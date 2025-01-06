@@ -7,10 +7,10 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data
 
-package edu.mit.jwi.data;
-
-import java.io.IOException;
+import java.io.IOException
+import kotlin.Throws
 
 /**
  * Object that has a lifecycle. Objects implementing this interface can be
@@ -23,29 +23,30 @@ import java.io.IOException;
  * @version 2.4.0
  * @since JWI 2.2.0
  */
-public interface IHasLifecycle extends IClosable
-{
+interface IHasLifecycle : IClosable {
+
     /**
      * This opens the object by performing any required initialization steps. If
-     * this method returns <code>false</code>, then subsequent calls to
-     * {@link #isOpen()} will return <code>false</code>.
+     * this method returns `false`, then subsequent calls to
+     * [.isOpen] will return `false`.
      *
-     * @return <code>true</code> if there were no errors in initialization;
-     * <code>false</code> otherwise.
+     * @return `true` if there were no errors in initialization;
+     * `false` otherwise.
      * @throws IOException if there was IO error while performing initialization
      * @since JWI 2.2.0
      */
-    boolean open() throws IOException;
+    @Throws(IOException::class)
+    fun open(): Boolean
 
     /**
-     * Returns <code>true</code> if the dictionary is open, that is, ready to
-     * accept queries; returns <code>false</code> otherwise
+     * Returns `true` if the dictionary is open, that is, ready to
+     * accept queries; returns `false` otherwise
      *
-     * @return <code>true</code> if the object is open; <code>false</code>
+     * @return `true` if the object is open; `false`
      * otherwise
      * @since JWI 2.2.0
      */
-    boolean isOpen();
+    val isOpen: Boolean
 
     /**
      * An enum that represents the four different lifecycle states an object may
@@ -56,8 +57,8 @@ public interface IHasLifecycle extends IClosable
      * @version 2.4.0
      * @since JWI 2.4.0
      */
-    enum LifecycleState
-    {
+    enum class LifecycleState {
+
         CLOSED, OPENING, OPEN, CLOSING
     }
 
@@ -69,74 +70,60 @@ public interface IHasLifecycle extends IClosable
      * @version 2.4.0
      * @since JWI 2.2.0
      */
-    class ObjectClosedException extends RuntimeException
-    {
-        // serial version id
-        private static final long serialVersionUID = -4703264035869277920L;
+    class ObjectClosedException : RuntimeException {
 
         /**
-         * Constructs a new exception with <code>null</code> as its detail
+         * Constructs a new exception with `null` as its detail
          * message. The cause is not initialized, and may subsequently be
-         * initialized by a call to {@link #initCause}.
+         * initialized by a call to [.initCause].
          *
          * @since JWI 2.2.0
          */
-        public ObjectClosedException()
-        {
-            super();
-        }
+        constructor() : super()
 
         /**
          * Constructs a new exception with the specified detail message. The cause
          * is not initialized, and may subsequently be initialized by a call to
-         * {@link #initCause}.
+         * [.initCause].
          *
          * @param message the detail message. The detail message is saved for later
-         *                retrieval by the {@link #getMessage()} method.
+         * retrieval by the [.getMessage] method.
          * @since JWI 2.2.0
          */
-        public ObjectClosedException(String message)
-        {
-            super(message);
-        }
+        constructor(message: String?) : super(message)
 
         /**
          * Constructs a new exception with the specified detail message and cause.
-         * <p>
-         * Note that the detail message associated with <code>cause</code> is
-         * <i>not</i> automatically incorporated in this runtime exception's detail
+         *
+         *
+         * Note that the detail message associated with `cause` is
+         * *not* automatically incorporated in this runtime exception's detail
          * message.
          *
          * @param message the detail message (which is saved for later retrieval by the
-         *                {@link #getMessage()} method).
+         * [.getMessage] method).
          * @param cause   the cause (which is saved for later retrieval by the
-         *                {@link #getCause()} method). (A {@code null} value is
-         *                permitted, and indicates that the cause is nonexistent or
-         *                unknown.)
+         * [.getCause] method). (A `null` value is
+         * permitted, and indicates that the cause is nonexistent or
+         * unknown.)
          * @since JWI 2.2.0
          */
-        public ObjectClosedException(String message, Throwable cause)
-        {
-            super(message, cause);
-        }
+        constructor(message: String?, cause: Throwable?) : super(message, cause)
 
         /**
          * Constructs a new exception with the specified cause and a detail message
-         * of {@code (cause==null ? null : cause.toString())} (which typically
-         * contains the class and detail message of {@code cause}). This
+         * of `(cause==null ? null : cause.toString())` (which typically
+         * contains the class and detail message of `cause`). This
          * constructor is useful for runtime exceptions that are little more than
          * wrappers for other throwables.
          *
          * @param cause the cause (which is saved for later retrieval by the
-         *              {@link #getCause()} method). (A {@code null} value is
-         *              permitted, and indicates that the cause is nonexistent or
-         *              unknown.)
+         * [.getCause] method). (A `null` value is
+         * permitted, and indicates that the cause is nonexistent or
+         * unknown.)
          * @since JWI 2.2.0
          */
-        public ObjectClosedException(Throwable cause)
-        {
-            super(cause);
-        }
+        constructor(cause: Throwable?) : super(cause)
     }
 
     /**
@@ -147,73 +134,59 @@ public interface IHasLifecycle extends IClosable
      * @version 2.4.0
      * @since JWI 2.4.0
      */
-    class ObjectOpenException extends RuntimeException
-    {
-        // serial version id
-        private static final long serialVersionUID = -4703264035869277920L;
+    class ObjectOpenException : RuntimeException {
 
         /**
-         * Constructs a new exception with <code>null</code> as its detail
+         * Constructs a new exception with `null` as its detail
          * message. The cause is not initialized, and may subsequently be
-         * initialized by a call to {@link #initCause}.
+         * initialized by a call to [.initCause].
          *
          * @since JWI 2.4.0
          */
-        public ObjectOpenException()
-        {
-            super();
-        }
+        constructor() : super()
 
         /**
          * Constructs a new exception with the specified detail message. The cause
          * is not initialized, and may subsequently be initialized by a call to
-         * {@link #initCause}.
+         * [.initCause].
          *
          * @param message the detail message. The detail message is saved for later
-         *                retrieval by the {@link #getMessage()} method.
+         * retrieval by the [.getMessage] method.
          * @since JWI 2.4.0
          */
-        public ObjectOpenException(String message)
-        {
-            super(message);
-        }
+        constructor(message: String) : super(message)
 
         /**
          * Constructs a new exception with the specified detail message and cause.
-         * <p>
-         * Note that the detail message associated with <code>cause</code> is
-         * <i>not</i> automatically incorporated in this runtime exception's detail
+         *
+         *
+         * Note that the detail message associated with `cause` is
+         * *not* automatically incorporated in this runtime exception's detail
          * message.
          *
          * @param message the detail message (which is saved for later retrieval by the
-         *                {@link #getMessage()} method).
+         * [.getMessage] method).
          * @param cause   the cause (which is saved for later retrieval by the
-         *                {@link #getCause()} method). (A {@code null} value is
-         *                permitted, and indicates that the cause is nonexistent or
-         *                unknown.)
+         * [.getCause] method). (A `null` value is
+         * permitted, and indicates that the cause is nonexistent or
+         * unknown.)
          * @since JWI 2.4.0
          */
-        public ObjectOpenException(String message, Throwable cause)
-        {
-            super(message, cause);
-        }
+        constructor(message: String, cause: Throwable?) : super(message, cause)
 
         /**
          * Constructs a new exception with the specified cause and a detail message
-         * of {@code (cause==null ? null : cause.toString())} (which typically
-         * contains the class and detail message of {@code cause}). This
+         * of `(cause==null ? null : cause.toString())` (which typically
+         * contains the class and detail message of `cause`). This
          * constructor is useful for runtime exceptions that are little more than
          * wrappers for other throwables.
          *
          * @param cause the cause (which is saved for later retrieval by the
-         *              {@link #getCause()} method). (A {@code null} value is
-         *              permitted, and indicates that the cause is nonexistent or
-         *              unknown.)
+         * [.getCause] method). (A `null` value is
+         * permitted, and indicates that the cause is nonexistent or
+         * unknown.)
          * @since JWI 2.4.0
          */
-        public ObjectOpenException(Throwable cause)
-        {
-            super(cause);
-        }
+        constructor(cause: Throwable?) : super(cause)
     }
 }

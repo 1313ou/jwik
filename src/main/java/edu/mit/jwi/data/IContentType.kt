@@ -7,62 +7,42 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data
 
-package edu.mit.jwi.data;
-
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.data.compare.ILineComparator;
-import edu.mit.jwi.item.IHasPOS;
+import edu.mit.jwi.NonNull
+import edu.mit.jwi.data.compare.ILineComparator
+import edu.mit.jwi.item.IHasPOS
 
 /**
- * <p>
  * Objects that implement this interface represent all possible types of content
  * that are contained in the dictionary data resources. Each unique object of
  * this type will correspond to a particular resource or file.
- * </p>
- * <p>
+ *
  * In the standard Wordnet distributions, examples of content types would
- * include, but would not be limited to, <em>Index</em>, <em>Data</em>, and
- * <em>Exception</em> files for each part of speech.
- * </p>
+ * include, but would not be limited to, *Index*, *Data*, and
+ * *Exception* files for each part of speech.
+ *
  *
  * @param <T> the parameterization of the data type for this content type
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-public interface IContentType<T> extends IHasPOS, IHasCharset
-{
-    /**
-     * Returns the content type key. This method may not return <code>null</code>
-     *
-     * @return the content type key representing the resource type for this
-     * content type
-     * @since JWI 2.4.1
-     */
-    @NonNull
-    ContentTypeKey getKey();
+interface IContentType<T> : IHasPOS, IHasCharset {
 
-    /**
-     * Returns the assigned resource type of this object. This method may not
-     * return <code>null</code>
-     *
-     * @return the data type object representing the resource type for this
-     * content type
-     * @since JWI 1.0
-     */
-    @NonNull
-    IDataType<T> getDataType();
+    val key: ContentTypeKey
+
+    val dataType: IDataType<T>
 
     /**
      * Returns a comparator that can be used to determine ordering between
      * different lines of data in the resource. This is used for searching. If
      * the data in the resource is not ordered, then this method returns
-     * <code>null</code>.
+     * `null`.
      *
      * @return a comparator that imposes an ordering on the lines in the data
-     * file; or <code>null</code> if there is no comparator
+     * file; or `null` if there is no comparator
      * @since JWI 1.0
      */
-    ILineComparator getLineComparator();
+     val lineComparator: ILineComparator?
 }

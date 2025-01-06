@@ -47,7 +47,7 @@ open class CachingDictionary(
      */
     protected fun checkOpen() {
         if (isOpen()) {
-            if (!cache.isOpen()) {
+            if (!cache.isOpen) {
                 try {
                     cache.open()
                 } catch (e: IOException) {
@@ -55,7 +55,7 @@ open class CachingDictionary(
                 }
             }
         } else {
-            if (cache.isOpen()) {
+            if (cache.isOpen) {
                 cache.close()
             }
             throw ObjectClosedException()
@@ -67,7 +67,7 @@ open class CachingDictionary(
     }
 
     override fun getCharset(): Charset? {
-        return backingDictionary.getCharset()
+        return backingDictionary.charset
     }
 
     override fun setComparator(contentType: ContentTypeKey, comparator: ILineComparator?) {
@@ -89,7 +89,7 @@ open class CachingDictionary(
 
     override fun isOpen(): Boolean {
         checkNotNull(this.backingDictionary)
-        return backingDictionary.isOpen()
+        return backingDictionary.isOpen
     }
 
     override fun close() {

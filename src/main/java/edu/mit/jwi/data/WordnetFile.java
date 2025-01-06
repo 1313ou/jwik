@@ -96,7 +96,7 @@ public abstract class WordnetFile<T> implements ILoadableDataSource<T>
         this.name = file.getName();
         this.file = file;
         this.contentType = contentType;
-        this.detector = contentType.getLineComparator().getCommentDetector();
+        this.detector = contentType.lineComparator.getCommentDetector();
     }
 
     /*
@@ -696,7 +696,7 @@ public abstract class WordnetFile<T> implements ILoadableDataSource<T>
             do
             {
                 assert contentType != null;
-                line = getLine(itrBuffer, contentType.getCharset());
+                line = getLine(itrBuffer, contentType.charset);
             }
             while (line != null && isComment(line));
             next = line;

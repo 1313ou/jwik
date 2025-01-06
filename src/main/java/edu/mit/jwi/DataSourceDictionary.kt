@@ -51,7 +51,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
     }
 
     override fun isOpen(): Boolean {
-        return dataProvider.isOpen()
+        return dataProvider.isOpen
     }
 
     /**
@@ -68,7 +68,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
     }
 
     override fun getCharset(): Charset? {
-        return dataProvider.getCharset()
+        return dataProvider.charset
     }
 
     override fun setCharset(charset: Charset) {
@@ -97,8 +97,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
             return null
         }
         checkNotNull(content)
-        val dataType = content.getDataType()
-        val parser = checkNotNull(dataType.getParser())
+        val dataType = content.dataType
+        val parser = checkNotNull(dataType.parser)
         return parser.parseLine(line)
     }
 
@@ -118,8 +118,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
     protected fun getWords(@NonNull start: String, @NonNull pos: POS?, limit: Int, result: MutableSet<String>): MutableCollection<String> {
         checkOpen()
         val content = checkNotNull(dataProvider.resolveContentType<IIndexWord?>(DataType.WORD, pos))
-        val dataType = content.getDataType()
-        val parser: ILineParser<IIndexWord> = checkNotNull(dataType.getParser())
+        val dataType = content.dataType
+        val parser: ILineParser<IIndexWord> = checkNotNull(dataType.parser)
         val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IIndexWord?>(content))
         var found = false
         val lines = file.iterator(start)
@@ -232,8 +232,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
             return null
         }
         checkNotNull(content)
-        val dataType = content.getDataType()
-        val parser = checkNotNull(dataType.getParser())
+        val dataType = content.dataType
+        val parser = checkNotNull(dataType.parser)
         return parser.parseLine(line)
     }
 
@@ -252,8 +252,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
             return null
         }
         checkNotNull(content)
-        val dataType = content.getDataType()
-        val parser = checkNotNull(dataType.getParser())
+        val dataType = content.dataType
+        val parser = checkNotNull(dataType.parser)
         return parser.parseLine(line)
     }
 
@@ -274,8 +274,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
             return null
         }
         checkNotNull(content)
-        val dataType = content.getDataType()
-        val parser = checkNotNull(dataType.getParser())
+        val dataType = content.dataType
+        val parser = checkNotNull(dataType.parser)
         val result = parser.parseLine(line)
         if (result != null) {
             setHeadWord(result)
@@ -350,8 +350,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
             return null
         }
         checkNotNull(content)
-        val dataType = content.getDataType()
-        val parser = checkNotNull(dataType.getParser())
+        val dataType = content.dataType
+        val parser = checkNotNull(dataType.parser)
         val proxy = parser.parseLine(line)
         if (proxy == null) {
             return null
@@ -397,8 +397,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         init {
             checkNotNull(dataProvider)
             this.fFile = dataProvider.getSource<T?>(content)
-            val dataType = content.getDataType()
-            this.fParser = dataType.getParser()
+            val dataType = content.dataType
+            this.fParser = dataType.parser
             iterator = if (fFile == null) {
                 // Fix for Bug018
                 Collections.emptyIterator<String>()
@@ -411,7 +411,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         override val pOS: POS
             get() {
                 checkNotNull(fFile)
-                val contentType = checkNotNull(fFile.getContentType())
+                val contentType = checkNotNull(fFile.contentType)
                 return contentType.pOS
             }
 

@@ -49,7 +49,7 @@ public class BinarySearchWordnetFile<T> extends WordnetFile<T>
     {
         super(file, contentType);
         assert getContentType() != null;
-        fComparator = getContentType().getLineComparator();
+        fComparator = getContentType().lineComparator;
     }
 
     private final Object bufferLock = new Object();
@@ -83,7 +83,7 @@ public class BinarySearchWordnetFile<T> extends WordnetFile<T>
 
                 // read line
                 assert getContentType() != null;
-                line = getLine(buffer, getContentType().getCharset());
+                line = getLine(buffer, getContentType().charset);
 
                 // if we get a null, we've reached the end of the file
                 cmp = (line == null) ? 1 : fComparator.compare(line, key);
@@ -170,9 +170,9 @@ public class BinarySearchWordnetFile<T> extends WordnetFile<T>
                     midpoint = (start + stop) / 2;
                     itrBuffer.position(midpoint);
                     assert getContentType() != null;
-                    getLine(itrBuffer, getContentType().getCharset());
+                    getLine(itrBuffer, getContentType().charset);
                     offset = itrBuffer.position();
-                    line = getLine(itrBuffer, getContentType().getCharset());
+                    line = getLine(itrBuffer, getContentType().charset);
 
                     // Fix for Bug009: If the line is null, we've reached
                     // the end of the file, so just advance to the first line
@@ -212,7 +212,7 @@ public class BinarySearchWordnetFile<T> extends WordnetFile<T>
                 if (lastOffset > -1)
                 {
                     itrBuffer.position(lastOffset);
-                    next = getLine(itrBuffer, getContentType().getCharset());
+                    next = getLine(itrBuffer, getContentType().charset);
                     return;
                 }
 

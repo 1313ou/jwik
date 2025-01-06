@@ -7,79 +7,64 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data
 
-package edu.mit.jwi.data;
-
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.Nullable;
-import edu.mit.jwi.data.compare.ILineComparator;
-import edu.mit.jwi.item.IHasVersion;
-import edu.mit.jwi.item.POS;
-
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Set;
+import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
+import edu.mit.jwi.data.compare.ILineComparator
+import edu.mit.jwi.item.IHasVersion
+import edu.mit.jwi.item.POS
+import java.net.URL
+import java.nio.charset.Charset
 
 /**
  * Objects that implement this interface manage access to data source objects.
- * Before the provider can be used, a client must call {@link #setSource(URL)}
- * (or call the appropriate constructor) followed by {@link #open()}.  Otherwise,
+ * Before the provider can be used, a client must call [.setSource]
+ * (or call the appropriate constructor) followed by [.open].  Otherwise,
  * the provider will throw an exception.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-public interface IDataProvider extends IHasVersion, IHasLifecycle, IHasCharset
-{
+interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
+
     /**
      * This method is used to set the source URL from which the provider
      * accesses the data from which it instantiates data sources. The data at
      * the specified location may be in an implementation-specific format. If
      * the provider is currently open, this method throws an
-     * {@code IllegalStateException}.
+     * `IllegalStateException`.
      *
-     * @param url the location of the data, may not be <code>null</code>
+     * @param source the location of the data, may not be `null`
      * @throws IllegalStateException if the provider is currently open
-     * @throws NullPointerException  if the specified <code>URL</code> is <code>null</code>.
+     * @throws NullPointerException  if the specified `URL` is `null`.
      * @since JWI 1.0
      */
-    void setSource(URL url);
-
-    /**
-     * Returns the <code>URL</code> that points to the resource location; should
-     * never return <code>null</code>.
-     *
-     * @return the<code>URL</code> that points to the resource location; must
-     * not be <code>null</code>
-     * @since JWI 1.0
-     */
-    @Nullable
-    URL getSource();
+    var source: URL
 
     /**
      * Sets the character set associated with this dictionary. The character set
-     * may be <code>null</code>.
+     * may be `null`.
      *
-     * @param charset the possibly <code>null</code> character set to use when
-     *                decoding files.
+     * @param charset the possibly `null` character set to use when
+     * decoding files.
      * @throws IllegalStateException if the provider is currently open
      * @since JWI 2.3.4
      */
-    void setCharset(@Nullable Charset charset);
+    fun setCharset(charset: Charset?)
 
     /**
      * Sets the comparator associated with this content type in this dictionary.
-     * The comparator may be <code>null</code> in which case it is reset.
+     * The comparator may be `null` in which case it is reset.
      *
-     * @param contentTypeKey the <code>non-null</code> content type key for which
-     *                       the comparator is to be set.
-     * @param comparator     the possibly <code>null</code> comparator to use when
-     *                       decoding files.
+     * @param contentTypeKey the `non-null` content type key for which
+     * the comparator is to be set.
+     * @param comparator     the possibly `null` comparator to use when
+     * decoding files.
      * @throws IllegalStateException if the provider is currently open
      * @since JWI 2.4.1
      */
-    void setComparator(@NonNull ContentTypeKey contentTypeKey, @Nullable ILineComparator comparator);
+    fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?)
 
     /**
      * Sets pattern attached to content type key, that source files have to
@@ -87,55 +72,41 @@ public interface IDataProvider extends IHasVersion, IHasLifecycle, IHasCharset
      * This gives selection a first opportunity before falling back on standard data
      * type selection.
      *
-     * @param contentTypeKey the <code>non-null</code> content type key for which
-     *                       the matcher is to be set.
+     * @param contentTypeKey the `non-null` content type key for which
+     * the matcher is to be set.
      * @param pattern        regexp pattern
      * @since JWI 2.4.1
      */
-    void setSourceMatcher(@NonNull ContentTypeKey contentTypeKey, @Nullable String pattern);
+    fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String)
 
-    /**
-     * Returns a set containing all the content types this provider looks for at
-     * the resource location. The returned collection may be unmodifiable, or
-     * may be a copy of an internal array; in any event modification of the
-     * returned collection should not affect the set of types used by the
-     * provider.
-     *
-     * @return a non-<code>null</code>, non-empty set of content types for this
-     * provider
-     * @since JWI 2.2.0
-     */
-    @NonNull
-    Set<? extends IContentType<?>> getTypes();
+    val types: Set<IContentType<*>>?
 
     /**
      * Returns the first content type, if any, that matches the specified data
-     * type and pos object. Either parameter may be <code>null</code>.
+     * type and pos object. Either parameter may be `null`.
      *
-     * @param dt  the data type, possibly <code>null</code>, of the desired
-     *            content type
-     * @param pos the part of speech, possibly <code>null</code>, of the desired
-     *            content type
      * @param <T> type
+     * @param dt  the data type, possibly `null`, of the desired
+     * content type
+     * @param pos the part of speech, possibly `null`, of the desired
+     * content type
      * @return the first content type that matches the specified data type and
      * part of speech.
      * @since JWI 2.3.4
-     */
-    @Nullable
-    <T> IContentType<T> resolveContentType(IDataType<T> dt, POS pos);
+    */
+    fun <T> resolveContentType(dt: IDataType<T>, pos: POS?): IContentType<T>?
 
     /**
      * Returns a data source object for the specified content type, if one is
-     * available; otherwise returns <code>null</code>.
+     * available; otherwise returns `null`.
      *
      * @param <T>         the content type of the data source
      * @param contentType the content type of the data source to be retrieved
      * @return the data source for the specified content type, or
-     * <code>null</code> if this provider has no such data source
-     * @throws NullPointerException  if the type is <code>null</code>
+     * `null` if this provider has no such data source
+     * @throws NullPointerException  if the type is `null`
      * @throws ObjectClosedException if the provider is not open when this call is made
      * @since JWI 2.0.0
      */
-    @Nullable
-    <T> IDataSource<T> getSource(IContentType<T> contentType);
+    fun <T> getSource(contentType: IContentType<T>?): IDataSource<T>?
 }

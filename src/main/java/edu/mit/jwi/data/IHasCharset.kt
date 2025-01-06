@@ -7,12 +7,10 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data
 
-package edu.mit.jwi.data;
-
-import edu.mit.jwi.Nullable;
-
-import java.nio.charset.Charset;
+import edu.mit.jwi.Nullable
+import java.nio.charset.Charset
 
 /**
  * Classes implementing this interface have an associated Charset.
@@ -21,14 +19,7 @@ import java.nio.charset.Charset;
  * @version 2.4.0
  * @since JWI 2.3.4
  */
-public interface IHasCharset
-{
-    /**
-     * Returns the character set associated with this object.  May be <code>null</code>.
-     *
-     * @return the Charset associated this object, possibly <code>null</code>
-     * @since JWI 2.3.4
-     */
-    @Nullable
-    Charset getCharset();
+interface IHasCharset {
+
+    val charset: Charset?
 }

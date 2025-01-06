@@ -198,7 +198,7 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
         Map<ContentTypeKey, IContentType<?>> prototypeMap = new LinkedHashMap<>(contentTypes.size());
         for (IContentType<?> contentType : contentTypes)
         {
-            ContentTypeKey key = contentType.getKey();
+            ContentTypeKey key = contentType.key;
             prototypeMap.put(key, contentType);
         }
         this.prototypeMap = prototypeMap;
@@ -209,7 +209,7 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
     {
         for (IContentType<?> contentType : this.defaultContentTypes)
         {
-            if (contentType.getKey().equals(key))
+            if (contentType.key.equals(key))
             {
                 return contentType;
             }
@@ -371,12 +371,12 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
                     // if we get a null charset, reset to the prototype value but preserve line comparator
                     IContentType<?> defaultContentType = getDefault(key);
                     assert defaultContentType != null;
-                    e.setValue(new ContentType<>(key, value.getLineComparator(), defaultContentType.getCharset()));
+                    e.setValue(new ContentType<>(key, value.lineComparator, defaultContentType.charset));
                 }
                 else
                 {
                     // if we get a non-null charset, generate new  type using the new charset but preserve line comparator
-                    e.setValue(new ContentType<>(key, value.getLineComparator(), charset));
+                    e.setValue(new ContentType<>(key, value.lineComparator, charset));
                 }
             }
             this.charset = charset;
@@ -413,13 +413,13 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
                 IContentType<?> defaultContentType = getDefault(key);
                 assert defaultContentType != null;
                 assert value != null;
-                prototypeMap.put(key, new ContentType<>(key, defaultContentType.getLineComparator(), value.getCharset()));
+                prototypeMap.put(key, new ContentType<>(key, defaultContentType.lineComparator, value.charset));
             }
             else
             {
                 // if we get a non-null comparator, generate a new type using the new comparator but preserve charset
                 assert value != null;
-                prototypeMap.put(key, new ContentType<>(key, comparator, value.getCharset()));
+                prototypeMap.put(key, new ContentType<>(key, comparator, value.charset));
             }
         }
         finally
@@ -625,7 +625,7 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
             assert fileMap != null;
             for (ILoadableDataSource<?> source : fileMap.values())
             {
-                if (!source.isLoaded())
+                if (!source.isLoaded)
                 {
                     return false;
                 }
@@ -661,9 +661,9 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
             File file = null;
 
             // give first chance to matcher
-            if (sourceMatcher.containsKey(contentType.getKey()))
+            if (sourceMatcher.containsKey(contentType.key))
             {
-                String regex = sourceMatcher.get(contentType.getKey());
+                String regex = sourceMatcher.get(contentType.key);
                 assert regex != null;
                 file = match(regex, files);
             }
@@ -671,7 +671,7 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
             // if it failed fall back on data types
             if (file == null)
             {
-                IDataType<?> dataType = contentType.getDataType();
+                IDataType<?> dataType = contentType.dataType;
                 file = DataType.find(dataType, contentType.getPOS(), files);
             }
 
@@ -682,12 +682,12 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
             }
 
             // do not remove file from possible choices as both content types may use the same file
-            if (!contentType.getKey().equals(ContentTypeKey.SENSE) && //
-                    !contentType.getKey().equals(ContentTypeKey.SENSES) && //
-                    !contentType.getKey().equals(ContentTypeKey.INDEX_ADJECTIVE) && //
-                    !contentType.getKey().equals(ContentTypeKey.INDEX_ADVERB) && //
-                    !contentType.getKey().equals(ContentTypeKey.INDEX_NOUN) && //
-                    !contentType.getKey().equals(ContentTypeKey.INDEX_VERB)
+            if (!contentType.key.equals(ContentTypeKey.SENSE) && //
+                    !contentType.key.equals(ContentTypeKey.SENSES) && //
+                    !contentType.key.equals(ContentTypeKey.INDEX_ADJECTIVE) && //
+                    !contentType.key.equals(ContentTypeKey.INDEX_ADVERB) && //
+                    !contentType.key.equals(ContentTypeKey.INDEX_NOUN) && //
+                    !contentType.key.equals(ContentTypeKey.INDEX_VERB)
             )
             {
                 files.remove(file);
@@ -732,7 +732,7 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
     protected <T> ILoadableDataSource<T> createDataSource(@NonNull File file, @NonNull IContentType<T> contentType, int policy) throws IOException
     {
         ILoadableDataSource<T> src;
-        if (contentType.getDataType() == DataType.DATA)
+        if (contentType.dataType == DataType.DATA)
         {
             src = createDirectAccess(file, contentType);
             src.open();
@@ -761,7 +761,7 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
             }
 
             // extract key
-            ILineParser<T> parser = contentType.getDataType().getParser();
+            ILineParser<T> parser = contentType.dataType.parser;
             assert parser != null;
             ISynset s = (ISynset) parser.parseLine(firstLine);
             assert s != null;
@@ -830,7 +830,7 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
     @NonNull
     protected <T> ILoadableDataSource<T> createBinarySearch(@NonNull File file, IContentType<T> contentType)
     {
-        return "Word".equals(contentType.getDataType().toString()) ?
+        return "Word".equals(contentType.dataType.toString()) ?
                 new BinaryStartSearchWordnetFile<>(file, contentType) :
                 new BinarySearchWordnetFile<>(file, contentType);
     }
@@ -911,7 +911,7 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
         checkOpen();
 
         // assume at first this the prototype
-        IContentType<?> actualType = prototypeMap.get(contentType.getKey());
+        IContentType<?> actualType = prototypeMap.get(contentType.key);
 
         // if this does not map to an adjusted type, we will check under it directly
         if (actualType == null)
@@ -978,7 +978,7 @@ public class FileProvider implements IDataProvider, ILoadable, ILoadPolicy
                 assert fileMap != null;
                 for (ILoadableDataSource<?> source : fileMap.values())
                 {
-                    if (!cancel && !source.isLoaded())
+                    if (!cancel && !source.isLoaded)
                     {
                         try
                         {

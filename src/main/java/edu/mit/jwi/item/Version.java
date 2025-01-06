@@ -498,7 +498,7 @@ public class Version implements IVersion
     @Nullable
     public static Version extractVersion(@NonNull IContentType<?> contentType, @NonNull ByteBuffer buffer)
     {
-        IDataType<?> dataType = contentType.getDataType();
+        IDataType<?> dataType = contentType.dataType;
         if (!dataType.hasVersion())
         {
             return null;
@@ -524,7 +524,7 @@ public class Version implements IVersion
 
         // if direct access doesn't work, try walking forward in file
         // until we find a string that looks like "WordNet 2.1 Copyright"
-        ICommentDetector cd = contentType.getLineComparator().getCommentDetector();
+        ICommentDetector cd = contentType.lineComparator.getCommentDetector();
         if (cd == null)
         {
             return null;

@@ -7,8 +7,7 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
-
-package edu.mit.jwi.data;
+package edu.mit.jwi.data
 
 /**
  * An object that can be closed. What 'closing' means is implementation
@@ -18,8 +17,8 @@ package edu.mit.jwi.data;
  * @version 2.4.0
  * @since JWI 2.2.0
  */
-public interface IClosable
-{
+interface IClosable {
+
     /**
      * This closes the object by disposing of data backing objects or
      * connections. If the object is already closed, or in the process of
@@ -28,5 +27,5 @@ public interface IClosable
      *
      * @since JWI 2.2.0
      */
-    void close();
+    fun close()
 }

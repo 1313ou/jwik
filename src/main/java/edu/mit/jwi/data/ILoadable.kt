@@ -7,8 +7,7 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
-
-package edu.mit.jwi.data;
+package edu.mit.jwi.data
 
 /**
  * An object that can be loaded. What 'loading' means may be implementation
@@ -18,8 +17,8 @@ package edu.mit.jwi.data;
  * @version 2.4.0
  * @since JWI 2.2.0
  */
-public interface ILoadable
-{
+interface ILoadable {
+
     /**
      * Starts a simple, non-blocking load. If the object is already loaded, the
      * method returns immediately and has no effect. If the object is in the
@@ -27,11 +26,11 @@ public interface ILoadable
      *
      * @since JWI 2.2.0
      */
-    void load();
+    fun load()
 
     /**
      * Initiates the loading process. Depending on the flag, the method may
-     * return immediately (<code>block</code> is <code>false</code>), or return
+     * return immediately (`block` is `false`), or return
      * only when the loading process is complete. If the object is already
      * loaded, the method returns immediately and has no effect. If the object
      * is in the process of loading, and the method is called in blocking mode,
@@ -39,25 +38,25 @@ public interface ILoadable
      * method did not initiate the loading process. Some implementors of this
      * interface may not support the immediate-return functionality.
      *
-     * @param block if <code>true</code>, the method returns only when the loading
-     *              process is complete; if <code>false</code>, the method returns
-     *              immediately.
+     * @param block if `true`, the method returns only when the loading
+     * process is complete; if `false`, the method returns
+     * immediately.
      * @throws InterruptedException if the method is blocking, and is interrupted while waiting
-     *                              for loading to complete
+     * for loading to complete
      * @since JWI 2.2.0
      */
-    void load(boolean block) throws InterruptedException;
+    @Throws(InterruptedException::class)
+    fun load(block: Boolean)
 
     /**
      * Returns whether this object is loaded or not. This method should return
-     * <code>true</code> only if the loading process has completed and the
+     * `true` only if the loading process has completed and the
      * object is actually loaded; if the object is still in the process of
-     * loading, or failed to load, the method should return <code>false</code>.
+     * loading, or failed to load, the method should return `false`.
      *
-     * @return <code>true</code> if the method has completed loading;
-     * <code>false</code> otherwise
+     * @return `true` if the method has completed loading;
+     * `false` otherwise
      * @since JWI 2.2.0
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    boolean isLoaded();
+    val isLoaded: Boolean
 }

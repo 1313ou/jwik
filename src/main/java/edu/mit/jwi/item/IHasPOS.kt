@@ -18,5 +18,5 @@ package edu.mit.jwi.item
  */
 interface IHasPOS {
 
-    val pOS: POS
+    val pOS: POS?
 }

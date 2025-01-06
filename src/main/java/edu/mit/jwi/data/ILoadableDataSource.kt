@@ -7,8 +7,7 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
-
-package edu.mit.jwi.data;
+package edu.mit.jwi.data
 
 /**
  * A data source that is also loadable.
@@ -17,7 +16,5 @@ package edu.mit.jwi.data;
  * @version 2.4.0
  * @since JWI 2.2.0
  */
-public interface ILoadableDataSource<T> extends IDataSource<T>, ILoadable
-{
-    // no methods
-}
+interface ILoadableDataSource<T> : IDataSource<T?>, ILoadable
+

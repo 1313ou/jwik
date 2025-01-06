@@ -192,7 +192,7 @@ class RAMDictionary protected constructor(
     }
 
     override fun getCharset(): Charset? {
-        return backingDictionary?.getCharset()
+        return backingDictionary?.charset
     }
 
     override fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
@@ -383,7 +383,7 @@ class RAMDictionary protected constructor(
             }
 
             // if the backing dictionary is present and open, then we are open
-            if (backingDictionary != null && backingDictionary.isOpen()) {
+            if (backingDictionary != null && backingDictionary.isOpen) {
                 return LifecycleState.OPEN
             }
 

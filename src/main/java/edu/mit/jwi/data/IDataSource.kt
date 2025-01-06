@@ -7,83 +7,66 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data
 
-package edu.mit.jwi.data;
-
-import edu.mit.jwi.IDataSourceDictionary;
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.Nullable;
-import edu.mit.jwi.item.IHasVersion;
-
-import java.util.Iterator;
+import edu.mit.jwi.NonNull
+import edu.mit.jwi.Nullable
+import edu.mit.jwi.item.IHasVersion
 
 /**
- * <p>
- * An object that mediate between an {@link IDataSourceDictionary} and the data
+ *
+ *
+ * An object that mediate between an [IDataSourceDictionary] and the data
  * that is contained in the dictionary data resources. Data resources are
- * assigned a name (e.g., <i>verb.data</i>, for the data resource pertaining to
+ * assigned a name (e.g., *verb.data*, for the data resource pertaining to
  * verbs) and a content type. Data resources are assumed to be indexed by keys
- * that can be passed into the {@link #getLine(String)} method to find a
- * particular piece of data in the resource. The <code>String</code> return can
+ * that can be passed into the [.getLine] method to find a
+ * particular piece of data in the resource. The `String` return can
  * be parsed by the parser associated with the content type to produce a data
- * object (e.g., an {@code ISynset} or {@code IIndexWord} object).
- * </p>
- * <p>
+ * object (e.g., an `ISynset` or `IIndexWord` object).
+ *
+ *
+ *
  * The iterator produced by this class should not support the
- * {@link Iterator#remove()} operation; if that method is called, the iterator
- * will throw an {@link UnsupportedOperationException}.
- * </p>
+ * [Iterator.remove] operation; if that method is called, the iterator
+ * will throw an [UnsupportedOperationException].
+ *
  *
  * @param <T> the type of object represented in this data resource
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.0.0
- */
-public interface IDataSource<T> extends IHasVersion, Iterable<String>, IHasLifecycle
-{
-    /**
-     * Returns a string representation of the name of this resource. For
-     * file-based resources, this will usually be the filename.
-     *
-     * @return the name of this resource, neither <code>null</code>, empty, or
-     * all whitespace
-     * @since JWI 2.0.0
-     */
-    @NonNull
-    String getName();
+</T> */
+interface IDataSource<T> : IHasVersion, Iterable<String?>, IHasLifecycle {
 
-    /**
-     * Returns the assigned content type of the resource that backs this object.
-     *
-     * @return the assigned content type for this data source. Will not return
-     * <code>null</code>.
-     * @since JWI 2.0.0
-     */
-    @Nullable
-    IContentType<T> getContentType();
+    @get:NonNull
+    val name: String?
+
+    @get:Nullable
+    val contentType: IContentType<T?>?
 
     /**
      * Returns the line in the resource contains the data indexed by the
      * specified key. If the file cannot find the key in its data resource, it
-     * returns <code>null</code>
+     * returns `null`
      *
      * @param key the key which indexes the desired data
      * @return the line indexed by the specified key in the resource
-     * @throws NullPointerException if the specified key is <code>null</code>
+     * @throws NullPointerException if the specified key is `null`
      * @since JWI 2.0.0
      */
     @Nullable
-    String getLine(String key);
+    fun getLine(key: String?): String?
 
     /**
      * Returns an iterator that will iterator over lines in the data resource,
      * starting at the line specified by the given key. If the key is
-     * <code>null</code>, this is the same as calling the plain
-     * {@link #iterator()} method. If no line starts with the pattern, the
-     * iterator's {@link Iterator#hasNext()} will return <code>false</code>. The
-     * iterator does not support the {@link Iterator#remove()} operation; if
+     * `null`, this is the same as calling the plain
+     * [.iterator] method. If no line starts with the pattern, the
+     * iterator's [Iterator.hasNext] will return `false`. The
+     * iterator does not support the [Iterator.remove] operation; if
      * that method is called, the iterator will throw an
-     * {@link UnsupportedOperationException}.
+     * [UnsupportedOperationException].
      *
      * @param key the key at which the iterator should begin
      * @return an iterator that will iterate over the file starting at the line
@@ -91,5 +74,5 @@ public interface IDataSource<T> extends IHasVersion, Iterable<String>, IHasLifec
      * @since JWI 2.0.0
      */
     @NonNull
-    Iterator<String> iterator(String key);
+    fun iterator(key: String?): MutableIterator<String?>?
 }

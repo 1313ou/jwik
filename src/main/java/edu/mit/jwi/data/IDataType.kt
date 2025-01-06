@@ -7,29 +7,26 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data
 
-package edu.mit.jwi.data;
-
-import edu.mit.jwi.Nullable;
-import edu.mit.jwi.data.compare.ILineComparator;
-import edu.mit.jwi.data.parse.ILineParser;
-
-import java.util.Set;
+import edu.mit.jwi.data.parse.ILineParser
 
 /**
- * <p>
+ *
+ *
  * Objects that implement this interface represent possible types of data that
  * occur in the dictionary data directory.
- * </p>
- * <p>
+ *
+ *
+ *
  * In the standard Wordnet distributions, data types would include, but would
- * not be limited to, <i>Index</i> files, <i>Data</i> files, and
- * <i>Exception</i> files. The objects implementing this interface are then
- * paired with an {@link edu.mit.jwi.item.POS} instance and
- * {@link ILineComparator} instance to form an instance of an
- * {@link IContentType} class, which identifies the specific data contained in
+ * not be limited to, *Index* files, *Data* files, and
+ * *Exception* files. The objects implementing this interface are then
+ * paired with an [edu.mit.jwi.item.POS] instance and
+ * [ILineComparator] instance to form an instance of an
+ * [IContentType] class, which identifies the specific data contained in
  * the file. Note that here, 'data' refers not to an actual file, but to an
- * instance of the {@code IDataSource} interface that provides access to the
+ * instance of the `IDataSource` interface that provides access to the
  * data, be it a file in the file system, a socket connection to a database, or
  * something else.
  *
@@ -37,46 +34,32 @@ import java.util.Set;
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.0.0
- */
-public interface IDataType<T>
-{
-    /**
-     * Returns the line parser that can be used to process lines of data
-     * retrieved from an {@code IDataSource} file with this type.
-     *
-     * @return the line parser that can be used to process lines of data
-     * retrieved from an {@code IDataSource} file with this type.
-     * @since JWI 2.0.0
-     */
-    @Nullable
-    ILineParser<T> getParser();
+</T> */
+interface IDataType<T> {
+
+    val parser: ILineParser<T>
 
     /**
      * Indicates whether this content type usually has wordnet version
      * information encoded in its header.
      *
-     * @return <code>true</code> if the content file that underlies this content
+     * @return `true` if the content file that underlies this content
      * usually has wordnet version information in its comment header;
-     * <code>false</code> otherwise.
+     * `false` otherwise.
      * @since JWI 2.1.0
      */
-    boolean hasVersion();
+    fun hasVersion(): Boolean
 
     /**
      * Returns an immutable set of strings that can be used as keywords to
      * identify resources that are of this type.
-     *
-     * @return a set of resource name fragments
-     * @since JWI 2.0.0
-     */
-    Set<String> getResourceNameHints();
-
-    /**
      * Set strings that can be used as keywords to identify resources that
      * are of this type.
      *
-     * @param hints a set of resource name fragments
+     * @param resourceNameHints a set of resource name fragments
+     * @return a set of resource name fragments
+     * @since JWI 2.0.0
      * @since JWI 2.4.1
      */
-    void setResourceNameHints(Set<String> hints);
+    var resourceNameHints: Set<String>
 }
