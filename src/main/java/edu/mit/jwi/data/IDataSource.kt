@@ -25,13 +25,6 @@ import edu.mit.jwi.item.IHasVersion
  * be parsed by the parser associated with the content type to produce a data
  * object (e.g., an `ISynset` or `IIndexWord` object).
  *
- *
- *
- * The iterator produced by this class should not support the
- * [Iterator.remove] operation; if that method is called, the iterator
- * will throw an [UnsupportedOperationException].
- *
- *
  * @param <T> the type of object represented in this data resource
  * @author Mark A. Finlayson
  * @version 2.4.0
@@ -39,11 +32,9 @@ import edu.mit.jwi.item.IHasVersion
 </T> */
 interface IDataSource<T> : IHasVersion, Iterable<String?>, IHasLifecycle {
 
-    @get:NonNull
     val name: String?
 
-    @get:Nullable
-    val contentType: IContentType<T?>?
+    val contentType: IContentType<T>
 
     /**
      * Returns the line in the resource contains the data indexed by the

@@ -48,8 +48,8 @@ public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
     public BinaryStartSearchWordnetFile(@NonNull File file, IContentType<T> contentType)
     {
         super(file, contentType);
-        assert getContentType() != null;
-        fComparator = getContentType().getLineComparator();
+        assert contentType != null;
+        fComparator = contentType.getLineComparator();
     }
 
     private final Object bufferLock = new Object();
@@ -77,7 +77,6 @@ public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
                 rewindToLineStart(buffer);
 
                 // read line
-                assert getContentType() != null;
                 line = getLine(buffer, getContentType().getCharset());
 
                 // if we get a null, we've reached the end of the file
@@ -164,7 +163,6 @@ public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
                 {
                     midpoint = (start + stop) / 2;
                     itrBuffer.position(midpoint);
-                    assert getContentType() != null;
                     getLine(itrBuffer, getContentType().getCharset());
                     offset = itrBuffer.position();
                     line = getLine(itrBuffer, getContentType().getCharset());
@@ -182,7 +180,7 @@ public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
                     // the start of this pattern in the file
                     if (compare == 0)
                     {
-                        next = line;
+                        setNextLine(line);
                         return;
                     }
                     else if (compare > 0)
@@ -203,7 +201,7 @@ public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
                 if (lastOffset > -1)
                 {
                     itrBuffer.position(lastOffset);
-                    next = getLine(itrBuffer, getContentType().getCharset());
+                    setNextLine(getLine(itrBuffer, getContentType().getCharset()));
                     return;
                 }
 
