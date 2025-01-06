@@ -21,5 +21,5 @@ import edu.mit.jwi.data.IDataProvider
  */
 interface IDataSourceDictionary : IDictionary {
 
-    val dataProvider: IDataProvider?
+    val dataProvider: IDataProvider
 }
