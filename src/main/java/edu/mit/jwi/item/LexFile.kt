@@ -39,7 +39,7 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-open class LexFile(num: Int, name: String, desc: String, pos: POS) : ILexFile {
+open class LexFile(num: Int, name: String, desc: String, pos: POS?) : ILexFile {
 
     override val number: Int = checkLexicalFileNumber(num)
 

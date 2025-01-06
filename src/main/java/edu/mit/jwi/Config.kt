@@ -1,18 +1,16 @@
-package edu.mit.jwi;
+package edu.mit.jwi
 
-import edu.mit.jwi.data.compare.ILineComparator;
+import edu.mit.jwi.data.compare.ILineComparator
+import java.nio.charset.Charset
 
-import java.nio.charset.Charset;
+class Config {
 
-public class Config
-{
-    public Boolean checkLexicalId;
-
-    public String indexSensePattern;
-    public ILineComparator indexNounComparator;
-    public ILineComparator indexVerbComparator;
-    public ILineComparator indexAdjectiveComparator;
-    public ILineComparator indexAdverbComparator;
-    public ILineComparator indexSenseKeyComparator;
-    public Charset charSet;
+    var checkLexicalId: Boolean? = null
+    var indexSensePattern: String? = null
+    var indexNounComparator: ILineComparator? = null
+    var indexVerbComparator: ILineComparator? = null
+    var indexAdjectiveComparator: ILineComparator? = null
+    var indexAdverbComparator: ILineComparator? = null
+    var indexSenseKeyComparator: ILineComparator? = null
+    var charSet: Charset? = null
 }
