@@ -75,7 +75,7 @@ class SenseKey(
      * @throws NullPointerException if either the lemma or synset is `null`
      * @since JWI 2.1.0
      */
-    constructor(lemma: String, lexID: Int, synset: ISynset) : this(lemma, lexID, synset.pOS, synset.isAdjectiveSatellite, synset.lexicalFile)
+    constructor(lemma: String, lexID: Int, synset: ISynset) : this(lemma, lexID, synset.pOS!!, synset.isAdjectiveSatellite, synset.lexicalFile)
 
     /**
      * Constructs a new sense key.

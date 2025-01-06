@@ -104,22 +104,22 @@ class DataType<T>(
     companion object {
 
         @JvmField
-        val INDEX: DataType<IIndexWord?> = DataType<IIndexWord?>("Index", true, IndexLineParser.getInstance(), "index", "idx")
+        val INDEX: DataType<IIndexWord> = DataType<IIndexWord>("Index", true, IndexLineParser.getInstance(), "index", "idx")
 
         @JvmField
-        val WORD: DataType<IIndexWord?> = DataType<IIndexWord?>("Word", true, IndexLineParser.getInstance(), "index", "idx")
+        val WORD: DataType<IIndexWord> = DataType<IIndexWord>("Word", true, IndexLineParser.getInstance(), "index", "idx")
 
         @JvmField
-        val DATA: DataType<ISynset?> = DataType<ISynset?>("Data", true, DataLineParser.getInstance(), "data", "dat")
+        val DATA: DataType<ISynset> = DataType<ISynset>("Data", true, DataLineParser.getInstance(), "data", "dat")
 
         @JvmField
-        val EXCEPTION: DataType<IExceptionEntryProxy?> = DataType<IExceptionEntryProxy?>("Exception", false, ExceptionLineParser.getInstance(), "exception", "exc")
+        val EXCEPTION: DataType<IExceptionEntryProxy> = DataType<IExceptionEntryProxy>("Exception", false, ExceptionLineParser.getInstance(), "exception", "exc")
 
         @JvmField
-        val SENSE: DataType<ISenseEntry?> = DataType<ISenseEntry?>("Sense", false, SenseLineParser.getInstance(), "sense")
+        val SENSE: DataType<ISenseEntry> = DataType<ISenseEntry>("Sense", false, SenseLineParser.getInstance(), "sense")
 
         @JvmField
-        val SENSES: DataType<Array<ISenseEntry?>?> = DataType<Array<ISenseEntry?>?>("Senses", false, SensesLineParser.getInstance(), "sense")
+        val SENSES: DataType<Array<ISenseEntry>> = DataType<Array<ISenseEntry>>("Senses", false, SensesLineParser.getInstance(), "sense")
 
         // set of all data types implemented in this class
         private var dataTypes: Set<DataType<*>>? = null
@@ -178,8 +178,7 @@ class DataType<T>(
          * @throws NullPointerException if the data type or file collection is `null`
          * @since JWI 2.2.0
          */
-        @Nullable
-        fun find(@NonNull dataType: IDataType<*>, @Nullable pos: POS?, @NonNull files: MutableCollection<out File>): File? {
+        fun find(dataType: IDataType<*>, pos: POS?, files: Collection<File>): File? {
             val typePatterns = dataType.resourceNameHints
             val posPatterns: Set<String> = pos?.resourceNameHints ?: setOf<String>()
             if (typePatterns == null || typePatterns.isEmpty()) {

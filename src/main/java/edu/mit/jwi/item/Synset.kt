@@ -55,7 +55,7 @@ class Synset(
     override val pOS: POS
         get() {
             checkNotNull(this.iD)
-            return iD.pOS
+            return iD.pOS!!
         }
 
     override val type: Int

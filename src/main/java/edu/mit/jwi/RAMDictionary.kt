@@ -12,8 +12,8 @@ package edu.mit.jwi
 import edu.mit.jwi.IRAMDictionary.IInputStreamFactory
 import edu.mit.jwi.data.ContentTypeKey
 import edu.mit.jwi.data.FileProvider
-import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.data.IHasLifecycle.LifecycleState
+import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
 import edu.mit.jwi.data.ILoadPolicy
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.*
@@ -179,55 +179,44 @@ class RAMDictionary protected constructor(
         check(!(backing != null && factory != null)) { "Both backing dictionary and input stream factory may not be non-null" }
 
         backingDictionary = backing
-        this.streamFactory = factory
-        this.loadPolicy = if (factory == null) loadPolicy else ILoadPolicy.IMMEDIATE_LOAD
+        streamFactory = factory
     }
 
-    override fun setCharset(charset: Charset) {
-        if (isOpen) {
-            throw IHasLifecycle.ObjectOpenException()
+    override var loadPolicy: Int = if (factory == null) loadPolicy else ILoadPolicy.IMMEDIATE_LOAD
+        set(policy) {
+            if (isOpen)
+                throw ObjectOpenException()
+
+            // if the dictionary uses an input stream factory
+            // the load policy is effectively IMMEDIATE_LOAD
+            // so the load policy is set to this for information purposes
+            loadPolicy = if (streamFactory == null) policy else ILoadPolicy.IMMEDIATE_LOAD
         }
-        checkNotNull(backingDictionary)
-        backingDictionary.setCharset(charset)
-    }
 
-    override fun getCharset(): Charset? {
-        return backingDictionary?.charset
-    }
+    override var charset: Charset?
+        get() {
+            return backingDictionary?.charset
+        }
+        set(charset) {
+            if (isOpen)
+                throw ObjectOpenException()
+            backingDictionary?.charset = charset
+        }
 
     override fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
-        if (isOpen) {
-            throw IHasLifecycle.ObjectOpenException()
-        }
-        checkNotNull(backingDictionary)
-        backingDictionary.setComparator(contentTypeKey, comparator)
+        if (isOpen)
+            throw ObjectOpenException()
+        backingDictionary?.setComparator(contentTypeKey, comparator)
     }
 
-    override fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String) {
-        if (isOpen) {
-            throw IHasLifecycle.ObjectOpenException()
-        }
-        checkNotNull(backingDictionary)
-        backingDictionary.setSourceMatcher(contentTypeKey, pattern)
+    override fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
+        if (isOpen)
+            throw ObjectOpenException()
+        backingDictionary?.setSourceMatcher(contentTypeKey, pattern)
     }
 
-    override fun getLoadPolicy(): Int {
-        return loadPolicy
-    }
-
-    override fun setLoadPolicy(policy: Int) {
-        if (isOpen) {
-            throw IHasLifecycle.ObjectOpenException()
-        }
-        // if the dictionary uses an input stream factory
-        // the load policy is effectively IMMEDIATE_LOAD
-        // so the load policy is set to this for information purposes
-        this.loadPolicy = if (this.streamFactory == null) policy else ILoadPolicy.IMMEDIATE_LOAD
-    }
-
-    override fun isLoaded(): Boolean {
-        return data != null
-    }
+    override val isLoaded: Boolean
+        get() = data != null
 
     override fun load() {
         try {
@@ -318,14 +307,15 @@ class RAMDictionary protected constructor(
         }
     }
 
-    override fun isOpen(): Boolean {
-        try {
-            lifecycleLock.lock()
-            return state == LifecycleState.OPEN
-        } finally {
-            lifecycleLock.unlock()
+    override val isOpen: Boolean
+        get() {
+            try {
+                lifecycleLock.lock()
+                return state == LifecycleState.OPEN
+            } finally {
+                lifecycleLock.unlock()
+            }
         }
-    }
 
     override fun close() {
         try {

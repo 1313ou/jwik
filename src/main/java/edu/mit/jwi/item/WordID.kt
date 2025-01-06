@@ -29,10 +29,7 @@ class WordID : IWordID {
     override val wordNumber: Int
 
     override val pOS: POS
-        get() {
-            checkNotNull(synsetID)
-            return synsetID.pOS
-        }
+        get() = synsetID.pOS!!
 
     override val lemma: String?
 
@@ -123,7 +120,6 @@ class WordID : IWordID {
         this.wordNumber = num
         this.lemma = lemma
     }
-
 
     /*
     * (non-Javadoc)

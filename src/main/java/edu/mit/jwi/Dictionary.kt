@@ -57,7 +57,7 @@ class Dictionary : CachingDictionary {
 
     private fun configure(@Nullable config: Config?) {
         // default
-        setCharset(Charset.defaultCharset())
+        charset = Charset.defaultCharset()
 
         // enforce config
         if (config == null) {
@@ -66,7 +66,7 @@ class Dictionary : CachingDictionary {
 
         // global params
         if (config.checkLexicalId != null) {
-            checkLexicalId = config.checkLexicalId
+            checkLexicalId = config.checkLexicalId == true
         }
 
         // dictionary params
@@ -92,7 +92,7 @@ class Dictionary : CachingDictionary {
             setComparator(ContentTypeKey.SENSES, config.indexSenseKeyComparator)
         }
         if (config.charSet != null) {
-            setCharset(config.charSet)
+            charset = config.charSet
         }
     }
 }

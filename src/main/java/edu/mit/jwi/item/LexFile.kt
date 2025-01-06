@@ -45,7 +45,7 @@ open class LexFile(num: Int, name: String, desc: String, pos: POS?) : ILexFile {
 
     override val name: String = checkString(name)
 
-    override val pOS: POS = pos
+    override val pOS: POS? = pos
 
     private val desc: String = desc
 

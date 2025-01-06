@@ -31,8 +31,7 @@ class SenseEntry(@Nullable key: ISenseKey, offset: Int, num: Int, count: Int) : 
 
     override val pOS: POS
         get() {
-            checkNotNull(this.senseKey)
-            return senseKey.pOS
+            return senseKey.pOS!!
         }
 
     /**

@@ -50,9 +50,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         dataProvider.close()
     }
 
-    override fun isOpen(): Boolean {
-        return dataProvider.isOpen
-    }
+    override val isOpen: Boolean
+        get() = dataProvider.isOpen
 
     /**
      * An internal method for assuring compliance with the dictionary interface
@@ -67,19 +66,17 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         }
     }
 
-    override fun getCharset(): Charset? {
-        return dataProvider.charset
-    }
-
-    override fun setCharset(charset: Charset) {
-        dataProvider.setCharset(charset)
-    }
+    override var charset: Charset?
+        get() = dataProvider.charset
+        set(charset) {
+            dataProvider.charset = charset
+        }
 
     override fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
         dataProvider.setComparator(contentTypeKey, comparator)
     }
 
-    override fun setSourceMatcher(@NonNull contentTypeKey: ContentTypeKey, pattern: String) {
+    override fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
         dataProvider.setSourceMatcher(contentTypeKey, pattern)
     }
 
@@ -90,8 +87,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
 
     override fun getIndexWord(@NonNull id: IIndexWordID): IIndexWord? {
         checkOpen()
-        val content = dataProvider.resolveContentType<IIndexWord?>(DataType.INDEX, id.pOS)
-        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IIndexWord?>(content))
+        val content = dataProvider.resolveContentType<IIndexWord>(DataType.INDEX, id.pOS)
+        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IIndexWord>(content!!))
         val line = file.getLine(id.lemma)
         if (line == null) {
             return null
@@ -115,12 +112,12 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return result
     }
 
-    protected fun getWords(@NonNull start: String, @NonNull pos: POS?, limit: Int, result: MutableSet<String>): MutableCollection<String> {
+    protected fun getWords(start: String, pos: POS, limit: Int, result: MutableSet<String>): MutableCollection<String> {
         checkOpen()
-        val content = checkNotNull(dataProvider.resolveContentType<IIndexWord?>(DataType.WORD, pos))
+        val content = checkNotNull(dataProvider.resolveContentType<IIndexWord>(DataType.WORD, pos))
         val dataType = content.dataType
         val parser: ILineParser<IIndexWord> = checkNotNull(dataType.parser)
-        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IIndexWord?>(content))
+        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IIndexWord>(content))
         var found = false
         val lines = file.iterator(start)
         while (lines.hasNext()) {
@@ -182,7 +179,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         // done in the call to getSynset()
         val entry = getSenseEntry(key)
         if (entry != null) {
-            val synset = getSynset(SynsetID(entry.offset, entry.pOS))
+            val synset = getSynset(SynsetID(entry.offset, entry.pOS!!))
             if (synset != null) {
                 for (synonym in synset.words) {
                     if (synonym.senseKey == key) {
@@ -200,7 +197,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         // index word search because some synsets have lemmas that differ only in case
         // e.g., {earth, Earth} or {south, South}, and so separate entries
         // are not found in the index file
-        val indexWord = getIndexWord(key.lemma, key.pOS)
+        val indexWord = getIndexWord(key.lemma, key.pOS!!)
         if (indexWord != null) {
             var possibleWord: IWord?
             for (wordID in indexWord.wordIDs) {
@@ -225,8 +222,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
 
     override fun getSenseEntry(@NonNull key: ISenseKey): ISenseEntry? {
         checkOpen()
-        val content = dataProvider.resolveContentType<ISenseEntry?>(DataType.SENSE, null)
-        val file = checkNotNull(dataProvider.getSource<ISenseEntry?>(content))
+        val content = dataProvider.resolveContentType<ISenseEntry>(DataType.SENSE, null)
+        val file = checkNotNull(dataProvider.getSource<ISenseEntry>(content!!))
         val line = file.getLine(key.toString())
         if (line == null) {
             return null
@@ -243,10 +240,10 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      * @see edu.mit.jwi.IDictionary#getSenseEntries(edu.edu.mit.jwi.item.ISenseKey)
      */
     @Nullable
-    fun getSenseEntries(@NonNull key: ISenseKey): Array<ISenseEntry?>? {
+    fun getSenseEntries(@NonNull key: ISenseKey): Array<ISenseEntry>? {
         checkOpen()
-        val content = dataProvider.resolveContentType<Array<ISenseEntry?>?>(DataType.SENSES, null)
-        val file = checkNotNull(dataProvider.getSource<Array<ISenseEntry?>?>(content))
+        val content = dataProvider.resolveContentType<Array<ISenseEntry>>(DataType.SENSES, null)
+        val file = checkNotNull(dataProvider.getSource<Array<ISenseEntry>>(content!!))
         val line = file.getLine(key.toString())
         if (line == null) {
             return null
@@ -265,8 +262,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
     @Nullable
     override fun getSynset(@NonNull id: ISynsetID): ISynset? {
         checkOpen()
-        val content = dataProvider.resolveContentType<ISynset?>(DataType.DATA, id.pOS)
-        val file = dataProvider.getSource<ISynset?>(content)
+        val content = dataProvider.resolveContentType<ISynset>(DataType.DATA, id.pOS)
+        val file = dataProvider.getSource<ISynset>(content!!)
         val zeroFilledOffset = zeroFillOffset(id.offset)
         checkNotNull(file)
         val line = file.getLine(zeroFilledOffset)
@@ -339,8 +336,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
 
     override fun getExceptionEntry(id: IExceptionEntryID): IExceptionEntry? {
         checkOpen()
-        val content = dataProvider.resolveContentType<IExceptionEntryProxy?>(DataType.EXCEPTION, id.pOS)
-        val file = dataProvider.getSource<IExceptionEntryProxy?>(content)
+        val content = dataProvider.resolveContentType<IExceptionEntryProxy>(DataType.EXCEPTION, id.pOS)
+        val file = dataProvider.getSource<IExceptionEntryProxy>(content!!)
         // fix for bug 010
         if (file == null) {
             return null
@@ -356,7 +353,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         if (proxy == null) {
             return null
         }
-        return ExceptionEntry(proxy, id.pOS)
+        return ExceptionEntry(proxy, id.pOS!!)
     }
 
     override fun getIndexWordIterator(pos: POS): Iterator<IIndexWord> {
@@ -385,18 +382,18 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
     abstract inner class FileIterator<T, N> @JvmOverloads constructor(content: IContentType<T>, startKey: String? = null) : Iterator<N>, IHasPOS {
 
         @Nullable
-        protected val fFile: IDataSource<T?>?
+        protected val fFile: IDataSource<T>
         @NonNull
-        protected var iterator: MutableIterator<String>? = null
+        protected var iterator: Iterator<String>? = null
         @Nullable
-        protected val fParser: ILineParser<T?>
+        protected val fParser: ILineParser<T>
 
         var currentLine: String? = null
             protected set
 
         init {
             checkNotNull(dataProvider)
-            this.fFile = dataProvider.getSource<T?>(content)
+            this.fFile = dataProvider.getSource<T>(content)!!
             val dataType = content.dataType
             this.fParser = dataType.parser
             iterator = if (fFile == null) {
@@ -410,9 +407,8 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         @get:Nullable
         override val pOS: POS
             get() {
-                checkNotNull(fFile)
-                val contentType = checkNotNull(fFile.contentType)
-                return contentType.pOS
+                val contentType = fFile.contentType!!
+                return contentType.pOS!!
             }
 
         override fun hasNext(): Boolean {
@@ -464,7 +460,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      * Iterates over index files.
      */
     inner class IndexFileIterator @JvmOverloads constructor(pos: POS, pattern: String = "") : FileIterator2<IIndexWord>(
-        dataProvider.resolveContentType<IIndexWord?>(DataType.INDEX, pos),
+        dataProvider.resolveContentType<IIndexWord>(DataType.INDEX, pos)!!,
         pattern
     ) {
 
@@ -478,7 +474,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      * Iterates over the sense file.
      */
     inner class SenseEntryFileIterator : FileIterator2<ISenseEntry>(
-        dataProvider.resolveContentType<ISenseEntry>(DataType.SENSE, null)
+        dataProvider.resolveContentType<ISenseEntry>(DataType.SENSE, null)!!
     ) {
 
         override fun parseLine(line: String?): ISenseEntry? {
@@ -491,7 +487,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      * Iterates over data files.
      */
     inner class DataFileIterator(pos: POS?) : FileIterator2<ISynset>(
-        dataProvider.resolveContentType<ISynset?>(DataType.DATA, pos)
+        dataProvider.resolveContentType<ISynset>(DataType.DATA, pos)!!
     ) {
 
         override fun parseLine(line: String?): ISynset? {
@@ -511,7 +507,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      * Iterates over exception files.
      */
     inner class ExceptionFileIterator(pos: POS?) : FileIterator<IExceptionEntryProxy, IExceptionEntry>(
-        dataProvider.resolveContentType<IExceptionEntryProxy>(DataType.EXCEPTION, pos)
+        dataProvider.resolveContentType<IExceptionEntryProxy>(DataType.EXCEPTION, pos)!!
     ) {
 
         override fun parseLine(line: String?): IExceptionEntry? {

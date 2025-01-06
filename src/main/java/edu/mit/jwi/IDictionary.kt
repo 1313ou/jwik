@@ -38,7 +38,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * decoding files.
      * @since JWI 2.3.4
      */
-    fun setCharset(@Nullable charset: Charset)
+    override var charset: Charset?
 
     /**
      * Sets the comparator associated with this content type in this dictionary.
@@ -64,7 +64,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @param pattern        regexp pattern
      * @since JWI 2.4.1
      */
-    fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String)
+    fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?)
 
     // F I N D
 

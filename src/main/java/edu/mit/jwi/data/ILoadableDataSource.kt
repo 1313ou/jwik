@@ -16,5 +16,5 @@ package edu.mit.jwi.data
  * @version 2.4.0
  * @since JWI 2.2.0
  */
-interface ILoadableDataSource<T> : IDataSource<T?>, ILoadable
+interface ILoadableDataSource<T> : IDataSource<T>, ILoadable
 

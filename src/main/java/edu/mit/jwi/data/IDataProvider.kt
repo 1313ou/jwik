@@ -51,7 +51,7 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws IllegalStateException if the provider is currently open
      * @since JWI 2.3.4
      */
-    fun setCharset(charset: Charset?)
+    override var charset: Charset?
 
     /**
      * Sets the comparator associated with this content type in this dictionary.
@@ -77,7 +77,7 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
      * @param pattern        regexp pattern
      * @since JWI 2.4.1
      */
-    fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String)
+    fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?)
 
     val types: Set<IContentType<*>>?
 
@@ -108,5 +108,5 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws ObjectClosedException if the provider is not open when this call is made
      * @since JWI 2.0.0
      */
-    fun <T> getSource(contentType: IContentType<T>?): IDataSource<T>?
+    fun <T> getSource(contentType: IContentType<T>): IDataSource<T>?
 }

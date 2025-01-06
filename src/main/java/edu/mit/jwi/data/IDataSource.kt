@@ -56,23 +56,19 @@ interface IDataSource<T> : IHasVersion, Iterable<String?>, IHasLifecycle {
      * @since JWI 2.0.0
      */
     @Nullable
-    fun getLine(key: String?): String?
+    fun getLine(key: String): String?
 
     /**
      * Returns an iterator that will iterator over lines in the data resource,
      * starting at the line specified by the given key. If the key is
      * `null`, this is the same as calling the plain
      * [.iterator] method. If no line starts with the pattern, the
-     * iterator's [Iterator.hasNext] will return `false`. The
-     * iterator does not support the [Iterator.remove] operation; if
-     * that method is called, the iterator will throw an
-     * [UnsupportedOperationException].
+     * iterator's [Iterator.hasNext] will return `false`.
      *
      * @param key the key at which the iterator should begin
      * @return an iterator that will iterate over the file starting at the line
      * indexed by the specified key
      * @since JWI 2.0.0
      */
-    @NonNull
-    fun iterator(key: String?): MutableIterator<String?>?
+    fun iterator(key: String?): Iterator<String>
 }

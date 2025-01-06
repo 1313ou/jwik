@@ -68,7 +68,7 @@ public class DirectAccessWordnetFile<T> extends WordnetFile<T>
                 }
                 buffer.position(byteOffset);
                 assert getContentType() != null;
-                String line = getLine(buffer, getContentType().charset);
+                String line = getLine(buffer, getContentType().getCharset());
                 return line != null && line.startsWith(key) ? line : null;
             }
             catch (NumberFormatException e)
@@ -136,7 +136,7 @@ public class DirectAccessWordnetFile<T> extends WordnetFile<T>
                     }
                     itrBuffer.position(byteOffset);
                     assert getContentType() != null;
-                    next = getLine(itrBuffer, getContentType().charset);
+                    next = getLine(itrBuffer, getContentType().getCharset());
                 }
                 catch (NumberFormatException e)
                 {

@@ -30,7 +30,7 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
 
     override val wordIDs: List<IWordID>
 
-     override val lemma: String
+    override val lemma: String
         get() {
             checkNotNull(this.iD)
             return iD.lemma
@@ -38,11 +38,10 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
 
     override val pOS: POS
         get() {
-            checkNotNull(this.iD)
-            return iD.pOS
+            return iD.pOS!!
         }
 
-   /**
+    /**
      * Constructs a new index word.
      *
      * @param lemma       the lemma of this index word

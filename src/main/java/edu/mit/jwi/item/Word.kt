@@ -70,9 +70,8 @@ class Word(
 
     override val pOS: POS
         get() {
-            checkNotNull(this.iD)
-            val sid = checkNotNull(iD.synsetID)
-            return sid.pOS
+            val sid = iD.synsetID
+            return sid.pOS!!
         }
 
     override val adjectiveMarker: AdjMarker

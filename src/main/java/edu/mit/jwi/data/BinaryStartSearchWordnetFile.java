@@ -49,16 +49,11 @@ public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
     {
         super(file, contentType);
         assert getContentType() != null;
-        fComparator = getContentType().lineComparator;
+        fComparator = getContentType().getLineComparator();
     }
 
     private final Object bufferLock = new Object();
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.IDataSource#getLine(java.lang.String)
-     */
     @Nullable
     public String getLine(String key)
     {
@@ -83,7 +78,7 @@ public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
 
                 // read line
                 assert getContentType() != null;
-                line = getLine(buffer, getContentType().charset);
+                line = getLine(buffer, getContentType().getCharset());
 
                 // if we get a null, we've reached the end of the file
                 cmp = (line == null) ? 1 : fComparator.compare(line, key);
@@ -170,9 +165,9 @@ public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
                     midpoint = (start + stop) / 2;
                     itrBuffer.position(midpoint);
                     assert getContentType() != null;
-                    getLine(itrBuffer, getContentType().charset);
+                    getLine(itrBuffer, getContentType().getCharset());
                     offset = itrBuffer.position();
-                    line = getLine(itrBuffer, getContentType().charset);
+                    line = getLine(itrBuffer, getContentType().getCharset());
 
                     // Fix for Bug009: If the line is null, we've reached
                     // the end of the file, so just advance to the first line
@@ -208,7 +203,7 @@ public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
                 if (lastOffset > -1)
                 {
                     itrBuffer.position(lastOffset);
-                    next = getLine(itrBuffer, getContentType().charset);
+                    next = getLine(itrBuffer, getContentType().getCharset());
                     return;
                 }
 

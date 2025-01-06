@@ -15,7 +15,6 @@ import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.*
 import java.io.IOException
-import java.nio.charset.Charset
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.Throws
@@ -46,7 +45,7 @@ open class CachingDictionary(
      * @since JWI 2.2.0
      */
     protected fun checkOpen() {
-        if (isOpen()) {
+        if (isOpen) {
             if (!cache.isOpen) {
                 try {
                     cache.open()
@@ -62,38 +61,35 @@ open class CachingDictionary(
         }
     }
 
-    override fun setCharset(charset: Charset) {
-        backingDictionary.setCharset(charset)
-    }
-
-    override fun getCharset(): Charset? {
-        return backingDictionary.charset
-    }
+    override var charset
+        get() = backingDictionary.charset
+        set(charset) {
+            backingDictionary.charset = charset
+        }
 
     override fun setComparator(contentType: ContentTypeKey, comparator: ILineComparator?) {
         backingDictionary.setComparator(contentType, comparator)
     }
 
-    override fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String) {
+    override fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
         backingDictionary.setSourceMatcher(contentTypeKey, pattern)
     }
 
     @Throws(IOException::class)
     override fun open(): Boolean {
-        if (isOpen()) {
+        if (isOpen) {
             return true
         }
         cache.open()
         return backingDictionary.open()
     }
 
-    override fun isOpen(): Boolean {
-        checkNotNull(this.backingDictionary)
-        return backingDictionary.isOpen
-    }
+    override val isOpen: Boolean
+        get() = backingDictionary.isOpen
+
 
     override fun close() {
-        if (!isOpen()) {
+        if (!isOpen) {
             return
         }
         cache.close()
@@ -322,9 +318,8 @@ open class CachingDictionary(
             return LinkedHashMap<K, V>(initialCapacity, DEFAULT_LOAD_FACTOR, true)
         }
 
-        override fun isOpen(): Boolean {
-            return itemCache != null && keyCache != null && senseCache != null && sensesCache != null
-        }
+        override val isOpen: Boolean
+            get() = itemCache != null && keyCache != null && senseCache != null && sensesCache != null
 
         /**
          * An internal method for assuring compliance with the dictionary
