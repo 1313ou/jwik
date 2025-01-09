@@ -26,7 +26,7 @@ class Synset(
     isAdjSat: Boolean,
     isAdjHead: Boolean,
     gloss: String,
-    wordBuilders: MutableList<IWordBuilder>,
+    wordBuilders: List<IWordBuilder>,
     ids: Map<IPointer, List<ISynsetID>>
 ) : ISynset {
 

@@ -7,98 +7,64 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data.parse
 
-package edu.mit.jwi.data.parse;
-
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.Nullable;
-import edu.mit.jwi.item.*;
-import edu.mit.jwi.item.Synset.IWordBuilder;
-import edu.mit.jwi.item.Synset.WordBuilder;
-
-import java.util.*;
+import edu.mit.jwi.item.*
+import edu.mit.jwi.item.LexFile.Companion.getLexicalFile
+import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
+import edu.mit.jwi.item.Pointer.Companion.getPointerType
+import edu.mit.jwi.item.UnknownLexFile.Companion.getUnknownLexicalFile
+import edu.mit.jwi.item.VerbFrame.Companion.getFrame
+import java.util.*
 
 /**
- * <p>
- * Parser for Wordnet data files (e.g., <code>data.adv</code> or
- * <code>adv.dat</code>). This parser produces an <code>ISynset</code> object.
- * </p>
- * <p>
+ *
+ *
+ * Parser for Wordnet data files (e.g., `data.adv` or
+ * `adv.dat`). This parser produces an `ISynset` object.
+ *
+ *
+ *
  * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the {@link #getInstance()} method to get
+ * instantiated directly; rather, call the [.getInstance] method to get
  * the singleton instance.
- * </p>
+ *
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-public class DataLineParser implements ILineParser<ISynset>
-{
-    // singleton instance
-    private static DataLineParser instance;
+class DataLineParser
+/**
+ * This constructor is marked protected so that the class may be
+ * sub-classed, but not directly instantiated. Obtain instances of this
+ * class via the static [.getInstance] method.
+ *
+ * @since JWI 2.0.0
+ */
+private constructor() : ILineParser<ISynset> {
 
-    /**
-     * Returns the singleton instance of this class, instantiating it if
-     * necessary. The singleton instance will not be <code>null</code>.
-     *
-     * @return the non-<code>null</code> singleton instance of this class,
-     * instantiating it if necessary.
-     * @since JWI 2.0.0
-     */
-    public static DataLineParser getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new DataLineParser();
-        }
-        return instance;
-    }
+    override fun parseLine(line: String): ISynset {
 
-    /**
-     * This constructor is marked protected so that the class may be
-     * sub-classed, but not directly instantiated. Obtain instances of this
-     * class via the static {@link #getInstance()} method.
-     *
-     * @since JWI 2.0.0
-     */
-    protected DataLineParser()
-    {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.parse.ILineParser#parseLine(java.lang.String)
-     */
-    @NonNull
-    public ISynset parseLine(@Nullable String line)
-    {
-        if (line == null)
-        {
-            throw new NullPointerException();
-        }
-
-        try
-        {
-            StringTokenizer tokenizer = new StringTokenizer(line, " ");
+        try {
+            val tokenizer = StringTokenizer(line, " ")
 
             // Get offset
-            int offset = Integer.parseInt(tokenizer.nextToken());
+            val offset = tokenizer.nextToken().toInt()
 
             // Consume lex_filenum
-            int lex_filenum = Integer.parseInt(tokenizer.nextToken());
-            ILexFile lexFile = resolveLexicalFile(lex_filenum);
+            val lex_filenum = tokenizer.nextToken().toInt()
+            val lexFile = resolveLexicalFile(lex_filenum)
 
             // Get part of speech
-            POS synset_pos;
-            char synset_tag = tokenizer.nextToken().charAt(0);
-            synset_pos = POS.getPartOfSpeech(synset_tag);
+            val synset_pos: POS?
+            val synset_tag = tokenizer.nextToken()[0]
+            synset_pos = getPartOfSpeech(synset_tag)
 
-            ISynsetID synsetID = new SynsetID(offset, synset_pos);
+            val synsetID: ISynsetID = SynsetID(offset, synset_pos)
 
             // Determine if it is an adjective satellite
-            boolean isAdjSat = (synset_tag == 's');
+            val isAdjSat = (synset_tag == 's')
 
             // A synset is an adjective head if it is the 00 lexical file, is
             // not an adjective satellite, and it has an antonym. The Wordnet
@@ -107,129 +73,105 @@ public class DataLineParser implements ILineParser<ISynset>
             // cases, e.g., in Wordnet 3.0:
             // 01380267 aerial (no antonyms), with satellite 01380571 free-flying
             // 01380721 marine (no antonyms), with satellite 01380926 deep-sea
-            boolean isAdjHead = !isAdjSat && lex_filenum == 0;
+            val isAdjHead = !isAdjSat && lex_filenum == 0
 
             // Get word count
-            int wordCount = Integer.parseInt(tokenizer.nextToken(), 16);
+            val wordCount = tokenizer.nextToken().toInt(16)
 
             // Get words
-            String lemma;
-            AdjMarker marker;
-            int lexID;
-            IWordBuilder[] wordProxies = new IWordBuilder[wordCount];
-            for (int i = 0; i < wordCount; i++)
-            {
+            var lemma: String
+            var marker: AdjMarker?
+            var lexID: Int
+            val wordProxies: Array<Synset.IWordBuilder> = Array<Synset.IWordBuilder>(wordCount) {
                 // consume next word
-                lemma = tokenizer.nextToken();
+                lemma = tokenizer.nextToken()
 
                 // if it is an adjective, it may be followed by a marker
-                marker = null;
-                if (synset_pos == POS.ADJECTIVE)
-                {
-                    for (AdjMarker adjMarker : AdjMarker.values())
-                    {
-                        assert adjMarker.getSymbol() != null;
-                        if (lemma.endsWith(adjMarker.getSymbol()))
-                        {
-                            marker = adjMarker;
-                            lemma = lemma.substring(0, lemma.length() - adjMarker.getSymbol().length());
+                marker = null
+                if (synset_pos == POS.ADJECTIVE) {
+                    for (adjMarker in AdjMarker.entries) {
+                        checkNotNull(adjMarker.symbol)
+                        if (lemma.endsWith(adjMarker.symbol)) {
+                            marker = adjMarker
+                            lemma = lemma.substring(0, lemma.length - adjMarker.symbol.length)
                         }
                     }
                 }
 
                 // parse lex_id
-                lexID = Integer.parseInt(tokenizer.nextToken(), 16);
+                lexID = tokenizer.nextToken().toInt(16)
 
-                wordProxies[i] = new WordBuilder(i + 1, lemma, lexID, marker);
+                Synset.WordBuilder(it + 1, lemma, lexID, marker)
             }
 
             // Get pointer count
-            int pointerCount = Integer.parseInt(tokenizer.nextToken());
-
-            Map<IPointer, ArrayList<ISynsetID>> synsetPointerMap = null;
+            val pointerCount = tokenizer.nextToken().toInt()
+            var synsetPointerMap: MutableMap<IPointer, ArrayList<ISynsetID>>? = null
 
             // Get pointers
-            IPointer pointer_type;
-            int target_offset;
-            POS target_pos;
-            int source_target_num, source_num, target_num;
-            ArrayList<ISynsetID> pointerList;
-            IWordID target_word_id;
-            ISynsetID target_synset_id;
-            for (int i = 0; i < pointerCount; i++)
-            {
+
+            repeat(pointerCount) {
+
                 // get pointer symbol
-                pointer_type = resolvePointer(tokenizer.nextToken(), synset_pos);
-                assert pointer_type != null;
+                val pointer_type: IPointer = resolvePointer(tokenizer.nextToken(), synset_pos)
+                checkNotNull(pointer_type)
 
                 // get synset target offset
-                target_offset = Integer.parseInt(tokenizer.nextToken());
+                val target_offset: Int = tokenizer.nextToken().toInt()
 
                 // get target synset part of speech
-                target_pos = POS.getPartOfSpeech(tokenizer.nextToken().charAt(0));
+                val target_pos = getPartOfSpeech(tokenizer.nextToken()[0])
 
-                target_synset_id = new SynsetID(target_offset, target_pos);
+                var target_synset_id: ISynsetID = SynsetID(target_offset, target_pos)
 
                 // get source/target numbers
-                source_target_num = Integer.parseInt(tokenizer.nextToken(), 16);
+                var source_target_num: Int = tokenizer.nextToken().toInt(16)
 
                 // this is a semantic pointer if the source/target numbers are zero
-                if (source_target_num == 0)
-                {
-                    if (synsetPointerMap == null)
-                    {
-                        synsetPointerMap = new HashMap<>();
+                if (source_target_num == 0) {
+                    if (synsetPointerMap == null) {
+                        synsetPointerMap = HashMap<IPointer, ArrayList<ISynsetID>>()
                     }
-                    pointerList = synsetPointerMap.computeIfAbsent(pointer_type, k -> new ArrayList<>());
-                    pointerList.add(target_synset_id);
-                }
-                else
-                {
+                    var pointerList: ArrayList<ISynsetID> = synsetPointerMap.computeIfAbsent(pointer_type) { k: IPointer -> ArrayList<ISynsetID>() }
+                    pointerList.add(target_synset_id)
+                } else {
                     // this is a lexical pointer
-                    source_num = source_target_num / 256;
-                    target_num = source_target_num & 255;
-                    target_word_id = new WordID(target_synset_id, target_num);
-                    wordProxies[source_num - 1].addRelatedWord(pointer_type, target_word_id);
+                    val source_num: Int = source_target_num / 256
+                    val target_num: Int = source_target_num and 255
+                    val target_word_id: IWordID = WordID(target_synset_id, target_num)
+                    wordProxies[source_num - 1].addRelatedWord(pointer_type, target_word_id)
                 }
             }
 
             // trim pointer lists
-            if (synsetPointerMap != null)
-            {
-                for (ArrayList<ISynsetID> list : synsetPointerMap.values())
-                {
-                    list.trimToSize();
+            if (synsetPointerMap != null) {
+                for (list in synsetPointerMap.values) {
+                    list.trimToSize()
                 }
             }
 
             // parse verb frames
             // do not make the field compulsory for verbs with a 00 when no frame is present
-            if (synset_pos == POS.VERB)
-            {
-                String peekTok = tokenizer.nextToken();
-                if (!peekTok.startsWith("|"))
-                {
-                    int frame_num, word_num;
-                    int verbFrameCount = Integer.parseInt(peekTok);
-                    IVerbFrame frame;
-                    for (int i = 0; i < verbFrameCount; i++)
-                    {
+            if (synset_pos == POS.VERB) {
+                val peekTok = tokenizer.nextToken()
+                if (!peekTok.startsWith("|")) {
+                    var frame_num: Int
+                    var word_num: Int
+                    val verbFrameCount = peekTok.toInt()
+                    var frame: IVerbFrame
+                    repeat(verbFrameCount) {
                         // Consume '+'
-                        tokenizer.nextToken();
+                        tokenizer.nextToken()
                         // Get frame number
-                        frame_num = Integer.parseInt(tokenizer.nextToken());
-                        frame = resolveVerbFrame(frame_num);
+                        frame_num = tokenizer.nextToken().toInt()
+                        frame = resolveVerbFrame(frame_num)
                         // Get word number
-                        word_num = Integer.parseInt(tokenizer.nextToken(), 16);
-                        if (word_num > 0)
-                        {
-                            wordProxies[word_num - 1].addVerbFrame(frame);
-                        }
-                        else
-                        {
-                            for (IWordBuilder proxy : wordProxies)
-                            {
-                                proxy.addVerbFrame(frame);
+                        word_num = tokenizer.nextToken().toInt(16)
+                        if (word_num > 0) {
+                            wordProxies[word_num - 1].addVerbFrame(frame)
+                        } else {
+                            for (proxy in wordProxies) {
+                                proxy.addVerbFrame(frame)
                             }
                         }
                     }
@@ -237,89 +179,109 @@ public class DataLineParser implements ILineParser<ISynset>
             }
 
             // Get gloss
-            String gloss = "";
-            int index = line.indexOf('|');
-            if (index > 0)
-            {
-                gloss = line.substring(index + 2).trim();
+            var gloss = ""
+            val index = line.indexOf('|')
+            if (index > 0) {
+                gloss = line.substring(index + 2).trim { it <= ' ' }
             }
 
             // create synset and words
-            List<IWordBuilder> words = Arrays.asList(wordProxies);
-            return new Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, words, synsetPointerMap);
-        }
-        catch (@NonNull NumberFormatException | NoSuchElementException e)
-        {
-            throw new MisformattedLineException(line, e);
+            val words = listOf<Synset.IWordBuilder>(*wordProxies)
+            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, words, synsetPointerMap!!)
+        } catch (e: NumberFormatException) {
+            throw MisformattedLineException(line, e)
+        } catch (e: NoSuchElementException) {
+            throw MisformattedLineException(line, e)
         }
     }
 
     /**
-     * <p>
-     * Retrieves the verb frames for the {@link #parseLine(String)} method.
-     * </p>
-     * <p>
+     *
+     *
+     * Retrieves the verb frames for the [.parseLine] method.
+     *
+     *
+     *
      * This is implemented in its own method for ease of subclassing.
-     * </p>
+     *
      *
      * @param frameNum the number of the frame to return
      * @return the verb frame corresponding to the specified frame number, or
-     * <code>null</code> if there is none
+     * `null` if there is none
      * @since JWI 2.1.0
      */
-    @Nullable
-    protected IVerbFrame resolveVerbFrame(int frameNum)
-    {
-        return VerbFrame.getFrame(frameNum);
+    private fun resolveVerbFrame(frameNum: Int): IVerbFrame {
+        return getFrame(frameNum)!!
     }
 
     /**
-     * <p>
-     * Retrieves the lexical file objects for the {@link #parseLine(String)}
+     *
+     *
+     * Retrieves the lexical file objects for the [.parseLine]
      * method. If the lexical file number does correspond to a known lexical
      * file, the method returns a singleton placeholder 'unknown' lexical file
      * object.
-     * </p>
-     * <p>
+     *
+     *
+     *
      * This is implemented in its own method for ease of subclassing.
-     * </p>
+     *
      *
      * @param lexFileNum the number of the lexical file to return
      * @return the lexical file corresponding to the specified frame number
      * @since JWI 2.1.0
      */
-    @Nullable
-    protected ILexFile resolveLexicalFile(int lexFileNum)
-    {
-        ILexFile lexFile = LexFile.getLexicalFile(lexFileNum);
-        if (lexFile == null)
-        {
-            lexFile = UnknownLexFile.getUnknownLexicalFile(lexFileNum);
+    private fun resolveLexicalFile(lexFileNum: Int): ILexFile {
+        var lexFile: ILexFile = getLexicalFile(lexFileNum)
+        if (lexFile == null) {
+            lexFile = getUnknownLexicalFile(lexFileNum)
         }
-        return lexFile;
+        return lexFile
     }
 
     /**
-     * <p>
-     * Retrieves the pointer objects for the {@link #parseLine(String)} method.
-     * </p>
-     * <p>
+     *
+     *
+     * Retrieves the pointer objects for the [.parseLine] method.
+     *
+     *
+     *
      * This is implemented in its own method for ease of subclassing.
-     * </p>
+     *
      *
      * @param symbol the symbol of the pointer to return
      * @param pos    the part of speech of the pointer to return, can be
-     *               <code>null</code> unless the pointer symbol is ambiguous
+     * `null` unless the pointer symbol is ambiguous
      * @return the pointer corresponding to the specified symbol and part of
      * speech combination
-     * @throws NullPointerException     if the symbol is <code>null</code>
+     * @throws NullPointerException     if the symbol is `null`
      * @throws IllegalArgumentException if the symbol and part of speech combination does not
-     *                                  correspond to a known pointer
+     * correspond to a known pointer
      * @since JWI 2.1.0
      */
-    @Nullable
-    protected IPointer resolvePointer(@NonNull String symbol, POS pos)
-    {
-        return Pointer.getPointerType(symbol, pos);
+    private fun resolvePointer(symbol: String, pos: POS?): IPointer {
+        return getPointerType(symbol, pos)
+    }
+
+    companion object {
+
+        // singleton instance
+        @JvmStatic
+        var instance: DataLineParser? = null
+            /**
+             * Returns the singleton instance of this class, instantiating it if
+             * necessary. The singleton instance will not be `null`.
+             *
+             * @return the non-`null` singleton instance of this class,
+             * instantiating it if necessary.
+             * @since JWI 2.0.0
+             */
+            get() {
+                if (field == null) {
+                    field = DataLineParser()
+                }
+                return field
+            }
+            private set
     }
 }

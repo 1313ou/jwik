@@ -298,7 +298,7 @@ open class LexFile(num: Int, name: String, desc: String, pos: POS?) : ILexFile {
         @JvmStatic
         @Nullable
         fun getLexicalFile(num: Int): LexFile {
-            return lexFileMap.get(num)!!
+            return lexFileMap[num]!!
         }
     }
 }
