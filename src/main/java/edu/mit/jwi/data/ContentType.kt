@@ -66,30 +66,30 @@ class ContentType<T> @JvmOverloads constructor(
         val WORD_ADVERB: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.WORD_ADVERB, IndexLineComparator.instance)
         val WORD_ADJECTIVE: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator.instance)
 
-        val DATA_NOUN: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_NOUN, DataLineComparator.getInstance())
-        val DATA_VERB: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_VERB, DataLineComparator.getInstance())
-        val DATA_ADVERB: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_ADVERB, DataLineComparator.getInstance())
-        val DATA_ADJECTIVE: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_ADJECTIVE, DataLineComparator.getInstance())
+        val DATA_NOUN: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_NOUN, DataLineComparator.instance)
+        val DATA_VERB: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_VERB, DataLineComparator.instance)
+        val DATA_ADVERB: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_ADVERB, DataLineComparator.instance)
+        val DATA_ADJECTIVE: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_ADJECTIVE, DataLineComparator.instance)
 
         val EXCEPTION_NOUN: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(
             ContentTypeKey.EXCEPTION_NOUN,
-            ExceptionLineComparator.getInstance()
+            ExceptionLineComparator.instance
         )
         val EXCEPTION_VERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(
             ContentTypeKey.EXCEPTION_VERB,
-            ExceptionLineComparator.getInstance()
+            ExceptionLineComparator.instance
         )
         val EXCEPTION_ADVERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(
             ContentTypeKey.EXCEPTION_ADVERB,
-            ExceptionLineComparator.getInstance()
+            ExceptionLineComparator.instance
         )
         val EXCEPTION_ADJECTIVE: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(
             ContentTypeKey.EXCEPTION_ADJECTIVE,
-            ExceptionLineComparator.getInstance()
+            ExceptionLineComparator.instance
         )
 
-        val SENSE: ContentType<ISenseEntry> = ContentType<ISenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator.getInstance())
-        val SENSES: ContentType<Array<ISenseEntry>> = ContentType<Array<ISenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator.getInstance())
+        val SENSE: ContentType<ISenseEntry> = ContentType<ISenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator.instance)
+        val SENSES: ContentType<Array<ISenseEntry>> = ContentType<Array<ISenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator.instance)
 
         // set of all content types implemented in this class
         private val contentTypes: Set<ContentType<*>>

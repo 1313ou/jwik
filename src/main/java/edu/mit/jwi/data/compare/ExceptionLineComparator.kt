@@ -7,83 +7,70 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data.compare
 
-package edu.mit.jwi.data.compare;
-
-import edu.mit.jwi.data.parse.MisformattedLineException;
-
-import java.util.regex.Pattern;
+import edu.mit.jwi.data.parse.MisformattedLineException
+import java.util.regex.Pattern
 
 /**
- * <p>
+ *
+ *
  * A comparator that captures the ordering of lines in Wordnet exception files
- * (e.g., <code>exc.adv</code> or <code>adv.exc</code> files). These files are
+ * (e.g., `exc.adv` or `adv.exc` files). These files are
  * ordered alphabetically.
- * </p>
- * <p>
+ *
+ *
+ *
  * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the {@link #getInstance()} method to get
+ * instantiated directly; rather, call the [.getInstance] method to get
  * the singleton instance.
- * </p>
+ *
+ * This constructor is marked protected so that the class may be
+ * sub-classed, but not directly instantiated. Obtain instances of this
+ * class via the static [.getInstance] method.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-public class ExceptionLineComparator implements ILineComparator
-{
-    // singleton instance
-    private static ExceptionLineComparator instance;
+class ExceptionLineComparator private constructor() : ILineComparator {
 
-    /**
-     * Returns the singleton instance of this class, instantiating it if
-     * necessary. The singleton instance will not be <code>null</code>.
-     *
-     * @return the non-<code>null</code> singleton instance of this class,
-     * instantiating it if necessary.
-     * @since JWI 2.0.0
-     */
-    public static ExceptionLineComparator getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new ExceptionLineComparator();
+    override fun compare(line1: String, line2: String): Int {
+        val words1: Array<String?> = spacePattern.split(line1)
+        val words2: Array<String?> = spacePattern.split(line2)
+
+        if (words1.isEmpty()) {
+            throw MisformattedLineException(line1)
         }
-        return instance;
+        if (words2.isEmpty()) {
+            throw MisformattedLineException(line2)
+        }
+        return words1[0]!!.compareTo(words2[0]!!)
     }
 
-    // static fields
-    private final static Pattern spacePattern = Pattern.compile(" ");
+    override val commentDetector: ICommentDetector?
+        get() = null
 
-    /**
-     * This constructor is marked protected so that the class may be
-     * sub-classed, but not directly instantiated. Obtain instances of this
-     * class via the static {@link #getInstance()} method.
-     *
-     * @since JWI 2.0.0
-     */
-    protected ExceptionLineComparator()
-    {
-    }
+    companion object {
 
-    public int compare(String line1, String line2)
-    {
-        String[] words1 = spacePattern.split(line1);
-        String[] words2 = spacePattern.split(line2);
+        /**
+         * Returns the singleton instance of this class, instantiating it if
+         * necessary. The singleton instance will not be `null`.
+         *
+         * @return the non-`null` singleton instance of this class,
+         * instantiating it if necessary.
+         * @since JWI 2.0.0
+         */
+        var instance: ExceptionLineComparator? = null
+            get() {
+                if (field == null) {
+                    field = ExceptionLineComparator()
+                }
+                return field
+            }
+            private set
 
-        if (words1.length < 1)
-        {
-            throw new MisformattedLineException(line1);
-        }
-        if (words2.length < 1)
-        {
-            throw new MisformattedLineException(line2);
-        }
-        return words1[0].compareTo(words2[0]);
-    }
-
-    public ICommentDetector getCommentDetector()
-    {
-        return null;
+        // static fields
+        private val spacePattern: Pattern = Pattern.compile(" ")
     }
 }

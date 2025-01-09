@@ -7,55 +7,57 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.morph
 
-package edu.mit.jwi.morph;
-
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.Nullable;
-import edu.mit.jwi.item.POS;
-
-import java.util.*;
-import java.util.regex.Pattern;
+import edu.mit.jwi.NonNull
+import edu.mit.jwi.Nullable
+import edu.mit.jwi.item.POS
+import java.util.*
+import java.util.Collections.unmodifiableList
+import java.util.Collections.unmodifiableMap
+import java.util.regex.Pattern
 
 /**
  * Provides simple a simple pattern-based stemming facility based on the "Rules
- * of Detachment" as described in the {@code morphy} man page in the Wordnet
- * distribution, which can be found at <a
- * href="http://wordnet.princeton.edu/man/morphy.7WN.html">
- * http://wordnet.princeton.edu/man/morphy.7WN.html</a> It also attempts to
+ * of Detachment" as described in the `morphy` man page in the Wordnet
+ * distribution, which can be found at [
+ * http://wordnet.princeton.edu/man/morphy.7WN.html](http://wordnet.princeton.edu/man/morphy.7WN.html) It also attempts to
  * strip "ful" endings. It does not search Wordnet to see if stems actually
  * exist. In particular, quoting from that man page:
  * <h3>Rules of Detachment</h3>
- * <p>
+ *
+ *
  * The following table shows the rules of detachment used by Morphy. If a word
  * ends with one of the suffixes, it is stripped from the word and the
  * corresponding ending is added. ... No rules are applicable to adverbs.
- * <p>
- * POS Suffix Ending<br>
- * <ul>
- * <li>NOUN "s" ""
- * <li>NOUN "ses" "s"
- * <li>NOUN "xes" "x"
- * <li>NOUN "zes" "z"
- * <li>NOUN "ches" "ch"
- * <li>NOUN "shes" "sh"
- * <li>NOUN "men" "man"
- * <li>NOUN "ies" "y"
- * <li>VERB "s" ""
- * <li>VERB "ies" "y"
- * <li>VERB "es" "e"
- * <li>VERB "es" ""
- * <li>VERB "ed" "e"
- * <li>VERB "ed" ""
- * <li>VERB "ing" "e"
- * <li>VERB "ing" ""
- * <li>ADJ "er" ""
- * <li>ADJ "est" ""
- * <li>ADJ "er" "e"
- * <li>ADJ "est" "e"
- * </ul>
+ *
+ *
+ * POS Suffix Ending<br></br>
+ *
+ *  * NOUN "s" ""
+ *  * NOUN "ses" "s"
+ *  * NOUN "xes" "x"
+ *  * NOUN "zes" "z"
+ *  * NOUN "ches" "ch"
+ *  * NOUN "shes" "sh"
+ *  * NOUN "men" "man"
+ *  * NOUN "ies" "y"
+ *  * VERB "s" ""
+ *  * VERB "ies" "y"
+ *  * VERB "es" "e"
+ *  * VERB "es" ""
+ *  * VERB "ed" "e"
+ *  * VERB "ed" ""
+ *  * VERB "ing" "e"
+ *  * VERB "ing" ""
+ *  * ADJ "er" ""
+ *  * ADJ "est" ""
+ *  * ADJ "er" "e"
+ *  * ADJ "est" "e"
+ *
  * <h3>Special Processing for nouns ending with 'ful'</h3>
- * <p>
+ *
+ *
  * Morphy contains code that searches for nouns ending with ful and performs a
  * transformation on the substring preceding it. It then appends 'ful' back
  * onto the resulting string and returns it. For example, if passed the nouns
@@ -65,84 +67,9 @@ import java.util.regex.Pattern;
  * @version 2.4.0
  * @since JWI 1.0
  */
-public class SimpleStemmer implements IStemmer
-{
-    public static final String underscore = "_";
-    final Pattern whitespace = Pattern.compile("\\s+");
+open class SimpleStemmer : IStemmer {
 
-    public static final String SUFFIX_ches = "ches";
-    public static final String SUFFIX_ed = "ed";
-    public static final String SUFFIX_es = "es";
-    public static final String SUFFIX_est = "est";
-    public static final String SUFFIX_er = "er";
-    public static final String SUFFIX_ful = "ful";
-    public static final String SUFFIX_ies = "ies";
-    public static final String SUFFIX_ing = "ing";
-    public static final String SUFFIX_men = "men";
-    public static final String SUFFIX_s = "s";
-    public static final String SUFFIX_ss = "ss";
-    public static final String SUFFIX_ses = "ses";
-    public static final String SUFFIX_shes = "shes";
-    public static final String SUFFIX_xes = "xes";
-    public static final String SUFFIX_zes = "zes";
-
-    public static final String ENDING_null = "";
-    public static final String ENDING_ch = "ch";
-    public static final String ENDING_e = "e";
-    public static final String ENDING_man = "man";
-    public static final String ENDING_s = SUFFIX_s;
-    public static final String ENDING_sh = "sh";
-    public static final String ENDING_x = "x";
-    public static final String ENDING_y = "y";
-    public static final String ENDING_z = "z";
-
-    @NonNull
-    public static final Map<POS, List<StemmingRule>> ruleMap;
-
-    static
-    {
-        Map<POS, List<StemmingRule>> ruleMapHidden = new TreeMap<>();
-
-        List<StemmingRule> list;
-
-        // nouns
-        list = new ArrayList<>(8);
-        list.add(new StemmingRule(SUFFIX_s, ENDING_null, POS.NOUN, SUFFIX_ss));
-        list.add(new StemmingRule(SUFFIX_ses, ENDING_s, POS.NOUN, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_xes, ENDING_x, POS.NOUN, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_zes, ENDING_z, POS.NOUN, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_ches, ENDING_ch, POS.NOUN, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_shes, ENDING_sh, POS.NOUN, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_men, ENDING_man, POS.NOUN, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_ies, ENDING_y, POS.NOUN, (String[]) null));
-        ruleMapHidden.put(POS.NOUN, Collections.unmodifiableList(list));
-
-        // verbs
-        list = new ArrayList<>(8);
-        list.add(new StemmingRule(SUFFIX_s, ENDING_null, POS.VERB, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_ies, ENDING_y, POS.VERB, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_es, ENDING_e, POS.VERB, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_es, ENDING_null, POS.VERB, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_ed, ENDING_e, POS.VERB, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_ed, ENDING_null, POS.VERB, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_ing, ENDING_e, POS.VERB, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_ing, ENDING_null, POS.VERB, (String[]) null));
-        ruleMapHidden.put(POS.VERB, Collections.unmodifiableList(list));
-
-        // adjectives
-        list = new ArrayList<>(4);
-        list.add(new StemmingRule(SUFFIX_er, ENDING_e, POS.ADJECTIVE, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_er, ENDING_null, POS.ADJECTIVE, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_est, ENDING_e, POS.ADJECTIVE, (String[]) null));
-        list.add(new StemmingRule(SUFFIX_est, ENDING_null, POS.ADJECTIVE, (String[]) null));
-        ruleMapHidden.put(POS.ADJECTIVE, Collections.unmodifiableList(list));
-
-        // adverbs
-        ruleMapHidden.put(POS.ADVERB, Collections.emptyList());
-
-        // assign
-        ruleMap = Collections.unmodifiableMap(ruleMapHidden);
-    }
+    val whitespace: Pattern = Pattern.compile("\\s+")
 
     /**
      * Returns a set of stemming rules used by this stemmer. Will not return a
@@ -152,54 +79,36 @@ public class SimpleStemmer implements IStemmer
      * @return the rule map for this stemmer
      * @since JWI 3.5.1
      */
-    @NonNull
-    @SuppressWarnings("SameReturnValue")
-    public Map<POS, List<StemmingRule>> getRuleMap()
-    {
-        return ruleMap;
-    }
+    val ruleMap: MutableMap<POS?, List<StemmingRule>>
+        get() = Companion.ruleMap
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.morph.IStemmer#findStems(java.lang.String, edu.edu.mit.jwi.item.POS)
-     */
-    public List<String> findStems(String word, @Nullable POS pos)
-    {
-        word = normalize(word);
+    override fun findStems(word: String, @Nullable pos: POS?): List<String> {
+        var word = word
+        word = normalize(word)
 
         // if pos is null, do all
-        if (pos == null)
-        {
-            Set<String> result = new LinkedHashSet<>();
-            for (POS p : POS.values())
-            {
-                result.addAll(findStems(word, p));
+        if (pos == null) {
+            val result: MutableSet<String?> = LinkedHashSet<String?>()
+            for (p in POS.entries) {
+                result.addAll(findStems(word, p))
             }
-            if (result.isEmpty())
-            {
-                return Collections.emptyList();
+            if (result.isEmpty()) {
+                return listOf<String>()
             }
-            return new ArrayList<>(result);
+            return ArrayList<String>(result)
         }
 
-        boolean isCollocation = word.contains(underscore);
+        val isCollocation: Boolean = word.contains(underscore)
 
-        switch (pos)
-        {
-            case NOUN:
-                return isCollocation ? getNounCollocationRoots(word) : stripNounSuffix(word);
-            case VERB:
-                // BUG006: here we check for composites
-                return isCollocation ? getVerbCollocationRoots(word) : stripVerbSuffix(word);
-            case ADJECTIVE:
-                return stripAdjectiveSuffix(word);
-            case ADVERB:
-                // nothing for adverbs
-                return Collections.emptyList();
+        return when (pos) {
+            POS.NOUN      -> if (isCollocation) getNounCollocationRoots(word) else stripNounSuffix(word)
+            POS.VERB      -> if (isCollocation) getVerbCollocationRoots(word) else stripVerbSuffix(word) // BUG006: here we check for composites
+
+            POS.ADJECTIVE -> stripAdjectiveSuffix(word)
+            POS.ADVERB    -> listOf<String>()  // nothing for adverb
         }
 
-        throw new IllegalArgumentException("This should not happen");
+        throw IllegalArgumentException("This should not happen")
     }
 
     /**
@@ -208,30 +117,27 @@ public class SimpleStemmer implements IStemmer
      *
      * @param word the string to be normalized
      * @return a normalized string
-     * @throws NullPointerException     if the specified string is <code>null</code>
+     * @throws NullPointerException     if the specified string is `null`
      * @throws IllegalArgumentException if the specified string is empty or all whitespace
      * @since JWI 2.1.1
      */
-    protected String normalize(String word)
-    {
+    protected fun normalize(word: String): String {
         // make lowercase
-        word = word.toLowerCase();
+        var word = word
+        word = word.lowercase(Locale.getDefault())
 
         // replace all underscores with spaces
-        word = word.replace('_', ' ');
+        word = word.replace('_', ' ')
 
         // trim off extra whitespace
-        word = word.trim();
-        if (word.length() == 0)
-        {
-            throw new IllegalArgumentException();
-        }
+        word = word.trim { it <= ' ' }
+        require(word.isNotEmpty())
 
         // replace all whitespace with underscores
-        word = whitespace.matcher(word).replaceAll(underscore);
+        word = whitespace.matcher(word).replaceAll(underscore)
 
         // return normalized word
-        return word;
+        return word
     }
 
     /**
@@ -240,42 +146,36 @@ public class SimpleStemmer implements IStemmer
      * @param noun the word to be modified
      * @return a list of modified forms that were constructed, or the empty list
      * if none
-     * @throws NullPointerException if the specified word is <code>null</code>
+     * @throws NullPointerException if the specified word is `null`
      * @since JWI 1.0
      */
     @NonNull
-    protected List<String> stripNounSuffix(@NonNull final String noun)
-    {
-        if (noun.length() <= 2)
-        {
-            return Collections.emptyList();
+    protected fun stripNounSuffix(noun: String): List<String> {
+        if (noun.length <= 2) {
+            return listOf<String>()
         }
 
         // strip off "ful"
-        String word = noun;
-        String suffix = null;
-        if (noun.endsWith(SUFFIX_ful))
-        {
-            word = noun.substring(0, noun.length() - SUFFIX_ful.length());
-            suffix = SUFFIX_ful;
+        var word = noun
+        var suffix: String? = null
+        if (noun.endsWith(SUFFIX_ful)) {
+            word = noun.substring(0, noun.length - SUFFIX_ful.length)
+            suffix = SUFFIX_ful
         }
 
         // we will return this to the caller
-        Set<String> result = new LinkedHashSet<>();
+        val result: MutableSet<String> = LinkedHashSet<String>()
 
         // apply the rules
-        String root;
-        List<StemmingRule> rules = getRuleMap().get(POS.NOUN);
-        assert rules != null;
-        for (StemmingRule rule : rules)
-        {
-            root = rule.apply(word, suffix);
-            if (root != null && root.length() > 0)
-            {
-                result.add(root);
+        var root: String?
+        val rules = checkNotNull(this.ruleMap[POS.NOUN])
+        for (rule in rules) {
+            root = rule.apply(word, suffix)
+            if (root != null && root.isNotEmpty()) {
+                result.add(root)
             }
         }
-        return result.isEmpty() ? Collections.emptyList() : new ArrayList<>(result);
+        return if (result.isEmpty()) listOf<String>() else ArrayList<String>(result)
     }
 
     /**
@@ -284,93 +184,75 @@ public class SimpleStemmer implements IStemmer
      * @param composite the word to be modified
      * @return a list of modified forms that were constructed, or the empty list
      * if none
-     * @throws NullPointerException if the specified word is <code>null</code>
+     * @throws NullPointerException if the specified word is `null`
      * @since JWI 1.1.1
      */
     @NonNull
-    protected List<String> getNounCollocationRoots(@NonNull String composite)
-    {
+    protected fun getNounCollocationRoots(composite: String): List<String> {
         // split into parts
-        String[] parts = composite.split(underscore);
-        if (parts.length < 2)
-        {
-            return Collections.emptyList();
+        val parts: Array<String> = composite.split(underscore.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        if (parts.size < 2) {
+            return mutableListOf<String>()
         }
 
         // stem each part
-        List<List<String>> rootSets = new ArrayList<>(parts.length);
-        for (String part : parts)
-        {
-            rootSets.add(findStems(part, POS.NOUN));
+        val rootSets: MutableList<List<String>?> = ArrayList<List<String>?>(parts.size)
+        for (part in parts) {
+            rootSets.add(findStems(part, POS.NOUN))
         }
 
         // reassemble all combinations
-        Set<StringBuffer> poss = new HashSet<>();
+        val poss: MutableSet<StringBuffer> = HashSet<StringBuffer>()
 
         // seed the set
-        List<String> rootSet = rootSets.get(0);
-        if (rootSet == null)
-        {
-            poss.add(new StringBuffer(parts[0]));
-        }
-        else
-        {
-            for (String root : rootSet)
-            {
-                poss.add(new StringBuffer(root));
+        var rootSet = rootSets[0]
+        if (rootSet == null) {
+            poss.add(StringBuffer(parts[0]))
+        } else {
+            for (root in rootSet) {
+                poss.add(StringBuffer(root))
             }
         }
 
         // make all combinations
-        StringBuffer newBuf;
-        Set<StringBuffer> replace;
-        for (int i = 1; i < rootSets.size(); i++)
-        {
-            rootSet = rootSets.get(i);
-            if (rootSet.isEmpty())
-            {
-                for (StringBuffer p : poss)
-                {
-                    p.append("_");
-                    p.append(parts[i]);
+        var replace: MutableSet<StringBuffer>?
+        for (i in 1..<rootSets.size) {
+            rootSet = rootSets[i]
+            if (rootSet!!.isEmpty()) {
+                for (p in poss) {
+                    p.append("_")
+                    p.append(parts[i])
                 }
-            }
-            else
-            {
-                replace = new HashSet<>();
-                for (StringBuffer p : poss)
-                {
-                    for (Object root : rootSet)
-                    {
-                        newBuf = new StringBuffer();
-                        newBuf.append(p.toString());
-                        newBuf.append("_");
-                        newBuf.append(root);
-                        replace.add(newBuf);
+            } else {
+                replace = HashSet<StringBuffer>()
+                for (p in poss) {
+                    for (root in rootSet) {
+                        var newBuf = StringBuffer()
+                        newBuf.append(p.toString())
+                        newBuf.append("_")
+                        newBuf.append(root)
+                        replace.add(newBuf)
                     }
                 }
-                poss.clear();
-                poss.addAll(replace);
+                poss.clear()
+                poss.addAll(replace)
             }
         }
 
-        if (poss.isEmpty())
-        {
-            return Collections.emptyList();
+        if (poss.isEmpty()) {
+            return listOf<String>()
         }
 
         // make sure to remove empties
-        Set<String> result = new LinkedHashSet<>();
-        String root;
-        for (StringBuffer p : poss)
-        {
-            root = p.toString().trim();
-            if (root.length() != 0)
-            {
-                result.add(root);
+        val result: MutableSet<String> = LinkedHashSet<String>()
+        var root: String?
+        for (p in poss) {
+            root = p.toString().trim { it <= ' ' }
+            if (root.isNotEmpty()) {
+                result.add(root)
             }
         }
-        return new ArrayList<>(result);
+        return ArrayList<String>(result)
     }
 
     /**
@@ -379,33 +261,28 @@ public class SimpleStemmer implements IStemmer
      * @param verb the word to be modified
      * @return a list of modified forms that were constructed, or the empty list
      * if none
-     * @throws NullPointerException if the specified word is <code>null</code>
+     * @throws NullPointerException if the specified word is `null`
      * @since JWI 1.0
      */
     @NonNull
-    protected List<String> stripVerbSuffix(@NonNull final String verb)
-    {
-        if (verb.length() <= 2)
-        {
-            return Collections.emptyList();
+    protected fun stripVerbSuffix(@NonNull verb: String): List<String> {
+        if (verb.length <= 2) {
+            return emptyList<String>()
         }
 
         // we will return this to the caller
-        Set<String> result = new LinkedHashSet<>();
+        val result: MutableSet<String?> = LinkedHashSet<String?>()
 
         // apply the rules
-        String root;
-        List<StemmingRule> rules = getRuleMap().get(POS.VERB);
-        assert rules != null;
-        for (StemmingRule rule : rules)
-        {
-            root = rule.apply(verb);
-            if (root != null && root.length() > 0)
-            {
-                result.add(root);
+        var root: String?
+        val rules = checkNotNull(this.ruleMap[POS.VERB])
+        for (rule in rules) {
+            root = rule.apply(verb)
+            if (root != null && root.isNotEmpty()) {
+                result.add(root)
             }
         }
-        return result.isEmpty() ? Collections.emptyList() : new ArrayList<>(result);
+        return if (result.isEmpty()) emptyList<String>() else ArrayList<String>(result)
     }
 
     /**
@@ -414,62 +291,50 @@ public class SimpleStemmer implements IStemmer
      * @param composite the word to be modified
      * @return a list of modified forms that were constructed, or an empty list
      * if none
-     * @throws NullPointerException if the specified word is <code>null</code>
+     * @throws NullPointerException if the specified word is `null`
      * @since JWI 1.1.1
      */
-    @NonNull
-    protected List<String> getVerbCollocationRoots(@NonNull String composite)
-    {
+    protected fun getVerbCollocationRoots(composite: String): List<String> {
         // split into parts
-        String[] parts = composite.split(underscore);
-        if (parts.length < 2)
-        {
-            return Collections.emptyList();
+        val parts: Array<String> = composite.split(underscore.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        if (parts.size < 2) {
+            return listOf<String>()
         }
 
         // find the stems of each parts
-        List<List<String>> rootSets = new ArrayList<>(parts.length);
-        for (String part : parts)
-        {
-            rootSets.add(findStems(part, POS.VERB));
+        val rootSets: MutableList<List<String>> = ArrayList<List<String>>(parts.size)
+        for (part in parts) {
+            rootSets.add(findStems(part, POS.VERB))
         }
 
-        Set<String> result = new LinkedHashSet<>();
+        val result: MutableSet<String?> = LinkedHashSet<String?>()
 
         // form all combinations
-        StringBuilder rootBuffer = new StringBuilder();
-        for (int i = 0; i < parts.length; i++)
-        {
-            if (rootSets.get(i) == null)
-            {
-                continue;
+        val rootBuffer = StringBuilder()
+        for (i in parts.indices) {
+            if (rootSets[i] == null) {
+                continue
             }
-            for (String partRoot : rootSets.get(i))
-            {
-                rootBuffer.replace(0, rootBuffer.length(), "");
+            for (partRoot in rootSets[i]) {
+                rootBuffer.replace(0, rootBuffer.length, "")
 
-                for (int j = 0; j < parts.length; j++)
-                {
-                    if (j == i)
-                    {
-                        rootBuffer.append(partRoot);
+                for (j in parts.indices) {
+                    if (j == i) {
+                        rootBuffer.append(partRoot)
+                    } else {
+                        rootBuffer.append(parts[j])
                     }
-                    else
-                    {
-                        rootBuffer.append(parts[j]);
-                    }
-                    if (j < parts.length - 1)
-                    {
-                        rootBuffer.append(underscore);
+                    if (j < parts.size - 1) {
+                        rootBuffer.append(underscore)
                     }
                 }
-                result.add(rootBuffer.toString());
+                result.add(rootBuffer.toString())
             }
         }
 
         // remove any empties
-        result.removeIf(s -> s.length() == 0);
-        return result.isEmpty() ? Collections.emptyList() : new ArrayList<>(result);
+        result.removeIf { s: String? -> s!!.isEmpty() }
+        return if (result.isEmpty()) listOf<String>() else ArrayList<String>(result)
     }
 
     /**
@@ -478,27 +343,100 @@ public class SimpleStemmer implements IStemmer
      * @param adj the word to be modified
      * @return a list of modified forms that were constructed, or an empty list
      * if none
-     * @throws NullPointerException if the specified word is <code>null</code>
+     * @throws NullPointerException if the specified word is `null`
      * @since JWI 1.0
      */
-    @NonNull
-    protected List<String> stripAdjectiveSuffix(@NonNull final String adj)
-    {
+    protected fun stripAdjectiveSuffix(adj: String): List<String> {
         // we will return this to the caller
-        Set<String> result = new LinkedHashSet<>();
+        val result: MutableSet<String> = LinkedHashSet<String>()
 
         // apply the rules
-        String root;
-        List<StemmingRule> rules = getRuleMap().get(POS.ADJECTIVE);
-        assert rules != null;
-        for (StemmingRule rule : rules)
-        {
-            root = rule.apply(adj);
-            if (root != null && root.length() > 0)
-            {
-                result.add(root);
+        var root: String?
+        val rules = checkNotNull(this.ruleMap[POS.ADJECTIVE])
+        for (rule in rules) {
+            root = rule.apply(adj)
+            if (root != null && root.isNotEmpty()) {
+                result.add(root)
             }
         }
-        return result.isEmpty() ? Collections.emptyList() : new ArrayList<>(result);
+        return if (result.isEmpty()) listOf<String>() else ArrayList<String>(result)
+    }
+
+    companion object {
+
+        const val underscore: String = "_"
+        const val SUFFIX_ches: String = "ches"
+        const val SUFFIX_ed: String = "ed"
+        const val SUFFIX_es: String = "es"
+        const val SUFFIX_est: String = "est"
+        const val SUFFIX_er: String = "er"
+        const val SUFFIX_ful: String = "ful"
+        const val SUFFIX_ies: String = "ies"
+        const val SUFFIX_ing: String = "ing"
+        const val SUFFIX_men: String = "men"
+        const val SUFFIX_s: String = "s"
+        const val SUFFIX_ss: String = "ss"
+        const val SUFFIX_ses: String = "ses"
+        const val SUFFIX_shes: String = "shes"
+        const val SUFFIX_xes: String = "xes"
+        const val SUFFIX_zes: String = "zes"
+
+        const val ENDING_null: String = ""
+        const val ENDING_ch: String = "ch"
+        const val ENDING_e: String = "e"
+        const val ENDING_man: String = "man"
+        const val ENDING_s: String = SUFFIX_s
+        const val ENDING_sh: String = "sh"
+        const val ENDING_x: String = "x"
+        const val ENDING_y: String = "y"
+        const val ENDING_z: String = "z"
+
+        val ruleMap: MutableMap<POS?, List<StemmingRule>>
+
+        init {
+            // nouns
+            val listNouns = listOf(
+                StemmingRule(SUFFIX_s, ENDING_null, POS.NOUN, SUFFIX_ss),
+                StemmingRule(SUFFIX_ses, ENDING_s, POS.NOUN),
+                StemmingRule(SUFFIX_xes, ENDING_x, POS.NOUN),
+                StemmingRule(SUFFIX_zes, ENDING_z, POS.NOUN),
+                StemmingRule(SUFFIX_ches, ENDING_ch, POS.NOUN),
+                StemmingRule(SUFFIX_shes, ENDING_sh, POS.NOUN),
+                StemmingRule(SUFFIX_men, ENDING_man, POS.NOUN),
+                StemmingRule(SUFFIX_ies, ENDING_y, POS.NOUN)
+            )
+
+            // verbs
+            val listVerb = listOf(
+                StemmingRule(SUFFIX_s, ENDING_null, POS.VERB),
+                StemmingRule(SUFFIX_ies, ENDING_y, POS.VERB),
+                StemmingRule(SUFFIX_es, ENDING_e, POS.VERB),
+                StemmingRule(SUFFIX_es, ENDING_null, POS.VERB),
+                StemmingRule(SUFFIX_ed, ENDING_e, POS.VERB),
+                StemmingRule(SUFFIX_ed, ENDING_null, POS.VERB),
+                StemmingRule(SUFFIX_ing, ENDING_e, POS.VERB),
+                StemmingRule(SUFFIX_ing, ENDING_null, POS.VERB)
+            )
+
+            // adjectives
+            val listAdj = listOf(
+                StemmingRule(SUFFIX_er, ENDING_e, POS.ADJECTIVE),
+                StemmingRule(SUFFIX_er, ENDING_null, POS.ADJECTIVE),
+                StemmingRule(SUFFIX_est, ENDING_e, POS.ADJECTIVE),
+                StemmingRule(SUFFIX_est, ENDING_null, POS.ADJECTIVE)
+            )
+
+            // adverbs
+            val listAdv = emptyList<StemmingRule>()
+
+            // assign
+            val ruleMapHidden = sortedMapOf(
+                POS.NOUN to unmodifiableList<StemmingRule>(listNouns),
+                POS.VERB to unmodifiableList<StemmingRule>(listVerb),
+                POS.ADJECTIVE to unmodifiableList<StemmingRule>(listAdj),
+                POS.ADVERB to unmodifiableList<StemmingRule>(listAdv),
+            )
+            ruleMap = unmodifiableMap<POS?, List<StemmingRule>>(ruleMapHidden)
+        }
     }
 }

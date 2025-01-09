@@ -7,204 +7,122 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.morph
 
-package edu.mit.jwi.morph;
-
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.Nullable;
-import edu.mit.jwi.item.POS;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import edu.mit.jwi.item.POS
+import java.util.*
 
 /**
- * Default implementation of the {@link IStemmingRule} interface.
+ * Default implementation of the [IStemmingRule] interface.
  *
+ * Creates a new stemming rule with the specified suffix, ending, and
+ * avoid set
+ *
+ * @param suffix the suffix that should be stripped from a word; should not
+ * be `null`, empty, or all whitespace.
+ * @param ending the ending that should be stripped from a word; should not
+ * be `null`, but may be empty or all whitespace.
+ * @param pos    the part of speech to which this rule applies, may not be
+ * `null`
+ * @param ignore the set of suffixes that, when present, indicate this rule
+ * should not be applied. May be null or empty, but not
+ * contain nulls or empties.
+ * @throws NullPointerException if the suffix, ending, or pos are null, or the ignore set
+ * contains null
+ * @throws NullPointerException if the suffix is empty or all whitespace, or the ignore
+ * set contains a string which is empty or all whitespace
+
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.3.1
  */
-public class StemmingRule implements IStemmingRule
-{
-    @Nullable
-    private final POS pos;
-    @Nullable
-    private final String suffix;
-    @Nullable
-    private final String ending;
-    private final Set<String> ignoreSet;
+class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: String) : IStemmingRule {
+
+    override val pOS: POS
+
+    override val suffix: String
+
+    override val ending: String
+
+    override val suffixIgnoreSet: MutableSet<String>
 
     /**
-     * Creates a new stemming rule with the specified suffix, ending, and
-     * avoid set
-     *
-     * @param suffix the suffix that should be stripped from a word; should not
-     *               be <code>null</code>, empty, or all whitespace.
-     * @param ending the ending that should be stripped from a word; should not
-     *               be <code>null</code>, but may be empty or all whitespace.
-     * @param pos    the part of speech to which this rule applies, may not be
-     *               <code>null</code>
-     * @param ignore the set of suffixes that, when present, indicate this rule
-     *               should not be applied. May be null or empty, but not
-     *               contain nulls or empties.
-     * @throws NullPointerException if the suffix, ending, or pos are null, or the ignore set
-     *                              contains null
-     * @throws NullPointerException if the suffix is empty or all whitespace, or the ignore
-     *                              set contains a string which is empty or all whitespace
-     * @since JWI 2.3.1
+      * @since JWI 2.3.1
      */
-    public StemmingRule(@Nullable String suffix, @Nullable String ending, @Nullable POS pos, @Nullable String... ignore)
-    {
-        if (suffix == null)
-        {
-            throw new NullPointerException();
+    init {
+        var suffix = suffix
+        var ending = ending
+        if (suffix == null) {
+            throw NullPointerException()
         }
-        if (ending == null)
-        {
-            throw new NullPointerException();
+        if (ending == null) {
+            throw NullPointerException()
         }
-        if (pos == null)
-        {
-            throw new NullPointerException();
+        if (pos == null) {
+            throw NullPointerException()
         }
 
         // allocate avoid set
-        Set<String> ignoreSet;
-        if (ignore != null && ignore.length > 0)
-        {
-            ignoreSet = new HashSet<>(ignore.length);
-            for (String avoidStr : ignore)
-            {
-                if (avoidStr == null)
-                {
-                    throw new NullPointerException();
+        var ignoreSet: MutableSet<String>
+        if (ignore != null && ignore.isNotEmpty()) {
+            ignoreSet = HashSet<String>(ignore.size)
+            for (avoidStr in ignore) {
+                var avoidStr = avoidStr
+                if (avoidStr == null) {
+                    throw NullPointerException()
                 }
-                avoidStr = avoidStr.trim();
-                if (avoidStr.length() == 0)
-                {
-                    throw new IllegalArgumentException();
-                }
-                ignoreSet.add(avoidStr);
+                avoidStr = avoidStr.trim { it <= ' ' }
+                require(avoidStr.isNotEmpty())
+                ignoreSet.add(avoidStr)
             }
-            ignoreSet = Collections.unmodifiableSet(ignoreSet);
-        }
-        else
-        {
-            ignoreSet = Collections.emptySet();
+            ignoreSet = Collections.unmodifiableSet<String>(ignoreSet)
+        } else {
+            ignoreSet = mutableSetOf<String>()
         }
 
-        suffix = suffix.trim();
-        ending = ending.trim();
-        if (suffix.length() == 0)
-        {
-            throw new IllegalArgumentException();
-        }
+        suffix = suffix.trim { it <= ' ' }
+        ending = ending.trim { it <= ' ' }
+        require(suffix.isNotEmpty())
 
-        if (ignoreSet.contains(suffix))
-        {
-            throw new IllegalArgumentException();
-        }
+        require(!ignoreSet.contains(suffix))
 
-        this.pos = pos;
-        this.suffix = suffix;
-        this.ending = ending;
-        this.ignoreSet = ignoreSet;
+        this.pOS = pos
+        this.suffix = suffix
+        this.ending = ending
+        this.suffixIgnoreSet = ignoreSet
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.morph.IStemmingRule#getSuffix()
-     */
-    @Nullable
-    public String getSuffix()
-    {
-        return suffix;
+    override fun apply(word: String): String? {
+        return apply(word, null)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.morph.IStemmingRule#getEnding()
-     */
-    @Nullable
-    public String getEnding()
-    {
-        return ending;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.morph.IStemmingRule#getSuffixIgnoreSet()
-     */
-    public Set<String> getSuffixIgnoreSet()
-    {
-        return ignoreSet;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.item.IHasPOS#getPOS()
-     */
-    @Nullable
-    public POS getPOS()
-    {
-        return pos;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.morph.IStemmingRule#apply(java.lang.String)
-     */
-    @Nullable
-    public String apply(@NonNull String word)
-    {
-        return apply(word, null);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.morph.IStemmingRule#apply(java.lang.String, java.lang.String)
-     */
-    @Nullable
-    public String apply(@NonNull String word, @Nullable String suffix)
-    {
+    override fun apply(word: String, suffix: String?): String? {
         // see if the suffix is present
-        assert getSuffix() != null;
-        if (!word.endsWith(getSuffix()))
-        {
-            return null;
+        checkNotNull(suffix)
+        if (!word.endsWith(suffix)) {
+            return null
         }
 
         // process ignore set
-        for (String ignoreSuffix : getSuffixIgnoreSet())
-        {
-            if (word.endsWith(ignoreSuffix))
-            {
-                return null;
+        for (ignoreSuffix in suffixIgnoreSet) {
+            if (word.endsWith(ignoreSuffix)) {
+                return null
             }
         }
 
         // apply the rule
         // we loop directly over characters here to avoid two loops
-        StringBuilder sb = new StringBuilder();
-        int len = word.length() - getSuffix().length();
-        for (int i = 0; i < len; i++)
-        {
-            sb.append(word.charAt(i));
+        val sb = StringBuilder()
+        val len = word.length - suffix.length
+        for (i in 0..<len) {
+            sb.append(word[i])
         }
-        sb.append(getEnding());
+        sb.append(ending)
 
         // append optional suffix
-        if (suffix != null)
-        {
-            sb.append(suffix.trim());
+        if (suffix != null) {
+            sb.append(suffix.trim { it <= ' ' })
         }
-        return sb.toString();
+        return sb.toString()
     }
 }

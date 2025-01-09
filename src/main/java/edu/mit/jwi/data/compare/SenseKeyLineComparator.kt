@@ -7,74 +7,42 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data.compare
 
-package edu.mit.jwi.data.compare;
-
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.Nullable;
+import edu.mit.jwi.NonNull
 
 /**
- * <p>
+ *
+ *
  * A comparator that captures the ordering of lines in sense index files (e.g.,
- * the <code>sense.index</code> file). This files are ordered alphabetically by
+ * the `sense.index` file). This files are ordered alphabetically by
  * sense key.
- * </p>
- * <p>
+ *
+ *
+ *
  * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the {@link #getInstance()} method to get
+ * instantiated directly; rather, call the [.getInstance] method to get
  * the singleton instance.
- * <p>
+ *
+ * This constructor is marked protected so that the class may be
+ * sub-classed, but not directly instantiated. Obtain instances of this
+ * class via the static [.getInstance] method.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-public class SenseKeyLineComparator implements ILineComparator
-{
-    // singleton instance
-    private static SenseKeyLineComparator instance;
+open class SenseKeyLineComparator protected constructor() : ILineComparator {
 
-    /**
-     * Returns the singleton instance of this class, instantiating it if
-     * necessary. The singleton instance will not be <code>null</code>.
-     *
-     * @return the non-<code>null</code> singleton instance of this class,
-     * instantiating it if necessary.
-     * @since JWI 2.1.0
-     */
-    public static SenseKeyLineComparator getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new SenseKeyLineComparator();
-        }
-        return instance;
-    }
-
-    /**
-     * This constructor is marked protected so that the class may be
-     * sub-classed, but not directly instantiated. Obtain instances of this
-     * class via the static {@link #getInstance()} method.
-     *
-     * @since JWI 2.1.0
-     */
-    protected SenseKeyLineComparator()
-    {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
-    public int compare(@NonNull String line1, @NonNull String line2)
-    {
+    override fun compare(@NonNull line1: String, @NonNull line2: String): Int {
         // get sense keys
-        int i1 = line1.indexOf(' ');
-        int i2 = line2.indexOf(' ');
-        line1 = (i1 == -1) ? line1 : line1.substring(0, i1);
-        line2 = (i2 == -1) ? line2 : line2.substring(0, i2);
-        return compareSenseKeys(line1, line2);
+        var line1 = line1
+        var line2 = line2
+        val i1 = line1.indexOf(' ')
+        val i2 = line2.indexOf(' ')
+        line1 = if (i1 == -1) line1 else line1.substring(0, i1)
+        line2 = if (i2 == -1) line2 else line2.substring(0, i2)
+        return compareSenseKeys(line1, line2)
     }
 
     /**
@@ -84,19 +52,30 @@ public class SenseKeyLineComparator implements ILineComparator
      * @param senseKey2 sense key 1
      * @return compare code
      */
-    protected int compareSenseKeys(@NonNull String senseKey1, @NonNull String senseKey2)
-    {
-        return senseKey1.compareToIgnoreCase(senseKey2);
+    protected open fun compareSenseKeys(@NonNull senseKey1: String, @NonNull senseKey2: String): Int {
+        return senseKey1.compareTo(senseKey2, ignoreCase = true)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.compare.ILineComparator#getCommentDetector()
-     */
-    @Nullable
-    public ICommentDetector getCommentDetector()
-    {
-        return null;
+    override val commentDetector: ICommentDetector?
+        get() = null
+
+    companion object {
+
+        /**
+         * Returns the singleton instance of this class, instantiating it if
+         * necessary. The singleton instance will not be `null`.
+         *
+         * @return the non-`null` singleton instance of this class,
+         * instantiating it if necessary.
+         * @since JWI 2.1.0
+         */
+        var instance: SenseKeyLineComparator? = null
+            get() {
+                if (field == null) {
+                    field = SenseKeyLineComparator()
+                }
+                return field
+            }
+            private set
     }
 }
