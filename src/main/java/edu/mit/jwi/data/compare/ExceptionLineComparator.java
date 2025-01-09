@@ -10,8 +10,7 @@
 
 package edu.mit.jwi.data.compare;
 
-import edu.mit.jwi.Nullable;
-import edu.mit.jwi.data.parse.ILineParser.MisformattedLineException;
+import edu.mit.jwi.data.parse.MisformattedLineException;
 
 import java.util.regex.Pattern;
 
@@ -67,11 +66,6 @@ public class ExceptionLineComparator implements ILineComparator
     {
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
     public int compare(String line1, String line2)
     {
         String[] words1 = spacePattern.split(line1);
@@ -88,12 +82,6 @@ public class ExceptionLineComparator implements ILineComparator
         return words1[0].compareTo(words2[0]);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.compare.ILineComparator#getCommentDetector()
-     */
-    @Nullable
     public ICommentDetector getCommentDetector()
     {
         return null;

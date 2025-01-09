@@ -417,7 +417,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
 
         override fun next(): N {
             currentLine = iterator!!.next()
-            return parseLine(currentLine)!!
+            return parseLine(currentLine!!)!!
         }
 
         /**
@@ -426,7 +426,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
          * @param line line
          * @return parsed object
          */
-        abstract fun parseLine(line: String?): N?
+        abstract fun parseLine(line: String): N
     }
 
     /**
@@ -464,7 +464,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         pattern
     ) {
 
-        override fun parseLine(line: String?): IIndexWord? {
+        override fun parseLine(line: String): IIndexWord {
             checkNotNull(fParser)
             return fParser.parseLine(line)
         }
@@ -477,7 +477,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         dataProvider.resolveContentType<ISenseEntry>(DataType.SENSE, null)!!
     ) {
 
-        override fun parseLine(line: String?): ISenseEntry? {
+        override fun parseLine(line: String): ISenseEntry {
             checkNotNull(fParser)
             return fParser.parseLine(line)
         }
@@ -490,7 +490,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         dataProvider.resolveContentType<ISynset>(DataType.DATA, pos)!!
     ) {
 
-        override fun parseLine(line: String?): ISynset? {
+        override fun parseLine(line: String): ISynset {
             if (pOS == POS.ADJECTIVE) {
                 checkNotNull(fParser)
                 val synset = checkNotNull(fParser.parseLine(line))
@@ -510,10 +510,10 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         dataProvider.resolveContentType<IExceptionEntryProxy>(DataType.EXCEPTION, pos)!!
     ) {
 
-        override fun parseLine(line: String?): IExceptionEntry? {
+        override fun parseLine(line: String): IExceptionEntry {
             checkNotNull(fParser)
             val proxy = fParser.parseLine(line)
-            return if (proxy == null) null else ExceptionEntry(proxy, pOS)
+            return ExceptionEntry(proxy, pOS)
         }
     }
 }

@@ -7,142 +7,110 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data.parse
 
-package edu.mit.jwi.data.parse;
-
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.Nullable;
-import edu.mit.jwi.item.*;
-
-import java.util.StringTokenizer;
+import edu.mit.jwi.item.*
+import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
+import edu.mit.jwi.item.Pointer.Companion.getPointerType
+import java.util.*
 
 /**
- * <p>
- * Parser parser for Wordnet index files (e.g., <code>idx.adv</code> or
- * <code>adv.idx</code>). It produces an {@code IIndexWord} object.
- * </p>
- * <p>
+ * Parserfor Wordnet index files (e.g., `idx.adv` or
+ * `adv.idx`). It produces an `IIndexWord` object.
+ *
  * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the {@link #getInstance()} method to get
+ * instantiated directly; rather, call the [.getInstance] method to get
  * the singleton instance.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-public class IndexLineParser implements ILineParser<IIndexWord>
-{
-    // singleton instance
-    private static IndexLineParser instance;
+class IndexLineParser
+/**
+ * This constructor is marked protected so that the class may be
+ * sub-classed, but not directly instantiated. Obtain instances of this
+ * class via the static [.getInstance] method.
+ *
+ * @since JWI 2.0.0
+ */
+private constructor() : ILineParser<IIndexWord> {
 
-    /**
-     * Returns the singleton instance of this class, instantiating it if
-     * necessary. The singleton instance will not be <code>null</code>.
-     *
-     * @return the non-<code>null</code> singleton instance of this class,
-     * instantiating it if necessary.
-     * @since JWI 2.0.0
-     */
-    public static IndexLineParser getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new IndexLineParser();
-        }
-        return instance;
-    }
+    override fun parseLine(line: String): IIndexWord {
 
-    /**
-     * This constructor is marked protected so that the class may be
-     * sub-classed, but not directly instantiated. Obtain instances of this
-     * class via the static {@link #getInstance()} method.
-     *
-     * @since JWI 2.0.0
-     */
-    protected IndexLineParser()
-    {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.parse.ILineParser#parseLine(java.lang.String)
-     */
-    @NonNull
-    public IIndexWord parseLine(@Nullable String line)
-    {
-        if (line == null)
-        {
-            throw new NullPointerException();
-        }
-
-        try
-        {
-            StringTokenizer tokenizer = new StringTokenizer(line, " ");
+        try {
+            val tokenizer = StringTokenizer(line, " ")
 
             // get lemma
-            String lemma = tokenizer.nextToken();
+            val lemma = tokenizer.nextToken()
 
             // get pos
-            String posSym = tokenizer.nextToken();
-            POS pos = POS.getPartOfSpeech(posSym.charAt(0));
+            val posSym = tokenizer.nextToken()
+            val pos = getPartOfSpeech(posSym.get(0))
 
             // consume synset_cnt
-            tokenizer.nextToken();
+            tokenizer.nextToken()
 
             // consume ptr_symbols
-            int p_cnt = Integer.parseInt(tokenizer.nextToken());
-            IPointer[] ptrs = new IPointer[p_cnt];
-            String tok;
-            for (int i = 0; i < p_cnt; ++i)
-            {
-                tok = tokenizer.nextToken();
-                ptrs[i] = resolvePointer(tok, pos);
+            val ptrCnt = tokenizer.nextToken().toInt()
+            val ptrs = Array<IPointer>(ptrCnt) {
+                val tok: String = tokenizer.nextToken()
+                resolvePointer(tok, pos)
             }
 
             // get sense_cnt
-            int senseCount = Integer.parseInt(tokenizer.nextToken());
+            val senseCount = tokenizer.nextToken().toInt()
 
             // get tagged sense count
-            int tagSenseCnt = Integer.parseInt(tokenizer.nextToken());
+            val tagSenseCnt = tokenizer.nextToken().toInt()
 
             // get words
-            IWordID[] words = new IWordID[senseCount];
-            int offset;
-            for (int i = 0; i < senseCount; i++)
-            {
-                offset = Integer.parseInt(tokenizer.nextToken());
-                words[i] = new WordID(new SynsetID(offset, pos), lemma);
+            val words = Array<IWordID>(senseCount) {
+                val offset: Int = tokenizer.nextToken().toInt()
+                WordID(SynsetID(offset, pos), lemma)
             }
-            return new IndexWord(lemma, pos, tagSenseCnt, ptrs, words);
-        }
-        catch (Exception e)
-        {
-            throw new MisformattedLineException(line, e);
+            return IndexWord(lemma, pos, tagSenseCnt, ptrs, words)
+        } catch (e: Exception) {
+            throw MisformattedLineException(line, e)
         }
     }
 
     /**
-     * <p>
-     * Retrieves the pointer objects for the {@link #parseLine(String)} method.
-     * </p>
-     * <p>
+     * Retrieves the pointer objects for the [.parseLine] method.
+     *
      * This is implemented in its own method for ease of subclassing.
-     * </p>
      *
      * @param symbol the symbol of the pointer to return
      * @param pos    the part of speech of the pointer to return, can be
-     *               <code>null</code> unless the pointer symbol is ambiguous
+     * `null` unless the pointer symbol is ambiguous
      * @return the pointer corresponding to the specified symbol and part of
      * speech combination
-     * @throws NullPointerException     if the symbol is <code>null</code>
+     * @throws NullPointerException     if the symbol is `null`
      * @throws IllegalArgumentException if the symbol and part of speech combination does not
-     *                                  correspond to a known pointer
+     * correspond to a known pointer
      * @since JWI 2.3.0
      */
-    @Nullable
-    protected IPointer resolvePointer(@NonNull String symbol, POS pos)
-    {
-        return Pointer.getPointerType(symbol, pos);
+    private fun resolvePointer(symbol: String, pos: POS?): IPointer {
+        return getPointerType(symbol, pos)
+    }
+
+    companion object {
+
+        /**
+         * Returns the singleton instance of this class, instantiating it if
+         * necessary. The singleton instance will not be `null`.
+         *
+         * @return the non-`null` singleton instance of this class,
+         * instantiating it if necessary.
+         * @since JWI 2.0.0
+         */
+        var instance: IndexLineParser? = null
+            get() {
+                if (field == null) {
+                    field = IndexLineParser()
+                }
+                return field
+            }
+            private set
     }
 }

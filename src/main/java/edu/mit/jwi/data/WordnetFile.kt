@@ -21,7 +21,6 @@ import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.Throws
 
 /**
  * Abstract superclass of wordnet data file objects. Provides all the
@@ -42,7 +41,7 @@ import kotlin.Throws
  * data type. If these are mismatched, this will result in
  * `MisformattedLineExceptions` in later calls.
  *
- * @param file        the file which backs this wordnet file; may not be 'null`
+ * @param file        the file which backs this wordnet file; may not be 'null'
  * @param contentType the content type for this file; may not be `null`
 
  * @param <T> the type of the objects represented in this file
@@ -102,7 +101,7 @@ abstract class WordnetFile<T>(
                 return true
             }
             val raFile = RandomAccessFile(file, "r")
-            channel = raFile.getChannel()
+            channel = raFile.channel
             buffer = channel!!.map(FileChannel.MapMode.READ_ONLY, 0, file.length())
             return true
         } finally {
@@ -242,11 +241,11 @@ abstract class WordnetFile<T>(
      * @see java.lang.Object#hashCode()
      */
     override fun hashCode(): Int {
-        val PRIME = 31
+        val prime = 31
         var result = 1
         checkNotNull(contentType)
-        result = PRIME * result + contentType.hashCode()
-        result = PRIME * result + file.hashCode()
+        result = prime * result + contentType.hashCode()
+        result = prime * result + file.hashCode()
         return result
     }
 
@@ -284,7 +283,7 @@ abstract class WordnetFile<T>(
      */
     abstract inner class LineIterator(buffer: ByteBuffer) : Iterator<String> {
 
-        protected val parentBuffer: ByteBuffer
+        protected val parentBuffer: ByteBuffer = buffer
 
         @JvmField
         protected var itrBuffer: ByteBuffer
@@ -309,7 +308,6 @@ abstract class WordnetFile<T>(
          * @since JWI 1.0
          */
         init {
-            parentBuffer = buffer
             itrBuffer = buffer.asReadOnlyBuffer()
             itrBuffer.clear()
         }
@@ -317,12 +315,11 @@ abstract class WordnetFile<T>(
         /**
          * Start at the specified key.
          *
-         * @param key the key of the line to start at; may be `null`
+         * @param key0 the key of the line to start at; may be `null`
          */
-        fun init(key: String?) {
-            var key = key
-            key = if (key == null) null else key.trim { it <= ' ' }
-            if (key == null || key.length == 0) {
+        fun init(key0: String?) {
+            var key  = key0?.trim { it <= ' ' }
+            if (key == null || key.isEmpty()) {
                 advance()
             } else {
                 findFirstLine(key)

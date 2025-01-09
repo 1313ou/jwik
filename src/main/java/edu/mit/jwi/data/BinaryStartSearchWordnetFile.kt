@@ -7,15 +7,10 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data
 
-package edu.mit.jwi.data;
-
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.Nullable;
-
-import java.io.File;
-import java.nio.ByteBuffer;
-import java.util.Comparator;
+import java.io.File
+import java.nio.ByteBuffer
 
 /**
  * Concrete implementation of a wordnet file data source. This particular
@@ -23,191 +18,134 @@ import java.util.Comparator;
  * find requested lines. It is appropriate for alphabetically-ordered Wordnet
  * files.
  *
+ * Constructs a new binary search wordnet file, on the specified file with
+ * the specified content type.
+ *
+ * @param file        the file which backs this wordnet file; may not be
+ * `null`
+ * @param contentType the content type for this file; may not be `null`
  * @param <T> the type of object represented in this data resource
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.0.0
  */
-public class BinaryStartSearchWordnetFile<T> extends WordnetFile<T>
-{
+class BinaryStartSearchWordnetFile<T>(file: File, contentType: IContentType<T>) : WordnetFile<T>(file, contentType) {
+
     // the comparator
-    @SuppressWarnings("WeakerAccess")
-    protected final Comparator<String> fComparator;
+    private val fComparator: Comparator<String>? = contentType.lineComparator
 
-    /**
-     * Constructs a new binary search wordnet file, on the specified file with
-     * the specified content type.
-     *
-     * @param file        the file which backs this wordnet file; may not be
-     *                    <code>null</code>
-     * @param contentType the content type for this file; may not be <code>null</code>
-     * @throws NullPointerException {@link NullPointerException} if either the file or content type
-     *                              is <code>null</code>
-     * @since JWI 2.0.0
-     */
-    public BinaryStartSearchWordnetFile(@NonNull File file, IContentType<T> contentType)
-    {
-        super(file, contentType);
-        assert contentType != null;
-        fComparator = contentType.getLineComparator();
-    }
+    private val bufferLock = Any()
 
-    private final Object bufferLock = new Object();
+    override fun getLine(key: String): String? {
+        val buffer = getBuffer()
 
-    @Nullable
-    public String getLine(String key)
-    {
-        ByteBuffer buffer = getBuffer();
-
-        synchronized (bufferLock)
-        {
-            int start = 0;
-            int midpoint;
-            assert buffer != null;
-            int stop = buffer.limit();
-            int cmp;
-            String line;
-            while (stop - start > 1)
-            {
+        synchronized(bufferLock) {
+            checkNotNull(buffer)
+            var start = 0
+            var stop = buffer.limit()
+            while (stop - start > 1) {
                 // find the middle of the buffer
-                midpoint = (start + stop) / 2;
-                buffer.position(midpoint);
+                var midpoint: Int = (start + stop) / 2
+                buffer.position(midpoint)
 
                 // back up to the beginning of the line
-                rewindToLineStart(buffer);
+                rewindToLineStart(buffer)
 
                 // read line
-                line = getLine(buffer, getContentType().getCharset());
+                var line: String? = getLine(buffer, contentType.charset)
 
                 // if we get a null, we've reached the end of the file
-                cmp = (line == null) ? 1 : fComparator.compare(line, key);
+                var cmp: Int = if (line == null) 1 else fComparator!!.compare(line, key)
 
                 // found our line
-                if (cmp == 0)
-                {
-                    return line;
+                if (cmp == 0) {
+                    return line
                 }
 
-                if (cmp > 0)
-                {
+                if (cmp > 0) {
                     // too far forward
-                    stop = midpoint;
-                }
-                else
-                {
+                    stop = midpoint
+                } else {
                     // too far back
-                    start = midpoint;
+                    start = midpoint
                 }
             }
         }
-        return null;
+        return null
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.WordnetFile#makeIterator(java.nio.ByteBuffer, java.lang.String)
-     */
-    @NonNull
-    public LineIterator makeIterator(@NonNull ByteBuffer buffer, String key)
-    {
-        return new BinarySearchLineIterator(buffer, key);
+    override fun makeIterator(buffer: ByteBuffer, key: String?): LineIterator {
+        return BinarySearchLineIterator(buffer, key)
     }
 
     /**
      * Used to iterate over lines in a file. It is a look-ahead iterator. Does
-     * not support the {@link #remove()} method; if that method is called, it
-     * will throw an {@link UnsupportedOperationException}.
+     * not support the [.remove] method; if that method is called, it
+     * will throw an [UnsupportedOperationException].
      *
+     * Constructs a new line iterator over this buffer, starting at the
+     * specified key.
+     *
+     * @param buffer the buffer over which the iterator should iterator; may
+     * not be `null`
+     * @param key    the key of the line to start at; may be `null`
      * @author Mark A. Finlayson
      * @version 2.4.0
      * @since JWI 2.0.0
      */
-    public class BinarySearchLineIterator extends LineIterator
-    {
-        private final Object bufferLock;
+    inner class BinarySearchLineIterator(buffer: ByteBuffer, key: String?) : LineIterator(buffer) {
 
-        /**
-         * Constructs a new line iterator over this buffer, starting at the
-         * specified key.
-         *
-         * @param buffer the buffer over which the iterator should iterator; may
-         *               not be <code>null</code>
-         * @param key    the key of the line to start at; may be <code>null</code>
-         * @throws NullPointerException if the specified buffer is <code>null</code>
-         * @since JWI 2.0.0
-         */
-        public BinarySearchLineIterator(@NonNull ByteBuffer buffer, String key)
-        {
-            super(buffer);
-            bufferLock = new Object();
-            init(key);
+        private val bufferLock: Any = Any()
+
+        init {
+            init(key)
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see edu.edu.mit.jwi.data.WordnetFile.LineIterator#findFirstLine(java.lang.String)
-         */
-        protected void findFirstLine(@NonNull String key)
-        {
-            synchronized (bufferLock)
-            {
-                int lastOffset = -1;
-                int start = 0;
-                int stop = itrBuffer.limit();
-                int offset, midpoint;
-                int compare;
-                String line;
-                while (start + 1 < stop)
-                {
-                    midpoint = (start + stop) / 2;
-                    itrBuffer.position(midpoint);
-                    getLine(itrBuffer, getContentType().getCharset());
-                    offset = itrBuffer.position();
-                    line = getLine(itrBuffer, getContentType().getCharset());
+        override fun findFirstLine(key: String) {
+            synchronized(bufferLock) {
+                var lastOffset = -1
+                var start = 0
+                var stop = itrBuffer.limit()
+                while (start + 1 < stop) {
+                    var midpoint: Int = (start + stop) / 2
+                    itrBuffer.position(midpoint)
+                    getLine(itrBuffer, contentType.charset)
+                    var offset: Int = itrBuffer.position()
+                    var line = getLine(itrBuffer, contentType.charset)
 
                     // Fix for Bug009: If the line is null, we've reached
                     // the end of the file, so just advance to the first line
-                    if (line == null)
-                    {
-                        itrBuffer.position(itrBuffer.limit());
-                        return;
+                    if (line == null) {
+                        itrBuffer.position(itrBuffer.limit())
+                        return
                     }
-
-                    compare = fComparator.compare(line, key);
+                    var compare: Int = fComparator!!.compare(line, key)
                     // if the key matches exactly, we know we have found
                     // the start of this pattern in the file
-                    if (compare == 0)
-                    {
-                        setNextLine(line);
-                        return;
-                    }
-                    else if (compare > 0)
-                    {
-                        stop = midpoint;
-                    }
-                    else
-                    {
-                        start = midpoint;
+                    if (compare == 0) {
+                        nextLine = line
+                        return
+                    } else if (compare > 0) {
+                        stop = midpoint
+                    } else {
+                        start = midpoint
                         // remember last position before
-                        lastOffset = offset;
+                        lastOffset = offset
                     }
                 }
 
                 // Getting here means that we didn't find an exact match
                 // to the key, so we take the last line that started
                 // with the pattern
-                if (lastOffset > -1)
-                {
-                    itrBuffer.position(lastOffset);
-                    setNextLine(getLine(itrBuffer, getContentType().getCharset()));
-                    return;
+                if (lastOffset > -1) {
+                    itrBuffer.position(lastOffset)
+                    nextLine = getLine(itrBuffer, contentType.charset)
+                    return
                 }
 
                 // If we didn't have any lines that matched the pattern
                 // then just advance to the first non-comment
-                itrBuffer.position(itrBuffer.limit());
+                itrBuffer.position(itrBuffer.limit())
             }
         }
     }
