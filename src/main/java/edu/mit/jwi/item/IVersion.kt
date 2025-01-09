@@ -51,7 +51,7 @@ interface IVersion : Serializable {
      * @return the version qualifier, non-`null`, potentially empty
      * @since JWI 2.2.0
      */
-    val qualifier: String
+    val qualifier: String?
 
     companion object {
 
