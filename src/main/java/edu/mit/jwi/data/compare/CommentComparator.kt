@@ -7,96 +7,57 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data.compare
 
-package edu.mit.jwi.data.compare;
-
-import edu.mit.jwi.NonNull;
-
-import java.util.Comparator;
+import edu.mit.jwi.NonNull
 
 /**
- * <p>
+ *
+ *
  * Default comment detector that is designed for comments found at the head of
  * Wordnet dictionary files. It assumes that each comment line starts with two
  * spaces, followed by a number that indicates the position of the comment line
  * relative to the rest of the comment lines in the file.
- * </p>
- * <p>
+ *
  * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the {@link #getInstance()} method to get
+ * instantiated directly; rather, call the [.getInstance] method to get
  * the singleton instance.
- * <p>
+ *
+ * This constructor is marked protected so that the class may be
+ * sub-classed, but not directly instantiated. Obtain instances of this
+ * class via the static [.getInstance] method.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-public class CommentComparator implements Comparator<String>, ICommentDetector
-{
-    // singleton instance
-    private static CommentComparator instance;
+class CommentComparator
+private constructor() : Comparator<String>, ICommentDetector {
 
-    /**
-     * Returns the singleton instance of this class, instantiating it if
-     * necessary. The singleton instance will not be <code>null</code>.
-     *
-     * @return the non-<code>null</code> singleton instance of this class,
-     * instantiating it if necessary.
-     * @since JWI 2.0.0
-     */
-    public static CommentComparator getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new CommentComparator();
+    override fun compare(s1: String, s2: String): Int {
+        var s1 = s1
+        var s2 = s2
+        s1 = s1.trim { it <= ' ' }
+        s2 = s2.trim { it <= ' ' }
+
+        var idx1 = s1.indexOf(' ')
+        var idx2 = s2.indexOf(' ')
+        if (idx1 == -1) {
+            idx1 = s1.length
         }
-        return instance;
-    }
-
-    /**
-     * This constructor is marked protected so that the class may be
-     * sub-classed, but not directly instantiated. Obtain instances of this
-     * class via the static {@link #getInstance()} method.
-     *
-     * @since JWI 2.0.0
-     */
-    protected CommentComparator()
-    {
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
-    public int compare(String s1, String s2)
-    {
-        s1 = s1.trim();
-        s2 = s2.trim();
-
-        int idx1 = s1.indexOf(' ');
-        int idx2 = s2.indexOf(' ');
-        if (idx1 == -1)
-        {
-            idx1 = s1.length();
-        }
-        if (idx2 == -1)
-        {
-            idx2 = s2.length();
+        if (idx2 == -1) {
+            idx2 = s2.length
         }
 
-        int num1 = Integer.parseInt(s1.substring(0, idx1));
-        int num2 = Integer.parseInt(s2.substring(0, idx2));
+        val num1 = s1.substring(0, idx1).toInt()
+        val num2 = s2.substring(0, idx2).toInt()
 
-        if (num1 < num2)
-        {
-            return -1;
+        if (num1 < num2) {
+            return -1
+        } else if (num1 > num2) {
+            return 1
         }
-        else if (num1 > num2)
-        {
-            return 1;
-        }
-        return 0;
+        return 0
     }
 
     /*
@@ -104,8 +65,28 @@ public class CommentComparator implements Comparator<String>, ICommentDetector
      *
      * @see edu.edu.mit.jwi.data.compare.ICommentDetector#isCommentLine(java.lang.String)
      */
-    public boolean isCommentLine(@NonNull String line)
-    {
-        return line.length() >= 2 && line.charAt(0) == ' ' && line.charAt(1) == ' ';
+    override fun isCommentLine(@NonNull line: String): Boolean {
+        return line.length >= 2 && line[0] == ' ' && line[1] == ' '
+    }
+
+    companion object {
+
+        /**
+         * Returns the singleton instance of this class, instantiating it if
+         * necessary. The singleton instance will not be `null`.
+         *
+         * @return the non-`null` singleton instance of this class,
+         * instantiating it if necessary.
+         * @since JWI 2.0.0
+         */
+        @JvmStatic
+        var instance: CommentComparator? = null
+            get() {
+                if (field == null) {
+                    field = CommentComparator()
+                }
+                return field
+            }
+            private set
     }
 }

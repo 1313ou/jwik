@@ -59,7 +59,7 @@ abstract class WordnetFile<T>(
 
     override val name: String = file.getName()
 
-    private val detector: ICommentDetector = contentType.lineComparator!!.getCommentDetector()
+    private val detector: ICommentDetector = contentType.lineComparator!!.commentDetector!!
 
     // loading locks and status flag
     // the flag is marked transient to avoid different values in different threads
@@ -376,7 +376,7 @@ abstract class WordnetFile<T>(
          * `false` otherwise
          * @since JWI 1.0
          */
-        protected fun isComment(line: String?): Boolean {
+        protected fun isComment(line: String): Boolean {
             if (detector == null) {
                 return false
             }

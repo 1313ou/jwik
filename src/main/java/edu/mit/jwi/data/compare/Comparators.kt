@@ -1,53 +1,35 @@
-package edu.mit.jwi.data.compare;
+package edu.mit.jwi.data.compare
 
-import edu.mit.jwi.NonNull;
+import edu.mit.jwi.NonNull
+import edu.mit.jwi.data.compare.IndexLineComparator
 
-public class Comparators
-{
+class Comparators {
     /**
      * Case-sensitive index processing.
      */
-    public static class CaseSensitiveIndexLineComparator extends IndexLineComparator
-    {
-        private static final CaseSensitiveIndexLineComparator INSTANCE = new CaseSensitiveIndexLineComparator();
+    class CaseSensitiveIndexLineComparator private constructor() : IndexLineComparator(CommentComparator.instance!!) {
 
-        @NonNull
-        public static CaseSensitiveIndexLineComparator getInstance()
-        {
-            return INSTANCE;
+        override fun compareLemmas(@NonNull lemma1: String, @NonNull lemma2: String): Int {
+            return lemma1.compareTo(lemma2)
         }
 
-        protected CaseSensitiveIndexLineComparator()
-        {
-            super(CommentComparator.getInstance());
-        }
+        companion object {
 
-        @Override
-        protected int compareLemmas(@NonNull String lemma1, @NonNull String lemma2)
-        {
-            return lemma1.compareTo(lemma2);
+            @get:NonNull
+            val instance: CaseSensitiveIndexLineComparator = CaseSensitiveIndexLineComparator()
         }
     }
 
-    public static class CaseSensitiveSenseKeyLineComparator extends SenseKeyLineComparator
-    {
-        private static final CaseSensitiveSenseKeyLineComparator INSTANCE = new CaseSensitiveSenseKeyLineComparator();
+    class CaseSensitiveSenseKeyLineComparator private constructor() : SenseKeyLineComparator() {
 
-        @NonNull
-        public static CaseSensitiveSenseKeyLineComparator getInstance()
-        {
-            return INSTANCE;
+        override fun compareSenseKeys(@NonNull senseKey1: String, @NonNull senseKey2: String): Int {
+            return senseKey1.compareTo(senseKey2)
         }
 
-        protected CaseSensitiveSenseKeyLineComparator()
-        {
-            super();
-        }
+        companion object {
 
-        @Override
-        protected int compareSenseKeys(@NonNull String senseKey1, @NonNull String senseKey2)
-        {
-            return senseKey1.compareTo(senseKey2);
+            @get:NonNull
+            val instance: CaseSensitiveSenseKeyLineComparator = CaseSensitiveSenseKeyLineComparator()
         }
     }
 
@@ -55,30 +37,20 @@ public class Comparators
      * Like ignore case, but in case of ignore-case equals, further case-sensitive processing
      * comparison is attempted.
      */
-    public static class LexicographicOrderSenseKeyLineComparator extends SenseKeyLineComparator
-    {
-        private static final LexicographicOrderSenseKeyLineComparator INSTANCE = new LexicographicOrderSenseKeyLineComparator();
+    class LexicographicOrderSenseKeyLineComparator private constructor() : SenseKeyLineComparator() {
 
-        @NonNull
-        public static LexicographicOrderSenseKeyLineComparator getInstance()
-        {
-            return INSTANCE;
-        }
-
-        protected LexicographicOrderSenseKeyLineComparator()
-        {
-            super();
-        }
-
-        @Override
-        protected int compareSenseKeys(@NonNull String senseKey1, @NonNull String senseKey2)
-        {
-            int c = senseKey1.compareToIgnoreCase(senseKey2);
-            if (c != 0)
-            {
-                return c;
+        override fun compareSenseKeys(@NonNull senseKey1: String, @NonNull senseKey2: String): Int {
+            val c = senseKey1.compareTo(senseKey2, ignoreCase = true)
+            if (c != 0) {
+                return c
             }
-            return -senseKey1.compareTo(senseKey2);
+            return -senseKey1.compareTo(senseKey2)
+        }
+
+        companion object {
+
+            @get:NonNull
+            val instance: LexicographicOrderSenseKeyLineComparator = LexicographicOrderSenseKeyLineComparator()
         }
     }
 }

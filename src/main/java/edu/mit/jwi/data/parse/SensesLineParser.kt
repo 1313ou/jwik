@@ -7,120 +7,72 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
+package edu.mit.jwi.data.parse
 
-package edu.mit.jwi.data.parse;
-
-import edu.mit.jwi.Nullable;
-import edu.mit.jwi.item.ISenseEntry;
-import edu.mit.jwi.item.ISenseKey;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import edu.mit.jwi.Nullable
+import edu.mit.jwi.data.parse.SenseLineParser.Companion.parseSenseEntry
+import edu.mit.jwi.item.ISenseEntry
+import edu.mit.jwi.item.ISenseKey
+import java.util.*
 
 /**
- * Parser for Wordnet sense index files (e.g., <code>index.sense</code> or
- * <code>sense.index</code>). It produces an {@code ISenseEntry} object.
- * <p>
+ * Parser for Wordnet sense index files (e.g., `index.sense` or
+ * `sense.index`). It produces an `ISenseEntry` object.
+ *
  * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the {@link #getInstance()} method to get
+ * instantiated directly; rather, call the [.getInstance] method to get
  * the singleton instance.
+ *
+ * This constructor is marked protected so that the class may be
+ * sub-classed, but not directly instantiated. Obtain instances of this
+ * class via the static [.getInstance] method.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-public class SensesLineParser implements ILineParser<ISenseEntry[]>
-{
-    // singleton instance
-    private static SensesLineParser instance;
+class SensesLineParser private constructor(@Nullable private val keyParser: ILineParser<ISenseKey> = SenseKeyParser.instance!!) : ILineParser<Array<ISenseEntry>> {
 
-    /**
-     * Returns the singleton instance of this class, instantiating it if
-     * necessary. The singleton instance will not be <code>null</code>.
-     *
-     * @return the non-<code>null</code> singleton instance of this class,
-     * instantiating it if necessary.
-     * @since JWI 2.1.0
-     */
-    public static SensesLineParser getInstance()
-    {
-        if (instance == null)
-        {
-            instance = new SensesLineParser();
-        }
-        return instance;
-    }
+    override fun parseLine(line: String): Array<ISenseEntry> {
 
-    // instance fields
-    @Nullable
-    protected final ILineParser<ISenseKey> keyParser;
-
-    /**
-     * This constructor is marked protected so that the class may be
-     * sub-classed, but not directly instantiated. Obtain instances of this
-     * class via the static {@link #getInstance()} method.
-     *
-     * @since JWI 2.1.0
-     */
-    protected SensesLineParser()
-    {
-        this(SenseKeyParser.getInstance());
-    }
-
-    /**
-     * This constructor is marked protected so that the class may be
-     * sub-classed, but not directly instantiated. Obtain instances of this
-     * class via the static {@link #getInstance()} method.
-     *
-     * @param keyParser the sense key parser this sense line parser should use
-     * @throws NullPointerException if the specified key parser is <code>null</code>
-     * @since JWI 2.2.0
-     */
-    protected SensesLineParser(@Nullable ILineParser<ISenseKey> keyParser)
-    {
-        if (keyParser == null)
-        {
-            throw new NullPointerException();
-        }
-        this.keyParser = keyParser;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.parse.ILineParser#parseLine(java.lang.String)
-     */
-    public ISenseEntry[] parseLine(@Nullable String line)
-    {
-        if (line == null)
-        {
-            throw new NullPointerException();
-        }
-
-        List<ISenseEntry> senseEntries = new ArrayList<>();
-        try
-        {
+        val senseEntries: MutableList<ISenseEntry> = ArrayList<ISenseEntry>()
+        try {
             // get sense key
-            int end = line.indexOf(' ');
-            String keyStr = line.substring(0, end);
-            assert keyParser != null;
-            ISenseKey senseKey = keyParser.parseLine(keyStr);
+            val end = line.indexOf(' ')
+            val keyStr = line.substring(0, end)
+            checkNotNull(keyParser)
+            val senseKey = keyParser.parseLine(keyStr)
 
             // get sense entry
-            String tail = line.substring(end + 1);
-            StringTokenizer tokenizer = new StringTokenizer(tail);
+            val tail = line.substring(end + 1)
+            val tokenizer = StringTokenizer(tail)
 
-            while (tokenizer.hasMoreTokens())
-            {
-                senseEntries.add(SenseLineParser.parseSenseEntry(tokenizer, senseKey));
+            while (tokenizer.hasMoreTokens()) {
+                senseEntries.add(parseSenseEntry(tokenizer, senseKey))
             }
+            return senseEntries.toTypedArray<ISenseEntry>()
+        } catch (e: Exception) {
+            throw MisformattedLineException(line, e)
+        }
+    }
 
-            return senseEntries.toArray(new ISenseEntry[0]);
-        }
-        catch (Exception e)
-        {
-            throw new MisformattedLineException(line, e);
-        }
+    companion object {
+
+        /**
+         * Returns the singleton instance of this class, instantiating it if
+         * necessary. The singleton instance will not be `null`.
+         *
+         * @return the non-`null` singleton instance of this class,
+         * instantiating it if necessary.
+         * @since JWI 2.1.0
+         */
+        var instance: SensesLineParser? = null
+            get() {
+                if (field == null) {
+                    field = SensesLineParser()
+                }
+                return field
+            }
+            private set
     }
 }

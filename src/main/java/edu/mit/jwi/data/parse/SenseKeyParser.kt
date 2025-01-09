@@ -38,7 +38,7 @@ class SenseKeyParser
  *
  * @since JWI 2.1.4
  */
-private constructor() : ILineParser<ISenseKey?> {
+private constructor() : ILineParser<ISenseKey> {
 
     override fun parseLine(key: String): ISenseKey {
         try {

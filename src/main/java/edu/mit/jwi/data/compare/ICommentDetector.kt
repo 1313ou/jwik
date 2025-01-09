@@ -7,10 +7,7 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
-
-package edu.mit.jwi.data.compare;
-
-import java.util.Comparator;
+package edu.mit.jwi.data.compare
 
 /**
  * A detector for comment lines in data resources. Objects that implement this
@@ -21,17 +18,17 @@ import java.util.Comparator;
  * @version 2.4.0
  * @since JWI 1.0
  */
-public interface ICommentDetector extends Comparator<String>
-{
+interface ICommentDetector : Comparator<String> {
+
     /**
-     * Returns <code>true</code> if the specified string is a comment line,
-     * <code>false</code> otherwise.
+     * Returns `true` if the specified string is a comment line,
+     * `false` otherwise.
      *
      * @param line the line to be analyzed
-     * @return <code>true</code> if the specified string is a comment line,
-     * <code>false</code> otherwise.
-     * @throws NullPointerException if the specified line is <code>null</code>
+     * @return `true` if the specified string is a comment line,
+     * `false` otherwise.
+     * @throws NullPointerException if the specified line is `null`
      * @since JWI 1.0
      */
-    boolean isCommentLine(String line);
+    fun isCommentLine(line: String): Boolean
 }

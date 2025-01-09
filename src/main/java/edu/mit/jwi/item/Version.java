@@ -524,7 +524,7 @@ public class Version implements IVersion
 
         // if direct access doesn't work, try walking forward in file
         // until we find a string that looks like "WordNet 2.1 Copyright"
-        ICommentDetector cd = contentType.getLineComparator().getCommentDetector();
+        ICommentDetector cd = contentType.getLineComparator().commentDetector;
         if (cd == null)
         {
             return null;

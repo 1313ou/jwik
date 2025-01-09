@@ -7,33 +7,19 @@
  * purposes, as long as proper acknowledgment is made.  See the license file
  * included with this distribution for more details.
  *******************************************************************************/
-
-package edu.mit.jwi.data.compare;
-
-import edu.mit.jwi.Nullable;
-
-import java.util.Comparator;
+package edu.mit.jwi.data.compare
 
 /**
  * A string comparator that may have an associated comment detector. The
- * <code>compare</code> method of this class will throw an
- * {@link IllegalArgumentException} if the line data passed to that method is
+ * `compare` method of this class will throw an
+ * [IllegalArgumentException] if the line data passed to that method is
  * ill-formed.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.0.0
  */
-public interface ILineComparator extends Comparator<String>
-{
-    /**
-     * Returns the comment detector instance associated with this line
-     * comparator, or <code>null</code> if one does not exist.
-     *
-     * @return the comment detector associated with this line comparator, or
-     * <code>null</code> if there is none
-     * @since JWI 2.0.0
-     */
-    @Nullable
-    ICommentDetector getCommentDetector();
+interface ILineComparator : Comparator<String> {
+
+    val commentDetector: ICommentDetector?
 }
