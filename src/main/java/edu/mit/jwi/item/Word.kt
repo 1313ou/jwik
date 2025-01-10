@@ -74,12 +74,12 @@ class Word(
             return sid.pOS!!
         }
 
-    override val adjectiveMarker: AdjMarker
-        get() = adjMarker!!
+    override val adjectiveMarker: AdjMarker?
+        get() = adjMarker
 
         override fun getRelatedWords(ptrType: IPointer): List<IWordID> {
         val result: List<IWordID>? = relatedMap.get(ptrType)
-        return if (result == null) listOf<IWordID>() else result
+        return result ?: emptyList<IWordID>()
     }
 
     override fun toString(): String {

@@ -7,8 +7,8 @@
   <packaging>jar</packaging>
   <version>2.4.1.1</version>
 
-  <name>Java WordNet Extended Interface</name>
-  <description>Java library for interfacing with WordNet and English WordNet</description>
+  <name>Java WordNet Extended Interface in Kotlin</name>
+  <description>Java library for interfacing with WordNet and English WordNet in Kotlin</description>
   <url>https://github.com/x-englishwordnet/jwi</url>
 
   <properties>
