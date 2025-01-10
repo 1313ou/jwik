@@ -32,7 +32,7 @@ package edu.mit.jwi.data.compare
  */
 open class SenseKeyLineComparator protected constructor() : ILineComparator {
 
-    override fun compare( line1: String,  line2: String): Int {
+    override fun compare(line1: String, line2: String): Int {
         // get sense keys
         var line1 = line1
         var line2 = line2
@@ -50,7 +50,7 @@ open class SenseKeyLineComparator protected constructor() : ILineComparator {
      * @param senseKey2 sense key 1
      * @return compare code
      */
-    protected open fun compareSenseKeys( senseKey1: String,  senseKey2: String): Int {
+    protected open fun compareSenseKeys(senseKey1: String, senseKey2: String): Int {
         return senseKey1.compareTo(senseKey2, ignoreCase = true)
     }
 

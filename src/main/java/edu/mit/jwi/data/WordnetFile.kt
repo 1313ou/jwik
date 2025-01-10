@@ -21,6 +21,7 @@ import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.Throws
 
 /**
  * Abstract superclass of wordnet data file objects. Provides all the
@@ -318,7 +319,7 @@ abstract class WordnetFile<T>(
          * @param key0 the key of the line to start at; may be `null`
          */
         fun init(key0: String?) {
-            var key  = key0?.trim { it <= ' ' }
+            var key = key0?.trim { it <= ' ' }
             if (key == null || key.isEmpty()) {
                 advance()
             } else {

@@ -137,7 +137,7 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
     *
     * @see java.lang.Object#toString()
     */
-    
+
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append('[')
@@ -178,7 +178,7 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    override fun equals( obj: Any?): Boolean {
+    override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
         }

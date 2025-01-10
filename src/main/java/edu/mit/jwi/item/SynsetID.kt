@@ -83,7 +83,7 @@ class SynsetID(offset: Int, pos: POS) : ISynsetID {
      *
      * @see java.lang.Object#toString()
      */
-    
+
     override fun toString(): String {
         checkNotNull(this.pOS)
         return synsetIDPrefix + Synset.zeroFillOffset(offset) + '-' + pOS.tag.uppercaseChar()
@@ -120,7 +120,7 @@ class SynsetID(offset: Int, pos: POS) : ISynsetID {
          * @throws IllegalArgumentException if the specified string is not a properly formatted synset id
          * @since JWI 1.0
          */
-        
+
         fun parseSynsetID(value: String): SynsetID {
             var value = value
             if (value == null) {

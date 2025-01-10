@@ -25,7 +25,7 @@ class Synset(
     isAdjHead: Boolean,
     gloss: String,
     wordBuilders: List<IWordBuilder>,
-    ids: Map<IPointer, List<ISynsetID>>?
+    ids: Map<IPointer, List<ISynsetID>>?,
 ) : ISynset {
 
     override val iD: ISynsetID
@@ -129,12 +129,12 @@ class Synset(
         return words[wordNumber - 1]
     }
 
-     override fun getRelatedSynsets(ptrType: IPointer): List<ISynsetID> {
+    override fun getRelatedSynsets(ptrType: IPointer): List<ISynsetID> {
         val result: List<ISynsetID>? = relatedMap[ptrType]
         return if (result != null) result else listOf<ISynsetID>()
     }
 
-     override fun hashCode(): Int {
+    override fun hashCode(): Int {
         val PRIME = 31
         var result = 1
         checkNotNull(gloss)
@@ -185,7 +185,7 @@ class Synset(
      *
      * @see java.lang.Object#toString()
      */
-    
+
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append("SYNSET{")
@@ -219,7 +219,7 @@ class Synset(
          * @return the created word
          * @since JWI 2.2.0
          */
-        
+
         fun toWord(synset: ISynset): IWord
 
         /**
@@ -265,7 +265,7 @@ class Synset(
         private val num: Int,
         private val lemma: String,
         protected val lexID: Int,
-        private val marker: AdjMarker?
+        private val marker: AdjMarker?,
     ) : IWordBuilder {
 
         private val relatedWords: MutableMap<IPointer, MutableList<IWordID>> = HashMap<IPointer, MutableList<IWordID>>()
@@ -290,7 +290,7 @@ class Synset(
             verbFrames.add(frame)
         }
 
-        override fun toWord( synset: ISynset): IWord {
+        override fun toWord(synset: ISynset): IWord {
             return Word(synset, num, lemma, lexID, marker, verbFrames, relatedWords)
         }
     }
@@ -319,7 +319,7 @@ class Synset(
          * @since JWI 2.1.0
          */
         @JvmStatic
-        
+
         fun zeroFillOffset(offset: Int): String {
             checkOffset(offset)
             val sb = StringBuilder(8)

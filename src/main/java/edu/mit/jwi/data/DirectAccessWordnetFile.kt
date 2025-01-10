@@ -53,7 +53,7 @@ class DirectAccessWordnetFile<T>(file: File, contentType: IContentType<T>) : Wor
         }
     }
 
-     override fun makeIterator(buffer: ByteBuffer, key: String?): LineIterator {
+    override fun makeIterator(buffer: ByteBuffer, key: String?): LineIterator {
         return DirectLineIterator(buffer, key)
     }
 
@@ -82,7 +82,7 @@ class DirectAccessWordnetFile<T>(file: File, contentType: IContentType<T>) : Wor
             init(key)
         }
 
-         override fun findFirstLine( key: String) {
+        override fun findFirstLine(key: String) {
             synchronized(bufferLock) {
                 try {
                     val byteOffset = key.toInt()

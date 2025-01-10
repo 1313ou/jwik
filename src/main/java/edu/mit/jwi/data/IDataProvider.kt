@@ -93,7 +93,7 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
      * @return the first content type that matches the specified data type and
      * part of speech.
      * @since JWI 2.3.4
-    */
+     */
     fun <T> resolveContentType(dt: IDataType<T>, pos: POS?): IContentType<T>?
 
     /**

@@ -44,7 +44,7 @@ interface IDataSource<T> : IHasVersion, Iterable<String?>, IHasLifecycle {
      * @throws NullPointerException if the specified key is `null`
      * @since JWI 2.0.0
      */
-    
+
     fun getLine(key: String): String?
 
     /**

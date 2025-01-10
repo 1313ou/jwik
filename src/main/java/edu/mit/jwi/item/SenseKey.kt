@@ -24,7 +24,7 @@ class SenseKey(
     lexID: Int,
     pos: POS,
     isAdjSat: Boolean,
-    lexFile: ILexFile
+    lexFile: ILexFile,
 ) : ISenseKey {
 
     override val lemma: String
@@ -89,7 +89,7 @@ class SenseKey(
      * `null`
      * @since JWI 2.1.0
      */
-    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: ILexFile,  originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
+    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: ILexFile, originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
         if (originalKey == null) {
             throw NullPointerException()
         }
@@ -110,7 +110,7 @@ class SenseKey(
      * `null`
      * @since JWI 2.1.0
      */
-    constructor(lemma: String, lexID: Int, pos: POS, lexFile: ILexFile,  headLemma: String?, headLexID: Int,  originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
+    constructor(lemma: String, lexID: Int, pos: POS, lexFile: ILexFile, headLemma: String?, headLexID: Int, originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
         if (headLemma == null) {
             isHeadSet = true
         } else {
@@ -189,7 +189,7 @@ class SenseKey(
         }
 
         // then sort by lex_id
-        cmp =  this.lexicalID.toFloat().compareTo(key.lexicalID.toFloat())
+        cmp = this.lexicalID.toFloat().compareTo(key.lexicalID.toFloat())
         if (cmp != 0) {
             return cmp
         }
@@ -221,7 +221,7 @@ class SenseKey(
      *
      * @see java.lang.Object#toString()
      */
-    
+
     override fun toString(): String {
         checkHeadSet()
         if (toString == null) {
@@ -268,7 +268,7 @@ class SenseKey(
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    override fun equals( obj: Any?): Boolean {
+    override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
         }
@@ -316,7 +316,7 @@ class SenseKey(
          * @throws NullPointerException if the specified key is `null`
          * @since JWI 2.1.0
          */
-        
+
         fun toString(key: ISenseKey): String {
             val lf: ILexFile? = checkNotNull(key.lexicalFile)
             // figure out appropriate size

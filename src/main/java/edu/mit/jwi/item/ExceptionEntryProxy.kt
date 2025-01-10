@@ -21,7 +21,7 @@ import java.util.*
 open class ExceptionEntryProxy : IExceptionEntryProxy {
 
     override lateinit var surfaceForm: String
-    
+
     override lateinit var rootForms: List<String>
 
     /**
@@ -31,7 +31,7 @@ open class ExceptionEntryProxy : IExceptionEntryProxy {
      * @throws NullPointerException if the specified proxy is `null`
      * @since JWI 1.0
      */
-    constructor( proxy: IExceptionEntryProxy) {
+    constructor(proxy: IExceptionEntryProxy) {
         if (proxy == null) {
             throw NullPointerException()
         }
@@ -46,7 +46,7 @@ open class ExceptionEntryProxy : IExceptionEntryProxy {
      * @param rootForms   the root forms for the entry; may not contain `null`, empty, or all whitespace strings
      * @since JWI 1.0
      */
-    constructor( surfaceForm: String, rootForms: Array<String>) {
+    constructor(surfaceForm: String, rootForms: Array<String>) {
         if (surfaceForm == null) {
             throw NullPointerException()
         }

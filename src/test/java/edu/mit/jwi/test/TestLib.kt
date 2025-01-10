@@ -70,7 +70,7 @@ object TestLib {
     }
 
     @JvmStatic
-    
+
     fun parseDataLineIntoMembers(line: String): MutableList<String?> {
         val result: MutableList<String?> = ArrayList<String?>()
         val parser = DataLineParser.instance

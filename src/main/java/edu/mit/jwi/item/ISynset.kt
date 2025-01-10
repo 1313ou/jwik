@@ -26,7 +26,7 @@ interface ISynset : IHasPOS, IItem<ISynsetID> {
      */
     val offset: Int
 
-     val lexicalFile: ILexFile
+    val lexicalFile: ILexFile
 
     /**
      * Returns the type of the synset, encoded as follows: 1=Noun, 2=Verb,
@@ -61,7 +61,7 @@ interface ISynset : IHasPOS, IItem<ISynsetID> {
      * `false` otherwise.
      * @since JWI 1.0
      */
-     val isAdjectiveHead: Boolean
+    val isAdjectiveHead: Boolean
 
     /**
      * Returns `true` if this synset is an adjective satellite;

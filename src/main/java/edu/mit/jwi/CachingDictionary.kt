@@ -87,7 +87,6 @@ open class CachingDictionary(
     override val isOpen: Boolean
         get() = backingDictionary.isOpen
 
-
     override fun close() {
         if (!isOpen) {
             return

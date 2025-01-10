@@ -41,6 +41,7 @@ interface ILineParser<T> {
  * @since JWI 1.0
  */
 class MisformattedLineException : RuntimeException {
+
     /**
      * Constructs a new exception with `null` as its detail message. The
      * cause is not initialized, and may subsequently be initialized by a call

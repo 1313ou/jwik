@@ -152,7 +152,7 @@ private constructor() : ILineParser<ISynset> {
             if (synset_pos == POS.VERB) {
                 val peekTok = tokenizer.nextToken()
                 if (!peekTok.startsWith("|")) {
-                   val verbFrameCount = peekTok.toInt()
+                    val verbFrameCount = peekTok.toInt()
                     var frame: IVerbFrame
                     repeat(verbFrameCount) {
                         // Consume '+'

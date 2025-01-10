@@ -29,7 +29,7 @@ enum class POS
      * @return the character representing this part of speech
      * @since JWI 2.0.0
      */
-     val tag: Char,
+    val tag: Char,
 
     /**
      * Returns the standard WordNet number of this part of speech
@@ -137,7 +137,7 @@ enum class POS
          * @since JWI 2.0.0
          */
         @JvmStatic
-        
+
         fun getPartOfSpeech(num: Int): POS? {
             when (num) {
                 (1)      -> return NOUN

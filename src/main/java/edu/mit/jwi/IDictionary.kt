@@ -239,5 +239,5 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is `null`
      * @since JWIX 2.4.0.4
      */
-     fun getWords(start: String, pos: POS?, limit: Int): Set<String>
+    fun getWords(start: String, pos: POS?, limit: Int): Set<String>
 }

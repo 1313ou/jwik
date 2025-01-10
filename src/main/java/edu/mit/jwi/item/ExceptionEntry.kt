@@ -62,7 +62,7 @@ class ExceptionEntry : ExceptionEntryProxy, IExceptionEntry {
     *
     * @see edu.edu.mit.jwi.item.ExceptionEntryProxy#toString()
     */
-    
+
     override fun toString(): String {
         checkNotNull(this.pOS)
         return super.toString() + "-" + this.pOS

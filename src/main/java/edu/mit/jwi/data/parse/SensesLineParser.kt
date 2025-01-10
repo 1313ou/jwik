@@ -30,7 +30,7 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class SensesLineParser private constructor( private val keyParser: ILineParser<ISenseKey> = SenseKeyParser.instance!!) : ILineParser<Array<ISenseEntry>> {
+class SensesLineParser private constructor(private val keyParser: ILineParser<ISenseKey> = SenseKeyParser.instance!!) : ILineParser<Array<ISenseEntry>> {
 
     override fun parseLine(line: String): Array<ISenseEntry> {
 

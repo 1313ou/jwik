@@ -42,7 +42,7 @@ interface ISenseKey : IHasPOS, Comparable<ISenseKey>, Serializable {
      * @return the synset type, an integer between 1 and 5, inclusive
      * @since JWI 2.1.0
      */
-     val synsetType: Int
+    val synsetType: Int
 
     /**
      * Returns `true` if this sense key points to an adjective

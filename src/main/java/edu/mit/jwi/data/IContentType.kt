@@ -43,5 +43,5 @@ interface IContentType<T> : IHasPOS, IHasCharset {
      * file; or `null` if there is no comparator
      * @since JWI 1.0
      */
-     val lineComparator: ILineComparator?
+    val lineComparator: ILineComparator?
 }

@@ -102,7 +102,7 @@ class JWI
         }
     }
 
-    fun tryForAllSynsets( f: Consumer<ISynset>?) {
+    fun tryForAllSynsets(f: Consumer<ISynset>?) {
         for (pos in POS.entries) {
             val it: Iterator<ISynset> = dict.getSynsetIterator(pos)
             while (it.hasNext()) {
@@ -116,7 +116,7 @@ class JWI
         }
     }
 
-    fun forAllSenseEntries( f: Consumer<ISenseEntry>?) {
+    fun forAllSenseEntries(f: Consumer<ISenseEntry>?) {
         val it: Iterator<ISenseEntry> = dict.getSenseEntryIterator()
         while (it.hasNext()) {
             val entry = it.next()
@@ -124,7 +124,7 @@ class JWI
         }
     }
 
-    fun tryForAllSenseEntries( f: Consumer<ISenseEntry>?) {
+    fun tryForAllSenseEntries(f: Consumer<ISenseEntry>?) {
         val it: Iterator<ISenseEntry> = dict.getSenseEntryIterator()
         while (it.hasNext()) {
             try {
@@ -138,7 +138,7 @@ class JWI
 
     // S P E C I F I C   I T E R A T I O N S
 
-    fun forAllLemmas( f: Consumer<String?>?) {
+    fun forAllLemmas(f: Consumer<String?>?) {
         for (pos in POS.entries) {
             val it: Iterator<IIndexWord> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
@@ -159,7 +159,7 @@ class JWI
         }
     }
 
-    fun forAllSensekeys( f: Consumer<ISenseKey>?) {
+    fun forAllSensekeys(f: Consumer<ISenseKey>?) {
         for (pos in POS.entries) {
             val it: Iterator<IIndexWord> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
@@ -180,7 +180,7 @@ class JWI
         }
     }
 
-    fun forAllSynsetRelations( f: Consumer<ISynset>?) {
+    fun forAllSynsetRelations(f: Consumer<ISynset>?) {
         for (pos in POS.entries) {
             val it: Iterator<ISynset> = dict.getSynsetIterator(pos)
             while (it.hasNext()) {
@@ -194,7 +194,7 @@ class JWI
         }
     }
 
-    fun forAllSenseRelations( f: Consumer<IWord>?) {
+    fun forAllSenseRelations(f: Consumer<IWord>?) {
         for (pos in POS.entries) {
             val it: Iterator<IIndexWord> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
@@ -300,7 +300,7 @@ class JWI
         ps.printf("  sensenum: %s tag cnt:%s%n", senseEntry?.senseNumber ?: "<missing>", senseEntry?.tagCount ?: "<missing>")
     }
 
-    fun walk( relatedMap: Map<IPointer, List<IWordID>>, ps: PrintStream) {
+    fun walk(relatedMap: Map<IPointer, List<IWordID>>, ps: PrintStream) {
         for (entry in relatedMap.entries) {
             val pointer = entry.key
             for (relatedId in entry.value) {
@@ -311,7 +311,7 @@ class JWI
         }
     }
 
-    fun walk( verbFrames: List<IVerbFrame>?, lemma: String, ps: PrintStream) {
+    fun walk(verbFrames: List<IVerbFrame>?, lemma: String, ps: PrintStream) {
         if (verbFrames != null) {
             for (verbFrame in verbFrames) {
                 ps.printf("  verb frame: %s : %s%n", verbFrame.template, verbFrame.instantiateTemplate(lemma))

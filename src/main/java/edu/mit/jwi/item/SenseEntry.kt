@@ -18,7 +18,7 @@ import edu.mit.jwi.item.Synset.Companion.checkOffset
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class SenseEntry( key: ISenseKey, offset: Int, num: Int, count: Int) : ISenseEntry {
+class SenseEntry(key: ISenseKey, offset: Int, num: Int, count: Int) : ISenseEntry {
 
     override val offset: Int
 
@@ -74,7 +74,7 @@ class SenseEntry( key: ISenseKey, offset: Int, num: Int, count: Int) : ISenseEnt
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    override fun equals( obj: Any?): Boolean {
+    override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
         }

@@ -144,7 +144,7 @@ class Version(
          * @throws IllegalArgumentException if the supplied arguments do not identify a legal version
          * @since JWI 2.2.0
          */
-        
+
         fun checkVersion(major: Int, minor: Int, bugfix: Int, qualifier: String?): String {
             checkVersionNumber(major, minor, bugfix)
             return checkQualifier(qualifier)
@@ -174,8 +174,8 @@ class Version(
          * @see .isIllegalQualifier
          * @since JWI 2.1.0
          */
-        
-        fun checkQualifier( qualifier: String?): String {
+
+        fun checkQualifier(qualifier: String?): String {
             if (qualifier == null) {
                 return ""
             }
@@ -234,7 +234,7 @@ class Version(
          * @see Character.isJavaIdentifierPart
          * @since JWI 2.2.0
          */
-        fun isIllegalQualifier( qualifier: String): Boolean {
+        fun isIllegalQualifier(qualifier: String): Boolean {
             var c: Char
             for (i in 0..<qualifier.length) {
                 c = qualifier.get(i)
@@ -259,7 +259,7 @@ class Version(
          * @return the cached version object corresponding to these numbers
          * @since JWI 2.1.0
          */
-        
+
         fun getVersion(major: Int, minor: Int, bugfix: Int): Version {
             return getVersion(major, minor, bugfix, null)
         }
@@ -276,7 +276,7 @@ class Version(
          * @throws IllegalArgumentException if the version numbers and qualifier are not legal
          * @since JWI 2.2.0
          */
-        
+
         fun getVersion(major: Int, minor: Int, bugfix: Int, qualifier: String?): Version {
             var qualifier = qualifier
             qualifier = checkVersion(major, minor, bugfix, qualifier)
@@ -308,7 +308,7 @@ class Version(
          * @throws IllegalArgumentException if illegal argument
          * @since JWI 2.2.0
          */
-        
+
         fun makeVersionString(major: Int, minor: Int, bugfix: Int, qualifier: String?): String {
             var qualifier = qualifier
             qualifier = checkQualifier(qualifier)
@@ -361,8 +361,8 @@ class Version(
          * @return the Version that was extracted, or `null` if none
          * @since JWI 2.1.0
          */
-        
-        fun extractVersion( contentType: IContentType<*>,  buffer: ByteBuffer): Version? {
+
+        fun extractVersion(contentType: IContentType<*>, buffer: ByteBuffer): Version? {
             val dataType: IDataType<*> = contentType.dataType
             if (!dataType.hasVersion()) {
                 return null
@@ -422,8 +422,8 @@ class Version(
          * not a valid version
          * @since JWI 2.1.0
          */
-        
-        fun parseVersionProtected( verStr: CharSequence?): Version? {
+
+        fun parseVersionProtected(verStr: CharSequence?): Version? {
             if (verStr == null) {
                 return null
             }

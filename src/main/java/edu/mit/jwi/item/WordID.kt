@@ -53,7 +53,7 @@ class WordID : IWordID {
      * whitespace
      * @since JWI 1.0
      */
-    constructor(offset: Int, pos: POS,  lemma: String) : this(SynsetID(offset, pos), lemma)
+    constructor(offset: Int, pos: POS, lemma: String) : this(SynsetID(offset, pos), lemma)
 
     /**
      * Constructs a word id from the specified arguments. This constructor
@@ -65,7 +65,7 @@ class WordID : IWordID {
      * @throws IllegalArgumentException if the lemma is empty or all whitespace
      * @since JWI 1.0
      */
-    constructor( id: ISynsetID, num: Int) {
+    constructor(id: ISynsetID, num: Int) {
         if (id == null) {
             throw NullPointerException()
         }
@@ -86,7 +86,7 @@ class WordID : IWordID {
      * @throws IllegalArgumentException if the lemma is empty or all whitespace
      * @since JWI 1.0
      */
-    constructor( id: ISynsetID,  lemma: String) {
+    constructor(id: ISynsetID, lemma: String) {
         if (id == null) {
             throw NullPointerException()
         }
@@ -108,7 +108,7 @@ class WordID : IWordID {
      * is not legal
      * @since JWI 1.0
      */
-    constructor( id: ISynsetID, num: Int,  lemma: String) {
+    constructor(id: ISynsetID, num: Int, lemma: String) {
         if (id == null) {
             throw NullPointerException()
         }
@@ -134,7 +134,7 @@ class WordID : IWordID {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    override fun equals( obj: Any?): Boolean {
+    override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
         }
@@ -163,7 +163,7 @@ class WordID : IWordID {
      *
      * @see java.lang.Object#toString()
      */
-    
+
     override fun toString(): String {
         checkNotNull(this.synsetID)
         val pos = checkNotNull(synsetID.pOS)
@@ -220,8 +220,8 @@ class WordID : IWordID {
          * @throws NullPointerException     if the specified string is `null`
          * @since JWI 1.0
          */
-        
-        fun parseWordID( value: String): IWordID {
+
+        fun parseWordID(value: String): IWordID {
             if (value == null) {
                 throw NullPointerException()
             }

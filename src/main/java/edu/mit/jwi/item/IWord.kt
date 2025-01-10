@@ -18,9 +18,9 @@ package edu.mit.jwi.item
  */
 interface IWord : IHasPOS, IItem<IWordID> {
 
-     val lemma: String
+    val lemma: String
 
-     val synset: ISynset
+    val synset: ISynset
 
     val senseKey: ISenseKey
 

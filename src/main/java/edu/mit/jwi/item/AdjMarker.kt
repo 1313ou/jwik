@@ -39,7 +39,7 @@ enum class AdjMarker(
      * @return a user-readable description of the marker
      * @since JWI 2.1.0
      */
-     val description: String
+    val description: String
 
     /**
      * Constructs a new adjective marker with the specified symbol and
