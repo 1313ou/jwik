@@ -99,7 +99,7 @@ class Version(
      * @return the appropriate deserialized object.
      * @since JWI 2.4.0
      */
-    protected fun readResolve(): Any {
+    private fun readResolve(): Any {
         return getVersion(majorVersion, minorVersion, bugfixVersion, qualifier)
     }
 
@@ -237,7 +237,7 @@ class Version(
         fun isIllegalQualifier(qualifier: String): Boolean {
             var c: Char
             for (i in 0..<qualifier.length) {
-                c = qualifier.get(i)
+                c = qualifier[i]
                 if (Character.isLetterOrDigit(c)) {
                     continue
                 }
@@ -281,7 +281,7 @@ class Version(
             var qualifier = qualifier
             qualifier = checkVersion(major, minor, bugfix, qualifier)
             val hash = hashCode(major, minor, bugfix, qualifier)
-            var version: Version? = versionCache.get(hash)
+            var version: Version? = versionCache[hash]
             if (version == null) {
                 version = Version(major, minor, bugfix, qualifier)
                 versionCache.put(version.hashCode(), version)
@@ -312,7 +312,7 @@ class Version(
         fun makeVersionString(major: Int, minor: Int, bugfix: Int, qualifier: String?): String {
             var qualifier = qualifier
             qualifier = checkQualifier(qualifier)
-            val hasQualifier = qualifier.length > 0
+            val hasQualifier = qualifier.isNotEmpty()
             val sb = StringBuilder()
             sb.append(major)
             sb.append('.')

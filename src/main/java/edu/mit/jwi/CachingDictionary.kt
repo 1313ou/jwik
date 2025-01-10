@@ -255,7 +255,7 @@ open class CachingDictionary(
         isEnabled0: Boolean = true,
     ) : IItemCache {
 
-        protected val lifecycleLock: Lock = ReentrantLock()
+        private val lifecycleLock: Lock = ReentrantLock()
 
         // The caches themselves
         var itemCache: MutableMap<IItemID, IItem<*>>? = null
@@ -313,7 +313,7 @@ open class CachingDictionary(
          * @return the new map
          * @since JWI 2.2.0
          */
-        protected fun <K, V> makeCache(initialCapacity: Int): MutableMap<K, V> {
+        private fun <K, V> makeCache(initialCapacity: Int): MutableMap<K, V> {
             return LinkedHashMap<K, V>(initialCapacity, DEFAULT_LOAD_FACTOR, true)
         }
 
@@ -329,7 +329,7 @@ open class CachingDictionary(
          * @throws ObjectClosedException if the dictionary is closed.
          * @since JWI 2.2.0
          */
-        protected fun checkOpen() {
+        private fun checkOpen() {
             if (!isOpen) {
                 throw ObjectClosedException()
             }
@@ -402,7 +402,7 @@ open class CachingDictionary(
          * @param cache the map to be trimmed
          * @since JWI 2.2.0
          */
-        protected fun reduceCacheSize(cache: MutableMap<*, *>) {
+        private fun reduceCacheSize(cache: MutableMap<*, *>) {
             if (!isOpen || maximumCapacity < 1 || cache.size < maximumCapacity) {
                 return
             }

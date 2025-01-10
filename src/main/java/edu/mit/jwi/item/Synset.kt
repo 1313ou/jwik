@@ -131,7 +131,7 @@ class Synset(
 
     override fun getRelatedSynsets(ptrType: IPointer): List<ISynsetID> {
         val result: List<ISynsetID>? = relatedMap[ptrType]
-        return if (result != null) result else listOf<ISynsetID>()
+        return result ?: listOf<ISynsetID>()
     }
 
     override fun hashCode(): Int {
@@ -264,7 +264,7 @@ class Synset(
         (
         private val num: Int,
         private val lemma: String,
-        protected val lexID: Int,
+        private val lexID: Int,
         private val marker: AdjMarker?,
     ) : IWordBuilder {
 

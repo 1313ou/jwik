@@ -92,13 +92,6 @@ class SynsetID(offset: Int, pos: POS) : ISynsetID {
     companion object {
 
         /**
-         * Generated serial version id.
-         *
-         * @since JWI 2.2.5
-         */
-        private val serialVersionUID = -6965271039816443145L
-
-        /**
          * String prefix for the [.toString] method.
          *
          * @since JWI 2.0.0
@@ -136,7 +129,7 @@ class SynsetID(offset: Int, pos: POS) : ISynsetID {
             val offset = value.substring(4, 12).toInt()
 
             // get pos
-            val tag = value.get(13).lowercaseChar()
+            val tag = value[13].lowercaseChar()
             val pos = POS.getPartOfSpeech(tag)
             requireNotNull(pos) { "unknown part of speech tag: $tag" }
             return SynsetID(offset, pos)

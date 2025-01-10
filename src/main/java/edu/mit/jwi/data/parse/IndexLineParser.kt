@@ -15,7 +15,7 @@ import edu.mit.jwi.item.Pointer.Companion.getPointerType
 import java.util.*
 
 /**
- * Parserfor Wordnet index files (e.g., `idx.adv` or
+ * Parser for Wordnet index files (e.g., `idx.adv` or
  * `adv.idx`). It produces an `IIndexWord` object.
  *
  * This class follows a singleton design pattern, and is not intended to be
@@ -46,7 +46,7 @@ private constructor() : ILineParser<IIndexWord> {
 
             // get pos
             val posSym = tokenizer.nextToken()
-            val pos = getPartOfSpeech(posSym.get(0))
+            val pos = getPartOfSpeech(posSym[0])
 
             // consume synset_cnt
             tokenizer.nextToken()

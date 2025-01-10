@@ -45,7 +45,7 @@ import kotlin.Throws
  * @version 2.4.0
  * @since JWI 2.2.0
  */
-class RAMDictionary protected constructor(
+class RAMDictionary private constructor(
     backing: IDictionary?,
     factory: IInputStreamFactory?,
     loadPolicy: Int,
@@ -67,17 +67,17 @@ class RAMDictionary protected constructor(
      */
     val streamFactory: IInputStreamFactory?
 
-    protected val lifecycleLock: Lock = ReentrantLock()
+    private val lifecycleLock: Lock = ReentrantLock()
 
-    protected val loadLock: Lock = ReentrantLock()
+    private val loadLock: Lock = ReentrantLock()
 
     @Volatile
-    protected var state: LifecycleState = LifecycleState.CLOSED
+    private var state: LifecycleState = LifecycleState.CLOSED
 
     @Transient
-    protected var loader: Thread? = null
+    private var loader: Thread? = null
 
-    protected var data: DictionaryData? = null
+    private var data: DictionaryData? = null
 
     /**
      * Loads data from the specified File using the specified load policy. Note
@@ -363,7 +363,7 @@ class RAMDictionary protected constructor(
      * open; otherwise the lifecycle state object representing closed
      * @since JWI 2.4.0
      */
-    protected fun assertLifecycleState(): LifecycleState {
+    private fun assertLifecycleState(): LifecycleState {
         try {
             lifecycleLock.lock()
 
@@ -543,8 +543,8 @@ class RAMDictionary protected constructor(
      * @param <E> the element type of the iterator
      * @author Mark A. Finlayson
      * @since JWI 2.2.0
-    </E> */
-    protected abstract inner class HotSwappableIterator<E>(
+     */
+    private abstract inner class HotSwappableIterator<E>(
         private var itr: Iterator<E>,
         private var checkForLoad: Boolean,
     ) : Iterator<E> {
@@ -578,7 +578,7 @@ class RAMDictionary protected constructor(
          *
          * @since JWI 2.2.0
          */
-        protected fun checkForLoad() {
+        fun checkForLoad() {
             if (data == null) {
                 return
             }
@@ -602,7 +602,7 @@ class RAMDictionary protected constructor(
          * @return the new iterator to be swapped in when loading is done
          * @since JWI 2.2.0
          */
-        protected abstract fun makeIterator(): Iterator<E>
+        abstract fun makeIterator(): Iterator<E>
 
         fun remove() {
             throw UnsupportedOperationException()
@@ -617,7 +617,7 @@ class RAMDictionary protected constructor(
      * @author Mark A. Finlayson
      * @since JWI 2.2.0
      */
-    protected inner class HotSwappableIndexWordIterator(private val pos: POS) :
+    private inner class HotSwappableIndexWordIterator(private val pos: POS) :
         HotSwappableIterator<IIndexWord>(
             if (data == null) backingDictionary!!.getIndexWordIterator(pos) else data!!.idxWords[pos]!!.values.iterator(),
             data == null
@@ -638,7 +638,7 @@ class RAMDictionary protected constructor(
      * @author Mark A. Finlayson
      * @since JWI 2.2.0
      */
-    protected inner class HotSwappableSynsetIterator(private val pos: POS) :
+    private inner class HotSwappableSynsetIterator(private val pos: POS) :
         HotSwappableIterator<ISynset>(
             if (data == null) backingDictionary!!.getSynsetIterator(pos) else data!!.synsets[pos]!!.values.iterator(),
             data == null
@@ -660,7 +660,7 @@ class RAMDictionary protected constructor(
      * @author Mark A. Finlayson
      * @since JWI 2.2.0
      */
-    protected inner class HotSwappableExceptionEntryIterator(private val pos: POS) :
+    private inner class HotSwappableExceptionEntryIterator(private val pos: POS) :
         HotSwappableIterator<IExceptionEntry>(
             if (data == null) backingDictionary!!.getExceptionEntryIterator(pos) else data!!.exceptions[pos]!!.values.iterator(),
             data == null
@@ -679,7 +679,7 @@ class RAMDictionary protected constructor(
      * @author Mark A. Finlayson
      * @since JWI 2.2.0
      */
-    protected inner class HotSwappableSenseEntryIterator :
+    private inner class HotSwappableSenseEntryIterator :
         HotSwappableIterator<ISenseEntry>(
             if (data == null) backingDictionary!!.getSenseEntryIterator() else data!!.senses.values.iterator(),
             data == null
@@ -698,7 +698,7 @@ class RAMDictionary protected constructor(
      * @author Mark A. Finlayson
      * @since JWI 2.2.0
      */
-    protected inner class JWIBackgroundDataLoader : Runnable {
+    private inner class JWIBackgroundDataLoader : Runnable {
 
         override fun run() {
             try {
@@ -839,7 +839,7 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if either argument is `null`
          * @since JWI 2.2.0
          */
-        protected fun makeSenseEntry(key: ISenseKey, old: ISenseEntry): ISenseEntry {
+        private fun makeSenseEntry(key: ISenseKey, old: ISenseEntry): ISenseEntry {
             return SenseEntry(key, old.offset, old.senseNumber, old.tagCount)
         }
     }
@@ -888,7 +888,7 @@ class RAMDictionary protected constructor(
          * @return a map with an empty sub-map for every part of speech.
          * @since JWI 2.2.0
          */
-        protected fun <K, V> makePOSMap(): MutableMap<POS, MutableMap<K, V>> {
+        private fun <K, V> makePOSMap(): MutableMap<POS, MutableMap<K, V>> {
             val result: MutableMap<POS, MutableMap<K, V>> = HashMap<POS, MutableMap<K, V>>(POS.entries.size)
             for (pos in POS.entries) {
                 result.put(pos, makeMap<K, V>(4096, null))
@@ -912,7 +912,7 @@ class RAMDictionary protected constructor(
          * specified contents are `null`
          * @since JWI 2.2.0
          */
-        protected fun <K, V> makeMap(initialSize: Int, contents: MutableMap<K, V>?): MutableMap<K, V> {
+        private fun <K, V> makeMap(initialSize: Int, contents: MutableMap<K, V>?): MutableMap<K, V> {
             return if (contents == null) LinkedHashMap<K, V>(initialSize) else LinkedHashMap<K, V>(contents)
         }
 
@@ -948,8 +948,8 @@ class RAMDictionary protected constructor(
          * @param <K> key type
          * @param <V> value type
          * @since JWI 2.2.0
-        </V></K> */
-        protected fun <K, V> compactPOSMap(map: MutableMap<POS, MutableMap<K, V>>) {
+         */
+        private fun <K, V> compactPOSMap(map: MutableMap<POS, MutableMap<K, V>>) {
             for (entry in map.entries) {
                 entry.setValue(compactMap<K, V>(entry.value))
             }
@@ -965,7 +965,7 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if the specified map is `null`
          * @since JWI 2.2.0
          */
-        protected fun <K, V> compactMap(map: MutableMap<K, V>): MutableMap<K, V> {
+        private fun <K, V> compactMap(map: MutableMap<K, V>): MutableMap<K, V> {
             if (map == null) {
                 throw NullPointerException()
             }
@@ -1000,7 +1000,7 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if the specified synset is `null`
          * @since JWI 2.2.0
          */
-        protected fun makeSynset(old: ISynset): ISynset {
+        private fun makeSynset(old: ISynset): ISynset {
             val oldIDs: Map<IPointer, List<ISynsetID>> = old.relatedMap
             val newIDs: MutableMap<IPointer, MutableList<ISynsetID>> = HashMap<IPointer, MutableList<ISynsetID>>(oldIDs.size)
 
@@ -1038,7 +1038,7 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if any argument is `null`
          * @since JWI 2.2.0
          */
-        protected fun makeWord(newSynset: ISynset, oldSynset: ISynset, old: IWord): IWord {
+        private fun makeWord(newSynset: ISynset, oldSynset: ISynset, old: IWord): IWord {
             val oldPtrs: Map<IPointer, List<IWordID>> = old.relatedMap
             val newPtrs: MutableMap<IPointer, MutableList<IWordID>> = HashMap<IPointer, MutableList<IWordID>>(oldPtrs.size)
             var newList: MutableList<IWordID>
@@ -1073,7 +1073,7 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if the specified index word is `null`
          * @since JWI 2.2.0
          */
-        protected fun makeIndexWord(old: IIndexWord): IIndexWord {
+        private fun makeIndexWord(old: IIndexWord): IIndexWord {
             val oldIDs: List<IWordID> = old.wordIDs
             val newIDs: Array<IWordID> = Array(oldIDs.size) { i ->
                 var oldID: IWordID = oldIDs[i]
@@ -1265,7 +1265,7 @@ class RAMDictionary protected constructor(
          * @since JWI 2.4.0
          */
         @Throws(IOException::class)
-        protected fun export(dict: IRAMDictionary, out: OutputStream): Boolean {
+        private fun export(dict: IRAMDictionary, out: OutputStream): Boolean {
             // load initial data into memory
             var dict = dict
             print("Performing load...")

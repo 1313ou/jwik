@@ -72,10 +72,10 @@ class WordnetStemmer(
         }
 
         if (result.isEmpty()) {
-            if (possibles.isEmpty()) {
-                return emptyList<String>()
+            return if (possibles.isEmpty()) {
+                emptyList<String>()
             } else {
-                return ArrayList<String>(possibles)
+                ArrayList<String>(possibles)
             }
         }
         return ArrayList<String>(result)

@@ -239,7 +239,7 @@ class FileProvider @JvmOverloads constructor(
         try {
             lifecycleLock.lock()
             check(!isOpen) { "provider currently open" }
-            val value: IContentType<*> = prototypeMap.get(key)!!
+            val value: IContentType<*> = prototypeMap[key]!!
             if (comparator == null) {
                 // if we get a null comparator, reset to the prototype but preserve charset
                 val defaultContentType: IContentType<*>? = checkNotNull(getDefault(key))
@@ -311,7 +311,7 @@ class FileProvider @JvmOverloads constructor(
             if (fileArray == null || fileArray.size == 0) {
                 throw IOException("No files found in $directory")
             }
-            val files: MutableList<File> = ArrayList<File>(Arrays.asList<File?>(*fileArray))
+            val files: MutableList<File> = ArrayList<File>(listOf<File?>(*fileArray))
             if (files.isEmpty()) {
                 throw IOException("No files found in $directory")
             }
@@ -421,14 +421,14 @@ class FileProvider @JvmOverloads constructor(
      */
 
     @Throws(IOException::class)
-    protected fun createSourceMap(files: MutableList<File>, policy: Int): MutableMap<IContentType<*>?, ILoadableDataSource<*>> {
+    private fun createSourceMap(files: MutableList<File>, policy: Int): MutableMap<IContentType<*>?, ILoadableDataSource<*>> {
         val result: MutableMap<IContentType<*>?, ILoadableDataSource<*>> = HashMap<IContentType<*>?, ILoadableDataSource<*>>()
         for (contentType in prototypeMap.values) {
             var file: File? = null
 
             // give first chance to matcher
             if (sourceMatcher.containsKey(contentType.key)) {
-                val regex = checkNotNull(sourceMatcher.get(contentType.key))
+                val regex = checkNotNull(sourceMatcher[contentType.key])
                 file = match(regex, files)
             }
 
@@ -481,7 +481,7 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 2.2.0
      */
     @Throws(IOException::class)
-    protected fun <T> createDataSource(file: File, contentType: IContentType<T>, policy: Int): ILoadableDataSource<T> {
+    private fun <T> createDataSource(file: File, contentType: IContentType<T>, policy: Int): ILoadableDataSource<T> {
         var src: ILoadableDataSource<T>
         if (contentType.dataType === DataType.DATA) {
             src = createDirectAccess<T>(file, contentType)
@@ -546,7 +546,7 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 2.2.0
     </T> */
 
-    protected fun <T> createDirectAccess(file: File, contentType: IContentType<T>): ILoadableDataSource<T> {
+    private fun <T> createDirectAccess(file: File, contentType: IContentType<T>): ILoadableDataSource<T> {
         return DirectAccessWordnetFile<T>(file, contentType)
     }
 
@@ -564,7 +564,7 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 2.2.0
     </T> */
 
-    protected fun <T> createBinarySearch(file: File, contentType: IContentType<T>): ILoadableDataSource<T> {
+    private fun <T> createBinarySearch(file: File, contentType: IContentType<T>): ILoadableDataSource<T> {
         return if ("Word" == contentType.dataType.toString()) BinaryStartSearchWordnetFile<T>(file, contentType) else BinarySearchWordnetFile<T>(file, contentType)
     }
 
@@ -603,7 +603,7 @@ class FileProvider @JvmOverloads constructor(
      * @throws ObjectClosedException if the provider is closed
      * @since JWI 1.1
      */
-    protected fun checkOpen() {
+    private fun checkOpen() {
         if (!isOpen) {
             throw ObjectClosedException()
         }
@@ -640,9 +640,8 @@ class FileProvider @JvmOverloads constructor(
      * @version 2.4.0
      * @since JWI 2.2.0
      */
-    protected inner class JWIBackgroundLoader : Thread() {
+    private inner class JWIBackgroundLoader : Thread() {
 
-        // cancel flag
         @Transient
         private var cancel = false
 
@@ -704,7 +703,7 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 2.1.0
      */
 
-    protected fun determineVersion(srcs: Collection<IDataSource<*>>): IVersion? {
+    private fun determineVersion(srcs: Collection<IDataSource<*>>): IVersion? {
         var ver: IVersion? = IVersion.NO_VERSION
         for (dataSrc in srcs) {
             // if no version to set, ignore
@@ -743,9 +742,9 @@ class FileProvider @JvmOverloads constructor(
          */
 
         fun toFile(url: URL): File {
-            require(url.getProtocol() == "file") { "URL source must use 'file' protocol" }
+            require(url.protocol == "file") { "URL source must use 'file' protocol" }
             try {
-                return File(URLDecoder.decode(url.getPath(), "UTF-8"))
+                return File(URLDecoder.decode(url.path, "UTF-8"))
             } catch (e: UnsupportedEncodingException) {
                 throw RuntimeException(e)
             }
@@ -760,7 +759,7 @@ class FileProvider @JvmOverloads constructor(
          * @since JWI 2.2.0
          */
         fun toURL(file: File): URL {
-            val uri = URI("file", "//", file.toURI().toURL().getPath(), null)
+            val uri = URI("file", "//", file.toURI().toURL().path, null)
             return URL("file", null, uri.rawPath)
         }
 
@@ -775,7 +774,7 @@ class FileProvider @JvmOverloads constructor(
          * @since JWI 2.4.0
          */
         fun isLocalDirectory(url: URL): Boolean {
-            if (url.getProtocol() != "file") {
+            if (url.protocol != "file") {
                 return false
             }
             val file: File = toFile(url)

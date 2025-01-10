@@ -60,7 +60,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      *
      * @throws ObjectClosedException if the dictionary is closed.
      */
-    protected fun checkOpen() {
+    private fun checkOpen() {
         if (!isOpen) {
             throw ObjectClosedException()
         }
@@ -112,7 +112,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return result
     }
 
-    protected fun getWords(start: String, pos: POS, limit: Int, result: MutableSet<String>): MutableCollection<String> {
+    private fun getWords(start: String, pos: POS, limit: Int, result: MutableSet<String>): MutableCollection<String> {
         checkOpen()
         val content = checkNotNull(dataProvider.resolveContentType<IIndexWord>(DataType.WORD, pos))
         val dataType = content.dataType
@@ -270,7 +270,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      *
      * @param synset synset
      */
-    protected fun setHeadWord(synset: ISynset) {
+    private fun setHeadWord(synset: ISynset) {
         // head words are only needed for adjective satellites
         if (!synset.isAdjectiveSatellite) {
             return
@@ -363,7 +363,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      */
     abstract inner class FileIterator<T, N> @JvmOverloads constructor(content: IContentType<T>, startKey: String? = null) : Iterator<N>, IHasPOS {
 
-        protected val fFile: IDataSource<T>
+        protected val fFile: IDataSource<T>?
 
         protected var iterator: Iterator<String>? = null
 
@@ -374,20 +374,15 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
 
         init {
             checkNotNull(dataProvider)
-            this.fFile = dataProvider.getSource<T>(content)!!
+            this.fFile = dataProvider.getSource<T>(content)
             val dataType = content.dataType
             this.fParser = dataType.parser
-            iterator = if (fFile == null) {
-                // Fix for Bug018
-                Collections.emptyIterator<String>()
-            } else {
-                fFile.iterator(startKey)
-            }
+            iterator = fFile?.iterator(startKey) ?:Collections.emptyIterator<String>() // Fix for Bug018
         }
 
         override val pOS: POS
             get() {
-                val contentType = fFile.contentType
+                val contentType = fFile!!.contentType
                 return contentType.pOS!!
             }
 

@@ -112,7 +112,7 @@ class WordID : IWordID {
         if (id == null) {
             throw NullPointerException()
         }
-        require(lemma.trim { it <= ' ' }.length != 0)
+        require(lemma.trim { it <= ' ' }.isNotEmpty())
         checkWordNumber(num)
         this.synsetID = id
         this.wordNumber = num
@@ -173,7 +173,7 @@ class WordID : IWordID {
                 '-' +  //
                 (if (this.wordNumber < 0) unknownWordNumber else zeroFillWordNumber(this.wordNumber)) +  //
                 '-' +  //
-                (if (lemma == null) unknownLemma else lemma)
+                (lemma ?: unknownLemma)
     }
 
     companion object {
@@ -230,7 +230,7 @@ class WordID : IWordID {
 
             // get synset id
             val offset = value.substring(4, 12).toInt()
-            val pos = POS.getPartOfSpeech(value.get(13))
+            val pos = POS.getPartOfSpeech(value[13])
             val id: ISynsetID = SynsetID(offset, pos)
 
             // get word number

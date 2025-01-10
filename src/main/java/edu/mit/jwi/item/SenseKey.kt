@@ -237,7 +237,7 @@ class SenseKey(
      * `true`.
      * @since JWI 2.2.0
      */
-    protected fun checkHeadSet() {
+    private fun checkHeadSet() {
         check(!needsHeadSet()) { "Head word and id not yet set" }
     }
 

@@ -71,10 +71,10 @@ open class LexFile(num: Int, name: String, override val description: String, ove
         if (number != other.number) {
             return false
         }
-        if (pOS == null) {
-            return other.pOS == null
+        return if (pOS == null) {
+            other.pOS == null
         } else {
-            return pOS == other.pOS
+            pOS == other.pOS
         }
     }
 
@@ -151,7 +151,7 @@ open class LexFile(num: Int, name: String, override val description: String, ove
         protected fun checkString(str: String): String {
             var str = str
             str = str.trim { it <= ' ' }
-            require(str.length != 0)
+            require(str.isNotEmpty())
             return str
         }
 

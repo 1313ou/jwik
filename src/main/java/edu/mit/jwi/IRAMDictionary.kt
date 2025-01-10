@@ -74,8 +74,7 @@ interface IRAMDictionary : IDictionary, ILoadPolicy, ILoadable {
      */
     class FileInputStreamFactory(file: File) : IInputStreamFactory {
 
-        // instance fields
-        protected val file: File
+        private val file: File
 
         /**
          * Creates a FileInputStreamFactory that uses the specified file.
@@ -108,7 +107,7 @@ interface IRAMDictionary : IDictionary, ILoadPolicy, ILoadable {
      */
     class URLInputStreamFactory(url: URL) : IInputStreamFactory {
 
-        protected val url: URL
+        val url: URL
 
         /**
          * Creates a URLInputStreamFactory that uses the specified url.

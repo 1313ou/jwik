@@ -29,7 +29,7 @@ class UnknownLexFile
  * @param num the number of the lexical file
  * @since JWI 2.1.4
  */
-protected constructor(num: Int) : LexFile(num, "Unknown", "Unknown Lexical File", null) {
+private constructor(num: Int) : LexFile(num, "Unknown", "Unknown Lexical File", null) {
 
     companion object {
 
@@ -57,7 +57,7 @@ protected constructor(num: Int) : LexFile(num, "Unknown", "Unknown Lexical File"
         @JvmStatic
         fun getUnknownLexicalFile(num: Int): UnknownLexFile {
             checkLexicalFileNumber(num)
-            var result: UnknownLexFile? = lexFileMap.get(num)
+            var result: UnknownLexFile? = lexFileMap[num]
             if (result == null) {
                 result = UnknownLexFile(num)
                 lexFileMap.put(num, result)

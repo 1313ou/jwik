@@ -76,17 +76,17 @@ class Word(
         get() = adjMarker
 
     override fun getRelatedWords(ptrType: IPointer): List<IWordID> {
-        val result: List<IWordID>? = relatedMap.get(ptrType)
+        val result: List<IWordID>? = relatedMap[ptrType]
         return result ?: emptyList<IWordID>()
     }
 
     override fun toString(): String {
         checkNotNull(this.iD)
         val sid = checkNotNull(iD.synsetID)
-        if (iD.wordNumber == 0) {
-            return "W-" + sid.toString().substring(4) + "-?-" + iD.lemma
+        return if (iD.wordNumber == 0) {
+            "W-" + sid.toString().substring(4) + "-?-" + iD.lemma
         } else {
-            return "W-" + sid.toString().substring(4) + "-" + iD.wordNumber + "-" + iD.lemma
+            "W-" + sid.toString().substring(4) + "-" + iD.wordNumber + "-" + iD.lemma
         }
     }
 
@@ -97,13 +97,12 @@ class Word(
      */
     override fun hashCode(): Int {
         val PRIME = 31
-        var result: Int
-        result = PRIME + verbFrames.hashCode()
+        var result: Int = PRIME + verbFrames.hashCode()
         result = PRIME * result + relatedMap.hashCode()
         checkNotNull(this.iD)
         result = PRIME * result + iD.hashCode()
         result = PRIME * result + this.lexicalID
-        result = PRIME * result + (if (adjMarker == null) 0 else adjMarker.hashCode())
+        result = PRIME * result + (adjMarker?.hashCode() ?: 0)
         return result
     }
 
@@ -231,17 +230,7 @@ class Word(
         }
 
         /**
-         * Get flag to check lexical IDs.
-         *
-         * @return whether lexical IDs are checked to be in the closed range [0,15].
-         */
-        /**
-         * Set flag to check lexical IDs.
-         *
-         * @param flag whether lexical IDs are checked to be in the closed range [0,15].
-         */
-        /**
-         * Determines if lexical IDs are checked to be in the closed range [0,15]
+         * Flag to check lexical IDs. Determines if lexical IDs are checked to be in the closed range [0,15]
          */
         var checkLexicalId: Boolean = false
 
@@ -350,7 +339,7 @@ class Word(
                 sb.append('0')
             }
             for (i in 0..<str.length) {
-                sb.append(str.get(i).uppercaseChar())
+                sb.append(str[i].uppercaseChar())
             }
             return sb.toString()
         }

@@ -27,19 +27,15 @@ import java.util.*
  */
 class DataType<T>(
     userFriendlyName: String?,
-    hasVersion: Boolean,
-    parser: ILineParser<T>,
+    private val hasVersion: Boolean,
+    override val parser: ILineParser<T>,
     hints: Collection<String>?,
 ) : IDataType<T> {
 
     // fields set on construction
-    private val name: String?
+    private val name: String? = userFriendlyName
 
-    override var resourceNameHints: Set<String>
-
-    private val hasVersion: Boolean
-
-    override val parser: ILineParser<T>
+    override var resourceNameHints: Set<String> = if (hints == null || hints.isEmpty()) setOf<String>() else Collections.unmodifiableSet<String>(HashSet<String>(hints))
 
     /**
      * Constructs a new data type. This constructor takes the hints as a
@@ -70,28 +66,6 @@ class DataType<T>(
 
     override fun toString(): String {
         return name!!
-    }
-
-    /**
-     * Constructs a new data type. This constructor takes the hints as a
-     * collection.
-     *
-     * @param userFriendlyName a user-friendly name, for easy identification of this data
-     * type; may be `null`
-     * @param hasVersion       `true` if the comment header for this data type
-     * usually contains a version number
-     * @param parser           the line parser for transforming lines from this data type
-     * into objects; may not be `null`
-     * @param hints            a collection of resource name hints for identifying the
-     * resource that contains the data. May be `null`, but may not contain `null`
-     * @throws NullPointerException if the specified parser is `null`
-     * @since JWI 2.0.0
-     */
-    init {
-        this.name = userFriendlyName
-        this.parser = parser
-        this.hasVersion = hasVersion
-        this.resourceNameHints = if (hints == null || hints.isEmpty()) setOf<String>() else Collections.unmodifiableSet<String>(HashSet<String>(hints))
     }
 
     companion object {
