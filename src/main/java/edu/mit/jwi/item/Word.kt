@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
 import java.util.*
 
 /**
@@ -304,7 +302,7 @@ class Word(
          * @throws IllegalArgumentException if the specified integer is not a valid lexical id.
          * @since JWI 2.1.0
          */
-        @NonNull
+        
         fun getLexicalIDForDataFile(lexID: Int): String {
             checkLexicalID(lexID)
             return Integer.toHexString(lexID)
@@ -324,7 +322,7 @@ class Word(
          * @since JWI 2.1.0
          */
         @JvmStatic
-        @NonNull
+        
         fun getLexicalIDForSenseKey(lexID: Int): String {
             checkLexicalID(lexID)
             return if (lexID < 10) lexIDNumStrs[lexID] else lexID.toString()
@@ -342,7 +340,7 @@ class Word(
          * @since JWI 2.1.0
          */
         @JvmStatic
-        @NonNull
+        
         fun zeroFillWordNumber(num: Int): String {
             checkWordNumber(num)
             val sb = StringBuilder(2)

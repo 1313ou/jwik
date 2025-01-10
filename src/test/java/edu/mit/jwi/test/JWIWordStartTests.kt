@@ -1,62 +1,57 @@
-package edu.mit.jwi.test;
+package edu.mit.jwi.test
 
-import edu.mit.jwi.item.POS;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import edu.mit.jwi.item.POS
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import java.io.IOException
+import java.io.OutputStream
+import java.io.PrintStream
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Set;
+class JWIWordStartTests {
 
-public class JWIWordStartTests
-{
-    private static final boolean VERBOSE = !System.getProperties().containsKey("SILENT");
-
-    private static final PrintStream PS = VERBOSE ? System.out : new PrintStream(new OutputStream()
-    {
-        public void write(int b)
-        {
-            //DO NOTHING
-        }
-    });
-
-    private static JWI jwi;
-    private static String start;
-    private static POS pos;
-
-    @BeforeAll
-    public static void init() throws IOException
-    {
-        String wnHome = System.getProperty("SOURCE");
-        jwi = new JWI(wnHome);
-
-        start = System.getProperty("TARGET");
-
-        String scope = System.getProperty("TARGETSCOPE");
-        try
-        {
-            pos = POS.valueOf(scope);
-        }
-        catch (IllegalArgumentException e)
-        {
-            pos = null;
-        }
+    @Test
+    fun searchStart() {
+        val result: Set<String> = jwi!!.dict.getWords(start!!, pos, 0)
+        PS.println(start)
+        PS.println(result)
     }
 
     @Test
-    public void searchStart()
-    {
-        Set<String> result = jwi.dict.getWords(start, pos, 0);
-        PS.println(start);
-        PS.println(result);
+    fun searchStartLimited() {
+        val result: Set<String> = jwi!!.dict.getWords(start!!, pos, 3)
+        PS.println(start)
+        PS.println(result)
     }
 
-    @Test
-    public void searchStartLimited()
-    {
-        Set<String> result = jwi.dict.getWords(start, pos, 3);
-        PS.println(start);
-        PS.println(result);
+    companion object {
+
+        private val VERBOSE = !System.getProperties().containsKey("SILENT")
+
+        private val PS: PrintStream = if (VERBOSE) System.out else PrintStream(object : OutputStream() {
+            override fun write(b: Int) {
+                //DO NOTHING
+            }
+        })
+
+        private var jwi: JWI? = null
+        private var start: String? = null
+        private var pos: POS? = null
+
+        @JvmStatic
+        @BeforeAll
+        @Throws(IOException::class)
+        fun init() {
+            val wnHome = System.getProperty("SOURCE")
+            jwi = JWI(wnHome)
+
+            start = System.getProperty("TARGET")
+
+            val scope = System.getProperty("TARGETSCOPE")
+            pos = try {
+                POS.valueOf(scope)
+            } catch (_: IllegalArgumentException) {
+                null
+            }
+        }
     }
 }

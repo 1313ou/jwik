@@ -9,9 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
-
 /**
  * Represents a synset.
  *

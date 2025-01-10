@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
 import edu.mit.jwi.item.Word.Companion.checkWordNumber
 import edu.mit.jwi.item.Word.Companion.zeroFillWordNumber
 import java.util.*
@@ -55,7 +53,7 @@ class WordID : IWordID {
      * whitespace
      * @since JWI 1.0
      */
-    constructor(offset: Int, pos: POS, @NonNull lemma: String) : this(SynsetID(offset, pos), lemma)
+    constructor(offset: Int, pos: POS,  lemma: String) : this(SynsetID(offset, pos), lemma)
 
     /**
      * Constructs a word id from the specified arguments. This constructor
@@ -67,7 +65,7 @@ class WordID : IWordID {
      * @throws IllegalArgumentException if the lemma is empty or all whitespace
      * @since JWI 1.0
      */
-    constructor(@Nullable id: ISynsetID, num: Int) {
+    constructor( id: ISynsetID, num: Int) {
         if (id == null) {
             throw NullPointerException()
         }
@@ -88,7 +86,7 @@ class WordID : IWordID {
      * @throws IllegalArgumentException if the lemma is empty or all whitespace
      * @since JWI 1.0
      */
-    constructor(@Nullable id: ISynsetID, @NonNull lemma: String) {
+    constructor( id: ISynsetID,  lemma: String) {
         if (id == null) {
             throw NullPointerException()
         }
@@ -110,7 +108,7 @@ class WordID : IWordID {
      * is not legal
      * @since JWI 1.0
      */
-    constructor(@Nullable id: ISynsetID, num: Int, @NonNull lemma: String) {
+    constructor( id: ISynsetID, num: Int,  lemma: String) {
         if (id == null) {
             throw NullPointerException()
         }
@@ -136,7 +134,7 @@ class WordID : IWordID {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    override fun equals(@Nullable obj: Any?): Boolean {
+    override fun equals( obj: Any?): Boolean {
         if (this === obj) {
             return true
         }
@@ -165,7 +163,7 @@ class WordID : IWordID {
      *
      * @see java.lang.Object#toString()
      */
-    @NonNull
+    
     override fun toString(): String {
         checkNotNull(this.synsetID)
         val pos = checkNotNull(synsetID.pOS)
@@ -222,8 +220,8 @@ class WordID : IWordID {
          * @throws NullPointerException     if the specified string is `null`
          * @since JWI 1.0
          */
-        @NonNull
-        fun parseWordID(@Nullable value: String): IWordID {
+        
+        fun parseWordID( value: String): IWordID {
             if (value == null) {
                 throw NullPointerException()
             }

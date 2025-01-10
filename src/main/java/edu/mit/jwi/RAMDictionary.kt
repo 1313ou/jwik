@@ -602,7 +602,6 @@ class RAMDictionary protected constructor(
          * @return the new iterator to be swapped in when loading is done
          * @since JWI 2.2.0
          */
-        @NonNull
         protected abstract fun makeIterator(): Iterator<E>
 
         fun remove() {
@@ -840,8 +839,7 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if either argument is `null`
          * @since JWI 2.2.0
          */
-        @NonNull
-        protected fun makeSenseEntry(key: ISenseKey, @NonNull old: ISenseEntry): ISenseEntry {
+        protected fun makeSenseEntry(key: ISenseKey, old: ISenseEntry): ISenseEntry {
             return SenseEntry(key, old.offset, old.senseNumber, old.tagCount)
         }
     }
@@ -855,16 +853,12 @@ class RAMDictionary protected constructor(
     class DictionaryData : Serializable {
 
         // data
-        @Nullable
         var version: IVersion? = null
 
-        @NonNull
         val idxWords: MutableMap<POS, MutableMap<IIndexWordID, IIndexWord>>
 
-        @NonNull
         val synsets: MutableMap<POS, MutableMap<ISynsetID, ISynset>>
 
-        @NonNull
         val exceptions: MutableMap<POS, MutableMap<IExceptionEntryID, IExceptionEntry>>
 
         var words: MutableMap<ISenseKey, IWord>
@@ -893,8 +887,7 @@ class RAMDictionary protected constructor(
          * @param <V> the type of the values for the sub-maps
          * @return a map with an empty sub-map for every part of speech.
          * @since JWI 2.2.0
-        </V></K> */
-        @NonNull
+         */
         protected fun <K, V> makePOSMap(): MutableMap<POS, MutableMap<K, V>> {
             val result: MutableMap<POS, MutableMap<K, V>> = HashMap<POS, MutableMap<K, V>>(POS.entries.size)
             for (pos in POS.entries) {
@@ -956,7 +949,7 @@ class RAMDictionary protected constructor(
          * @param <V> value type
          * @since JWI 2.2.0
         </V></K> */
-        protected fun <K, V> compactPOSMap(@NonNull map: MutableMap<POS, MutableMap<K, V>>) {
+        protected fun <K, V> compactPOSMap(map: MutableMap<POS, MutableMap<K, V>>) {
             for (entry in map.entries) {
                 entry.setValue(compactMap<K, V>(entry.value))
             }
@@ -971,8 +964,7 @@ class RAMDictionary protected constructor(
          * @return the new, compacted map
          * @throws NullPointerException if the specified map is `null`
          * @since JWI 2.2.0
-        </V></K> */
-        @NonNull
+         */
         protected fun <K, V> compactMap(map: MutableMap<K, V>): MutableMap<K, V> {
             if (map == null) {
                 throw NullPointerException()
@@ -1008,7 +1000,6 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if the specified synset is `null`
          * @since JWI 2.2.0
          */
-        @Nullable
         protected fun makeSynset(old: ISynset): ISynset {
             val oldIDs: Map<IPointer, List<ISynsetID>> = old.relatedMap
             val newIDs: MutableMap<IPointer, MutableList<ISynsetID>> = HashMap<IPointer, MutableList<ISynsetID>>(oldIDs.size)
@@ -1047,8 +1038,7 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if any argument is `null`
          * @since JWI 2.2.0
          */
-        @NonNull
-        protected fun makeWord(newSynset: ISynset, oldSynset: ISynset, @NonNull old: IWord): IWord {
+        protected fun makeWord(newSynset: ISynset, oldSynset: ISynset, old: IWord): IWord {
             val oldPtrs: Map<IPointer, List<IWordID>> = old.relatedMap
             val newPtrs: MutableMap<IPointer, MutableList<IWordID>> = HashMap<IPointer, MutableList<IWordID>>(oldPtrs.size)
             var newList: MutableList<IWordID>
@@ -1152,8 +1142,7 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if the specified file is `null`
          * @since JWI 2.4.0
          */
-        @Nullable
-        fun createInputStreamFactory(@NonNull file: File): IInputStreamFactory? {
+        fun createInputStreamFactory(file: File): IInputStreamFactory? {
             return if (FileProvider.isLocalDirectory(file)) null else IRAMDictionary.FileInputStreamFactory(file)
         }
 
@@ -1168,8 +1157,7 @@ class RAMDictionary protected constructor(
          * @throws NullPointerException if the specified url is `null`
          * @since JWI 2.4.0
          */
-        @Nullable
-        fun createInputStreamFactory(@NonNull url: URL): IInputStreamFactory? {
+        fun createInputStreamFactory(url: URL): IInputStreamFactory? {
             return if (FileProvider.isLocalDirectory(url)) null else IRAMDictionary.URLInputStreamFactory(url)
         }
 

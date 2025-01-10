@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
 import java.util.*
 
 /**
@@ -139,7 +137,7 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
     *
     * @see java.lang.Object#toString()
     */
-    @NonNull
+    
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append('[')
@@ -180,7 +178,7 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    override fun equals(@Nullable obj: Any?): Boolean {
+    override fun equals( obj: Any?): Boolean {
         if (this === obj) {
             return true
         }

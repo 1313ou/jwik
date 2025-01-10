@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.data
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
 import edu.mit.jwi.item.IHasVersion
 
 /**
@@ -46,7 +44,7 @@ interface IDataSource<T> : IHasVersion, Iterable<String?>, IHasLifecycle {
      * @throws NullPointerException if the specified key is `null`
      * @since JWI 2.0.0
      */
-    @Nullable
+    
     fun getLine(key: String): String?
 
     /**

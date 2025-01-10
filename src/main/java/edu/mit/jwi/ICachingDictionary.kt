@@ -21,7 +21,6 @@ import edu.mit.jwi.item.*
  */
 interface ICachingDictionary : IDictionary {
 
-    @get:NonNull
     val cache: IItemCache?
 
     /**

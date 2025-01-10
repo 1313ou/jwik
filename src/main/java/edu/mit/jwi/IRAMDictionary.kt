@@ -108,8 +108,6 @@ interface IRAMDictionary : IDictionary, ILoadPolicy, ILoadable {
      */
     class URLInputStreamFactory(url: URL) : IInputStreamFactory {
 
-        // instance fields
-        @Nullable
         protected val url: URL
 
         /**

@@ -373,7 +373,7 @@ open class CachingDictionary(
             reduceCacheSize(itemCache!!)
         }
 
-        override fun cacheWordByKey(@NonNull word: IWord) {
+        override fun cacheWordByKey(word: IWord) {
             checkOpen()
             if (!isEnabled) {
                 return
@@ -383,7 +383,7 @@ open class CachingDictionary(
             reduceCacheSize(keyCache!!)
         }
 
-        override fun cacheSenseEntry(@NonNull entry: ISenseEntry) {
+        override fun cacheSenseEntry(entry: ISenseEntry) {
             checkOpen()
             if (!isEnabled) {
                 return
@@ -403,7 +403,7 @@ open class CachingDictionary(
          * @param cache the map to be trimmed
          * @since JWI 2.2.0
          */
-        protected fun reduceCacheSize(@NonNull cache: MutableMap<*, *>) {
+        protected fun reduceCacheSize(cache: MutableMap<*, *>) {
             if (!isOpen || maximumCapacity < 1 || cache.size < maximumCapacity) {
                 return
             }

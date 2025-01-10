@@ -9,7 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.Nullable
 import java.util.*
 
 /**
@@ -138,7 +137,7 @@ enum class POS
          * @since JWI 2.0.0
          */
         @JvmStatic
-        @Nullable
+        
         fun getPartOfSpeech(num: Int): POS? {
             when (num) {
                 (1)      -> return NOUN

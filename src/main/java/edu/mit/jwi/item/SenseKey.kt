@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
 import edu.mit.jwi.item.Word.Companion.checkLexicalID
 import edu.mit.jwi.item.Word.Companion.getLexicalIDForSenseKey
 
@@ -91,7 +89,7 @@ class SenseKey(
      * `null`
      * @since JWI 2.1.0
      */
-    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: ILexFile, @Nullable originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
+    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: ILexFile,  originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
         if (originalKey == null) {
             throw NullPointerException()
         }
@@ -112,7 +110,7 @@ class SenseKey(
      * `null`
      * @since JWI 2.1.0
      */
-    constructor(lemma: String, lexID: Int, pos: POS, lexFile: ILexFile, @Nullable headLemma: String?, headLexID: Int, @Nullable originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
+    constructor(lemma: String, lexID: Int, pos: POS, lexFile: ILexFile,  headLemma: String?, headLexID: Int,  originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
         if (headLemma == null) {
             isHeadSet = true
         } else {
@@ -223,7 +221,7 @@ class SenseKey(
      *
      * @see java.lang.Object#toString()
      */
-    @NonNull
+    
     override fun toString(): String {
         checkHeadSet()
         if (toString == null) {
@@ -270,7 +268,7 @@ class SenseKey(
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    override fun equals(@Nullable obj: Any?): Boolean {
+    override fun equals( obj: Any?): Boolean {
         if (this === obj) {
             return true
         }
@@ -318,7 +316,7 @@ class SenseKey(
          * @throws NullPointerException if the specified key is `null`
          * @since JWI 2.1.0
          */
-        @NonNull
+        
         fun toString(key: ISenseKey): String {
             val lf: ILexFile? = checkNotNull(key.lexicalFile)
             // figure out appropriate size

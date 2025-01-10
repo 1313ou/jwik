@@ -69,12 +69,12 @@ class JWITests {
     // enum live
     @Test
     fun allSensekeysAreLive() {
-        TestLib.allSensekeysAreLive(jwi)
+        TestLib.allSensekeysAreLive(jwi!!)
     }
 
     @Test
     fun allSenseEntriesAreLive() {
-        TestLib.allSenseEntriesAreLive(jwi)
+        TestLib.allSenseEntriesAreLive(jwi!!)
     }
 
     // others

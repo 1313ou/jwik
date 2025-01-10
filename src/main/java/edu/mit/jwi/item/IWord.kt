@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.Nullable
-
 /**
  * A word, which in Wordnet is an index word paired with a synset.
  *

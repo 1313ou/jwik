@@ -85,7 +85,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return getIndexWord(IndexWordID(lemma, pos))
     }
 
-    override fun getIndexWord(@NonNull id: IIndexWordID): IIndexWord? {
+    override fun getIndexWord(id: IIndexWordID): IIndexWord? {
         checkOpen()
         val content = dataProvider.resolveContentType<IIndexWord>(DataType.INDEX, id.pOS)
         val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IIndexWord>(content!!))
@@ -99,7 +99,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return parser.parseLine(line)
     }
 
-    override fun getWords(@NonNull start: String, @Nullable pos: POS?, limit: Int): Set<String> {
+    override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
         checkOpen()
         val result: MutableSet<String> = TreeSet<String>()
         if (pos != null) {
@@ -140,13 +140,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return result
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.mit.jwi.IDictionary#getWord(edu.edu.mit.jwi.item.IWordID)
-     */
-    @Nullable
-    override fun getWord(@NonNull id: IWordID): IWord? {
+    override fun getWord(id: IWordID): IWord? {
         checkOpen()
         val sid = checkNotNull(id.synsetID)
         val synset = getSynset(sid)
@@ -172,7 +166,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         }
     }
 
-    override fun getWord(@NonNull key: ISenseKey): IWord? {
+    override fun getWord(key: ISenseKey): IWord? {
         checkOpen()
 
         // no need to cache result from the following calls as this will have been
@@ -220,7 +214,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return word
     }
 
-    override fun getSenseEntry(@NonNull key: ISenseKey): ISenseEntry? {
+    override fun getSenseEntry(key: ISenseKey): ISenseEntry? {
         checkOpen()
         val content = dataProvider.resolveContentType<ISenseEntry>(DataType.SENSE, null)
         val file = checkNotNull(dataProvider.getSource<ISenseEntry>(content!!))
@@ -234,13 +228,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return parser.parseLine(line)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.mit.jwi.IDictionary#getSenseEntries(edu.edu.mit.jwi.item.ISenseKey)
-     */
-    @Nullable
-    fun getSenseEntries(@NonNull key: ISenseKey): Array<ISenseEntry>? {
+    fun getSenseEntries(key: ISenseKey): Array<ISenseEntry>? {
         checkOpen()
         val content = dataProvider.resolveContentType<Array<ISenseEntry>>(DataType.SENSES, null)
         val file = checkNotNull(dataProvider.getSource<Array<ISenseEntry>>(content!!))
@@ -254,13 +242,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return parser.parseLine(line)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.mit.wordnet.core.dict.IDictionary#getSynset(edu.mit.wordnet.core.data.ISynsetID)
-     */
-    @Nullable
-    override fun getSynset(@NonNull id: ISynsetID): ISynset? {
+    override fun getSynset(id: ISynsetID): ISynset? {
         checkOpen()
         val content = dataProvider.resolveContentType<ISynset>(DataType.DATA, id.pOS)
         val file = dataProvider.getSource<ISynset>(content!!)
@@ -288,7 +270,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      *
      * @param synset synset
      */
-    protected fun setHeadWord(@NonNull synset: ISynset) {
+    protected fun setHeadWord(synset: ISynset) {
         // head words are only needed for adjective satellites
         if (!synset.isAdjectiveSatellite) {
             return
@@ -381,11 +363,10 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      */
     abstract inner class FileIterator<T, N> @JvmOverloads constructor(content: IContentType<T>, startKey: String? = null) : Iterator<N>, IHasPOS {
 
-        @Nullable
         protected val fFile: IDataSource<T>
-        @NonNull
+
         protected var iterator: Iterator<String>? = null
-        @Nullable
+
         protected val fParser: ILineParser<T>
 
         var currentLine: String? = null
@@ -404,10 +385,9 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
             }
         }
 
-        @get:Nullable
         override val pOS: POS
             get() {
-                val contentType = fFile.contentType!!
+                val contentType = fFile.contentType
                 return contentType.pOS!!
             }
 

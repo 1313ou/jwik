@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.data
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
 import edu.mit.jwi.data.ContentType.Companion.values
 import edu.mit.jwi.data.DataType.Companion.find
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
@@ -89,14 +87,11 @@ class FileProvider @JvmOverloads constructor(
 
     private var fileMap: Map<IContentType<*>, ILoadableDataSource<*>>? = null
 
-    @Nullable
     @Transient
     private var loader: JWIBackgroundLoader? = null
 
-    @NonNull
     private val defaultContentTypes: Collection<IContentType<*>>
 
-    @NonNull
     private val sourceMatcher: MutableMap<ContentTypeKey, String> = HashMap<ContentTypeKey, String>()
 
     override var source: URL = url
@@ -179,7 +174,7 @@ class FileProvider @JvmOverloads constructor(
      * @throws IllegalArgumentException if the set of types is empty
      * @since JWI 2.2.0
      */
-    constructor(file: File, loadPolicy: Int, @NonNull types: MutableCollection<out IContentType<*>>) : this(toURL(file)!!, loadPolicy, types)
+    constructor(file: File, loadPolicy: Int, types: MutableCollection<out IContentType<*>>) : this(toURL(file)!!, loadPolicy, types)
 
     /**
      * Constructs the file provider pointing to the resource indicated by the
@@ -224,9 +219,8 @@ class FileProvider @JvmOverloads constructor(
             .map { it.key to it }
             .toMap()
             .toMutableMap()
-     }
+    }
 
-    @Nullable
     private fun getDefault(key: ContentTypeKey?): IContentType<*>? {
         for (contentType in this.defaultContentTypes) {
             if (contentType.key == key) {
@@ -425,9 +419,9 @@ class FileProvider @JvmOverloads constructor(
      * @throws IOException          if there is a problem creating the data source
      * @since JWI 2.2.0
      */
-    @NonNull
+
     @Throws(IOException::class)
-    protected fun createSourceMap(@NonNull files: MutableList<File>, policy: Int): MutableMap<IContentType<*>?, ILoadableDataSource<*>> {
+    protected fun createSourceMap(files: MutableList<File>, policy: Int): MutableMap<IContentType<*>?, ILoadableDataSource<*>> {
         val result: MutableMap<IContentType<*>?, ILoadableDataSource<*>> = HashMap<IContentType<*>?, ILoadableDataSource<*>>()
         for (contentType in prototypeMap.values) {
             var file: File? = null
@@ -463,8 +457,7 @@ class FileProvider @JvmOverloads constructor(
         return result
     }
 
-    @Nullable
-    private fun match(@NonNull pattern: String, @NonNull files: MutableList<File>): File? {
+    private fun match(pattern: String, files: MutableList<File>): File? {
         for (file in files) {
             val name = file.getName()
             if (name.matches(pattern.toRegex())) {
@@ -488,7 +481,7 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 2.2.0
      */
     @Throws(IOException::class)
-    protected fun <T> createDataSource(file: File,  contentType: IContentType<T>, policy: Int): ILoadableDataSource<T> {
+    protected fun <T> createDataSource(file: File, contentType: IContentType<T>, policy: Int): ILoadableDataSource<T> {
         var src: ILoadableDataSource<T>
         if (contentType.dataType === DataType.DATA) {
             src = createDirectAccess<T>(file, contentType)
@@ -552,7 +545,7 @@ class FileProvider @JvmOverloads constructor(
      * @throws NullPointerException if either argument is `null`
      * @since JWI 2.2.0
     </T> */
-    @NonNull
+
     protected fun <T> createDirectAccess(file: File, contentType: IContentType<T>): ILoadableDataSource<T> {
         return DirectAccessWordnetFile<T>(file, contentType)
     }
@@ -570,7 +563,7 @@ class FileProvider @JvmOverloads constructor(
      * @throws NullPointerException if either argument is `null`
      * @since JWI 2.2.0
     </T> */
-    @NonNull
+
     protected fun <T> createBinarySearch(file: File, contentType: IContentType<T>): ILoadableDataSource<T> {
         return if ("Word" == contentType.dataType.toString()) BinaryStartSearchWordnetFile<T>(file, contentType) else BinarySearchWordnetFile<T>(file, contentType)
     }
@@ -616,7 +609,7 @@ class FileProvider @JvmOverloads constructor(
         }
     }
 
-      override fun <T> getSource(contentType: IContentType<T>): ILoadableDataSource<T>? {
+    override fun <T> getSource(contentType: IContentType<T>): ILoadableDataSource<T>? {
         checkOpen()
 
         // assume at first this the prototype
@@ -710,7 +703,7 @@ class FileProvider @JvmOverloads constructor(
      * [IVersion.NO_VERSION] if there is none
      * @since JWI 2.1.0
      */
-    @Nullable
+
     protected fun determineVersion(srcs: Collection<IDataSource<*>>): IVersion? {
         var ver: IVersion? = IVersion.NO_VERSION
         for (dataSrc in srcs) {
@@ -748,8 +741,8 @@ class FileProvider @JvmOverloads constructor(
          * @throws IllegalArgumentException if the url does not use the 'file' protocol
          * @since JWI 1.0
          */
-        @NonNull
-        fun toFile(@NonNull url: URL): File {
+
+        fun toFile(url: URL): File {
             require(url.getProtocol() == "file") { "URL source must use 'file' protocol" }
             try {
                 return File(URLDecoder.decode(url.getPath(), "UTF-8"))
@@ -781,7 +774,7 @@ class FileProvider @JvmOverloads constructor(
          * @throws NullPointerException if the specified url object is `null`
          * @since JWI 2.4.0
          */
-        fun isLocalDirectory(@NonNull url: URL): Boolean {
+        fun isLocalDirectory(url: URL): Boolean {
             if (url.getProtocol() != "file") {
                 return false
             }
@@ -799,7 +792,7 @@ class FileProvider @JvmOverloads constructor(
          * @throws NullPointerException if the specified file object is `null`
          * @since JWI 2.4.0
          */
-        fun isLocalDirectory(@NonNull dir: File): Boolean {
+        fun isLocalDirectory(dir: File): Boolean {
             return dir.exists() && dir.isDirectory()
         }
     }

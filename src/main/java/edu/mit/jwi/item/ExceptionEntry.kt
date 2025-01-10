@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-
 /**
  * Default implementation of `IExceptionEntry`
  *
@@ -64,7 +62,7 @@ class ExceptionEntry : ExceptionEntryProxy, IExceptionEntry {
     *
     * @see edu.edu.mit.jwi.item.ExceptionEntryProxy#toString()
     */
-    @NonNull
+    
     override fun toString(): String {
         checkNotNull(this.pOS)
         return super.toString() + "-" + this.pOS

@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
 import java.util.*
 
 /**
@@ -187,7 +185,7 @@ class Synset(
      *
      * @see java.lang.Object#toString()
      */
-    @NonNull
+    
     override fun toString(): String {
         val sb = StringBuilder()
         sb.append("SYNSET{")
@@ -221,7 +219,7 @@ class Synset(
          * @return the created word
          * @since JWI 2.2.0
          */
-        @NonNull
+        
         fun toWord(synset: ISynset): IWord
 
         /**
@@ -292,7 +290,7 @@ class Synset(
             verbFrames.add(frame)
         }
 
-        override fun toWord(@NonNull synset: ISynset): IWord {
+        override fun toWord( synset: ISynset): IWord {
             return Word(synset, num, lemma, lexID, marker, verbFrames, relatedWords)
         }
     }
@@ -321,7 +319,7 @@ class Synset(
          * @since JWI 2.1.0
          */
         @JvmStatic
-        @NonNull
+        
         fun zeroFillOffset(offset: Int): String {
             checkOffset(offset)
             val sb = StringBuilder(8)

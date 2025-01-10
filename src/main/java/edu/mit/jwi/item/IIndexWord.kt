@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-
 /**
  * A Wordnet index word object, represented in the Wordnet files as a line in an
  * index file.

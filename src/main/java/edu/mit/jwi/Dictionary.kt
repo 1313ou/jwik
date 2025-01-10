@@ -55,7 +55,7 @@ class Dictionary : CachingDictionary {
         configure(config)
     }
 
-    private fun configure(@Nullable config: Config?) {
+    private fun configure(config: Config?) {
         // default
         charset = Charset.defaultCharset()
 

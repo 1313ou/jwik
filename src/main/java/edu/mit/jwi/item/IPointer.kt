@@ -9,7 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
 import java.io.Serializable
 
 /**

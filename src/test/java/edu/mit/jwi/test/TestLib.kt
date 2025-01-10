@@ -1,93 +1,83 @@
-package edu.mit.jwi.test;
+package edu.mit.jwi.test
 
-import edu.mit.jwi.NonNull;
-import edu.mit.jwi.data.parse.DataLineParser;
-import edu.mit.jwi.data.parse.SenseKeyParser;
-import edu.mit.jwi.item.*;
+import edu.mit.jwi.data.parse.DataLineParser
+import edu.mit.jwi.data.parse.SenseKeyParser
+import edu.mit.jwi.item.*
+import org.junit.jupiter.api.Assertions
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Consumer
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+object TestLib {
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-public class TestLib
-{
-    public static boolean sensekeyFromStringIsLive(@NonNull JWI jwi, String skStr)
-    {
-        ISenseKey sk = SenseKeyParser.getInstance().parseLine(skStr);
-        assert sk != null;
-        assertEquals(sk.toString(), skStr);
-        return sensekeyIsLive(jwi, sk);
+    @JvmStatic
+    fun sensekeyFromStringIsLive(jwi: JWI, skStr: String): Boolean {
+        val sk = checkNotNull(SenseKeyParser.instance!!.parseLine(skStr))
+        Assertions.assertEquals(sk.toString(), skStr)
+        return sensekeyIsLive(jwi, sk)
     }
 
-    public static boolean sensekeyIsLive(@NonNull JWI jwi, @NonNull ISenseKey sk)
-    {
-        //System.out.println("● sensekey=" + sk);
-        ISenseEntry senseEntry = jwi.dict.getSenseEntry(sk);
-        if (senseEntry == null)
-        {
-            return false;
+    fun sensekeyIsLive(jwi: JWI, sk: ISenseKey): Boolean {
+        // println("● sensekey=" + sk)
+        val senseEntry = jwi.dict.getSenseEntry(sk)
+        if (senseEntry == null) {
+            return false
         }
-        int offset = senseEntry.getOffset();
-        SynsetID sid = new SynsetID(offset, sk.getPOS());
-        return jwi.dict.getSynset(sid) != null;
+        val offset = senseEntry.offset
+        val sid = SynsetID(offset, sk.pOS!!)
+        return jwi.dict.getSynset(sid) != null
     }
 
-    public static void listDeadSensekeys(@NonNull JWI jwi)
-    {
-        AtomicInteger errorCount = new AtomicInteger();
-        jwi.forAllSenses((sense) -> {
-            ISenseKey sk = sense.getSenseKey();
-            boolean isLive = sensekeyIsLive(jwi, sk);
-            if (!isLive)
-            {
-                System.err.println("☈ sense = " + sense + " generated sensekey=" + sk + " not found");
-                //throw new IllegalArgumentException(sk.toString());
-                errorCount.getAndIncrement();
+    @JvmStatic
+    fun listDeadSensekeys(jwi: JWI) {
+        val errorCount = AtomicInteger()
+        jwi.forAllSenses(Consumer { sense: IWord? ->
+            val sk = sense!!.senseKey
+            val isLive = sensekeyIsLive(jwi, sk)
+            if (!isLive) {
+                System.err.println("☈ sense = $sense generated sensekey=$sk not found")
+                //throw new IllegalArgumentException(sk.toString())
+                errorCount.getAndIncrement()
             }
-        });
-        assertEquals(0, errorCount.get());
+        })
+        Assertions.assertEquals(0, errorCount.get())
     }
 
-    public static void allSensekeysAreLive(@NonNull JWI jwi)
-    {
-        jwi.forAllSensekeys((sk) -> {
-            assertNotNull(sk);
-            ISenseEntry senseEntry = jwi.dict.getSenseEntry(sk);
-            assertNotNull(senseEntry);
-            int offset = senseEntry.getOffset();
-            SynsetID sid = new SynsetID(offset, sk.getPOS());
-            assertNotNull(sid);
-            ISynset synset = jwi.dict.getSynset(sid);
-            assertNotNull(synset);
-        });
+    @JvmStatic
+    fun allSensekeysAreLive(jwi: JWI) {
+        jwi.forAllSensekeys(Consumer { sk: ISenseKey? ->
+            Assertions.assertNotNull(sk)
+            val senseEntry = jwi.dict.getSenseEntry(sk!!)
+            Assertions.assertNotNull(senseEntry)
+            val offset = senseEntry!!.offset
+            val sid = SynsetID(offset, sk.pOS!!)
+            Assertions.assertNotNull(sid)
+            val synset = jwi.dict.getSynset(sid)
+            Assertions.assertNotNull(synset)
+        })
     }
 
-    public static void allSenseEntriesAreLive(@NonNull JWI jwi)
-    {
-        jwi.forAllSenseEntries((se) -> {
-            assertNotNull(se);
-            int offset = se.getOffset();
-            POS pos = se.getPOS();
-            ISynsetID sid = new SynsetID(offset, pos);
-            assertNotNull(sid);
-            ISynset synset = jwi.dict.getSynset(sid);
-            assertNotNull(synset);
-        });
+    @JvmStatic
+    fun allSenseEntriesAreLive(jwi: JWI) {
+        jwi.forAllSenseEntries(Consumer { se: ISenseEntry? ->
+            Assertions.assertNotNull(se)
+            val offset = se!!.offset
+            val pos = se.pOS
+            val sid: ISynsetID = SynsetID(offset, pos!!)
+            Assertions.assertNotNull(sid)
+            val synset = jwi.dict.getSynset(sid)
+            Assertions.assertNotNull(synset)
+        })
     }
 
-    @NonNull
-    public static List<String> parseDataLineIntoMembers(String line)
-    {
-        List<String> result = new ArrayList<>();
-        DataLineParser parser = DataLineParser.getInstance();
-        ISynset synset = parser.parseLine(line);
-        for (IWord sense : synset.getWords())
-        {
-            result.add(String.format("%s %s %d", sense, sense.getLemma(), sense.getLexicalID()));
+    @JvmStatic
+    
+    fun parseDataLineIntoMembers(line: String): MutableList<String?> {
+        val result: MutableList<String?> = ArrayList<String?>()
+        val parser = DataLineParser.instance
+        val synset = parser!!.parseLine(line)
+        for (sense in synset.words) {
+            result.add(String.format("%s %s %d", sense, sense.lemma, sense.lexicalID))
         }
-        return result;
+        return result
     }
 }

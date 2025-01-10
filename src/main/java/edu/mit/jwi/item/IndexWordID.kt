@@ -9,7 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.Nullable
 import java.util.*
 import java.util.regex.Pattern
 
@@ -20,7 +19,7 @@ import java.util.regex.Pattern
  * @version 2.4.0
  * @since JWI 1.0
  */
-class IndexWordID(lemma: String, @Nullable pos: POS) : IIndexWordID {
+class IndexWordID(lemma: String,  pos: POS) : IIndexWordID {
 
     override val lemma: String
 
@@ -57,7 +56,7 @@ class IndexWordID(lemma: String, @Nullable pos: POS) : IIndexWordID {
         return result
     }
 
-    override fun equals(@Nullable obj: Any?): Boolean {
+    override fun equals( obj: Any?): Boolean {
         if (this === obj) {
             return true
         }
@@ -100,7 +99,7 @@ class IndexWordID(lemma: String, @Nullable pos: POS) : IIndexWordID {
          * string
          * @since JWI 1.0
          */
-        fun parseIndexWordID(@Nullable value: String): IndexWordID {
+        fun parseIndexWordID( value: String): IndexWordID {
             if (value == null) {
                 throw NullPointerException()
             }

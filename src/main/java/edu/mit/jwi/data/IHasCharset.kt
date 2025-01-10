@@ -9,7 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.data
 
-import edu.mit.jwi.Nullable
 import java.nio.charset.Charset
 
 /**

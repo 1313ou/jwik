@@ -9,7 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.data
 
-import edu.mit.jwi.NonNull
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.IHasPOS
 

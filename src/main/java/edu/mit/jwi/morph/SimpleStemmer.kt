@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.morph
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
 import edu.mit.jwi.item.POS
 import java.util.*
 import java.util.Collections.unmodifiableList
@@ -82,7 +80,7 @@ open class SimpleStemmer : IStemmer {
     val ruleMap: MutableMap<POS?, List<StemmingRule>>
         get() = Companion.ruleMap
 
-    override fun findStems(word: String, @Nullable pos: POS?): List<String> {
+    override fun findStems(word: String,  pos: POS?): List<String> {
         var word = word
         word = normalize(word)
 
@@ -149,7 +147,7 @@ open class SimpleStemmer : IStemmer {
      * @throws NullPointerException if the specified word is `null`
      * @since JWI 1.0
      */
-    @NonNull
+    
     protected fun stripNounSuffix(noun: String): List<String> {
         if (noun.length <= 2) {
             return listOf<String>()
@@ -187,7 +185,7 @@ open class SimpleStemmer : IStemmer {
      * @throws NullPointerException if the specified word is `null`
      * @since JWI 1.1.1
      */
-    @NonNull
+    
     protected fun getNounCollocationRoots(composite: String): List<String> {
         // split into parts
         val parts: Array<String> = composite.split(underscore.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -264,8 +262,8 @@ open class SimpleStemmer : IStemmer {
      * @throws NullPointerException if the specified word is `null`
      * @since JWI 1.0
      */
-    @NonNull
-    protected fun stripVerbSuffix(@NonNull verb: String): List<String> {
+    
+    protected fun stripVerbSuffix( verb: String): List<String> {
         if (verb.length <= 2) {
             return emptyList<String>()
         }

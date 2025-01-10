@@ -9,7 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.Nullable
 import edu.mit.jwi.item.Synset.Companion.checkOffset
 
 /**
@@ -19,7 +18,7 @@ import edu.mit.jwi.item.Synset.Companion.checkOffset
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class SenseEntry(@Nullable key: ISenseKey, offset: Int, num: Int, count: Int) : ISenseEntry {
+class SenseEntry( key: ISenseKey, offset: Int, num: Int, count: Int) : ISenseEntry {
 
     override val offset: Int
 
@@ -75,7 +74,7 @@ class SenseEntry(@Nullable key: ISenseKey, offset: Int, num: Int, count: Int) : 
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    override fun equals(@Nullable obj: Any?): Boolean {
+    override fun equals( obj: Any?): Boolean {
         if (this === obj) {
             return true
         }

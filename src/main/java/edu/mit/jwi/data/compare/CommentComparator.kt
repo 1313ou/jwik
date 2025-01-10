@@ -9,8 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.data.compare
 
-import edu.mit.jwi.NonNull
-
 /**
  *
  *
@@ -65,7 +63,7 @@ private constructor() : Comparator<String>, ICommentDetector {
      *
      * @see edu.edu.mit.jwi.data.compare.ICommentDetector#isCommentLine(java.lang.String)
      */
-    override fun isCommentLine(@NonNull line: String): Boolean {
+    override fun isCommentLine( line: String): Boolean {
         return line.length >= 2 && line[0] == ' ' && line[1] == ' '
     }
 

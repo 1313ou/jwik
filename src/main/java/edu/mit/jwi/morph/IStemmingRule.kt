@@ -9,7 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.morph
 
-import edu.mit.jwi.Nullable
 import edu.mit.jwi.item.IHasPOS
 
 /**
