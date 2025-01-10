@@ -319,7 +319,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         val ver = version
         val isVer16 = (ver != null) && (ver.majorVersion == 1 && ver.minorVersion == 6)
         if (isVer16 && headWord.adjectiveMarker != null) {
-            headLemma += headWord.adjectiveMarker.symbol
+            headLemma += headWord.adjectiveMarker!!.symbol
         }
 
         // set the head word for each word
@@ -444,7 +444,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
          * @param content content type
          * @since JWI 2.1.5
          */
-        constructor(@NonNull content: IContentType<T>) : super(content)
+        constructor(content: IContentType<T>) : super(content)
 
         /**
          * Constructs a new file iterator with the specified content type and start key.
@@ -453,7 +453,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
          * @param startKey start key
          * @since JWI 2.1.5
          */
-        constructor(@NonNull content: IContentType<T>, startKey: String) : super(content, startKey)
+        constructor(content: IContentType<T>, startKey: String) : super(content, startKey)
     }
 
     /**

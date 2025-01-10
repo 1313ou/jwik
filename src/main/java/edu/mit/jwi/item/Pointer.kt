@@ -9,9 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
-import java.lang.reflect.Field
 import java.util.*
 
 /**
@@ -35,7 +32,6 @@ class Pointer(symbol: String, name: String) : IPointer {
 
     private val toString: String = name.lowercase(Locale.getDefault()).replace(' ', '_').replace(",", "")
 
-    @NonNull
     override fun toString(): String {
         return toString
     }
@@ -89,7 +85,6 @@ class Pointer(symbol: String, name: String) : IPointer {
         val PERTAINYM: Pointer = Pointer("\\", "Pertainym (pertains to nouns)")
         val REGION: Pointer = Pointer(";r", "Domain of synset - REGION")
         val REGION_MEMBER: Pointer = Pointer("-r", "Member of this domain - REGION")
-        @JvmField
         val SIMILAR_TO: Pointer = Pointer("&", "Similar To")
         val TOPIC: Pointer = Pointer(";c", "Domain of synset - TOPIC")
         val TOPIC_MEMBER: Pointer = Pointer("-c", "Member of this domain - TOPIC")
@@ -117,45 +112,53 @@ class Pointer(symbol: String, name: String) : IPointer {
             return str
         }
 
-        @NonNull
-        private val pointerMap: MutableMap<String?, Pointer>
-        @NonNull
-        private val pointerSet: MutableSet<Pointer?>
+        private val pointerMap: Map<String, Pointer>
 
-        // class initialization code
+        private val pointerSet: Set<Pointer>
+
         init {
-            // get the instance fields
-            val fields = Pointer::class.java.getFields()
-            val instanceFields: MutableList<Field> = ArrayList<Field>()
-            for (field in fields) {
-                if (field.genericType === Pointer::class.java) {
-                    instanceFields.add(field)
-                }
-            }
+            val s = setOf(
+                ALSO_SEE,
+                ANTONYM,
+                ATTRIBUTE,
+                CAUSE,
+                DERIVATIONALLY_RELATED,
+                DERIVED_FROM_ADJ,
+                DOMAIN,
+                ENTAILMENT,
+                HYPERNYM,
+                HYPERNYM_INSTANCE,
+                HYPONYM,
+                HYPONYM_INSTANCE,
+                HOLONYM_MEMBER,
+                HOLONYM_SUBSTANCE,
+                HOLONYM_PART,
+                MEMBER,
+                MERONYM_MEMBER,
+                MERONYM_SUBSTANCE,
+                MERONYM_PART,
+                PARTICIPLE,
+                PERTAINYM,
+                REGION,
+                REGION_MEMBER,
+                SIMILAR_TO,
+                TOPIC,
+                TOPIC_MEMBER,
+                USAGE,
+                USAGE_MEMBER,
+                VERB_GROUP,
+                IS_CAUSED,
+                IS_ENTAILED,
+                COLLOCATION,
+            )
 
-            // these are our backing collections
-            val hiddenSet: MutableSet<Pointer?> = LinkedHashSet<Pointer?>(instanceFields.size)
-            val hiddenMap: MutableMap<String?, Pointer?> = LinkedHashMap<String?, Pointer?>(instanceFields.size - 1)
+            val m = s
+                .asSequence()
+                .filterNot { it == DERIVED_FROM_ADJ }
+                .map { it.symbol to it }.toMap()
 
-            var ptr: Pointer?
-            for (field in instanceFields) {
-                try {
-                    ptr = field.get(null) as Pointer?
-                    if (ptr == null) {
-                        continue
-                    }
-                    hiddenSet.add(ptr)
-                    if (ptr !== DERIVED_FROM_ADJ) {
-                        hiddenMap.put(ptr.symbol, ptr)
-                    }
-                } catch (_: IllegalAccessException) {
-                    // Ignore
-                }
-            }
-
-            // make the collections unmodifiable
-            pointerSet = Collections.unmodifiableSet<Pointer?>(hiddenSet)
-            pointerMap = Collections.unmodifiableMap<String?, Pointer?>(hiddenMap)
+            pointerSet = Collections.unmodifiableSet<Pointer>(s)
+            pointerMap = Collections.unmodifiableMap<String, Pointer>(m)
         }
 
         /**
@@ -167,8 +170,7 @@ class Pointer(symbol: String, name: String) : IPointer {
          * this class
          * @since JWI 2.1.0
          */
-        @NonNull
-        fun values(): MutableCollection<Pointer?> {
+        fun values(): Collection<Pointer> {
             return pointerSet
         }
 
@@ -186,7 +188,6 @@ class Pointer(symbol: String, name: String) : IPointer {
          * @since JWI 2.1.0
          */
         @JvmStatic
-        @Nullable
         fun getPointerType(symbol: String, pos: POS?): Pointer {
             if (pos == POS.ADVERB && symbol == AMBIGUOUS_SYMBOL) {
                 return DERIVED_FROM_ADJ

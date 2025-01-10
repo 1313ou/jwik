@@ -104,12 +104,9 @@ private constructor() : ILineParser<ISynset> {
                 Synset.WordBuilder(it + 1, lemma, lexID, marker)
             }
 
-            // Get pointer count
-            val pointerCount = tokenizer.nextToken().toInt()
-            var synsetPointerMap: MutableMap<IPointer, ArrayList<ISynsetID>>? = null
-
             // Get pointers
-
+            var synsetPointerMap: MutableMap<IPointer, ArrayList<ISynsetID>>? = null
+            val pointerCount = tokenizer.nextToken().toInt()
             repeat(pointerCount) {
 
                 // get pointer symbol
@@ -155,18 +152,16 @@ private constructor() : ILineParser<ISynset> {
             if (synset_pos == POS.VERB) {
                 val peekTok = tokenizer.nextToken()
                 if (!peekTok.startsWith("|")) {
-                    var frame_num: Int
-                    var word_num: Int
-                    val verbFrameCount = peekTok.toInt()
+                   val verbFrameCount = peekTok.toInt()
                     var frame: IVerbFrame
                     repeat(verbFrameCount) {
                         // Consume '+'
                         tokenizer.nextToken()
                         // Get frame number
-                        frame_num = tokenizer.nextToken().toInt()
+                        var frame_num: Int = tokenizer.nextToken().toInt()
                         frame = resolveVerbFrame(frame_num)
                         // Get word number
-                        word_num = tokenizer.nextToken().toInt(16)
+                        val word_num: Int = tokenizer.nextToken().toInt(16)
                         if (word_num > 0) {
                             wordProxies[word_num - 1].addVerbFrame(frame)
                         } else {
@@ -187,7 +182,7 @@ private constructor() : ILineParser<ISynset> {
 
             // create synset and words
             val words = listOf<Synset.IWordBuilder>(*wordProxies)
-            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, words, synsetPointerMap!!)
+            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, words, synsetPointerMap)
         } catch (e: NumberFormatException) {
             throw MisformattedLineException(line, e)
         } catch (e: NoSuchElementException) {

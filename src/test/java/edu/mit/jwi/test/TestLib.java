@@ -25,14 +25,14 @@ public class TestLib
     public static boolean sensekeyIsLive(@NonNull JWI jwi, @NonNull ISenseKey sk)
     {
         //System.out.println("● sensekey=" + sk);
-        ISenseEntry senseEntry = jwi.getDict().getSenseEntry(sk);
+        ISenseEntry senseEntry = jwi.dict.getSenseEntry(sk);
         if (senseEntry == null)
         {
             return false;
         }
         int offset = senseEntry.getOffset();
         SynsetID sid = new SynsetID(offset, sk.getPOS());
-        return jwi.getDict().getSynset(sid) != null;
+        return jwi.dict.getSynset(sid) != null;
     }
 
     public static void listDeadSensekeys(@NonNull JWI jwi)
@@ -55,12 +55,12 @@ public class TestLib
     {
         jwi.forAllSensekeys((sk) -> {
             assertNotNull(sk);
-            ISenseEntry senseEntry = jwi.getDict().getSenseEntry(sk);
+            ISenseEntry senseEntry = jwi.dict.getSenseEntry(sk);
             assertNotNull(senseEntry);
             int offset = senseEntry.getOffset();
             SynsetID sid = new SynsetID(offset, sk.getPOS());
             assertNotNull(sid);
-            ISynset synset = jwi.getDict().getSynset(sid);
+            ISynset synset = jwi.dict.getSynset(sid);
             assertNotNull(synset);
         });
     }
@@ -73,7 +73,7 @@ public class TestLib
             POS pos = se.getPOS();
             ISynsetID sid = new SynsetID(offset, pos);
             assertNotNull(sid);
-            ISynset synset = jwi.getDict().getSynset(sid);
+            ISynset synset = jwi.dict.getSynset(sid);
             assertNotNull(synset);
         });
     }

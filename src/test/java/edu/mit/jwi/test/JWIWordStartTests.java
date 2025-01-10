@@ -47,7 +47,7 @@ public class JWIWordStartTests
     @Test
     public void searchStart()
     {
-        Set<String> result = jwi.getDict().getWords(start, pos, 0);
+        Set<String> result = jwi.dict.getWords(start, pos, 0);
         PS.println(start);
         PS.println(result);
     }
@@ -55,7 +55,7 @@ public class JWIWordStartTests
     @Test
     public void searchStartLimited()
     {
-        Set<String> result = jwi.getDict().getWords(start, pos, 3);
+        Set<String> result = jwi.dict.getWords(start, pos, 3);
         PS.println(start);
         PS.println(result);
     }

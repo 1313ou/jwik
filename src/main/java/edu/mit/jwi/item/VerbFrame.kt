@@ -9,7 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import java.lang.reflect.Field
 import java.util.*
 
 /**
@@ -29,9 +28,6 @@ class VerbFrame(
 ) : IVerbFrame {
 
     override fun instantiateTemplate(verb: String): String {
-        if (verb == null) {
-            throw NullPointerException()
-        }
         val index = template.indexOf("----")
         if (index == -1) {
             return ""
@@ -99,36 +95,55 @@ class VerbFrame(
         val NUM_39: VerbFrame = VerbFrame(39, "Somebody ----s out of somebody")
 
         // verb frame cache
-        private val verbFrameMap: MutableMap<Int, VerbFrame>
+        private val verbFrameMap: Map<Int, VerbFrame>
 
         init {
-            // get the instance fields
-            val fields = VerbFrame::class.java.getFields()
-            val instanceFields: MutableList<Field> = ArrayList<Field>()
-            for (field in fields) {
-                if (field.genericType === VerbFrame::class.java) {
-                    instanceFields.add(field)
-                }
-            }
+            val m = listOf(
+                NUM_01,
+                NUM_02,
+                NUM_03,
+                NUM_04,
+                NUM_05,
+                NUM_06,
+                NUM_07,
+                NUM_08,
+                NUM_09,
+                NUM_10,
+                NUM_11,
+                NUM_12,
+                NUM_13,
+                NUM_14,
+                NUM_15,
+                NUM_16,
+                NUM_17,
+                NUM_18,
+                NUM_19,
+                NUM_20,
+                NUM_21,
+                NUM_22,
+                NUM_23,
+                NUM_24,
+                NUM_25,
+                NUM_26,
+                NUM_27,
+                NUM_28,
+                NUM_29,
+                NUM_30,
+                NUM_31,
+                NUM_32,
+                NUM_33,
+                NUM_34,
+                NUM_35,
+                NUM_36,
+                NUM_37,
+                NUM_38,
+                NUM_39,
+            )
+                .asSequence()
+                .map { it.number to it }
+                .toMap()
 
-            // this is our backing collection
-            val hidden: MutableMap<Int, VerbFrame> = LinkedHashMap<Int, VerbFrame>(instanceFields.size)
-
-            // get the instances
-            var frame: VerbFrame?
-            for (field in instanceFields) {
-                try {
-                    frame = field.get(null) as VerbFrame?
-                    if (frame != null) {
-                        hidden.put(frame.number, frame)
-                    }
-                } catch (_: IllegalAccessException) {
-                    // ignore
-                }
-            }
-
-            // make the value map unmodifiable
-            verbFrameMap = Collections.unmodifiableMap<Int?, VerbFrame?>(hidden)
+            verbFrameMap = Collections.unmodifiableMap<Int?, VerbFrame>(m)
         }
 
         /**

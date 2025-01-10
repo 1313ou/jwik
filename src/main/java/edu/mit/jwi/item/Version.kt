@@ -15,7 +15,6 @@ import edu.mit.jwi.data.IContentType
 import edu.mit.jwi.data.IDataType
 import edu.mit.jwi.data.WordnetFile.Companion.getLine
 import edu.mit.jwi.data.compare.ILineComparator
-import java.lang.reflect.Field
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.regex.Matcher
@@ -107,15 +106,6 @@ class Version(
     }
 
     companion object {
-
-        /**
-         * This serial version UID identifies the last version of JWI whose
-         * serialized instances of the Version class are compatible with this
-         * implementation.
-         *
-         * @since JWI 2.4.0
-         */
-        private const val serialVersionUID: Long = 240
 
         // only create one instance of any version
         private val versionCache: MutableMap<Int?, Version?> = HashMap<Int?, Version?>()
@@ -492,9 +482,6 @@ class Version(
          * @since JWI 2.1.0
          */
         fun parseVersion(verStr: CharSequence): Version {
-            if (verStr == null) {
-                throw NullPointerException()
-            }
 
             val parts: Array<String?> = periodPattern.split(verStr)
             require(!(parts.size < 2 || parts.size > 4))
@@ -508,7 +495,28 @@ class Version(
         }
 
         // internal cache of declared version
-        private var versions: MutableList<Version?>? = null
+        private var versions: List<Version>
+
+        init {
+            val l = listOf(
+                ver16,
+                ver17,
+                ver171,
+                ver20,
+                ver21,
+                ver30,
+                ver31,
+                ver21swn_10k,
+                ver21swn_20k,
+                ver21swn_30k,
+                ver21swn_40k,
+                ver21swn_400k_cropped,
+                ver21swn_400k_full,
+            )
+
+            // make the value set unmodifiable
+            versions = Collections.unmodifiableList<Version?>(l)
+        }
 
         /**
          * Emulates the Enum.values() function.
@@ -517,37 +525,8 @@ class Version(
          * order they are declared.
          * @since JWI 2.0.0
          */
-        fun values(): MutableList<Version?> {
-            if (versions == null) {
-                // get all the fields containing ContentType
-                val fields = Version::class.java.getFields()
-                val instanceFields: MutableList<Field> = ArrayList<Field>()
-                for (field in fields) {
-                    if (field.getGenericType() === Version::class.java) {
-                        instanceFields.add(field)
-                    }
-                }
-
-                // this is the backing set
-                val hidden: MutableList<Version?> = ArrayList<Version?>(instanceFields.size)
-
-                // fill in the backing set
-                var dataType: Version?
-                for (field in instanceFields) {
-                    try {
-                        dataType = field.get(null) as Version?
-                        if (dataType != null) {
-                            hidden.add(dataType)
-                        }
-                    } catch (_: IllegalAccessException) {
-                        // ignore
-                    }
-                }
-
-                // make the value set unmodifiable
-                versions = Collections.unmodifiableList<Version?>(hidden)
-            }
-            return versions!!
+        fun values(): List<Version?> {
+            return versions
         }
     }
 }

@@ -59,7 +59,7 @@ abstract class WordnetFile<T>(
 
     override val name: String = file.getName()
 
-    private val detector: ICommentDetector = contentType.lineComparator!!.commentDetector!!
+    private val detector: ICommentDetector? = contentType.lineComparator!!.commentDetector
 
     // loading locks and status flag
     // the flag is marked transient to avoid different values in different threads

@@ -9,9 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
-import java.lang.reflect.Field
 import java.util.*
 
 /**
@@ -25,57 +22,36 @@ import java.util.*
  * Constructs a new lexical file description object.
  *
  * @param num  the lexical file number, in the closed range [0,99]
- * @param name the name of the lexical file, may not be `null`,
- * empty, or all whitespace
- * @param desc the description of the lexical file, may not be
- * `null`, empty, or all whitespace
- * @param pos  the part of speech for the lexical file, may be
- * `null`
- * @throws NullPointerException     if either the name or description are `null`
+ * @param name the name of the lexical file, may not be `null`, empty, or all whitespace
+ * @property description the description of the lexical file, may not be `null`, empty, or all whitespace
+ * @property pOS  the part of speech for the lexical file, may be `null`
  * @throws IllegalArgumentException if either the name or description are empty or all whitespace
- * @since JWI 2.1.0
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-open class LexFile(num: Int, name: String, desc: String, pos: POS?) : ILexFile {
+open class LexFile(num: Int, name: String, override val description: String, override val pOS: POS?) : ILexFile {
 
     override val number: Int = checkLexicalFileNumber(num)
 
     override val name: String = checkString(name)
 
-    override val pOS: POS? = pos
-
-    private val desc: String = desc
-
-    override val description: String
-        get() = desc
-
     override fun toString(): String {
         return name
     }
 
-    /**
-      */
-
-    /*
-      * (non-Javadoc)
-      *
-      * @see java.lang.Object#hashCode()
-      */
     override fun hashCode(): Int {
         val prime = 31
         var result = 1
-        result = prime * result + (if (desc == null) 0 else desc.hashCode())
-        result = prime * result + (if (name == null) 0 else name.hashCode())
-        result = prime * result + this.number
-        result = prime * result + (if (pOS == null) 0 else pOS.hashCode())
+        result = prime * result + description.hashCode()
+        result = prime * result + name.hashCode()
+        result = prime * result + number
+        result = prime * result + (pOS?.hashCode() ?: 0)
         return result
     }
 
-    /* (non-Javadoc) @see java.lang.Object#equals(java.lang.Object) */
-    override fun equals(@Nullable obj: Any?): Boolean {
+    override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
         }
@@ -86,21 +62,13 @@ open class LexFile(num: Int, name: String, desc: String, pos: POS?) : ILexFile {
             return false
         }
         val other = obj as ILexFile
-        if (desc == null) {
-            if (other.description != null) {
-                return false
-            }
-        } else if (desc != other.description) {
+        if (description != other.description) {
             return false
         }
-        if (name == null) {
-            if (other.name != null) {
-                return false
-            }
-        } else if (name != other.name) {
+        if (name != other.name) {
             return false
         }
-        if (this.number != other.number) {
+        if (number != other.number) {
             return false
         }
         if (pOS == null) {
@@ -117,7 +85,6 @@ open class LexFile(num: Int, name: String, desc: String, pos: POS?) : ILexFile {
      * @return the appropriate deserialized object.
      * @since JWI 2.4.0
      */
-    @NonNull
     protected fun readResolve(): Any {
         val lexFile: LexFile = getLexicalFile(this.number)
         return if (this == lexFile) lexFile else this
@@ -238,37 +205,61 @@ open class LexFile(num: Int, name: String, desc: String, pos: POS?) : ILexFile {
             return num.toString()
         }
 
-        @NonNull
         private val lexFileMap: MutableMap<Int?, LexFile>
 
         init {
-            // get instance fields
-            val fields = LexFile::class.java.getFields()
-            val instanceFields: MutableList<Field> = ArrayList<Field>()
-            for (field in fields) {
-                if (field.getGenericType() === LexFile::class.java) {
-                    instanceFields.add(field)
-                }
-            }
-
-            // backing map
-            val hidden: MutableMap<Int?, LexFile?> = LinkedHashMap<Int?, LexFile?>(instanceFields.size)
-
-            // get instances
-            var lexFile: LexFile?
-            for (field in instanceFields) {
-                try {
-                    lexFile = field.get(null) as LexFile?
-                    if (lexFile != null) {
-                        hidden.put(lexFile.number, lexFile)
-                    }
-                } catch (e: IllegalAccessException) {
-                    // Ignore
-                }
-            }
+            val m = listOf(
+                ADJ_ALL,
+                ADJ_PERT,
+                ADV_ALL,
+                NOUN_TOPS,
+                NOUN_ACT,
+                NOUN_ANIMAL,
+                NOUN_ARTIFACT,
+                NOUN_ATTRIBUTE,
+                NOUN_BODY,
+                NOUN_COGNITION,
+                NOUN_COMMUNICATION,
+                NOUN_EVENT,
+                NOUN_FEELING,
+                NOUN_FOOD,
+                NOUN_GROUP,
+                NOUN_LOCATION,
+                NOUN_MOTIVE,
+                NOUN_OBJECT,
+                NOUN_PERSON,
+                NOUN_PHENOMENON,
+                NOUN_PLANT,
+                NOUN_POSSESSION,
+                NOUN_PROCESS,
+                NOUN_QUANTITY,
+                NOUN_RELATION,
+                NOUN_SHAPE,
+                NOUN_STATE,
+                NOUN_SUBSTANCE,
+                NOUN_TIME,
+                VERB_BODY,
+                VERB_CHANGE,
+                VERB_COGNITION,
+                VERB_COMMUNICATION,
+                VERB_COMPETITION,
+                VERB_CONSUMPTION,
+                VERB_CONTACT,
+                VERB_CREATION,
+                VERB_EMOTION,
+                VERB_MOTION,
+                VERB_PERCEPTION,
+                VERB_POSSESSION,
+                VERB_SOCIAL,
+                VERB_STATIVE,
+                VERB_WEATHER,
+                ADJ_PPL,
+            ).asSequence()
+                .map { it.number to it }
+                .toMap()
 
             // make backing map unmodifiable
-            lexFileMap = Collections.unmodifiableMap<Int?, LexFile?>(hidden)
+            lexFileMap = Collections.unmodifiableMap<Int, LexFile>(m)
         }
 
         /**
@@ -280,7 +271,6 @@ open class LexFile(num: Int, name: String, desc: String, pos: POS?) : ILexFile {
          * description declared in this class
          * @since JWI 2.1.0
          */
-        @NonNull
         fun values(): Collection<LexFile> {
             return lexFileMap.values
         }
@@ -296,7 +286,6 @@ open class LexFile(num: Int, name: String, desc: String, pos: POS?) : ILexFile {
          * @since JWI 2.1.0
          */
         @JvmStatic
-        @Nullable
         fun getLexicalFile(num: Int): LexFile {
             return lexFileMap[num]!!
         }

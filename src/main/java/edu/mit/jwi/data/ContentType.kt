@@ -11,7 +11,6 @@ package edu.mit.jwi.data
 
 import edu.mit.jwi.data.compare.*
 import edu.mit.jwi.item.*
-import java.lang.reflect.Field
 import java.nio.charset.Charset
 import java.util.*
 
@@ -28,20 +27,20 @@ import java.util.*
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.0.0
-</T> */
-class ContentType<T> @JvmOverloads constructor(
+ */
+class ContentType<T>
+@JvmOverloads constructor(
     override val key: ContentTypeKey,
     override val lineComparator: ILineComparator?,
-    override val charset: Charset? = null
+    override val charset: Charset? = null,
 ) : IContentType<T> {
-
 
     override val dataType: IDataType<T>
         get() {
             return key.getDataType<T>()
         }
 
-     override val pOS: POS?
+    override val pOS: POS?
         get() {
             return key.pOS
         }
@@ -71,60 +70,37 @@ class ContentType<T> @JvmOverloads constructor(
         val DATA_ADVERB: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_ADVERB, DataLineComparator.instance)
         val DATA_ADJECTIVE: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_ADJECTIVE, DataLineComparator.instance)
 
-        val EXCEPTION_NOUN: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(
-            ContentTypeKey.EXCEPTION_NOUN,
-            ExceptionLineComparator.instance
-        )
-        val EXCEPTION_VERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(
-            ContentTypeKey.EXCEPTION_VERB,
-            ExceptionLineComparator.instance
-        )
-        val EXCEPTION_ADVERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(
-            ContentTypeKey.EXCEPTION_ADVERB,
-            ExceptionLineComparator.instance
-        )
-        val EXCEPTION_ADJECTIVE: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(
-            ContentTypeKey.EXCEPTION_ADJECTIVE,
-            ExceptionLineComparator.instance
-        )
+        val EXCEPTION_NOUN: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_NOUN, ExceptionLineComparator.instance)
+        val EXCEPTION_VERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_VERB, ExceptionLineComparator.instance)
+        val EXCEPTION_ADVERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADVERB, ExceptionLineComparator.instance)
+        val EXCEPTION_ADJECTIVE: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADJECTIVE, ExceptionLineComparator.instance)
 
         val SENSE: ContentType<ISenseEntry> = ContentType<ISenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator.instance)
         val SENSES: ContentType<Array<ISenseEntry>> = ContentType<Array<ISenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator.instance)
 
         // set of all content types implemented in this class
-        private val contentTypes: Set<ContentType<*>>
-
-        // initialization for static content type set
-        init {
-            // get all the fields containing ContentType
-            val fields = ContentType::class.java.getFields()
-            val instanceFields: MutableList<Field> = ArrayList<Field>()
-            for (field in fields) {
-                if (field.type == ContentType::class.java) {
-                    instanceFields.add(field)
-                }
-            }
-
-            // this is the backing set
-            val hidden: MutableSet<ContentType<*>?> = LinkedHashSet<ContentType<*>?>(instanceFields.size)
-
-            // fill in the backing set
-            var contentType: ContentType<*>?
-            for (field in instanceFields) {
-                try {
-                    contentType = field.get(null) as ContentType<*>?
-                    if (contentType == null) {
-                        continue
-                    }
-                    hidden.add(contentType)
-                } catch (_: IllegalAccessException) {
-                    // ignore
-                }
-            }
-
-            // make the value set unmodifiable
-            contentTypes = Collections.unmodifiableSet<ContentType<*>>(hidden)
-        }
+        private val contentTypes: Set<ContentType<*>> = Collections.unmodifiableSet<ContentType<*>>(
+            setOf(
+                INDEX_NOUN,
+                INDEX_VERB,
+                INDEX_ADVERB,
+                INDEX_ADJECTIVE,
+                WORD_NOUN,
+                WORD_VERB,
+                WORD_ADVERB,
+                WORD_ADJECTIVE,
+                DATA_NOUN,
+                DATA_VERB,
+                DATA_ADVERB,
+                DATA_ADJECTIVE,
+                EXCEPTION_NOUN,
+                EXCEPTION_VERB,
+                EXCEPTION_ADVERB,
+                EXCEPTION_ADJECTIVE,
+                SENSE,
+                SENSES,
+            )
+        )
 
         /**
          * Emulates the Enum.values() function.
@@ -148,7 +124,7 @@ class ContentType<T> @JvmOverloads constructor(
          * @since JWI 2.0.0
          */
         fun getIndexContentType(pos: POS): IContentType<IIndexWord> {
-             return when (pos) {
+            return when (pos) {
                 POS.NOUN      -> INDEX_NOUN
                 POS.VERB      -> INDEX_VERB
                 POS.ADVERB    -> INDEX_ADVERB

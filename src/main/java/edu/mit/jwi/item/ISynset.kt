@@ -94,5 +94,5 @@ interface ISynset : IHasPOS, IItem<ISynsetID> {
      */
     fun getRelatedSynsets(ptr: IPointer): List<ISynsetID>
 
-    val relatedSynsets: List<ISynsetID?>
+    val relatedSynsets: List<ISynsetID>
 }

@@ -27,7 +27,7 @@ class Synset(
     isAdjHead: Boolean,
     gloss: String,
     wordBuilders: List<IWordBuilder>,
-    ids: Map<IPointer, List<ISynsetID>>
+    ids: Map<IPointer, List<ISynsetID>>?
 ) : ISynset {
 
     override val iD: ISynsetID
@@ -42,7 +42,7 @@ class Synset(
 
     override val isAdjectiveHead: Boolean
 
-    override val relatedSynsets: List<ISynsetID?>
+    override val relatedSynsets: List<ISynsetID>
 
     override val relatedMap: Map<IPointer, List<ISynsetID>>
 
@@ -92,18 +92,6 @@ class Synset(
      * @since JWI 1.0
      */
     init {
-        if (id == null) {
-            throw NullPointerException()
-        }
-        if (lexFile == null) {
-            throw NullPointerException()
-        }
-        if (gloss == null) {
-            throw NullPointerException()
-        }
-        if (wordBuilders == null) {
-            throw NullPointerException()
-        }
         require(!wordBuilders.isEmpty())
         require(!(isAdjSat && isAdjHead))
         require(!((isAdjSat || isAdjHead) && lexFile.number != 0))

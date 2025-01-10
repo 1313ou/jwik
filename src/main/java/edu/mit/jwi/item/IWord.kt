@@ -63,5 +63,5 @@ interface IWord : IHasPOS, IItem<IWordID> {
 
     val verbFrames: List<IVerbFrame>?
 
-    val adjectiveMarker: AdjMarker
+    val adjectiveMarker: AdjMarker?
 }

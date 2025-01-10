@@ -141,16 +141,11 @@ class FileProvider @JvmOverloads constructor(
             }
         }
 
-    //override fun setCharset(charset: Charset?){
-    //    this.charset = charset
-    //}
-
     /**
      * Constructs the file provider pointing to the resource indicated by the
      * path.  This file provider has an initial [ILoadPolicy.NO_LOAD] load policy.
      *
-     * @param file A file pointing to the wordnet directory, may not be
-     * `null`
+     * @param file A file pointing to the wordnet directory, may not be `null`
      * @throws NullPointerException if the specified file is `null`
      * @since JWI 1.0
      */
@@ -222,19 +217,14 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 1.0
      */
     init {
-        if (url == null) {
-            throw NullPointerException()
-        }
         require(!contentTypes.isEmpty())
         this.defaultContentTypes = contentTypes
-
-        val prototypeMap: MutableMap<ContentTypeKey, IContentType<*>> = LinkedHashMap<ContentTypeKey, IContentType<*>>(contentTypes.size)
-        for (contentType in contentTypes) {
-            val key = contentType.key
-            prototypeMap.put(key, contentType)
-        }
-        this.prototypeMap = prototypeMap
-    }
+        this.prototypeMap = contentTypes
+            .asSequence()
+            .map { it.key to it }
+            .toMap()
+            .toMutableMap()
+     }
 
     @Nullable
     private fun getDefault(key: ContentTypeKey?): IContentType<*>? {

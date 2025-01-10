@@ -9,12 +9,9 @@
  *******************************************************************************/
 package edu.mit.jwi.data
 
-import edu.mit.jwi.NonNull
-import edu.mit.jwi.Nullable
 import edu.mit.jwi.data.parse.*
 import edu.mit.jwi.item.*
 import java.io.File
-import java.lang.reflect.Field
 import java.util.*
 
 /**
@@ -32,7 +29,7 @@ class DataType<T>(
     userFriendlyName: String?,
     hasVersion: Boolean,
     parser: ILineParser<T>,
-    hints: Collection<String>?
+    hints: Collection<String>?,
 ) : IDataType<T> {
 
     // fields set on construction
@@ -64,14 +61,14 @@ class DataType<T>(
         userFriendlyName: String?,
         hasVersion: Boolean,
         parser: ILineParser<T>,
-        vararg hints: String
+        vararg hints: String,
     ) : this(userFriendlyName, hasVersion, parser, if (hints == null) null else listOf<String>(*hints))
 
     override fun hasVersion(): Boolean {
         return hasVersion
     }
 
-     override fun toString(): String {
+    override fun toString(): String {
         return name!!
     }
 
@@ -86,15 +83,11 @@ class DataType<T>(
      * @param parser           the line parser for transforming lines from this data type
      * into objects; may not be `null`
      * @param hints            a collection of resource name hints for identifying the
-     * resource that contains the data. May be `null`, but
-     * may not contain `null`
+     * resource that contains the data. May be `null`, but may not contain `null`
      * @throws NullPointerException if the specified parser is `null`
      * @since JWI 2.0.0
      */
     init {
-        if (parser == null) {
-            throw NullPointerException()
-        }
         this.name = userFriendlyName
         this.parser = parser
         this.hasVersion = hasVersion
@@ -121,8 +114,12 @@ class DataType<T>(
         @JvmField
         val SENSES: DataType<Array<ISenseEntry>> = DataType<Array<ISenseEntry>>("Senses", false, SensesLineParser.instance!!, "sense")
 
-        // set of all data types implemented in this class
-        private var dataTypes: Set<DataType<*>>? = null
+        /**
+         * Set of all data types implemented in this class
+         */
+        private val dataTypes: Set<DataType<*>> = Collections.unmodifiableSet<DataType<*>>(
+            setOf(INDEX, WORD, DATA, EXCEPTION, SENSE, SENSES)
+        )
 
         /**
          * Emulates the Enum.values() function.
@@ -132,36 +129,7 @@ class DataType<T>(
          * @since JWI 2.0.0
          */
         fun values(): Collection<DataType<*>> {
-            if (dataTypes == null) {
-                // get all the fields containing ContentType
-                val fields = DataType::class.java.getFields()
-                val instanceFields: MutableList<Field> = ArrayList<Field>()
-                for (field in fields) {
-                    if (field.genericType === DataType::class.java) {
-                        instanceFields.add(field)
-                    }
-                }
-
-                // this is the backing set
-                val hidden: MutableSet<DataType<*>?> = LinkedHashSet<DataType<*>?>(instanceFields.size)
-
-                // fill in the backing set
-                var dataType: DataType<*>?
-                for (field in instanceFields) {
-                    try {
-                        dataType = field.get(null) as DataType<*>?
-                        if (dataType != null) {
-                            hidden.add(dataType)
-                        }
-                    } catch (_: IllegalAccessException) {
-                        // ignore
-                    }
-                }
-
-                // make the value set unmodifiable
-                dataTypes = Collections.unmodifiableSet<DataType<*>?>(hidden)
-            }
-            return dataTypes!!
+            return dataTypes
         }
 
         /**

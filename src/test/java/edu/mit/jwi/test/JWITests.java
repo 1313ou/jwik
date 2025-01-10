@@ -155,7 +155,7 @@ public class JWITests
     @Test
     public void frameless()
     {
-        jwi.getDict().getIndexWord("fangirl", POS.VERB);
+        jwi.dict.getIndexWord("fangirl", POS.VERB);
         jwi.walk("fangirl", POS.VERB, PS);
     }
 }
