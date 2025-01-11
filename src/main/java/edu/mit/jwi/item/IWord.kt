@@ -55,7 +55,9 @@ interface IWord : IHasPOS, IItem<IWordID> {
      * list if none.
      * @since JWI 2.0.0
      */
-    fun getRelatedWords(ptr: IPointer): List<IWordID>
+    fun getRelatedFor(ptr: IPointer): List<IWordID> {
+        return related[ptr] ?: emptyList<IWordID>()
+    }
 
     val relatedWords: List<IWordID>?
 

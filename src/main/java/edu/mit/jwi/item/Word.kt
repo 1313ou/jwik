@@ -34,15 +34,15 @@ class Word(
     override val iD: IWordID,
     override val lexicalID: Int,
     private val adjMarker: AdjMarker?,
-    frames: List<IVerbFrame>?,
+    verbFrames: List<IVerbFrame>?,
     related: Map<IPointer, List<IWordID>>,
 ) : IWord {
 
-    override val senseKey: ISenseKey
+    override val senseKey: ISenseKey = SenseKey(iD.lemma!!, lexicalID, synset)
 
-    override val verbFrames: List<IVerbFrame>
+    override val verbFrames: List<IVerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
 
-    override val related: Map<IPointer, List<IWordID>>
+    override val related: Map<IPointer, List<IWordID>> = normalizeRelated(related)
 
     override val relatedWords: List<IWordID>
         get() = related.values
@@ -51,40 +51,17 @@ class Word(
             .toList()
 
     override val lemma: String
-        get() {
-            checkNotNull(this.iD)
-            return iD.lemma!!
-        }
+        get() = iD.lemma!!
 
     override val pOS: POS
-        get() {
-            val sid = iD.synsetID
-            return sid.pOS!!
-        }
+        get() = iD.synsetID.pOS!!
 
     override val adjectiveMarker: AdjMarker?
         get() = adjMarker
 
     init {
-        // check arguments
         checkLexicalID(lexicalID)
         require(!(synset.pOS !== POS.ADJECTIVE && adjMarker != null))
-
-        // related
-        this.related = normalizeRelated(
-            related.entries
-                .filter { !it.value.isEmpty() }
-                .associate { it.key to it.value }
-        )
-
-        // field assignments
-        val lemma = checkNotNull(iD.lemma)
-        this.senseKey = SenseKey(lemma, lexicalID, synset)
-        this.verbFrames = if (frames == null || frames.isEmpty()) listOf<IVerbFrame>() else Collections.unmodifiableList<IVerbFrame>(ArrayList<IVerbFrame>(frames))
-    }
-
-    override fun getRelatedWords(ptrType: IPointer): List<IWordID> {
-        return this@Word.related[ptrType] ?: emptyList<IWordID>()
     }
 
     override fun toString(): String {
@@ -96,7 +73,7 @@ class Word(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(iD, lexicalID, adjMarker, this@Word.related, verbFrames)
+        return Objects.hash(iD, lexicalID, adjMarker, related, verbFrames)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -135,10 +112,10 @@ class Word(
         }
 
         // check maps
-        if (this.verbFrames != that.verbFrames) {
+        if (verbFrames != that.verbFrames) {
             return false
         }
-        return this@Word.related == that.related
+        return related == that.related
     }
 
     companion object {

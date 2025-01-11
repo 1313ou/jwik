@@ -71,17 +71,17 @@ interface ISynset : IHasPOS, IItem<ISynsetID> {
      * Returns an immutable list of the ids of all synsets that are related to
      * this synset by the specified pointer type. Note that this only returns a
      * non-empty result for semantic pointers (i.e., non-lexical pointers). To
-     * obtain lexical pointers, call [IWord.getRelatedWords] on the
+     * obtain lexical pointers, call [IWord.getRelatedFor] on the
      * appropriate object.
      *
      * If there are no such synsets, this method returns the empty list.
      *
-     * @param ptrType the pointer for which related synsets are to be retrieved.
+     * @param ptr the pointer for which related synsets are to be retrieved.
      * @return the list of synsets related by the specified pointer; if there are no such synsets, returns the empty list
      * @since JWI 2.0.0
      */
-    fun getRelatedFor(ptrType: IPointer): List<ISynsetID> {
-        return related[ptrType] ?: emptyList()
+    fun getRelatedFor(ptr: IPointer): List<ISynsetID> {
+        return related[ptr] ?: emptyList()
     }
 
     val allRelated: List<ISynsetID>
