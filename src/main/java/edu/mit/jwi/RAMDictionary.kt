@@ -25,6 +25,7 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
+import kotlin.Throws
 
 /**
  * Default implementation of the `IRAMDictionary` interface. This
@@ -1057,15 +1058,13 @@ class RAMDictionary private constructor(
          *
          * @param old the index word to be replicated
          * @return the new index word object
-         * @throws NullPointerException if the specified index word is null
          * @since JWI 2.2.0
          */
         private fun makeIndexWord(old: IIndexWord): IIndexWord {
-            val oldIDs: List<IWordID> = old.wordIDs
-            val newIDs: Array<IWordID> = Array(oldIDs.size) { i ->
-                var oldID: IWordID = oldIDs[i]
-                val m = synsets[oldID.pOS]!!
-                var synset: ISynset = m[oldID.synsetID]!!
+            val newIDs: Array<IWordID> = Array(old.wordIDs.size) { i ->
+                var oldID: IWordID = old.wordIDs[i]
+                val resolver = synsets[oldID.pOS]!!
+                var synset: ISynset = resolver[oldID.synsetID]!!
                 val newWord = synset.words.first { it.iD == oldID }
                 newWord.iD
             }
@@ -1078,7 +1077,6 @@ class RAMDictionary private constructor(
          * Constructs a new word builder object out of the specified old
          * synset and word.
          *
-         * @param oldSynset the old synset that backs this builder
          * @param oldWord   the old word that backs this builder
          *
          * @author Mark A. Finlayson
