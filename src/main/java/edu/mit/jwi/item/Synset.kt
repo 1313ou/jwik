@@ -41,7 +41,7 @@ class Synset(
 
     override val words: List<IWord>
 
-    override val relatedMap: Map<IPointer, List<ISynsetID>>
+    override val related: Map<IPointer, List<ISynsetID>>
 
     override val offset: Int
         get() {
@@ -78,14 +78,14 @@ class Synset(
             .toList()
 
         // related synset map
-        relatedMap = ids?.entries
+        related = ids?.entries
             ?.filterNot { it.value.isEmpty() }
             ?.associate { it.key to it.value }
             ?: emptyMap()
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(iD, words, relatedMap, gloss, isAdjectiveSatellite)
+        return Objects.hash(iD, words, related, gloss, isAdjectiveSatellite)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -111,7 +111,7 @@ class Synset(
         if (isAdjectiveSatellite != other.isAdjectiveSatellite) {
             return false
         }
-        return relatedMap == other.relatedMap
+        return related == other.related
     }
 
     override fun toString(): String {

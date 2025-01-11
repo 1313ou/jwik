@@ -8,7 +8,6 @@ import java.io.File
 import java.io.IOException
 import java.io.PrintStream
 import java.util.function.Consumer
-import kotlin.Throws
 
 /**
  * JWI
@@ -185,7 +184,7 @@ class JWI
             val it: Iterator<ISynset> = dict.getSynsetIterator(pos)
             while (it.hasNext()) {
                 val synset = it.next()
-                val relatedIds: List<ISynsetID> = synset.relatedSynsets
+                val relatedIds: List<ISynsetID> = synset.allRelated
                 for (relatedId in relatedIds) {
                     val related = dict.getSynset(relatedId)!!
                     f?.accept(related)
@@ -321,7 +320,7 @@ class JWI
 
     fun walk(synset: ISynset, level: Int, ps: PrintStream) {
         val indentSpace = String(CharArray(level)).replace('\u0000', '\t')
-        val links: Map<IPointer, List<ISynsetID>> = synset.relatedMap
+        val links: Map<IPointer, List<ISynsetID>> = synset.related
         for (p in links.keys) {
             ps.printf("%s🡆 %s%n", indentSpace, p.name)
             val relations2: List<ISynsetID> = links[p]!!
@@ -341,7 +340,7 @@ class JWI
 
     fun walk(synset: ISynset, p: IPointer, level: Int, ps: PrintStream) {
         val indentSpace = String(CharArray(level)).replace('\u0000', '\t')
-        val relations2: List<ISynsetID> = checkNotNull(synset.getRelatedSynsets(p))
+        val relations2: List<ISynsetID> = checkNotNull(synset.getRelatedFor(p))
         for (synsetid2 in relations2) {
             val synset2: ISynset? = checkNotNull(dict.getSynset(synsetid2))
             ps.printf("%s%s%n", indentSpace, toString(synset2!!))

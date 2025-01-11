@@ -25,7 +25,6 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
-import kotlin.Throws
 
 /**
  * Default implementation of the `IRAMDictionary` interface. This
@@ -1001,7 +1000,7 @@ class RAMDictionary private constructor(
                 .toList()
 
             // related synsets
-            val newRelated = old.relatedMap
+            val newRelated = old.related
                 .map { (ptr, oldTargets) ->
                     val newTargets: List<ISynsetID> = oldTargets
                         .map {

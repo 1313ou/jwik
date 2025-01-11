@@ -18,7 +18,6 @@ import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
 import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
-import kotlin.Throws
 
 /**
  * Basic implementation of the `IDictionary` interface. A path to the
@@ -279,7 +278,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         // go find the head word
         var headSynset: ISynset?
         var headWord: IWord? = null
-        val related: List<ISynsetID> = checkNotNull(synset.getRelatedSynsets(Pointer.SIMILAR_TO))
+        val related: List<ISynsetID> = checkNotNull(synset.getRelatedFor(Pointer.SIMILAR_TO))
         for (simID in related) {
             headSynset = getSynset(simID)
             // assume first 'similar' adjective head is the right one
