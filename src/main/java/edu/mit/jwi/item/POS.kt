@@ -100,12 +100,12 @@ enum class POS
         const val TAG_ADJECTIVE_SATELLITE: Char = 's'
 
         /**
-         * Returns `true` if the specified number represents an adjective
-         * satellite, namely, if the number is 5; `false` otherwise
+         * Returns true if the specified number represents an adjective
+         * satellite, namely, if the number is 5; false otherwise
          *
          * @param num the number to be checked
-         * @return `true` if the specified number represents an adjective
-         * satellite, namely, if the number is 5; `false` otherwise
+         * @return true if the specified number represents an adjective
+         * satellite, namely, if the number is 5; false otherwise
          * @since JWI 2.0.0
          */
         @JvmStatic
@@ -114,14 +114,14 @@ enum class POS
         }
 
         /**
-         * Returns `true` if the specified character represents an
+         * Returns true if the specified character represents an
          * adjective satellite, namely, if the number is 's' or 'S';
-         * `false` otherwise
+         * false otherwise
          *
          * @param tag the character to be checked
-         * @return `true` if the specified number represents an adjective
+         * @return true if the specified number represents an adjective
          * satellite, namely, if the number is 's' or 'S';
-         * `false` otherwise
+         * false otherwise
          * @since JWI 2.0.0
          */
         fun isAdjectiveSatellite(tag: Char): Boolean {
@@ -133,7 +133,7 @@ enum class POS
          *
          * @param num the number for the part of speech
          * @return POS the part of speech object corresponding to the specified tag,
-         * or `null` if none is found
+         * or null if none is found
          * @since JWI 2.0.0
          */
         @JvmStatic

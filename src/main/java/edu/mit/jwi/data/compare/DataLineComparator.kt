@@ -22,7 +22,7 @@ package edu.mit.jwi.data.compare
  * class via the static [.getInstance] method.
  *
  * @param detector the comment detector for this line comparator, or
- * `null` if there is none
+ * null if there is none
  *
  *
  * This class follows a singleton design pattern, and is not intended to be
@@ -88,9 +88,9 @@ class DataLineComparator private constructor(
         var instance: DataLineComparator? = null
             /**
              * Returns the singleton instance of this class, instantiating it if
-             * necessary. The singleton instance will not be `null`.
+             * necessary. The singleton instance will not be null.
              *
-             * @return the non-`null` singleton instance of this class,
+             * @return the non-null singleton instance of this class,
              * instantiating it if necessary.
              * @since JWI 2.0.0
              */

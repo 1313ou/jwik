@@ -26,8 +26,8 @@ class SynsetID(offset: Int, pos: POS) : ISynsetID {
      * Constructs a new synset id with the specified offset and part of speech.
      *
      * @param offset the offset
-     * @param pos    the part of speech; may not be `null`
-     * @throws NullPointerException     if the specified part of speech is `null`
+     * @param pos    the part of speech; may not be null
+     * @throws NullPointerException     if the specified part of speech is null
      * @throws IllegalArgumentException if the specified offset is not a legal offset
      * @since JWI 1.0
      */
@@ -109,7 +109,7 @@ class SynsetID(offset: Int, pos: POS) : ISynsetID {
          * trailing whitespace
          * @return a synset id object corresponding to the specified string
          * representation
-         * @throws NullPointerException     if the specified string is `null`
+         * @throws NullPointerException     if the specified string is null
          * @throws IllegalArgumentException if the specified string is not a properly formatted synset id
          * @since JWI 1.0
          */

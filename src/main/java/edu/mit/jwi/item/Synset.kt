@@ -9,36 +9,37 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
+import edu.mit.jwi.item.LexFile.Companion.ADJ_ALL
+import edu.mit.jwi.item.POS.Companion.NUM_ADJECTIVE
+import edu.mit.jwi.item.POS.Companion.NUM_ADJECTIVE_SATELLITE
 import java.util.*
 
 /**
  * Default implementation of the `ISynset` interface.
  *
+ * @property iD the synset id
+ * @property lexicalFile the lexical file for this synset
+ * @property isAdjectiveSatellite true if this object represents an adjective satellite synset; false otherwise
+ * @property isAdjectiveHead true if this object represents an adjective head synset; false otherwise
+ * @property gloss the gloss for this synset
+ * @param wordBuilders the list of word builders for this synset
+ * @param ids a map of related synset lists, indexed by pointer; may be null
+
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
 class Synset(
-    id: ISynsetID,
-    lexFile: ILexFile,
-    isAdjSat: Boolean,
-    isAdjHead: Boolean,
-    gloss: String,
+    override val iD: ISynsetID,
+    override val lexicalFile: ILexFile,
+    override val isAdjectiveSatellite: Boolean,
+    override val isAdjectiveHead: Boolean,
+    override val gloss: String,
     wordBuilders: List<IWordBuilder>,
     ids: Map<IPointer, List<ISynsetID>>?,
 ) : ISynset {
 
-    override val iD: ISynsetID
-
-    override val gloss: String
-
-    override val lexicalFile: ILexFile
-
     override val words: List<IWord>
-
-    override val isAdjectiveSatellite: Boolean
-
-    override val isAdjectiveHead: Boolean
 
     override val relatedSynsets: List<ISynsetID>
 
@@ -46,112 +47,60 @@ class Synset(
 
     override val offset: Int
         get() {
-            checkNotNull(this.iD)
             return iD.offset
         }
 
     override val pOS: POS
         get() {
-            checkNotNull(this.iD)
             return iD.pOS!!
         }
 
     override val type: Int
         get() {
             val pos = pOS
-            if (pos != POS.ADJECTIVE) {
-                checkNotNull(pos)
-                return pos.number
+            if (pos == POS.ADJECTIVE) {
+                return if (isAdjectiveSatellite) NUM_ADJECTIVE_SATELLITE else NUM_ADJECTIVE
             }
-            return if (isAdjectiveSatellite) 5 else 3
+            return pos.number
         }
 
     /**
-     * Constructs a new synset object with the specified parameters.
-     *
-     * @param id           the synset id; may not be `null`
-     * @param lexFile      the lexical file for this synset; may not be `null`
-     * @param isAdjSat     `true` if this object represents an adjective
-     * satellite synset; `false` otherwise
-     * @param isAdjHead    `true` if this object represents an adjective head
-     * synset; `false` otherwise
-     * @param gloss        the gloss for this synset; may not be `null`
-     * @param wordBuilders the list of word builders for this synset; may not be
-     * `null`
-     * @param ids          a map of related synset lists, indexed by pointer; may be
-     * `null`
-     * @throws NullPointerException     if any of the id, lexical file, word list, or gloss are
-     * `null`, or the word list contains a
-     * `null`
-     * @throws IllegalArgumentException if the word list is empty, or both the adjective satellite
-     * and adjective head flags are set
-     * @throws IllegalArgumentException if either the adjective satellite and adjective head flags
-     * are set, and the lexical file number is not zero
+     * @throws IllegalArgumentException if the word list is empty, or both the adjective satellite and adjective head flags are set
+     * @throws IllegalArgumentException if either the adjective satellite and adjective head flags are set, and the lexical file number is not zero
      * @since JWI 1.0
      */
     init {
         require(!wordBuilders.isEmpty())
-        require(!(isAdjSat && isAdjHead))
-        require(!((isAdjSat || isAdjHead) && lexFile.number != 0))
-
-        this.iD = id
-        this.lexicalFile = lexFile
-        this.gloss = gloss
-        this.isAdjectiveSatellite = isAdjSat
-        this.isAdjectiveHead = isAdjHead
+        require(!(isAdjectiveSatellite && isAdjectiveHead))
+        require(!((isAdjectiveSatellite || isAdjectiveHead) && lexicalFile.number != ADJ_ALL.number))
 
         // words
-        val words: MutableList<IWord?> = ArrayList<IWord?>(wordBuilders.size)
-        for (wordBuilder in wordBuilders) {
-            words.add(wordBuilder.toWord(this))
-        }
-        this.words = Collections.unmodifiableList<IWord?>(words)
+        words = wordBuilders
+            .map { it.toWord(this) }
+            .toList()
 
-        var hiddenSet: MutableSet<ISynsetID>? = null
-        var hiddenMap: MutableMap<IPointer, List<ISynsetID>>? = null
-        // fill synset map
-        if (ids != null) {
-            hiddenSet = LinkedHashSet<ISynsetID>()
-            hiddenMap = HashMap<IPointer, List<ISynsetID>>(ids.size)
-            for (entry in ids.entries) {
-                if (entry.value == null || entry.value.isEmpty()) {
-                    continue
-                }
-                hiddenMap.put(entry.key, Collections.unmodifiableList<ISynsetID?>(ArrayList<ISynsetID?>(entry.value)))
-                hiddenSet.addAll(entry.value)
-            }
-        }
-        this.relatedSynsets = if (hiddenSet != null && !hiddenSet.isEmpty()) Collections.unmodifiableList<ISynsetID?>(ArrayList<ISynsetID>(hiddenSet)) else listOf<ISynsetID>()
-        this.relatedMap = if (hiddenMap != null && !hiddenMap.isEmpty()) Collections.unmodifiableMap<IPointer, List<ISynsetID>>(hiddenMap) else mapOf<IPointer, List<ISynsetID>>()
-    }
+        // related synset map
+        relatedMap = ids
+            ?.entries
+            ?.filterNot { it.value.isEmpty() }
+            ?.associate { it.key to it.value }
+            ?: emptyMap()
 
-    override fun getWord(wordNumber: Int): IWord {
-        return words[wordNumber - 1]
+        // related synset list
+        relatedSynsets = relatedMap.values
+            .flatMap { it.toList() }
+            .distinct()
+            .toList()
     }
 
     override fun getRelatedSynsets(ptrType: IPointer): List<ISynsetID> {
-        val result: List<ISynsetID>? = relatedMap[ptrType]
-        return result ?: listOf<ISynsetID>()
+        return relatedMap[ptrType] ?: emptyList()
     }
 
     override fun hashCode(): Int {
-        val PRIME = 31
-        var result = 1
-        checkNotNull(gloss)
-        result = PRIME * result + gloss.hashCode()
-        result = PRIME * result + (if (this.isAdjectiveSatellite) 1231 else 1237)
-        checkNotNull(this.iD)
-        result = PRIME * result + iD.hashCode()
-        result = PRIME * result + words.hashCode()
-        result = PRIME * result + relatedMap.hashCode()
-        return result
+        return Objects.hash(iD, words, relatedMap, gloss, isAdjectiveSatellite)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
@@ -163,46 +112,27 @@ class Synset(
             return false
         }
         val other = obj
-        checkNotNull(this.iD)
-        if (this.iD != other.iD) {
+        if (iD != other.iD) {
             return false
         }
         if (words != other.words) {
             return false
         }
-        checkNotNull(gloss)
         if (gloss != other.gloss) {
             return false
         }
-        if (this.isAdjectiveSatellite != other.isAdjectiveSatellite) {
+        if (isAdjectiveSatellite != other.isAdjectiveSatellite) {
             return false
         }
         return relatedMap == other.relatedMap
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
-
     override fun toString(): String {
-        val sb = StringBuilder()
-        sb.append("SYNSET{")
-        checkNotNull(this.iD)
-        sb.append(this.iD)
-        sb.append(" : Words[")
-        for (word in words) {
-            sb.append(word.toString())
-            sb.append(", ")
-        }
-        sb.replace(sb.length - 2, sb.length, "]}")
-        return sb.toString()
+        return "SYNSET{${iD} : Words[${words.joinToString(separator = ", ")}]}"
     }
 
     /**
-     * A word builder used to construct word objects inside the synset object
-     * constructor.
+     * A word builder used to construct word objects inside the synset object constructor.
      *
      * @author Mark A. Finlayson
      * @version 2.4.0
@@ -225,8 +155,8 @@ class Synset(
         /**
          * Adds the specified verb frame to this word.
          *
-         * @param frame the frame to be added, may not be `null`
-         * @throws NullPointerException if the specified frame is `null`
+         * @param frame the frame to be added
+         * @throws NullPointerException if the specified frame is null
          * @since JWI 2.2.0
          */
         fun addVerbFrame(frame: IVerbFrame)
@@ -234,9 +164,9 @@ class Synset(
         /**
          * Adds a pointer from this word to another word with the specified id.
          *
-         * @param ptrType the pointer type, may not be `null`
-         * @param id      the word id, may not be `null`
-         * @throws NullPointerException if either argument is `null`
+         * @param ptrType the pointer type
+         * @param id      the word id
+         * @throws NullPointerException if either argument is null
          * @since JWI 2.2.0
          */
         fun addRelatedWord(ptrType: IPointer, id: IWordID)
@@ -245,23 +175,18 @@ class Synset(
     /**
      * Holds information about word objects before they are instantiated.
      *
+     * Constructs a new word builder object. The constructor does not check
+     * its arguments - this is done when the word is created.
+     *
+     * @property num    the word number
+     * @property lemma  the lemma
+     * @property lexID  the id of the lexical file in which the word is listed
+     * @property marker the adjective marker for the word
      * @author Mark A. Finlayson
      * @version 2.4.0
      * @since JWI 1.0
      */
-    class WordBuilder
-
-    /**
-     * Constructs a new word builder object. The constructor does not check
-     * its arguments - this is done when the word is created.
-     *
-     * @param num    the word number
-     * @param lemma  the lemma
-     * @param lexID  the id of the lexical file in which the word is listed
-     * @param marker the adjective marker for the word
-     * @since JWI 1.0
-     */
-        (
+    data class WordBuilder (
         private val num: Int,
         private val lemma: String,
         private val lexID: Int,
@@ -273,21 +198,12 @@ class Synset(
         private val verbFrames = ArrayList<IVerbFrame>()
 
         override fun addRelatedWord(ptrType: IPointer, id: IWordID) {
-            if (ptrType == null) {
-                throw NullPointerException()
-            }
-            if (id == null) {
-                throw NullPointerException()
-            }
             val words = relatedWords.computeIfAbsent(ptrType) { k: IPointer -> ArrayList<IWordID>() }
             words.add(id)
         }
 
         override fun addVerbFrame(frame: IVerbFrame) {
-            if (frame == null) {
-                throw NullPointerException()
-            }
-            verbFrames.add(frame)
+             verbFrames.add(frame)
         }
 
         override fun toWord(synset: ISynset): IWord {
@@ -298,43 +214,23 @@ class Synset(
     companion object {
 
         /**
-         * This serial version UID identifies the last version of JWI whose
-         * serialized instances of the Synset class are compatible with this
-         * implementation.
-         *
-         * @since JWI 2.4.0
-         */
-        private const val serialVersionUID: Long = 240
-
-        /**
-         * Takes an integer in the closed range [0,99999999] and converts it into an
-         * eight decimal digit zero-filled string. E.g., "1" becomes "00000001",
-         * "1234" becomes "00001234", and so on. This is used for the generation of
-         * synset and word numbers.
+         * Takes an integer in the closed range [0,99999999] and converts it into an eight decimal digit zero-filled string.
+         * E.g., "1" becomes "00000001", "1234" becomes "00001234", and so on.
+         * This is used for the generation of synset and word numbers.
          *
          * @param offset the offset to be converted
          * @return the zero-filled string representation of the offset
-         * @throws IllegalArgumentException if the specified offset is not in the valid range of
-         * [0,99999999]
+         * @throws IllegalArgumentException if the specified offset is not in the valid range of [0,99999999]
          * @since JWI 2.1.0
          */
         @JvmStatic
-
         fun zeroFillOffset(offset: Int): String {
             checkOffset(offset)
-            val sb = StringBuilder(8)
-            val offsetStr = offset.toString()
-            val numZeros = 8 - offsetStr.length
-            for (i in 0..<numZeros) {
-                sb.append('0')
-            }
-            sb.append(offsetStr)
-            return sb.toString()
+            return "%08d".format(offset)
         }
 
         /**
-         * Throws an exception if the specified offset is not in the valid range of
-         * [0,99999999].
+         * Throws an exception if the specified offset is not in the valid range of [0,99999999].
          *
          * @param offset the offset to be checked
          * @return the checked offset
@@ -353,14 +249,12 @@ class Synset(
          * range of [0,99999999].
          *
          * @param offset the offset to be checked
-         * @return `true` if the specified offset is in the closed range
-         * [0, 99999999]; `false` otherwise.
+         * @return true if the specified offset is in the closed range [0, 99999999]; false otherwise.
          * @since JWI 2.2.0
          */
         fun isLegalOffset(offset: Int): Boolean {
-            if (offset < 0) {
+            if (offset < 0)
                 return false
-            }
             return offset <= 99999999
         }
     }

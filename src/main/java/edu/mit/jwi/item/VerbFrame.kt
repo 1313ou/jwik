@@ -160,10 +160,10 @@ class VerbFrame(
 
         /**
          * Returns the frame indexed by the specified number defined in this class,
-         * or `null` if there is
+         * or null if there is
          *
          * @param number the verb frame number
-         * @return the verb frame with the specified number, or `null` if
+         * @return the verb frame with the specified number, or null if
          * none
          * @since JWI 2.1.0
          */

@@ -82,10 +82,10 @@ private constructor() : ILineParser<IIndexWord> {
      *
      * @param symbol the symbol of the pointer to return
      * @param pos    the part of speech of the pointer to return, can be
-     * `null` unless the pointer symbol is ambiguous
+     * null unless the pointer symbol is ambiguous
      * @return the pointer corresponding to the specified symbol and part of
      * speech combination
-     * @throws NullPointerException     if the symbol is `null`
+     * @throws NullPointerException     if the symbol is null
      * @throws IllegalArgumentException if the symbol and part of speech combination does not
      * correspond to a known pointer
      * @since JWI 2.3.0
@@ -98,9 +98,9 @@ private constructor() : ILineParser<IIndexWord> {
 
         /**
          * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be `null`.
+         * necessary. The singleton instance will not be null.
          *
-         * @return the non-`null` singleton instance of this class,
+         * @return the non-null singleton instance of this class,
          * instantiating it if necessary.
          * @since JWI 2.0.0
          */

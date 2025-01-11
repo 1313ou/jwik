@@ -25,7 +25,7 @@ interface IWordID : IHasPOS, IItemID {
      * Returns the word number, which is a number from 1 to 255 that indicates
      * the order this word is listed in the Wordnet data files. If the word
      * number has not been specified, will return -1. If this method returns -1,
-     * the [.getLemma] method will return a non-`null`,
+     * the [.getLemma] method will return a non-null,
      * non-empty string, non-whitespace string.
      *
      * @return an integer between 1 and 255, inclusive; or -1 if the word number

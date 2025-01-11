@@ -33,7 +33,7 @@ class ExceptionEntryID(
      *
      * @param surfaceForm the surface form for the entry
      * @param pos         the part of speech for the entry
-     * @throws NullPointerException     if either argument is `null`
+     * @throws NullPointerException     if either argument is null
      * @throws IllegalArgumentException if the surface form is empty or all whitespace
      * @since JWI 1.0
      */
@@ -93,7 +93,7 @@ class ExceptionEntryID(
          *
          * @param value the string to parse
          * @return the derived exception entry id
-         * @throws NullPointerException     if the specified string is `null`
+         * @throws NullPointerException     if the specified string is null
          * @throws IllegalArgumentException if the specified string does not conform to an exception
          * entry id
          * @since JWI 2.2.0

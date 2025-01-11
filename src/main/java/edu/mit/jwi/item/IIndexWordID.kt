@@ -22,7 +22,7 @@ interface IIndexWordID : IHasPOS, IItemID {
 
     /**
      * Returns the lemma (root form) of the index word that this ID indicates.
-     * The lemma will never be `null`, empty, or all whitespace.
+     * The lemma will never be null, empty, or all whitespace.
      *
      * @return the lemma of the index word
      * @since JWI 1.0

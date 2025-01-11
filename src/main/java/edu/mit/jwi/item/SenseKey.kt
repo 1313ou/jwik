@@ -70,7 +70,7 @@ class SenseKey(
      * @param lemma  the lemma for the sense key
      * @param lexID  the lexical id of the sense key
      * @param synset the synset for the sense key
-     * @throws NullPointerException if either the lemma or synset is `null`
+     * @throws NullPointerException if either the lemma or synset is null
      * @since JWI 2.1.0
      */
     constructor(lemma: String, lexID: Int, synset: ISynset) : this(lemma, lexID, synset.pOS!!, synset.isAdjectiveSatellite, synset.lexicalFile)
@@ -78,15 +78,15 @@ class SenseKey(
     /**
      * Constructs a new sense key.
      *
-     * @param lemma       the lemma; may not be `null`
+     * @param lemma       the lemma; may not be null
      * @param lexID       the lexical id
-     * @param pos         the part of speech; may not be `null`
-     * @param isAdjSat    `true` if this represents an adjective satellite;
-     * `false` otherwise
-     * @param lexFile     the lexical file; may not be `null`
+     * @param pos         the part of speech; may not be null
+     * @param isAdjSat    true if this represents an adjective satellite;
+     * false otherwise
+     * @param lexFile     the lexical file; may not be null
      * @param originalKey the original key string
      * @throws NullPointerException if the lemma, lexical file, or original key is
-     * `null`
+     * null
      * @since JWI 2.1.0
      */
     constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: ILexFile, originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
@@ -99,15 +99,15 @@ class SenseKey(
     /**
      * Constructs a new sense key.
      *
-     * @param lemma       the lemma; may not be `null`
+     * @param lemma       the lemma; may not be null
      * @param lexID       the lexical id
-     * @param pos         the part of speech; may not be `null`
-     * @param lexFile     the lexical file; may not be `null`
+     * @param pos         the part of speech; may not be null
+     * @param lexFile     the lexical file; may not be null
      * @param originalKey the original key string
      * @param headLemma   the head lemma
      * @param headLexID   the head lexical id; ignored if head lemma is null
      * @throws NullPointerException if the lemma, lexical file, or original key is
-     * `null`
+     * null
      * @since JWI 2.1.0
      */
     constructor(lemma: String, lexID: Int, pos: POS, lexFile: ILexFile, headLemma: String?, headLexID: Int, originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
@@ -125,14 +125,14 @@ class SenseKey(
     /**
      * Constructs a new sense key.
      *
-     * @param lemma    the lemma; may not be `null`
+     * @param lemma    the lemma; may not be null
      * @param lexID    the lexical id
-     * @param pos      the part of speech; may not be `null`
-     * @param isAdjSat `true` if this is an adjective satellite sense key;
-     * `false` otherwise
-     * @param lexFile  the lexical file; may not be `null`
+     * @param pos      the part of speech; may not be null
+     * @param isAdjSat true if this is an adjective satellite sense key;
+     * false otherwise
+     * @param lexFile  the lexical file; may not be null
      * @throws NullPointerException if the lemma, part of speech, or lexical file is
-     * `null`
+     * null
      * @since JWI 2.1.0
      */
     init {
@@ -234,7 +234,7 @@ class SenseKey(
      * Throws an exception if the head is not yet set.
      *
      * @throws IllegalArgumentException if the [.needsHeadSet] method returns
-     * `true`.
+     * true.
      * @since JWI 2.2.0
      */
     private fun checkHeadSet() {
@@ -313,7 +313,7 @@ class SenseKey(
          *
          * @param key the sense key to be encoded as a string
          * @return the string representation of the sense key
-         * @throws NullPointerException if the specified key is `null`
+         * @throws NullPointerException if the specified key is null
          * @since JWI 2.1.0
          */
 

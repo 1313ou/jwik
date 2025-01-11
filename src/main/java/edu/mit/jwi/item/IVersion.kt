@@ -46,9 +46,9 @@ interface IVersion : Serializable {
 
     /**
      * Returns the version qualifier, i.e., the 'abc' in '1.7.2.abc'. The
-     * qualifier is never `null`, but may be empty.
+     * qualifier is never null, but may be empty.
      *
-     * @return the version qualifier, non-`null`, potentially empty
+     * @return the version qualifier, non-null, potentially empty
      * @since JWI 2.2.0
      */
     val qualifier: String?
@@ -57,7 +57,7 @@ interface IVersion : Serializable {
 
         /**
          * A dummy version object used to indicate that the version has been
-         * calculated, and determined to be `null`.
+         * calculated, and determined to be null.
          *
          * @since JWI 2.2.0
          */

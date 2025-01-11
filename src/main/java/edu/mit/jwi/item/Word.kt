@@ -39,15 +39,15 @@ class Word(
     /**
      * Constructs a new word object.
      *
-     * @param synset    the synset for the word; may not be `null`
+     * @param synset    the synset for the word; may not be null
      * @param number    the word number
      * @param lemma     the word lemma; may not be empty or all whitespace
      * @param lexID     the lexical id
-     * @param adjMarker non-`null` only if this is an adjective
+     * @param adjMarker non-null only if this is an adjective
      * @param frames    verb frames if this is a verb
      * @param pointers  lexical pointers
-     * @throws NullPointerException     if the synset is `null`
-     * @throws IllegalArgumentException if the adjective marker is non-`null` and this is not an adjective
+     * @throws NullPointerException     if the synset is null
+     * @throws IllegalArgumentException if the adjective marker is non-null and this is not an adjective
      * @since JWI 1.0
      */
     constructor(
@@ -156,15 +156,15 @@ class Word(
     /**
      * Constructs a new word object.
      *
-     * @param synset    the synset for the word; may not be `null` the word
+     * @param synset    the synset for the word; may not be null the word
      * lemma; may not be empty or all whitespace
-     * @param id        the word id; may not be `null`
+     * @param id        the word id; may not be null
      * @param lexID     the lexical id
-     * @param adjMarker non-`null` only if this is an adjective
+     * @param adjMarker non-null only if this is an adjective
      * @param frames    verb frames if this is a verb
      * @param pointers  lexical pointers
-     * @throws NullPointerException     if the synset or word ID is `null`
-     * @throws IllegalArgumentException if the adjective marker is non-`null` and this is
+     * @throws NullPointerException     if the synset or word ID is null
+     * @throws IllegalArgumentException if the adjective marker is non-null and this is
      * not an adjective
      * @since JWI 1.0
      */
@@ -253,8 +253,8 @@ class Word(
          * hexadecimal integer.
          *
          * @param id the lexical id to check
-         * @return `true` if the specified integer is an invalid lexical
-         * id; `false` otherwise.
+         * @return true if the specified integer is an invalid lexical
+         * id; false otherwise.
          * @since JWI 2.1.0
          */
         fun isIllegalLexicalID(id: Int): Boolean {
@@ -270,8 +270,8 @@ class Word(
          * word listing.
          *
          * @param num the number to check
-         * @return `true` if the specified integer is an invalid lexical
-         * id; `false` otherwise.
+         * @return true if the specified integer is an invalid lexical
+         * id; false otherwise.
          * @since JWI 2.1.0
          */
         fun isIllegalWordNumber(num: Int): Boolean {

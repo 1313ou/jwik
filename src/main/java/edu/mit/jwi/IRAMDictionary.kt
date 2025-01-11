@@ -29,11 +29,11 @@ interface IRAMDictionary : IDictionary, ILoadPolicy, ILoadable {
      * the data.
      *
      * @param out the output stream to which the in-memory data will be written;
-     * may not be `null`
+     * may not be null
      * @throws IOException           if there is a problem writing the in-memory data to the
      * output stream.
      * @throws IllegalStateException if the dictionary has not been loaded into memory
-     * @throws NullPointerException  if the output stream is `null`
+     * @throws NullPointerException  if the output stream is null
      * @since JWI 2.4.0
      */
     @Throws(IOException::class)
@@ -80,8 +80,8 @@ interface IRAMDictionary : IDictionary, ILoadPolicy, ILoadable {
          * Creates a FileInputStreamFactory that uses the specified file.
          *
          * @param file the file from which the input streams should be created;
-         * may not be `null`
-         * @throws NullPointerException if the specified file is `null`
+         * may not be null
+         * @throws NullPointerException if the specified file is null
          * @since JWI 2.4.0
          */
         init {
@@ -113,8 +113,8 @@ interface IRAMDictionary : IDictionary, ILoadPolicy, ILoadable {
          * Creates a URLInputStreamFactory that uses the specified url.
          *
          * @param url the url from which the input streams should be created;
-         * may not be `null`
-         * @throws NullPointerException if the specified url is `null`
+         * may not be null
+         * @throws NullPointerException if the specified url is null
          * @since JWI 2.4.0
          */
         init {

@@ -54,15 +54,15 @@ class RAMDictionary private constructor(
     /**
      * Returns the dictionary that backs this instance.
      *
-     * @return the dictionary that backs this instance; may be `null`.
+     * @return the dictionary that backs this instance; may be null.
      * @since JWI 2.2.0
      */
     val backingDictionary: IDictionary?
 
     /**
-     * Returns the stream factory that backs this instance; may be `null`.
+     * Returns the stream factory that backs this instance; may be null.
      *
-     * @return the stream factory that backs this instance; may be `null`
+     * @return the stream factory that backs this instance; may be null
      * @since JWI 2.4.0
      */
     val streamFactory: IInputStreamFactory?
@@ -85,7 +85,7 @@ class RAMDictionary private constructor(
      * in-memory dictionary, the specified load policy is ignored: the
      * dictionary is loaded into memory immediately.
      *
-     * @throws NullPointerException if the specified file is `null`
+     * @throws NullPointerException if the specified file is null
      * @see ILoadPolicy
 
      * Constructs a new wrapper RAM dictionary that will load the contents the
@@ -93,13 +93,13 @@ class RAMDictionary private constructor(
      * if the file points to an exported image of an in-memory dictionary, the
      * required load policy is to load immediately.
      *
-     * @param file       a file pointing to a local copy of wordnet; may not be `null`
+     * @param file       a file pointing to a local copy of wordnet; may not be null
      * @param loadPolicy the load policy of the dictionary; see constants in
      * [ILoadPolicy]. Note that if the file points to a
      * resource that is the exported image of an in-memory
      * dictionary, the specified load policy is ignored: the
      * dictionary is loaded into memory immediately.
-     * @throws NullPointerException if the specified file is `null`
+     * @throws NullPointerException if the specified file is null
      * @since JWI 2.4.0
      */
     @JvmOverloads
@@ -114,7 +114,7 @@ class RAMDictionary private constructor(
      * in-memory dictionary, the specified load policy is ignored: the
      * dictionary is loaded into memory immediately.
      *
-     * @throws NullPointerException if the specified url is `null`
+     * @throws NullPointerException if the specified url is null
      * @see ILoadPolicy
      *
      * Constructs a new RAMDictionary that will load the contents the specified
@@ -122,13 +122,13 @@ class RAMDictionary private constructor(
      * to a resource that is the exported image of an in-memory dictionary, the
      * required load policy is to load immediately.
      *
-     * @param url        an url pointing to a local copy of wordnet; may not be `null`
+     * @param url        an url pointing to a local copy of wordnet; may not be null
      * @param loadPolicy the load policy of the dictionary; see constants in
      * [ILoadPolicy]. Note that if the url points to a
      * resource that is the exported image of an in-memory
      * dictionary, the specified load policy is ignored: the
      * dictionary is loaded into memory immediately.
-     * @throws NullPointerException if the specified url is `null`
+     * @throws NullPointerException if the specified url is null
      * @since JWI 2.4.0
      */
     @JvmOverloads
@@ -141,7 +141,7 @@ class RAMDictionary private constructor(
      * Constructs a new RAMDictionary that will load the contents of
      * the wrapped dictionary into memory, with the specified load policy.
      *
-     * @param dict       the dictionary to be wrapped, may not be `null`
+     * @param dict       the dictionary to be wrapped, may not be null
      * @param loadPolicy the load policy of the dictionary; see constants in
      * [ILoadPolicy].
      * @see ILoadPolicy
@@ -154,8 +154,8 @@ class RAMDictionary private constructor(
      * Constructs a new RAMDictionary that will load an in-memory image from the
      * specified stream factory.
      *
-     * @param factory the stream factory that provides the stream; may not be `null`
-     * @throws NullPointerException if the factory is `null`
+     * @param factory the stream factory that provides the stream; may not be null
+     * @throws NullPointerException if the factory is null
      * @since JWI 2.4.0
      */
     constructor(factory: IInputStreamFactory) : this(null, factory, ILoadPolicy.IMMEDIATE_LOAD)
@@ -163,12 +163,12 @@ class RAMDictionary private constructor(
     /**
      * This is an internal constructor that unifies the constructor decision
      * matrix. Exactly one of the backing dictionary or the input factory must
-     * be non-`null`, otherwise an exception is thrown. If the
-     * factory is non-`null`, the dictionary will ignore the
+     * be non-null, otherwise an exception is thrown. If the
+     * factory is non-null, the dictionary will ignore the
      * specified load policy and set the load policy to "immediate load".
      *
-     * @param backing    the backing dictionary; may be `null`
-     * @param factory    the input stream factory; may be `null`
+     * @param backing    the backing dictionary; may be null
+     * @param factory    the input stream factory; may be null
      * @param loadPolicy the load policy
      * @since JWI 2.4.0
      */
@@ -452,7 +452,7 @@ class RAMDictionary private constructor(
             // depending on whence the word id came, so we have to check
             // them before trying.
             if (id.wordNumber > 0) {
-                return synset.getWord(id.wordNumber)
+                return synset.words[id.wordNumber - 1]
             } else if (id.lemma != null) {
                 for (word in synset.words) {
                     val lemma = checkNotNull(word.lemma)
@@ -537,7 +537,7 @@ class RAMDictionary private constructor(
      * Constructs a new hot swappable iterator.
      *
      * @param itr          the wrapped iterator
-     * @param checkForLoad if `true`, on each call the iterator checks to
+     * @param checkForLoad if true, on each call the iterator checks to
      * see if the dictionary has been loaded into memory,
      * switching data sources if so
      * @param <E> the element type of the iterator
@@ -655,7 +655,7 @@ class RAMDictionary private constructor(
      * A hot swappable iterator that iterates over exceptions entries for a
      * particular part of speech.
      *
-     * @param pos the part of speech for this iterator, may not be `null`
+     * @param pos the part of speech for this iterator, may not be null
      *
      * @author Mark A. Finlayson
      * @since JWI 2.2.0
@@ -742,7 +742,7 @@ class RAMDictionary private constructor(
      * dictionary to load its data.
      *
      * @param source source dictionary
-     * @throws NullPointerException if the specified dictionary is `null`
+     * @throws NullPointerException if the specified dictionary is null
      * @author Mark A. Finlayson
      * @since JWI 2.2.0
      */
@@ -836,7 +836,7 @@ class RAMDictionary private constructor(
          * @param key the sense key to be used
          * @param old the sense entry to be replicated
          * @return the new sense entry object
-         * @throws NullPointerException if either argument is `null`
+         * @throws NullPointerException if either argument is null
          * @since JWI 2.2.0
          */
         private fun makeSenseEntry(key: ISenseKey, old: ISenseEntry): ISenseEntry {
@@ -903,13 +903,13 @@ class RAMDictionary private constructor(
          * @param <K>         the type of the keys for the sub-maps
          * @param <V>         the type of the values for the sub-maps
          * @param initialSize the initial size of the map; this parameter is ignored if
-         * the `contents` parameter is non-`null`.
-         * @param contents    the items to be inserted in the map, may be `null`.
-         * If non-`null`, the `initialSize` parameter is ignored
+         * the `contents` parameter is non-null.
+         * @param contents    the items to be inserted in the map, may be null.
+         * If non-null, the `initialSize` parameter is ignored
          * @return an empty map with either the specified initial size, or
          * contained the specified contents
          * @throws IllegalArgumentException if the initial size is invalid (less than 1) and the
-         * specified contents are `null`
+         * specified contents are null
          * @since JWI 2.2.0
          */
         private fun <K, V> makeMap(initialSize: Int, contents: MutableMap<K, V>?): MutableMap<K, V> {
@@ -958,11 +958,11 @@ class RAMDictionary private constructor(
         /**
          * Compacts a regular map.
          *
-         * @param map the map to be compacted, may not be `null`.
+         * @param map the map to be compacted, may not be null.
          * @param <K> key type
          * @param <V> value type
          * @return the new, compacted map
-         * @throws NullPointerException if the specified map is `null`
+         * @throws NullPointerException if the specified map is null
          * @since JWI 2.2.0
          */
         private fun <K, V> compactMap(map: MutableMap<K, V>): MutableMap<K, V> {
@@ -997,7 +997,7 @@ class RAMDictionary private constructor(
          *
          * @param old the synset to be replicated
          * @return the new synset, a copy of the first
-         * @throws NullPointerException if the specified synset is `null`
+         * @throws NullPointerException if the specified synset is null
          * @since JWI 2.2.0
          */
         private fun makeSynset(old: ISynset): ISynset {
@@ -1035,7 +1035,7 @@ class RAMDictionary private constructor(
          * @param oldSynset the old synset from which the word should be made
          * @param old       the word to be replicated
          * @return the new synset, a copy of the first
-         * @throws NullPointerException if any argument is `null`
+         * @throws NullPointerException if any argument is null
          * @since JWI 2.2.0
          */
         private fun makeWord(newSynset: ISynset, oldSynset: ISynset, old: IWord): IWord {
@@ -1049,7 +1049,7 @@ class RAMDictionary private constructor(
                     val m = checkNotNull(synsets[otherID.pOS])
                     otherSynset = m[otherID.synsetID]!!
                     checkNotNull(otherSynset)
-                    newList.add(otherSynset.getWord(otherID.wordNumber).iD)
+                    newList.add(otherSynset.words[otherID.wordNumber - 1].iD)
                 }
                 newPtrs.put(entry.key, newList)
             }
@@ -1070,7 +1070,7 @@ class RAMDictionary private constructor(
          *
          * @param old the index word to be replicated
          * @return the new index word object
-         * @throws NullPointerException if the specified index word is `null`
+         * @throws NullPointerException if the specified index word is null
          * @since JWI 2.2.0
          */
         private fun makeIndexWord(old: IIndexWord): IIndexWord {
@@ -1092,9 +1092,9 @@ class RAMDictionary private constructor(
          * synset and word.
          *
          * @param oldSynset the old synset that backs this builder; may not be
-         * `null`
+         * null
          * @param oldWord   the old word that backs this builder; may not be
-         * `null`
+         * null
          *
          * @author Mark A. Finlayson
          * @version 2.4.0
@@ -1133,13 +1133,13 @@ class RAMDictionary private constructor(
 
         /**
          * Creates an input stream factory out of the specified File. If the file
-         * points to a local directory then the method returns `null`.
+         * points to a local directory then the method returns null.
          *
          * @param file the file out of which to make an input stream factory; may not
-         * be `null`
-         * @return a new input stream factory, or `null` if the url
+         * be null
+         * @return a new input stream factory, or null if the url
          * points to a local directory.
-         * @throws NullPointerException if the specified file is `null`
+         * @throws NullPointerException if the specified file is null
          * @since JWI 2.4.0
          */
         fun createInputStreamFactory(file: File): IInputStreamFactory? {
@@ -1148,13 +1148,13 @@ class RAMDictionary private constructor(
 
         /**
          * Creates an input stream factory out of the specified URL. If the url
-         * points to a local directory then the method returns `null`.
+         * points to a local directory then the method returns null.
          *
          * @param url the url out of which to make an input stream factory; may not
-         * be `null`
-         * @return a new input stream factory, or `null` if the url
+         * be null
+         * @return a new input stream factory, or null if the url
          * points to a local directory.
-         * @throws NullPointerException if the specified url is `null`
+         * @throws NullPointerException if the specified url is null
          * @since JWI 2.4.0
          */
         fun createInputStreamFactory(url: URL): IInputStreamFactory? {
@@ -1166,10 +1166,10 @@ class RAMDictionary private constructor(
          * as the file points to an existing local directory.
          *
          * @param file the local directory for which to create a data source
-         * dictionary; may not be `null`
+         * dictionary; may not be null
          * @return a dictionary object that uses the specified local directory as
-         * its data source; otherwise, `null`
-         * @throws NullPointerException if the specified file is `null`
+         * its data source; otherwise, null
+         * @throws NullPointerException if the specified file is null
          * @since JWI 2.4.0
          */
         fun createBackingDictionary(file: File): IDictionary? {
@@ -1181,10 +1181,10 @@ class RAMDictionary private constructor(
          * as the url points to an existing local directory.
          *
          * @param url the local directory for which to create a data source
-         * dictionary; may not be `null`
+         * dictionary; may not be null
          * @return a dictionary object that uses the specified local directory as
-         * its data source; otherwise, `null`
-         * @throws NullPointerException if the specified url is `null`
+         * its data source; otherwise, null
+         * @throws NullPointerException if the specified url is null
          * @since JWI 2.4.0
          */
         fun createBackingDictionary(url: URL): IDictionary? {
@@ -1198,11 +1198,11 @@ class RAMDictionary private constructor(
          * image.
          *
          * @param in  the file from which the Wordnet data should be loaded; may not
-         * be `null`
+         * be null
          * @param out the output stream to which the Wordnet data should be written;
-         * may not be `null`
-         * @return `true` if the export was successful
-         * @throws NullPointerException if either argument is `null`
+         * may not be null
+         * @return true if the export was successful
+         * @throws NullPointerException if either argument is null
          * @throws IOException          if there is an IO problem when opening or exporting the
          * dictionary.
          * @since JWI 2.4.0
@@ -1219,11 +1219,11 @@ class RAMDictionary private constructor(
          * image.
          *
          * @param in  the url from which the Wordnet data should be loaded; may not
-         * be `null`
+         * be null
          * @param out the output stream to which the Wordnet data should be written;
-         * may not be `null`
-         * @return `true` if the export was successful
-         * @throws NullPointerException if either argument is `null`
+         * may not be null
+         * @return true if the export was successful
+         * @throws NullPointerException if either argument is null
          * @throws IOException          if there is an IO problem when opening or exporting the
          * dictionary.
          * @since JWI 2.4.0
@@ -1239,11 +1239,11 @@ class RAMDictionary private constructor(
          * the specified output stream.
          *
          * @param in  the file from which the Wordnet data should be loaded; may not
-         * be `null`
+         * be null
          * @param out the output stream to which the Wordnet data should be written;
-         * may not be `null`
-         * @return `true` if the export was successful
-         * @throws NullPointerException if either argument is `null`
+         * may not be null
+         * @return true if the export was successful
+         * @throws NullPointerException if either argument is null
          * @throws IOException          if there is an IO problem when opening or exporting the
          * dictionary.
          * @since JWI 2.4.0
@@ -1260,7 +1260,7 @@ class RAMDictionary private constructor(
          * @param dict the dictionary to be exported; the dictionary will be closed
          * at the end of the method.
          * @param out  the output stream to which the data will be written.
-         * @return `true` if the export was successful
+         * @return true if the export was successful
          * @throws IOException if there was a IO problem during export
          * @since JWI 2.4.0
          */

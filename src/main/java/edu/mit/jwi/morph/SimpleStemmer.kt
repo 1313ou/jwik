@@ -115,7 +115,7 @@ open class SimpleStemmer : IStemmer {
      *
      * @param word the string to be normalized
      * @return a normalized string
-     * @throws NullPointerException     if the specified string is `null`
+     * @throws NullPointerException     if the specified string is null
      * @throws IllegalArgumentException if the specified string is empty or all whitespace
      * @since JWI 2.1.1
      */
@@ -144,7 +144,7 @@ open class SimpleStemmer : IStemmer {
      * @param noun the word to be modified
      * @return a list of modified forms that were constructed, or the empty list
      * if none
-     * @throws NullPointerException if the specified word is `null`
+     * @throws NullPointerException if the specified word is null
      * @since JWI 1.0
      */
 
@@ -182,7 +182,7 @@ open class SimpleStemmer : IStemmer {
      * @param composite the word to be modified
      * @return a list of modified forms that were constructed, or the empty list
      * if none
-     * @throws NullPointerException if the specified word is `null`
+     * @throws NullPointerException if the specified word is null
      * @since JWI 1.1.1
      */
 
@@ -259,7 +259,7 @@ open class SimpleStemmer : IStemmer {
      * @param verb the word to be modified
      * @return a list of modified forms that were constructed, or the empty list
      * if none
-     * @throws NullPointerException if the specified word is `null`
+     * @throws NullPointerException if the specified word is null
      * @since JWI 1.0
      */
 
@@ -289,7 +289,7 @@ open class SimpleStemmer : IStemmer {
      * @param composite the word to be modified
      * @return a list of modified forms that were constructed, or an empty list
      * if none
-     * @throws NullPointerException if the specified word is `null`
+     * @throws NullPointerException if the specified word is null
      * @since JWI 1.1.1
      */
     protected fun getVerbCollocationRoots(composite: String): List<String> {
@@ -341,7 +341,7 @@ open class SimpleStemmer : IStemmer {
      * @param adj the word to be modified
      * @return a list of modified forms that were constructed, or an empty list
      * if none
-     * @throws NullPointerException if the specified word is `null`
+     * @throws NullPointerException if the specified word is null
      * @since JWI 1.0
      */
     protected fun stripAdjectiveSuffix(adj: String): List<String> {

@@ -48,7 +48,7 @@ interface IWord : IHasPOS, IItem<IWordID> {
      * lexical pointers (i.e., not semantic pointers). To retrieve items related
      * by semantic pointers, call [ISynset.getRelatedSynsets]. If this
      * word has no targets for the specified pointer, this method
-     * returns an empty list. This method never returns `null`.
+     * returns an empty list. This method never returns null.
      *
      * @param ptr the pointer for which related words are requested
      * @return the list of words related by the specified pointer, or an empty

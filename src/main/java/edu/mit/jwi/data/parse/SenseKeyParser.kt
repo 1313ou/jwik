@@ -114,9 +114,9 @@ private constructor() : ILineParser<ISenseKey> {
 
         /**
          * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be `null`.
+         * necessary. The singleton instance will not be null.
          *
-         * @return the non-`null` singleton instance of this class,
+         * @return the non-null singleton instance of this class,
          * instantiating it if necessary.
          * @since JWI 2.1.4
          */

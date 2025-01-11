@@ -14,9 +14,8 @@ import java.io.Serializable
 /**
  * An ID for an [IItem] object.
  *
- * @param <T> the type of the item for which this type is an ID
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.0.0
-</T> */
+ */
 interface IItemID : Serializable

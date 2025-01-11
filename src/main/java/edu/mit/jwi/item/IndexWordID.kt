@@ -32,7 +32,7 @@ class IndexWordID(lemma: String, pos: POS) : IIndexWordID {
      *
      * @param lemma the lemma for the id
      * @param pos   the part of speech for the id
-     * @throws NullPointerException     if either argument is `null`
+     * @throws NullPointerException     if either argument is null
      * @throws IllegalArgumentException if the lemma is empty or all whitespace
      * @since JWI 1.0
      */
@@ -94,7 +94,7 @@ class IndexWordID(lemma: String, pos: POS) : IIndexWordID {
          *
          * @param value the string to be parsed
          * @return the index word id
-         * @throws NullPointerException     if the specified string is `null`
+         * @throws NullPointerException     if the specified string is null
          * @throws IllegalArgumentException if the specified string does not conform to an index word id
          * string
          * @since JWI 1.0

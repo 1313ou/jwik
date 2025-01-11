@@ -33,8 +33,8 @@ interface ICachingDictionary : IDictionary {
     interface IItemCache : IHasLifecycle {
 
         /**
-         * `true` if this cache is enabled;
-         * `false` otherwise.
+         * true if this cache is enabled;
+         * false otherwise.
          * If a cache is enabled, it will cache an item passed to its `cache` methods.
          *
          * @since JWI 2.2.0
@@ -59,7 +59,7 @@ interface ICachingDictionary : IDictionary {
         /**
          * Caches the specified item, if this cache is enabled. Otherwise, does nothing.
          *
-         * @param item the item to be cached; may not be `null`
+         * @param item the item to be cached; may not be null
          * @since JWI 2.2.0
          */
         fun cacheItem(item: IItem<*>)
@@ -67,7 +67,7 @@ interface ICachingDictionary : IDictionary {
         /**
          * Caches the specified word, indexed by its sense key.
          *
-         * @param word the word to be cached; may not be `null`
+         * @param word the word to be cached; may not be null
          * @since JWI 2.2.0
          */
         fun cacheWordByKey(word: IWord)
@@ -75,7 +75,7 @@ interface ICachingDictionary : IDictionary {
         /**
          * Caches the specified entry.
          *
-         * @param entry the entry to be cached; may not be `null`
+         * @param entry the entry to be cached; may not be null
          * @since JWI 2.2.0
          */
         fun cacheSenseEntry(entry: ISenseEntry)
@@ -86,7 +86,7 @@ interface ICachingDictionary : IDictionary {
          * @param <T> the type of the item
          * @param <D> the type of the item id
          * @param id  the id for the requested item
-         * @return the item for the specified id, or `null` if not present in the cache
+         * @return the item for the specified id, or null if not present in the cache
          * @since JWI 2.2.0
          */
         fun <T, D> retrieveItem(id: D): T? where
@@ -97,7 +97,7 @@ interface ICachingDictionary : IDictionary {
          * Retrieves the word identified by the specified sense key.
          *
          * @param key the sense key for the requested word
-         * @return the word for the specified key, or `null` if not
+         * @return the word for the specified key, or null if not
          * present in the cache
          * @since JWI 2.2.0
          */
@@ -107,7 +107,7 @@ interface ICachingDictionary : IDictionary {
          * Retrieves the sense entry identified by the specified sense key.
          *
          * @param key the sense key for the requested sense entry
-         * @return the sense entry for the specified key, or `null` if not present in the cache
+         * @return the sense entry for the specified key, or null if not present in the cache
          * @since JWI 2.2.0
          */
         fun retrieveSenseEntry(key: ISenseKey): ISenseEntry?

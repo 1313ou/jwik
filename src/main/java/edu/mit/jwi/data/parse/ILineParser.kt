@@ -25,7 +25,7 @@ interface ILineParser<T> {
      *
      * @param line the line to be parsed
      * @return the object resulting from the parse
-     * @throws NullPointerException      if the specified line is `null`
+     * @throws NullPointerException      if the specified line is null
      * @throws MisformattedLineException if the line is malformed in some way
      * @since JWI 1.0
      */
@@ -43,7 +43,7 @@ interface ILineParser<T> {
 class MisformattedLineException : RuntimeException {
 
     /**
-     * Constructs a new exception with `null` as its detail message. The
+     * Constructs a new exception with null as its detail message. The
      * cause is not initialized, and may subsequently be initialized by a call
      * to [.initCause].
      *
@@ -72,7 +72,7 @@ class MisformattedLineException : RuntimeException {
      * @param message the detail message (which is saved for later retrieval by the
      * [.getMessage] method).
      * @param cause   the cause (which is saved for later retrieval by the
-     * [.getCause] method). (A `null` value is
+     * [.getCause] method). (A null value is
      * permitted, and indicates that the cause is nonexistent or
      * unknown.)
      * @since JWI 1.0
@@ -86,7 +86,7 @@ class MisformattedLineException : RuntimeException {
      * other throwables.
      *
      * @param cause the cause (which is saved for later retrieval by the
-     * [.getCause] method). (A `null` value is
+     * [.getCause] method). (A null value is
      * permitted, and indicates that the cause is nonexistent or
      * unknown.)
      * @since JWI 2.0.0

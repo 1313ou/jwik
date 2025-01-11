@@ -36,7 +36,7 @@ class WordID : IWordID {
      * produces a word with an unknown lemma.
      *
      * @param offset the synset offset
-     * @param pos    the part of speech; may not be `null`
+     * @param pos    the part of speech; may not be null
      * @param num    the word number
      * @throws IllegalArgumentException if the offset or number are not legal
      * @since JWI 1.0
@@ -48,8 +48,8 @@ class WordID : IWordID {
      * produces a word with an unknown word number.
      *
      * @param offset the synset offset
-     * @param pos    the part of speech; may not be `null`
-     * @param lemma  the lemma; may not be `null`, empty, or all
+     * @param pos    the part of speech; may not be null
+     * @param lemma  the lemma; may not be null, empty, or all
      * whitespace
      * @since JWI 1.0
      */
@@ -59,9 +59,9 @@ class WordID : IWordID {
      * Constructs a word id from the specified arguments. This constructor
      * produces a word with an unknown lemma.
      *
-     * @param id  the synset id; may not be `null`
+     * @param id  the synset id; may not be null
      * @param num the word number
-     * @throws NullPointerException     if the synset id is `null`
+     * @throws NullPointerException     if the synset id is null
      * @throws IllegalArgumentException if the lemma is empty or all whitespace
      * @since JWI 1.0
      */
@@ -79,10 +79,10 @@ class WordID : IWordID {
      * Constructs a word id from the specified arguments. This constructor
      * produces a word with an unknown word number.
      *
-     * @param id    the synset id; may not be `null`
-     * @param lemma the lemma; may not be `null`, empty, or all
+     * @param id    the synset id; may not be null
+     * @param lemma the lemma; may not be null, empty, or all
      * whitespace
-     * @throws NullPointerException     if the synset id is `null`
+     * @throws NullPointerException     if the synset id is null
      * @throws IllegalArgumentException if the lemma is empty or all whitespace
      * @since JWI 1.0
      */
@@ -99,11 +99,11 @@ class WordID : IWordID {
     /**
      * Constructs a fully specified word id
      *
-     * @param id    the synset id; may not be `null`
+     * @param id    the synset id; may not be null
      * @param num   the word number
-     * @param lemma the lemma; may not be `null`, empty, or all
+     * @param lemma the lemma; may not be null, empty, or all
      * whitespace
-     * @throws NullPointerException     if the synset id is `null`
+     * @throws NullPointerException     if the synset id is null
      * @throws IllegalArgumentException if the lemma is empty or all whitespace, or the word number
      * is not legal
      * @since JWI 1.0
@@ -217,7 +217,7 @@ class WordID : IWordID {
          * @param value the string to be parsed
          * @return WordID the parsed id
          * @throws IllegalArgumentException if the specified string does not represent a word id
-         * @throws NullPointerException     if the specified string is `null`
+         * @throws NullPointerException     if the specified string is null
          * @since JWI 1.0
          */
 

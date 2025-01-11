@@ -42,15 +42,15 @@ class DataType<T>(
      * varargs array.
      *
      * @param userFriendlyName a user-friendly name, for easy identification of this data
-     * type; may be `null`
-     * @param hasVersion       `true` if the comment header for this data type
+     * type; may be null
+     * @param hasVersion       true if the comment header for this data type
      * usually contains a version number
      * @param parser           the line parser for transforming lines from this data type
-     * into objects; may not be `null`
+     * into objects; may not be null
      * @param hints            a varargs array of resource name hints for identifying the
-     * resource that contains the data. may be `null`, but
-     * may not contain `null`
-     * @throws NullPointerException if the specified parser is `null`
+     * resource that contains the data. may be null, but
+     * may not contain null
+     * @throws NullPointerException if the specified parser is null
      * @since JWI 2.0.0
      */
     constructor(
@@ -111,13 +111,13 @@ class DataType<T>(
          * the data type and part of speech. Behaviour modified.
          *
          * @param dataType the data type whose resource name hints should be used, may
-         * not be `null`
+         * not be null
          * @param pos      the part of speech whose resource name hints should be used,
-         * may be `null`
-         * @param files    the files to be searched, may be empty but not `null`
+         * may be null
+         * @param files    the files to be searched, may be empty but not null
          * @return the file that matches both the pos and type naming conventions,
-         * or `null` if none is found.
-         * @throws NullPointerException if the data type or file collection is `null`
+         * or null if none is found.
+         * @throws NullPointerException if the data type or file collection is null
          * @since JWI 2.2.0
          */
         fun find(dataType: IDataType<*>, pos: POS?, files: Collection<File>): File? {
@@ -146,14 +146,14 @@ class DataType<T>(
         /**
          * Checks to see if one of the string patterns specified in the set of
          * strings is found in the specified target string. If the pattern set is
-         * empty or null, returns `true`. If a pattern is found in the
-         * target string, returns `true`. Otherwise, returns
-         * `false`.
+         * empty or null, returns true. If a pattern is found in the
+         * target string, returns true. Otherwise, returns
+         * false.
          *
          * @param target   the string to be searched
          * @param patterns the patterns to search for
-         * @return `true` if the target contains one of the patterns;
-         * `false` otherwise
+         * @return true if the target contains one of the patterns;
+         * false otherwise
          * @since JWI 2.2.0
          */
         fun containsOneOf(target: String, patterns: Set<String>): Boolean {

@@ -47,7 +47,7 @@ class Dictionary : CachingDictionary {
      *
      * @param wordnetDir a file pointing to a directory containing the wordnet data files on the filesystem
      * @param config     config parameters
-     * @throws NullPointerException if the specified file is `null`
+     * @throws NullPointerException if the specified file is null
      * @since JWI 1.0
      */
     @JvmOverloads

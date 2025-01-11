@@ -35,18 +35,18 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
      * the provider is currently open, this method throws an
      * `IllegalStateException`.
      *
-     * @param source the location of the data, may not be `null`
+     * @param source the location of the data, may not be null
      * @throws IllegalStateException if the provider is currently open
-     * @throws NullPointerException  if the specified `URL` is `null`.
+     * @throws NullPointerException  if the specified `URL` is null.
      * @since JWI 1.0
      */
     var source: URL
 
     /**
      * Sets the character set associated with this dictionary. The character set
-     * may be `null`.
+     * may be null.
      *
-     * @param charset the possibly `null` character set to use when
+     * @param charset the possibly null character set to use when
      * decoding files.
      * @throws IllegalStateException if the provider is currently open
      * @since JWI 2.3.4
@@ -55,11 +55,11 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
 
     /**
      * Sets the comparator associated with this content type in this dictionary.
-     * The comparator may be `null` in which case it is reset.
+     * The comparator may be null in which case it is reset.
      *
      * @param contentTypeKey the `non-null` content type key for which
      * the comparator is to be set.
-     * @param comparator     the possibly `null` comparator to use when
+     * @param comparator     the possibly null comparator to use when
      * decoding files.
      * @throws IllegalStateException if the provider is currently open
      * @since JWI 2.4.1
@@ -83,12 +83,12 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
 
     /**
      * Returns the first content type, if any, that matches the specified data
-     * type and pos object. Either parameter may be `null`.
+     * type and pos object. Either parameter may be null.
      *
      * @param <T> type
-     * @param dt  the data type, possibly `null`, of the desired
+     * @param dt  the data type, possibly null, of the desired
      * content type
-     * @param pos the part of speech, possibly `null`, of the desired
+     * @param pos the part of speech, possibly null, of the desired
      * content type
      * @return the first content type that matches the specified data type and
      * part of speech.
@@ -98,13 +98,13 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
 
     /**
      * Returns a data source object for the specified content type, if one is
-     * available; otherwise returns `null`.
+     * available; otherwise returns null.
      *
      * @param <T>         the content type of the data source
      * @param contentType the content type of the data source to be retrieved
      * @return the data source for the specified content type, or
-     * `null` if this provider has no such data source
-     * @throws NullPointerException  if the type is `null`
+     * null if this provider has no such data source
+     * @throws NullPointerException  if the type is null
      * @throws ObjectClosedException if the provider is not open when this call is made
      * @since JWI 2.0.0
      */

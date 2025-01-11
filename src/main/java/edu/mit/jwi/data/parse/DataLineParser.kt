@@ -13,6 +13,7 @@ import edu.mit.jwi.item.*
 import edu.mit.jwi.item.LexFile.Companion.getLexicalFile
 import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
 import edu.mit.jwi.item.Pointer.Companion.getPointerType
+import edu.mit.jwi.item.Synset.WordBuilder
 import edu.mit.jwi.item.UnknownLexFile.Companion.getUnknownLexicalFile
 import edu.mit.jwi.item.VerbFrame.Companion.getFrame
 import java.util.*
@@ -82,7 +83,7 @@ private constructor() : ILineParser<ISynset> {
             var lemma: String
             var marker: AdjMarker?
             var lexID: Int
-            val wordProxies: Array<Synset.IWordBuilder> = Array<Synset.IWordBuilder>(wordCount) {
+            val wordProxies: Array<WordBuilder> = Array<WordBuilder>(wordCount) {
                 // consume next word
                 lemma = tokenizer.nextToken()
 
@@ -181,7 +182,7 @@ private constructor() : ILineParser<ISynset> {
             }
 
             // create synset and words
-            val words = listOf<Synset.IWordBuilder>(*wordProxies)
+            val words = listOf<WordBuilder>(*wordProxies)
             return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, words, synsetPointerMap)
         } catch (e: NumberFormatException) {
             throw MisformattedLineException(line, e)
@@ -202,7 +203,7 @@ private constructor() : ILineParser<ISynset> {
      *
      * @param frameNum the number of the frame to return
      * @return the verb frame corresponding to the specified frame number, or
-     * `null` if there is none
+     * null if there is none
      * @since JWI 2.1.0
      */
     private fun resolveVerbFrame(frameNum: Int): IVerbFrame {
@@ -246,10 +247,10 @@ private constructor() : ILineParser<ISynset> {
      *
      * @param symbol the symbol of the pointer to return
      * @param pos    the part of speech of the pointer to return, can be
-     * `null` unless the pointer symbol is ambiguous
+     * null unless the pointer symbol is ambiguous
      * @return the pointer corresponding to the specified symbol and part of
      * speech combination
-     * @throws NullPointerException     if the symbol is `null`
+     * @throws NullPointerException     if the symbol is null
      * @throws IllegalArgumentException if the symbol and part of speech combination does not
      * correspond to a known pointer
      * @since JWI 2.1.0
@@ -265,9 +266,9 @@ private constructor() : ILineParser<ISynset> {
         var instance: DataLineParser? = null
             /**
              * Returns the singleton instance of this class, instantiating it if
-             * necessary. The singleton instance will not be `null`.
+             * necessary. The singleton instance will not be null.
              *
-             * @return the non-`null` singleton instance of this class,
+             * @return the non-null singleton instance of this class,
              * instantiating it if necessary.
              * @since JWI 2.0.0
              */

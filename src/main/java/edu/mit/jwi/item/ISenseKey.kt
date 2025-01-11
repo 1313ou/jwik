@@ -45,11 +45,11 @@ interface ISenseKey : IHasPOS, Comparable<ISenseKey>, Serializable {
     val synsetType: Int
 
     /**
-     * Returns `true` if this sense key points to an adjective
-     * satellite; `false` otherwise.
+     * Returns true if this sense key points to an adjective
+     * satellite; false otherwise.
      *
-     * @return `true` if this sense key points to an adjective
-     * satellite; `false` otherwise
+     * @return true if this sense key points to an adjective
+     * satellite; false otherwise
      * @since JWI 2.1.0
      */
     val isAdjectiveSatellite: Boolean
@@ -92,20 +92,20 @@ interface ISenseKey : IHasPOS, Comparable<ISenseKey>, Serializable {
      * @param headLexID the head lexid to be set
      * @throws IllegalStateException if this method has already been called, if the headLemma is
      * empty or all whitespace or if the headLexID is illegal.
-     * @throws NullPointerException  if the headLemma is `null`
+     * @throws NullPointerException  if the headLemma is null
      * @since JWI 2.1.0
      */
     fun setHead(headLemma: String, headLexID: Int)
 
     /**
-     * This method will always return `false` if the
-     * [.isAdjectiveSatellite] returns `false`. If that
-     * method returns `true`, this method will only return
-     * `true` if [.setHead] has not yet been
+     * This method will always return false if the
+     * [.isAdjectiveSatellite] returns false. If that
+     * method returns true, this method will only return
+     * true if [.setHead] has not yet been
      * called.
      *
-     * @return `true` if the head lemma and lexical id need to be
-     * set; `false` otherwise.
+     * @return true if the head lemma and lexical id need to be
+     * set; false otherwise.
      * @since JWI 2.1.0
      */
     fun needsHeadSet(): Boolean

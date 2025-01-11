@@ -32,9 +32,9 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
 
     /**
      * Sets the character set associated with this dictionary. The character set
-     * may be `null`.
+     * may be null.
      *
-     * @param charset the possibly `null` character set to use when
+     * @param charset the possibly null character set to use when
      * decoding files.
      * @since JWI 2.3.4
      */
@@ -42,11 +42,11 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
 
     /**
      * Sets the comparator associated with this content type in this dictionary.
-     * The comparator may be `null` in which case it is reset.
+     * The comparator may be null in which case it is reset.
      *
      * @param contentTypeKey the `non-null` content type for which
      * the comparator is to be set.
-     * @param comparator     the possibly `null` comparator set to use when
+     * @param comparator     the possibly null comparator set to use when
      * decoding files.
      * @throws IllegalStateException if the provider is currently open
      * @since JWI 2.4.1
@@ -73,11 +73,11 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * is provided as a convenience.
      *
      * @param lemma the lemma for the index word requested; may not be
-     * `null`, empty, or all whitespace
-     * @param pos   the part of speech; may not be `null`
+     * null, empty, or all whitespace
+     * @param pos   the part of speech; may not be null
      * @return the index word corresponding to the specified lemma and part of
-     * speech, or `null` if none is found
-     * @throws NullPointerException     if either argument is `null`
+     * speech, or null if none is found
+     * @throws NullPointerException     if either argument is null
      * @throws IllegalArgumentException if the specified lemma is empty or all whitespace
      * @since JWI 1.0
      */
@@ -86,21 +86,21 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
     /**
      * Retrieves the specified index word object from the database. If the
      * specified lemma/part of speech combination is not found, returns
-     * `null`.
+     * null.
      *
      *
      * *Note:* This call does no stemming on the specified lemma, it is
      * taken as specified. That is, if you submit the word "dogs", it will
      * search for "dogs", not "dog"; in the standard Wordnet distribution, there
      * is no entry for "dogs" and therefore the call will return
-     * `null`. This is in contrast to the Wordnet API provided by
+     * null. This is in contrast to the Wordnet API provided by
      * Princeton. If you want your searches to capture morphological variation,
      * use the descendants of the [IStemmer] class.
      *
      * @param id the id of the index word to search for; may not be
-     * `null`
-     * @return the index word, if found; `null` otherwise
-     * @throws NullPointerException if the argument is `null`
+     * null
+     * @return the index word, if found; null otherwise
+     * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
     fun getIndexWord(id: IIndexWordID): IIndexWord?
@@ -110,45 +110,45 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * specified part of speech.
      *
      * @param pos the part of speech over which to iterate; may not be
-     * `null`
+     * null
      * @return an iterator that will iterate over all index words of the
      * specified part of speech
-     * @throws NullPointerException if the argument is `null`
+     * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
     fun getIndexWordIterator(pos: POS): Iterator<IIndexWord>
 
     /**
      * Retrieves the word with the specified id from the database. If the
-     * specified word is not found, returns `null`
+     * specified word is not found, returns null
      *
-     * @param id the id of the word to search for; may not be `null`
-     * @return the word, if found; `null` otherwise
-     * @throws NullPointerException if the argument is `null`
+     * @param id the id of the word to search for; may not be null
+     * @return the word, if found; null otherwise
+     * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
     fun getWord(id: IWordID): IWord?
 
     /**
      * Retrieves the word with the specified sense key from the database. If the
-     * specified word is not found, returns `null`
+     * specified word is not found, returns null
      *
      * @param key the sense key of the word to search for; may not be
-     * `null`
-     * @return the word, if found; `null` otherwise
-     * @throws NullPointerException if the argument is `null`
+     * null
+     * @return the word, if found; null otherwise
+     * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
     fun getWord(key: ISenseKey): IWord?
 
     /**
      * Retrieves the synset with the specified id from the database. If the
-     * specified synset is not found, returns `null`
+     * specified synset is not found, returns null
      *
      * @param id the id of the synset to search for; may not be
-     * `null`
-     * @return the synset, if found; `null` otherwise
-     * @throws NullPointerException if the argument is `null`
+     * null
+     * @return the synset, if found; null otherwise
+     * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
     fun getSynset(id: ISynsetID): ISynset?
@@ -158,10 +158,10 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * part of speech.
      *
      * @param pos the part of speech over which to iterate; may not be
-     * `null`
+     * null
      * @return an iterator that will iterate over all synsets of the specified
      * part of speech
-     * @throws NullPointerException if the argument is `null`
+     * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
     fun getSynsetIterator(pos: POS): Iterator<ISynset>
@@ -169,12 +169,12 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
     /**
      * Retrieves the sense entry for the specified sense key from the database.
      * If the specified sense key has no associated sense entry, returns
-     * `null`
+     * null
      *
      * @param key the sense key of the entry to search for; may not be
-     * `null`
-     * @return the entry, if found; `null` otherwise
-     * @throws NullPointerException if the argument is `null`
+     * null
+     * @return the entry, if found; null otherwise
+     * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
     fun getSenseEntry(key: ISenseKey): ISenseEntry?
@@ -191,13 +191,13 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
     /**
      * Retrieves the exception entry for the specified surface form and part of
      * speech from the database. If the specified surface form/ part of speech
-     * pair has no associated exception entry, returns `null`
+     * pair has no associated exception entry, returns null
      *
-     * @param surfaceForm the surface form to be looked up; may not be `null`
+     * @param surfaceForm the surface form to be looked up; may not be null
      * , empty, or all whitespace
-     * @param pos         the part of speech; may not be `null`
-     * @return the entry, if found; `null` otherwise
-     * @throws NullPointerException     if either argument is `null`
+     * @param pos         the part of speech; may not be null
+     * @return the entry, if found; null otherwise
+     * @throws NullPointerException     if either argument is null
      * @throws IllegalArgumentException if the specified surface form is empty or all whitespace
      * @since JWI 1.0
      */
@@ -205,10 +205,10 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
 
     /**
      * Retrieves the exception entry for the specified id from the database. If
-     * the specified id is not found, returns `null`
+     * the specified id is not found, returns null
      *
      * @param id the exception entry id of the entry to search for; may not be
-     * `null`
+     * null
      * @return the exception entry for the specified id
      * @since JWI 1.1
      */
@@ -219,10 +219,10 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * specified part of speech.
      *
      * @param pos the part of speech over which to iterate; may not be
-     * `null`
+     * null
      * @return an iterator that will iterate over all exception entries of the
      * specified part of speech
-     * @throws NullPointerException if the argument is `null`
+     * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
     fun getExceptionEntryIterator(pos: POS): Iterator<IExceptionEntry>
@@ -231,12 +231,12 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * Returns list of lemmas that have the given start.
      *
      * @param start start of lemmas searched for; may not be
-     * `null`
+     * null
      * @param pos   the part of speech over which to iterate; may be
-     * `null`, in which case it ignores pos
+     * null, in which case it ignores pos
      * @param limit maximum number of results, 0 for no limit
      * @return a set of lemmas in dictionary that have given start
-     * @throws NullPointerException if the argument is `null`
+     * @throws NullPointerException if the argument is null
      * @since JWIX 2.4.0.4
      */
     fun getWords(start: String, pos: POS?, limit: Int): Set<String>

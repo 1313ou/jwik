@@ -10,8 +10,7 @@
 package edu.mit.jwi.item
 
 /**
- * A Wordnet index word object, represented in the Wordnet files as a line in an
- * index file.
+ * A Wordnet index word object, represented in the Wordnet files as a line in an index file.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
@@ -20,10 +19,8 @@ package edu.mit.jwi.item
 interface IIndexWord : IHasPOS, IItem<IIndexWordID> {
 
     /**
-     * Returns the lemma (word root) associated with this index word.
-     *
-     * @return the lemma (word root) for this index word, never
-     * `null`, empty, or all whitespace.
+     * The lemma (word root) associated with this index word.
+     * Never empty or all whitespace.
      * @since JWI 1.0
      */
     val lemma: String
@@ -31,22 +28,15 @@ interface IIndexWord : IHasPOS, IItem<IIndexWordID> {
     val wordIDs: List<IWordID>
 
     /**
-     * Returns the number of senses of lemma that are ranked according to their
-     * frequency of occurrence in semantic concordance texts. This will be a
-     * non-negative number.
-     *
-     * @return the number of senses of lemma that are ranked according to their
-     * frequency of occurrence in semantic concordance texts.
+     * The number of senses of lemma that are ranked according to their frequency of occurrence in semantic concordance texts.
+     * This will be a non-negative number.
      * @since JWI 2.1.2
      */
     val tagSenseCount: Int
 
     /**
-     * Returns an immutable set containing all the different types of pointers
-     * that this index word has in all synsets containing this word. If all
-     * senses of the word have no pointers, this method returns an empty set.
-     *
-     * @return an immutable set of all pointers across all synsets for this word
+     * An immutable set containing all the different types of pointers that this index word has across all synsets containing this word.
+     * If all senses of the word have no pointers, this method returns an empty set.
      * @since JWI 2.3.0
      */
     val pointers: Set<IPointer>

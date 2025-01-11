@@ -19,60 +19,52 @@ package edu.mit.jwi.item
 interface ISynset : IHasPOS, IItem<ISynsetID> {
 
     /**
-     * Returns the data file byte offset of this synset.
-     *
-     * @return int the offset in the associated data source
+     * The data file byte offset of this synset in the associated data source
      * @since JWI 1.0
      */
     val offset: Int
 
+    /**
+     * The lexical file it was found in
+     */
     val lexicalFile: ILexFile
 
     /**
-     * Returns the type of the synset, encoded as follows: 1=Noun, 2=Verb,
-     * 3=Adjective, 4=Adverb, 5=Adjective Satellite.
-     *
-     * @return the type of the synset, an integer between 1 and 5, inclusive
+     * The type of the synset, encoded as follows:
+     * 1=Noun,
+     * 2=Verb,
+     * 3=Adjective,
+     * 4=Adverb,
+     * 5=Adjective Satellite.
      * @since JWI 1.0
      */
     val type: Int
 
+    /**
+     * The gloss or definition that comes with the synset
+     */
     val gloss: String
 
+    /**
+     * The words that are members of the synset
+     */
     val words: List<IWord>
 
     /**
-     * Returns the word with the specified word number. Words are numbered
-     * sequentially from 1 up to, and including, 255.
-     *
-     * @param wordNumber the number of the word to be retrieved
-     * @return the word with the specified word number
-     * @throws IndexOutOfBoundsException if the word number is not an appropriate word number for this
-     * synset.
-     * @since JWI 2.1.2
-     */
-    fun getWord(wordNumber: Int): IWord
-
-    /**
-     * Returns `true` if this synset is an adjective head;
-     * `false` otherwise.
-     *
-     * @return `true` if this synset represents an adjective head;
-     * `false` otherwise.
+     * true if this synset is / represents an adjective head; false otherwise.
      * @since JWI 1.0
      */
     val isAdjectiveHead: Boolean
 
     /**
-     * Returns `true` if this synset is an adjective satellite;
-     * `false` otherwise.
-     *
-     * @return `true` if this synset represents an adjective satellite;
-     * `false` otherwise.
+     * Returns true if this synset is / represents an adjective satellite; false otherwise.
      * @since JWI 1.0
      */
     val isAdjectiveSatellite: Boolean
 
+    /**
+     * Semantic relations
+     */
     val relatedMap: Map<IPointer, List<ISynsetID>>
 
     /**

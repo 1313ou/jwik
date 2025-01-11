@@ -22,8 +22,8 @@ import java.nio.ByteBuffer
  * the specified content type.
  *
  * @param file        the file which backs this wordnet file; may not be
- * `null`
- * @param contentType the content type for this file; may not be `null`
+ * null
+ * @param contentType the content type for this file; may not be null
  * @param <T> the type of object represented in this data resource
  * @author Mark A. Finlayson
  * @version 2.4.0
@@ -87,8 +87,8 @@ class BinaryStartSearchWordnetFile<T>(file: File, contentType: IContentType<T>) 
      * specified key.
      *
      * @param buffer the buffer over which the iterator should iterator; may
-     * not be `null`
-     * @param key    the key of the line to start at; may be `null`
+     * not be null
+     * @param key    the key of the line to start at; may be null
      * @author Mark A. Finlayson
      * @version 2.4.0
      * @since JWI 2.0.0

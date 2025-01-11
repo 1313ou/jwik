@@ -43,9 +43,9 @@ interface IDataType<T> {
      * Indicates whether this content type usually has wordnet version
      * information encoded in its header.
      *
-     * @return `true` if the content file that underlies this content
+     * @return true if the content file that underlies this content
      * usually has wordnet version information in its comment header;
-     * `false` otherwise.
+     * false otherwise.
      * @since JWI 2.1.0
      */
     fun hasVersion(): Boolean

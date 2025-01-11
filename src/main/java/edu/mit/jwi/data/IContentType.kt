@@ -37,10 +37,10 @@ interface IContentType<T> : IHasPOS, IHasCharset {
      * Returns a comparator that can be used to determine ordering between
      * different lines of data in the resource. This is used for searching. If
      * the data in the resource is not ordered, then this method returns
-     * `null`.
+     * null.
      *
      * @return a comparator that imposes an ordering on the lines in the data
-     * file; or `null` if there is no comparator
+     * file; or null if there is no comparator
      * @since JWI 1.0
      */
     val lineComparator: ILineComparator?

@@ -31,9 +31,9 @@ interface IVerbFrame : Serializable {
 
     /**
      * The string form of the template, drawn directly from the data file.
-     * Will never return `null`
+     * Will never return null
      *
-     * @return the non-`null`, non-empty template of the verb frame
+     * @return the non-null, non-empty template of the verb frame
      * @since JWI 1.0
      */
     val template: String
@@ -46,7 +46,7 @@ interface IVerbFrame : Serializable {
      *
      * @param verb the string to be substituted into the template
      * @return the instantiated template
-     * @throws NullPointerException if the specified string is `null`
+     * @throws NullPointerException if the specified string is null
      * @since JWI 1.0
      */
     fun instantiateTemplate(verb: String): String

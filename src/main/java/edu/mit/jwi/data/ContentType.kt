@@ -22,8 +22,8 @@ import java.util.*
  *
  * @param <T> the type of object for the content type
  * @param key        content type key
- * @param lineComparator the line comparator for this content type; may be `null` if the lines are not ordered
- * @param charset    the character set for this content type, may be `null`
+ * @param lineComparator the line comparator for this content type; may be null if the lines are not ordered
+ * @param charset    the character set for this content type, may be null
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.0.0
@@ -118,9 +118,9 @@ class ContentType<T>
          * Use this convenience method to retrieve the appropriate
          * `IIndexWord` content type for the specified POS.
          *
-         * @param pos the part of speech for the content type, may not be `null`
+         * @param pos the part of speech for the content type, may not be null
          * @return the index content type for the specified part of speech
-         * @throws NullPointerException if the specified part of speech is `null`
+         * @throws NullPointerException if the specified part of speech is null
          * @since JWI 2.0.0
          */
         fun getIndexContentType(pos: POS): IContentType<IIndexWord> {
@@ -148,9 +148,9 @@ class ContentType<T>
          * `ISynset` content type for the specified POS.
          *
          * @param pos the part of speech for the content type, may not be
-         * `null`
+         * null
          * @return the index content type for the specified part of speech
-         * @throws NullPointerException if the specified part of speech is `null`
+         * @throws NullPointerException if the specified part of speech is null
          * @since JWI 2.0.0
          */
         fun getDataContentType(pos: POS): IContentType<ISynset> {
@@ -168,9 +168,9 @@ class ContentType<T>
          * `IExceptionEntryProxy` content type for the specified POS.
          *
          * @param pos the part of speech for the content type, may not be
-         * `null`
+         * null
          * @return the index content type for the specified part of speech
-         * @throws NullPointerException if the specified part of speech is `null`
+         * @throws NullPointerException if the specified part of speech is null
          * @since JWI 2.0.0
          */
         fun getExceptionContentType(pos: POS): IContentType<IExceptionEntryProxy> {

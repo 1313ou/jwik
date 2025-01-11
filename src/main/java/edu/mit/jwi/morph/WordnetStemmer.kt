@@ -25,7 +25,7 @@ import edu.mit.jwi.item.POS
  */
 class WordnetStemmer(
     /**
-     * The dictionary in use by the stemmer; will not return `null`
+     * The dictionary in use by the stemmer; will not return null
      *
      * @return the dictionary in use by this stemmer
      * @since JWI 2.2.0

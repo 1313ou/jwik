@@ -28,7 +28,7 @@ class ExceptionEntry : ExceptionEntryProxy, IExceptionEntry {
      *
      * @param proxy the proxy containing the information for the entry
      * @param pos   the part of speech for the entry
-     * @throws NullPointerException if either argument is `null`
+     * @throws NullPointerException if either argument is null
      * @since JWI 1.0
      */
     constructor(proxy: IExceptionEntryProxy, pos: POS) : super(proxy) {
@@ -46,7 +46,7 @@ class ExceptionEntry : ExceptionEntryProxy, IExceptionEntry {
      * @param surfaceForm the surface form for the entry
      * @param pos         the part of speech for the entry
      * @param rootForms   the root forms for the entry
-     * @throws NullPointerException if either argument is `null`
+     * @throws NullPointerException if either argument is null
      * @since JWI 1.0
      */
     constructor(surfaceForm: String, pos: POS, rootForms: Array<String>) : super(surfaceForm, rootForms) {

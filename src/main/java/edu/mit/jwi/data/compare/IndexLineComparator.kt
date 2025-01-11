@@ -25,7 +25,7 @@ import java.util.*
  * class via the static [.getInstance] method.
  *
  * @param detector the comment detector for this line comparator, or
- * `null` if there is none
+ * null if there is none
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
@@ -87,9 +87,9 @@ open class IndexLineComparator(private val detector: CommentComparator) : ILineC
 
         /**
          * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be `null`.
+         * necessary. The singleton instance will not be null.
          *
-         * @return the non-`null` singleton instance of this class,
+         * @return the non-null singleton instance of this class,
          * instantiating it if necessary.
          * @since JWI 2.0.0
          */

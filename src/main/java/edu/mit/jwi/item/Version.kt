@@ -140,7 +140,7 @@ class Version(
          * @param minor     the minor version number
          * @param bugfix    the bugfix version number
          * @param qualifier the qualifier to check
-         * @return the `null`-masked qualifier
+         * @return the null-masked qualifier
          * @throws IllegalArgumentException if the supplied arguments do not identify a legal version
          * @since JWI 2.2.0
          */
@@ -170,7 +170,7 @@ class Version(
          * [IllegalArgumentException] if it is not a legal qualifier.
          *
          * @param qualifier the qualifier to check
-         * @return the `null`-masked qualifier
+         * @return the null-masked qualifier
          * @see .isIllegalQualifier
          * @since JWI 2.1.0
          */
@@ -184,15 +184,15 @@ class Version(
         }
 
         /**
-         * Returns `true` if the arguments identify a legal version;
-         * `false` otherwise.
+         * Returns true if the arguments identify a legal version;
+         * false otherwise.
          *
          * @param major     the major version number
          * @param minor     the minor version number
          * @param bugfix    the bugfix version number
          * @param qualifier the version qualifier
-         * @return `true` if the arguments identify a legal version;
-         * `false` otherwise.
+         * @return true if the arguments identify a legal version;
+         * false otherwise.
          * @since JWI 2.1.0
          */
         fun isIllegalVersion(major: Int, minor: Int, bugfix: Int, qualifier: String): Boolean {
@@ -208,8 +208,8 @@ class Version(
          * @param major  the major version number
          * @param minor  the minor version number
          * @param bugfix the bugfix version number
-         * @return `true` if all the numbers are non-negative;
-         * `false` otherwise
+         * @return true if all the numbers are non-negative;
+         * false otherwise
          * @since JWI 2.1.0
          */
         fun isIllegalVersionNumber(major: Int, minor: Int, bugfix: Int): Boolean {
@@ -223,14 +223,14 @@ class Version(
         }
 
         /**
-         * Returns `false`if the specified qualifier is legal, namely, if
+         * Returns falseif the specified qualifier is legal, namely, if
          * the string is either the empty string, or contains only characters that
          * are found in valid java identifiers.
          *
          * @param qualifier the qualifier to check
-         * @return `true` if not a legal qualifier; `false`
+         * @return true if not a legal qualifier; false
          * otherwise
-         * @throws NullPointerException if the specified string is `null`
+         * @throws NullPointerException if the specified string is null
          * @see Character.isJavaIdentifierPart
          * @since JWI 2.2.0
          */
@@ -354,11 +354,11 @@ class Version(
         /**
          * Extracts a version object from a byte buffer that contains data with the
          * specified content type. If no version can be extracted, returns
-         * `null`.
+         * null.
          *
          * @param contentType the content type of the data in the buffer
          * @param buffer      the buffer containing the data
-         * @return the Version that was extracted, or `null` if none
+         * @return the Version that was extracted, or null if none
          * @since JWI 2.1.0
          */
 
@@ -415,10 +415,10 @@ class Version(
 
         /**
          * Tries to transform the specified character sequence into a version
-         * object. If it cannot, returns `null`
+         * object. If it cannot, returns null
          *
          * @param verStr the sequence of characters to be transformed
-         * @return the version, or `null` if the character sequence is
+         * @return the version, or null if the character sequence is
          * not a valid version
          * @since JWI 2.1.0
          */
@@ -474,7 +474,7 @@ class Version(
          *
          * @param verStr the sequence of characters to be transformed
          * @return the version
-         * @throws NullPointerException     if the character sequence is `null`
+         * @throws NullPointerException     if the character sequence is null
          * @throws IllegalArgumentException if the character sequence does not correspond to a legal
          * version
          * @since JWI 2.1.0

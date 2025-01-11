@@ -14,7 +14,7 @@ import java.io.Serializable
 /**
  * An item is an object with an ID.
  *
- * @param <T> the type of the item id object
+ * @param <D> the type of the item id object
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.0.0

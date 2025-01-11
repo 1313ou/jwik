@@ -27,11 +27,11 @@ interface IHasLifecycle : IClosable {
 
     /**
      * This opens the object by performing any required initialization steps. If
-     * this method returns `false`, then subsequent calls to
-     * [.isOpen] will return `false`.
+     * this method returns false, then subsequent calls to
+     * [.isOpen] will return false.
      *
-     * @return `true` if there were no errors in initialization;
-     * `false` otherwise.
+     * @return true if there were no errors in initialization;
+     * false otherwise.
      * @throws IOException if there was IO error while performing initialization
      * @since JWI 2.2.0
      */
@@ -39,10 +39,10 @@ interface IHasLifecycle : IClosable {
     fun open(): Boolean
 
     /**
-     * Returns `true` if the dictionary is open, that is, ready to
-     * accept queries; returns `false` otherwise
+     * Returns true if the dictionary is open, that is, ready to
+     * accept queries; returns false otherwise
      *
-     * @return `true` if the object is open; `false`
+     * @return true if the object is open; false
      * otherwise
      * @since JWI 2.2.0
      */
@@ -73,7 +73,7 @@ interface IHasLifecycle : IClosable {
     class ObjectClosedException : RuntimeException {
 
         /**
-         * Constructs a new exception with `null` as its detail
+         * Constructs a new exception with null as its detail
          * message. The cause is not initialized, and may subsequently be
          * initialized by a call to [.initCause].
          *
@@ -103,7 +103,7 @@ interface IHasLifecycle : IClosable {
          * @param message the detail message (which is saved for later retrieval by the
          * [.getMessage] method).
          * @param cause   the cause (which is saved for later retrieval by the
-         * [.getCause] method). (A `null` value is
+         * [.getCause] method). (A null value is
          * permitted, and indicates that the cause is nonexistent or
          * unknown.)
          * @since JWI 2.2.0
@@ -118,7 +118,7 @@ interface IHasLifecycle : IClosable {
          * wrappers for other throwables.
          *
          * @param cause the cause (which is saved for later retrieval by the
-         * [.getCause] method). (A `null` value is
+         * [.getCause] method). (A null value is
          * permitted, and indicates that the cause is nonexistent or
          * unknown.)
          * @since JWI 2.2.0
@@ -137,7 +137,7 @@ interface IHasLifecycle : IClosable {
     class ObjectOpenException : RuntimeException {
 
         /**
-         * Constructs a new exception with `null` as its detail
+         * Constructs a new exception with null as its detail
          * message. The cause is not initialized, and may subsequently be
          * initialized by a call to [.initCause].
          *
@@ -167,7 +167,7 @@ interface IHasLifecycle : IClosable {
          * @param message the detail message (which is saved for later retrieval by the
          * [.getMessage] method).
          * @param cause   the cause (which is saved for later retrieval by the
-         * [.getCause] method). (A `null` value is
+         * [.getCause] method). (A null value is
          * permitted, and indicates that the cause is nonexistent or
          * unknown.)
          * @since JWI 2.4.0
@@ -182,7 +182,7 @@ interface IHasLifecycle : IClosable {
          * wrappers for other throwables.
          *
          * @param cause the cause (which is saved for later retrieval by the
-         * [.getCause] method). (A `null` value is
+         * [.getCause] method). (A null value is
          * permitted, and indicates that the cause is nonexistent or
          * unknown.)
          * @since JWI 2.4.0

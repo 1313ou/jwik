@@ -22,9 +22,9 @@ import java.util.*
  * Constructs a new lexical file description object.
  *
  * @param num  the lexical file number, in the closed range [0,99]
- * @param name the name of the lexical file, may not be `null`, empty, or all whitespace
- * @property description the description of the lexical file, may not be `null`, empty, or all whitespace
- * @property pOS  the part of speech for the lexical file, may be `null`
+ * @param name the name of the lexical file, may not be null, empty, or all whitespace
+ * @property description the description of the lexical file, may not be null, empty, or all whitespace
+ * @property pOS  the part of speech for the lexical file, may be null
  * @throws IllegalArgumentException if either the name or description are empty or all whitespace
  *
  * @author Mark A. Finlayson
@@ -139,12 +139,12 @@ open class LexFile(num: Int, name: String, override val description: String, ove
         val ADJ_PPL: LexFile = LexFile(44, "adj.ppl", "participial adjectives", POS.ADJECTIVE)
 
         /**
-         * Throws an exception if the specified string is `null`, empty,
+         * Throws an exception if the specified string is null, empty,
          * or all whitespace. Returns a trimmed form of the string.
          *
          * @param str the string to be checked
          * @return a trimmed form of the string
-         * @throws NullPointerException     if the specified string is `null`
+         * @throws NullPointerException     if the specified string is null
          * @throws IllegalArgumentException if the specified string is empty or all whitespace
          * @since JWI 2.2.0
          */
@@ -171,14 +171,14 @@ open class LexFile(num: Int, name: String, override val description: String, ove
         }
 
         /**
-         * Returns `true` if the number represents a valid lexical file
+         * Returns true if the number represents a valid lexical file
          * number, namely, a number in the closed range [0, 99]; returns
-         * `false` otherwise.
+         * false otherwise.
          *
          * @param num the number to be checked
-         * @return `true` if the number represents a valid lexical file
+         * @return true if the number represents a valid lexical file
          * number, namely, a number in the closed range [0, 99]; returns
-         * `false` otherwise.
+         * false otherwise.
          * @since JWI 2.1.0
          */
         fun isIllegalLexicalFileNumber(num: Int): Boolean {
@@ -278,7 +278,7 @@ open class LexFile(num: Int, name: String, override val description: String, ove
         /**
          * A convenience method that allows retrieval of one of the built-in lexical
          * file descriptions given the number. If no such description exists, then
-         * the method returns `null`.
+         * the method returns null.
          *
          * @param num the number for the lexical file object
          * @return ILexFile the lexical file corresponding to the specified tag, or

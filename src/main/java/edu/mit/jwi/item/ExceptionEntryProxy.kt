@@ -28,7 +28,7 @@ open class ExceptionEntryProxy : IExceptionEntryProxy {
      * Constructs a new proxy that is a copy of the specified proxy
      *
      * @param proxy the proxy to be copied
-     * @throws NullPointerException if the specified proxy is `null`
+     * @throws NullPointerException if the specified proxy is null
      * @since JWI 1.0
      */
     constructor(proxy: IExceptionEntryProxy) {
@@ -42,8 +42,8 @@ open class ExceptionEntryProxy : IExceptionEntryProxy {
     /**
      * Constructs a new proxy with the specified field values.
      *
-     * @param surfaceForm the surface form for the entry; may not be `null`, empty, or all whitespace
-     * @param rootForms   the root forms for the entry; may not contain `null`, empty, or all whitespace strings
+     * @param surfaceForm the surface form for the entry; may not be null, empty, or all whitespace
+     * @param rootForms   the root forms for the entry; may not contain null, empty, or all whitespace strings
      * @since JWI 1.0
      */
     constructor(surfaceForm: String, rootForms: Array<String>) {

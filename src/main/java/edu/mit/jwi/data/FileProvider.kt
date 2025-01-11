@@ -140,8 +140,8 @@ class FileProvider @JvmOverloads constructor(
      * Constructs the file provider pointing to the resource indicated by the
      * path.  This file provider has an initial [ILoadPolicy.NO_LOAD] load policy.
      *
-     * @param file A file pointing to the wordnet directory, may not be `null`
-     * @throws NullPointerException if the specified file is `null`
+     * @param file A file pointing to the wordnet directory, may not be null
+     * @throws NullPointerException if the specified file is null
      * @since JWI 1.0
      */
     constructor(file: File) : this(toURL(file))
@@ -151,10 +151,10 @@ class FileProvider @JvmOverloads constructor(
      * path, with the specified load policy.
      *
      * @param file       A file pointing to the wordnet directory, may not be
-     * `null`
+     * null
      * @param loadPolicy the load policy for this provider; this provider supports the
      * three values defined in `ILoadPolicy`.
-     * @throws NullPointerException if the specified file is `null`
+     * @throws NullPointerException if the specified file is null
      * @since JWI 2.2.0
      */
     constructor(file: File, loadPolicy: Int) : this(toURL(file)!!, loadPolicy, values())
@@ -165,12 +165,12 @@ class FileProvider @JvmOverloads constructor(
      * type.s
      *
      * @param file       A file pointing to the wordnet directory, may not be
-     * `null`
+     * null
      * @param loadPolicy the load policy for this provider; this provider supports the
      * three values defined in `ILoadPolicy`.
      * @param types      the content types this provider will look for when it loads
-     * its data; may not be `null` or empty
-     * @throws NullPointerException     if the file or content type collection is `null`
+     * its data; may not be null or empty
+     * @throws NullPointerException     if the file or content type collection is null
      * @throws IllegalArgumentException if the set of types is empty
      * @since JWI 2.2.0
      */
@@ -182,12 +182,12 @@ class FileProvider @JvmOverloads constructor(
      * type.s
      *
      * @param url          A file URL in UTF-8 decodable format, may not be
-     * `null`
+     * null
      * @param loadPolicy   the load policy for this provider; this provider supports the
      * three values defined in `ILoadPolicy`.
      * @param contentTypes the content types this provider will look for when it loads
-     * its data; may not be `null` or empty
-     * @throws NullPointerException     if the url or content type collection is `null`
+     * its data; may not be null or empty
+     * @throws NullPointerException     if the url or content type collection is null
      * @throws IllegalArgumentException if the set of types is empty
      * @since JWI 2.2.0
      */
@@ -196,10 +196,10 @@ class FileProvider @JvmOverloads constructor(
      * path, with the specified load policy.
      *
      * @param url        A file URL in UTF-8 decodable format, may not be
-     * `null`
+     * null
      * @param loadPolicy the load policy for this provider; this provider supports the
      * three values defined in `ILoadPolicy`.
-     * @throws NullPointerException if the specified URL is `null`
+     * @throws NullPointerException if the specified URL is null
      * @since JWI 2.2.0
      */
     /**
@@ -207,8 +207,8 @@ class FileProvider @JvmOverloads constructor(
      * path.  This file provider has an initial [ILoadPolicy.NO_LOAD] load policy.
      *
      * @param url A file URL in UTF-8 decodable format, may not be
-     * `null`
-     * @throws NullPointerException if the specified URL is `null`
+     * null
+     * @throws NullPointerException if the specified URL is null
      * @since JWI 1.0
      */
     init {
@@ -411,11 +411,11 @@ class FileProvider @JvmOverloads constructor(
      * if no data sources can be created. Subclasses may override this method.
      *
      * @param files  the files from which the data sources should be created, may
-     * not be `null`
+     * not be null
      * @param policy the load policy of the provider
-     * @return a map, possibly empty, but not `null`, of content
+     * @return a map, possibly empty, but not null, of content
      * types mapped to data sources
-     * @throws NullPointerException if the file list is `null`
+     * @throws NullPointerException if the file list is null
      * @throws IOException          if there is a problem creating the data source
      * @since JWI 2.2.0
      */
@@ -472,11 +472,11 @@ class FileProvider @JvmOverloads constructor(
      *
      * @param <T>         the content type of the data source
      * @param file        the file from which the data source should be created, may not
-     * be `null`
+     * be null
      * @param contentType the content type of the data source
      * @param policy      the load policy to follow when creating the data source
      * @return the created data source
-     * @throws NullPointerException if any argument is `null`
+     * @throws NullPointerException if any argument is null
      * @throws IOException          if there is an IO problem when creating the data source
      * @since JWI 2.2.0
      */
@@ -538,11 +538,11 @@ class FileProvider @JvmOverloads constructor(
      *
      * @param <T>         the parameter of the content type
      * @param file        the file on which the data source is based; may not be
-     * `null`
+     * null
      * @param contentType the data type for the data source; may not be
-     * `null`
+     * null
      * @return the data source
-     * @throws NullPointerException if either argument is `null`
+     * @throws NullPointerException if either argument is null
      * @since JWI 2.2.0
     </T> */
 
@@ -556,11 +556,11 @@ class FileProvider @JvmOverloads constructor(
      *
      * @param <T>         the parameter of the content type
      * @param file        the file on which the data source is based; may not be
-     * `null`
+     * null
      * @param contentType the data type for the data source; may not be
-     * `null`
+     * null
      * @return the data source
-     * @throws NullPointerException if either argument is `null`
+     * @throws NullPointerException if either argument is null
      * @since JWI 2.2.0
     </T> */
 
@@ -736,7 +736,7 @@ class FileProvider @JvmOverloads constructor(
          *
          * @param url url
          * @return a file pointing to the same place as the url
-         * @throws NullPointerException     if the url is `null`
+         * @throws NullPointerException     if the url is null
          * @throws IllegalArgumentException if the url does not use the 'file' protocol
          * @since JWI 1.0
          */
@@ -755,7 +755,7 @@ class FileProvider @JvmOverloads constructor(
          *
          * @param file the file to be transformed
          * @return a URL representing the file
-         * @throws NullPointerException if the specified file is `null`
+         * @throws NullPointerException if the specified file is null
          * @since JWI 2.2.0
          */
         fun toURL(file: File): URL {
@@ -767,10 +767,10 @@ class FileProvider @JvmOverloads constructor(
          * A utility method for checking whether a file represents an existing local
          * directory.
          *
-         * @param url the url object to check, may not be `null`
-         * @return `true` if the url object represents a local directory
-         * which exists; `false` otherwise.
-         * @throws NullPointerException if the specified url object is `null`
+         * @param url the url object to check, may not be null
+         * @return true if the url object represents a local directory
+         * which exists; false otherwise.
+         * @throws NullPointerException if the specified url object is null
          * @since JWI 2.4.0
          */
         fun isLocalDirectory(url: URL): Boolean {
@@ -785,10 +785,10 @@ class FileProvider @JvmOverloads constructor(
          * A utility method for checking whether a file represents an existing local
          * directory.
          *
-         * @param dir the file object to check, may not be `null`
-         * @return `true` if the file object represents a local directory
-         * which exist; `false` otherwise.
-         * @throws NullPointerException if the specified file object is `null`
+         * @param dir the file object to check, may not be null
+         * @return true if the file object represents a local directory
+         * which exist; false otherwise.
+         * @throws NullPointerException if the specified file object is null
          * @since JWI 2.4.0
          */
         fun isLocalDirectory(dir: File): Boolean {

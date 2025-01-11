@@ -96,12 +96,12 @@ class Pointer(symbol: String, name: String) : IPointer {
         val COLLOCATION: Pointer = Pointer("`", "Collocation")
 
         /**
-         * Throws an exception if the specified string is `null`, empty,
+         * Throws an exception if the specified string is null, empty,
          * or all whitespace. Returns a trimmed form of the string.
          *
          * @param str the string to be checked
          * @return a trimmed form of the string
-         * @throws NullPointerException     if the specified string is `null`
+         * @throws NullPointerException     if the specified string is null
          * @throws IllegalArgumentException if the specified string is empty or all whitespace
          * @since JWI 2.2.0
          */
@@ -181,7 +181,7 @@ class Pointer(symbol: String, name: String) : IPointer {
          * specified pointer symbol.
          *
          * @param symbol the symbol to look up
-         * @param pos    the part of speech for the symbol; may be `null`
+         * @param pos    the part of speech for the symbol; may be null
          * except for ambiguous symbols
          * @return pointer
          * @throws IllegalArgumentException if the symbol does not correspond to a known pointer.

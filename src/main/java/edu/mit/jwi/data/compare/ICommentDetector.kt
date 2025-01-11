@@ -21,13 +21,13 @@ package edu.mit.jwi.data.compare
 interface ICommentDetector : Comparator<String> {
 
     /**
-     * Returns `true` if the specified string is a comment line,
-     * `false` otherwise.
+     * Returns true if the specified string is a comment line,
+     * false otherwise.
      *
      * @param line the line to be analyzed
-     * @return `true` if the specified string is a comment line,
-     * `false` otherwise.
-     * @throws NullPointerException if the specified line is `null`
+     * @return true if the specified string is a comment line,
+     * false otherwise.
+     * @throws NullPointerException if the specified line is null
      * @since JWI 1.0
      */
     fun isCommentLine(line: String): Boolean

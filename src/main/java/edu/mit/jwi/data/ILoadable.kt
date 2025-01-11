@@ -30,7 +30,7 @@ interface ILoadable {
 
     /**
      * Initiates the loading process. Depending on the flag, the method may
-     * return immediately (`block` is `false`), or return
+     * return immediately (`block` is false), or return
      * only when the loading process is complete. If the object is already
      * loaded, the method returns immediately and has no effect. If the object
      * is in the process of loading, and the method is called in blocking mode,
@@ -38,8 +38,8 @@ interface ILoadable {
      * method did not initiate the loading process. Some implementors of this
      * interface may not support the immediate-return functionality.
      *
-     * @param block if `true`, the method returns only when the loading
-     * process is complete; if `false`, the method returns
+     * @param block if true, the method returns only when the loading
+     * process is complete; if false, the method returns
      * immediately.
      * @throws InterruptedException if the method is blocking, and is interrupted while waiting
      * for loading to complete
@@ -50,12 +50,12 @@ interface ILoadable {
 
     /**
      * Returns whether this object is loaded or not. This method should return
-     * `true` only if the loading process has completed and the
+     * true only if the loading process has completed and the
      * object is actually loaded; if the object is still in the process of
-     * loading, or failed to load, the method should return `false`.
+     * loading, or failed to load, the method should return false.
      *
-     * @return `true` if the method has completed loading;
-     * `false` otherwise
+     * @return true if the method has completed loading;
+     * false otherwise
      * @since JWI 2.2.0
      */
     val isLoaded: Boolean

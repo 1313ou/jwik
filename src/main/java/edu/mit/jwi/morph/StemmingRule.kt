@@ -19,11 +19,11 @@ import java.util.*
  * avoid set
  *
  * @param suffix the suffix that should be stripped from a word; should not
- * be `null`, empty, or all whitespace.
+ * be null, empty, or all whitespace.
  * @param ending the ending that should be stripped from a word; should not
- * be `null`, but may be empty or all whitespace.
+ * be null, but may be empty or all whitespace.
  * @param pos    the part of speech to which this rule applies, may not be
- * `null`
+ * null
  * @param ignore the set of suffixes that, when present, indicate this rule
  * should not be applied. May be null or empty, but not
  * contain nulls or empties.

@@ -37,11 +37,11 @@ interface IDataSource<T> : IHasVersion, Iterable<String?>, IHasLifecycle {
     /**
      * Returns the line in the resource contains the data indexed by the
      * specified key. If the file cannot find the key in its data resource, it
-     * returns `null`
+     * returns null
      *
      * @param key the key which indexes the desired data
      * @return the line indexed by the specified key in the resource
-     * @throws NullPointerException if the specified key is `null`
+     * @throws NullPointerException if the specified key is null
      * @since JWI 2.0.0
      */
 
@@ -50,9 +50,9 @@ interface IDataSource<T> : IHasVersion, Iterable<String?>, IHasLifecycle {
     /**
      * Returns an iterator that will iterator over lines in the data resource,
      * starting at the line specified by the given key. If the key is
-     * `null`, this is the same as calling the plain
+     * null, this is the same as calling the plain
      * [.iterator] method. If no line starts with the pattern, the
-     * iterator's [Iterator.hasNext] will return `false`.
+     * iterator's [Iterator.hasNext] will return false.
      *
      * @param key the key at which the iterator should begin
      * @return an iterator that will iterate over the file starting at the line

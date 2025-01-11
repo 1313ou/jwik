@@ -46,7 +46,7 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
      * @param pos         the part of speech of this index word
      * @param tagSenseCnt the tag sense count
      * @param words       the words for this index word
-     * @throws NullPointerException     if lemma, pos, or word array is `null`, or the
+     * @throws NullPointerException     if lemma, pos, or word array is null, or the
      * word array contains null
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is
      * empty
@@ -61,10 +61,10 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
      * @param pos         the part of speech of this index word
      * @param tagSenseCnt the tag sense count
      * @param ptrs        an array of pointers that the synsets with lemma have; may be
-     * `null`
+     * null
      * @param words       the words for this index word
-     * @throws NullPointerException     if lemma, pos, or word array is `null`, or the
-     * word array or pointer array contains `null`
+     * @throws NullPointerException     if lemma, pos, or word array is null, or the
+     * word array or pointer array contains null
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is
      * empty
      * @since JWI 2.3.0
@@ -77,7 +77,7 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
      * @param id          the index word id for this index word
      * @param tagSenseCnt the tag sense count
      * @param words       the words for this index word
-     * @throws NullPointerException     if lemma, pos, or word array is `null`, or the
+     * @throws NullPointerException     if lemma, pos, or word array is null, or the
      * word array contains null
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is
      * empty
@@ -91,10 +91,10 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
      * @param id          the index word id for this index word
      * @param tagSenseCnt the tag sense count
      * @param ptrs        an array of pointers for all the synsets of this lemma; may be
-     * `null`; must not contain `null`
+     * null; must not contain null
      * @param words       the words for this index word
-     * @throws NullPointerException     if lemma, pos, or word array is `null`, or the
-     * word array or pointer array contains `null`
+     * @throws NullPointerException     if lemma, pos, or word array is null, or the
+     * word array or pointer array contains null
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is
      * empty
      * @since JWI 2.3.0

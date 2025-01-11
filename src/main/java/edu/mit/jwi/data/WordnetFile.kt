@@ -43,7 +43,7 @@ import kotlin.Throws
  * `MisformattedLineExceptions` in later calls.
  *
  * @param file        the file which backs this wordnet file; may not be 'null'
- * @param contentType the content type for this file; may not be `null`
+ * @param contentType the content type for this file; may not be null
 
  * @param <T> the type of the objects represented in this file
  * @author Mark A. Finlayson
@@ -227,9 +227,9 @@ abstract class WordnetFile<T>(
      * [ByteBuffer], starting from the specified key.
      *
      * @param buffer the buffer over which the iterator will iterate, should not be
-     * `null`
+     * null
      * @param key    the key at which the iterator should begin, should not be
-     * `null`
+     * null
      * @return an iterator that can be used to iterate over the lines of the
      * [ByteBuffer]
      * @since JWI 2.2.0
@@ -293,7 +293,7 @@ abstract class WordnetFile<T>(
          * pure getter; does not increment the iterator.
          *
          * @return the next line that will be parsed and returned by this
-         * iterator, or `null` if none
+         * iterator, or null if none
          * @since JWI 2.2.0
          */
         var nextLine: String? = null
@@ -304,8 +304,8 @@ abstract class WordnetFile<T>(
          * specified key.
          *
          * @param buffer the buffer over which the iterator should iterator; may
-         * not be `null`
-         * @throws NullPointerException if the specified buffer is `null`
+         * not be null
+         * @throws NullPointerException if the specified buffer is null
          * @since JWI 1.0
          */
         init {
@@ -316,7 +316,7 @@ abstract class WordnetFile<T>(
         /**
          * Start at the specified key.
          *
-         * @param key0 the key of the line to start at; may be `null`
+         * @param key0 the key of the line to start at; may be null
          */
         fun init(key0: String?) {
             var key = key0?.trim { it <= ' ' }
@@ -369,12 +369,12 @@ abstract class WordnetFile<T>(
         }
 
         /**
-         * Returns `true` if the specified line is a comment;
-         * `false` otherwise
+         * Returns true if the specified line is a comment;
+         * false otherwise
          *
          * @param line the line to be tested
-         * @return `true` if the specified line is a comment;
-         * `false` otherwise
+         * @return true if the specified line is a comment;
+         * false otherwise
          * @since JWI 1.0
          */
         protected fun isComment(line: String): Boolean {
@@ -407,7 +407,7 @@ abstract class WordnetFile<T>(
          * @param buf the buffer from which the line should be extracted
          * @return the remainder of line in the specified buffer, starting from the
          * buffer's current position
-         * @throws NullPointerException if the specified buffer is `null`
+         * @throws NullPointerException if the specified buffer is null
          * @since JWI 2.1.0
          */
         @JvmStatic
@@ -444,15 +444,15 @@ abstract class WordnetFile<T>(
         /**
          * A different version of the getLine method that uses a specified character
          * set to decode the byte stream. If the provided character set is
-         * `null`, the method defaults to the previous method
+         * null, the method defaults to the previous method
          * [.getLine].
          *
          * @param buf the buffer from which the line should be extracted
          * @param cs  the character set to use for decoding; may be
-         * `null`
+         * null
          * @return the remainder of line in the specified buffer, starting from the
          * buffer's current position
-         * @throws NullPointerException if the specified buffer is `null`
+         * @throws NullPointerException if the specified buffer is null
          * @since JWI 2.3.4
          */
         @JvmStatic
@@ -511,8 +511,8 @@ abstract class WordnetFile<T>(
         /**
          * Rewinds the specified buffer to the beginning of the current line.
          *
-         * @param buf the buffer to be rewound; may not be `null`
-         * @throws NullPointerException if the specified buffer is `null`
+         * @param buf the buffer to be rewound; may not be null
+         * @throws NullPointerException if the specified buffer is null
          * @since JWI 2.2.0
          */
         @JvmStatic
