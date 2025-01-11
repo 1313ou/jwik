@@ -76,12 +76,18 @@ interface ISynset : IHasPOS, IItem<ISynsetID> {
      *
      * If there are no such synsets, this method returns the empty list.
      *
-     * @param ptr the pointer for which related synsets are to be retrieved.
-     * @return the list of synsets related by the specified pointer; if there
-     * are no such synsets, returns the empty list
+     * @param ptrType the pointer for which related synsets are to be retrieved.
+     * @return the list of synsets related by the specified pointer; if there are no such synsets, returns the empty list
      * @since JWI 2.0.0
      */
-    fun getRelatedSynsets(ptr: IPointer): List<ISynsetID>
+    fun getRelatedSynsets(ptrType: IPointer): List<ISynsetID> {
+        return relatedMap[ptrType] ?: emptyList()
+    }
 
     val relatedSynsets: List<ISynsetID>
+        get() = relatedMap.values
+            .flatMap { it.toList() }
+            .distinct()
+            .toList()
+
 }

@@ -41,8 +41,6 @@ class Synset(
 
     override val words: List<IWord>
 
-    override val relatedSynsets: List<ISynsetID>
-
     override val relatedMap: Map<IPointer, List<ISynsetID>>
 
     override val offset: Int
@@ -80,21 +78,10 @@ class Synset(
             .toList()
 
         // related synset map
-        relatedMap = ids
-            ?.entries
+        relatedMap = ids?.entries
             ?.filterNot { it.value.isEmpty() }
             ?.associate { it.key to it.value }
             ?: emptyMap()
-
-        // related synset list
-        relatedSynsets = relatedMap.values
-            .flatMap { it.toList() }
-            .distinct()
-            .toList()
-    }
-
-    override fun getRelatedSynsets(ptrType: IPointer): List<ISynsetID> {
-        return relatedMap[ptrType] ?: emptyList()
     }
 
     override fun hashCode(): Int {
