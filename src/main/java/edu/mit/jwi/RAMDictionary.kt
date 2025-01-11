@@ -852,7 +852,6 @@ class RAMDictionary private constructor(
      */
     class DictionaryData : Serializable {
 
-        // data
         var version: IVersion? = null
 
         val idxWords: MutableMap<POS, MutableMap<IIndexWordID, IIndexWord>>
@@ -958,17 +957,13 @@ class RAMDictionary private constructor(
         /**
          * Compacts a regular map.
          *
-         * @param map the map to be compacted, may not be null.
+         * @param map the map to be compacted
          * @param <K> key type
          * @param <V> value type
          * @return the new, compacted map
-         * @throws NullPointerException if the specified map is null
          * @since JWI 2.2.0
          */
         private fun <K, V> compactMap(map: MutableMap<K, V>): MutableMap<K, V> {
-            if (map == null) {
-                throw NullPointerException()
-            }
             return makeMap<K, V>(-1, map)
         }
 
@@ -997,33 +992,30 @@ class RAMDictionary private constructor(
          *
          * @param old the synset to be replicated
          * @return the new synset, a copy of the first
-         * @throws NullPointerException if the specified synset is null
          * @since JWI 2.2.0
          */
         private fun makeSynset(old: ISynset): ISynset {
-            val oldIDs: Map<IPointer, List<ISynsetID>> = old.relatedMap
-            val newIDs: MutableMap<IPointer, MutableList<ISynsetID>> = HashMap<IPointer, MutableList<ISynsetID>>(oldIDs.size)
-
-            var newList: MutableList<ISynsetID>
-            var otherSynset: ISynset
-            for (entry in oldIDs.entries) {
-                newList = ArrayList<ISynsetID>(entry.value.size)
-                for (otherID in entry.value) {
-                    val m = checkNotNull(synsets[otherID.pOS])
-                    otherSynset = m[otherID]!!
-                    checkNotNull(otherSynset)
-                    newList.add(otherSynset.iD)
-                }
-                newIDs.put(entry.key, newList)
-            }
 
             // words
-            val oldWords: List<IWord> = old.words
-            val newWords: MutableList<Synset.IWordBuilder> = ArrayList<Synset.IWordBuilder>(oldWords.size)
-            for (oldWord in old.words) {
-                newWords.add(WordBuilder(old, oldWord))
-            }
-            return Synset(old.iD, old.lexicalFile, old.isAdjectiveSatellite, old.isAdjectiveHead, old.gloss, newWords, newIDs)
+            val wordBuilders = old.words
+                .map { WordBuilder(it) }
+                .toList()
+
+            // related
+            val newRelatedIDs = old.relatedMap
+                .map { (ptr, oldTargets) ->
+                    val newTargets = oldTargets
+                        .map {
+                            val resolver: Map<ISynsetID, ISynset> = synsets[it.pOS]!!
+                            val otherSynset: ISynset = resolver[it]!!
+                            otherSynset.iD
+                        }
+                        .toList()
+                    ptr to newTargets
+                }
+                .toMap()
+
+            return Synset(old.iD, old.lexicalFile, old.isAdjectiveSatellite, old.isAdjectiveHead, old.gloss, wordBuilders, newRelatedIDs)
         }
 
         /**
@@ -1032,13 +1024,11 @@ class RAMDictionary private constructor(
          * throwing away redundant word ids.
          *
          * @param newSynset the synset for which the word is being made
-         * @param oldSynset the old synset from which the word should be made
          * @param old       the word to be replicated
          * @return the new synset, a copy of the first
-         * @throws NullPointerException if any argument is null
          * @since JWI 2.2.0
          */
-        private fun makeWord(newSynset: ISynset, oldSynset: ISynset, old: IWord): IWord {
+        private fun makeWord(newSynset: ISynset, old: IWord): IWord {
             val oldPtrs: Map<IPointer, List<IWordID>> = old.relatedMap
             val newPtrs: MutableMap<IPointer, MutableList<IWordID>> = HashMap<IPointer, MutableList<IWordID>>(oldPtrs.size)
             var newList: MutableList<IWordID>
@@ -1091,19 +1081,17 @@ class RAMDictionary private constructor(
          * Constructs a new word builder object out of the specified old
          * synset and word.
          *
-         * @param oldSynset the old synset that backs this builder; may not be
-         * null
-         * @param oldWord   the old word that backs this builder; may not be
-         * null
+         * @param oldSynset the old synset that backs this builder
+         * @param oldWord   the old word that backs this builder
          *
          * @author Mark A. Finlayson
          * @version 2.4.0
          * @since JWI 2.2.0
          */
-        inner class WordBuilder(private val oldSynset: ISynset, private val oldWord: IWord) : Synset.IWordBuilder {
+        inner class WordBuilder(private val oldWord: IWord) : Synset.IWordBuilder {
 
             override fun toWord(synset: ISynset): IWord {
-                return makeWord(synset, oldSynset, oldWord)
+                return makeWord(synset, oldWord)
             }
 
             override fun addVerbFrame(frame: IVerbFrame) {
