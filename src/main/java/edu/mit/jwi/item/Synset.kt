@@ -12,6 +12,7 @@ package edu.mit.jwi.item
 import edu.mit.jwi.item.LexFile.Companion.ADJ_ALL
 import edu.mit.jwi.item.POS.Companion.NUM_ADJECTIVE
 import edu.mit.jwi.item.POS.Companion.NUM_ADJECTIVE_SATELLITE
+import edu.mit.jwi.item.Word.Companion.checkWordNumber
 import java.util.*
 
 /**
@@ -155,9 +156,9 @@ class Synset private constructor(
      * Constructs a new word builder object. The constructor does not check
      * its arguments - this is done when the word is created.
      *
-     * @property num    the word number
-     * @property lemma  the lemma
-     * @property lexID  the id of the lexical file in which the word is listed
+     * @property number the word number
+     * @property lemma the lemma
+     * @property lexID the id of the lexical file in which the word is listed
      * @property marker the adjective marker for the word
      * @author Mark A. Finlayson
      * @version 2.4.0
@@ -169,6 +170,10 @@ class Synset private constructor(
         private val lexID: Int,
         private val marker: AdjMarker?,
     ) : IWordBuilder {
+
+        init {
+            checkWordNumber(number)
+        }
 
         private val relatedWords: MutableMap<IPointer, MutableList<IWordID>> = HashMap<IPointer, MutableList<IWordID>>()
 

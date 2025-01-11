@@ -65,45 +65,34 @@ class WordID : IWordID {
      * @since JWI 1.0
      */
     constructor(id: ISynsetID, num: Int) {
-        checkWordNumber(num)
         this.synsetID = id
         this.wordNumber = num
         this.lemma = null
     }
 
     /**
-     * Constructs a word id from the specified arguments. This constructor
-     * produces a word with an unknown word number.
+     * Constructs a word id from the specified arguments.
+     * This constructor produces a word with an unknown word number.
      *
-     * @param id    the synset id; may not be null
-     * @param lemma the lemma; may not be null, empty, or all
-     * whitespace
-     * @throws NullPointerException     if the synset id is null
+     * @param id the synset id
+     * @param lemma the lemma; may not be empty or all whitespace
      * @throws IllegalArgumentException if the lemma is empty or all whitespace
      * @since JWI 1.0
      */
-    constructor(id: ISynsetID, lemma: String) {
-        require(lemma.trim { it <= ' ' }.isNotEmpty())
-        this.synsetID = id
-        this.wordNumber = -1
-        this.lemma = lemma.lowercase()
-    }
+    constructor(id: ISynsetID, lemma: String): this(id, -1, lemma)
 
     /**
      * Constructs a fully specified word id
      *
      * @param id    the synset id; may not be null
      * @param num   the word number
-     * @param lemma the lemma; may not be null, empty, or all
-     * whitespace
-     * @throws NullPointerException     if the synset id is null
+     * @param lemma the lemma; may not be empty or all whitespace
      * @throws IllegalArgumentException if the lemma is empty or all whitespace, or the word number
      * is not legal
      * @since JWI 1.0
      */
     constructor(id: ISynsetID, num: Int, lemma: String) {
         require(lemma.trim { it <= ' ' }.isNotEmpty())
-        checkWordNumber(num)
         this.synsetID = id
         this.wordNumber = num
         this.lemma = lemma
@@ -137,15 +126,8 @@ class WordID : IWordID {
     }
 
     override fun toString(): String {
-        checkNotNull(this.synsetID)
-        val pos = checkNotNull(synsetID.pOS)
-        return wordIDPrefix +  //
-                Synset.zeroFillOffset(synsetID.offset) +  //
-                '-' + pos.tag.uppercaseChar() +  //
-                '-' +  //
-                (if (this.wordNumber < 0) unknownWordNumber else zeroFillWordNumber(this.wordNumber)) +  //
-                '-' +  //
-                (lemma ?: unknownLemma)
+        val pos = synsetID.pOS!!
+        return "$wordIDPrefix ${Synset.zeroFillOffset(synsetID.offset)}-${pos.tag.uppercaseChar()}-${if (wordNumber < 0) unknownWordNumber else zeroFillWordNumber(this.wordNumber)}-${lemma ?: unknownLemma}"
     }
 
     companion object {
