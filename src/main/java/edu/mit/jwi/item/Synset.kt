@@ -22,26 +22,47 @@ import java.util.*
  * @property isAdjectiveSatellite true if this object represents an adjective satellite synset; false otherwise
  * @property isAdjectiveHead true if this object represents an adjective head synset; false otherwise
  * @property gloss the gloss for this synset
- * @param wordBuilders the list of word builders for this synset
- * @param ids a map of related synset lists, indexed by pointer; may be null
+ * @property words the list of words in this synset
+ * @property related a map of related synset lists, indexed by pointer
 
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-class Synset(
+class Synset private constructor (
     override val iD: ISynsetID,
     override val lexicalFile: ILexFile,
     override val isAdjectiveSatellite: Boolean,
     override val isAdjectiveHead: Boolean,
     override val gloss: String,
-    wordBuilders: List<IWordBuilder>,
-    ids: Map<IPointer, List<ISynsetID>>?,
+    override val related: Map<IPointer, List<ISynsetID>>,
 ) : ISynset {
 
-    override val words: List<IWord>
+    override lateinit var words: List<IWord>
 
-    override val related: Map<IPointer, List<ISynsetID>>
+    /**
+     * Default implementation of the `ISynset` interface.
+     *
+     * @param iD the synset id
+     * @param lexicalFile the lexical file for this synset
+     * @param isAdjectiveSatellite true if this object represents an adjective satellite synset; false otherwise
+     * @param isAdjectiveHead true if this object represents an adjective head synset; false otherwise
+     * @param gloss the gloss for this synset
+     * @param wordBuilders the list of word builders for this synset
+     * @param related a map of related synset lists, indexed by pointer
+     */
+    constructor(
+        iD: ISynsetID,
+        lexicalFile: ILexFile,
+        isAdjectiveSatellite: Boolean,
+        isAdjectiveHead: Boolean,
+        gloss: String,
+        wordBuilders: List<IWordBuilder>,
+        related: Map<IPointer, List<ISynsetID>>?,
+    ) : this(iD, lexicalFile, isAdjectiveSatellite, isAdjectiveHead, gloss, normalizeRelated(related)) {
+        require(!wordBuilders.isEmpty())
+        words = buildWords(wordBuilders, this)
+    }
 
     override val offset: Int
         get() {
@@ -68,20 +89,8 @@ class Synset(
      * @since JWI 1.0
      */
     init {
-        require(!wordBuilders.isEmpty())
         require(!(isAdjectiveSatellite && isAdjectiveHead))
         require(!((isAdjectiveSatellite || isAdjectiveHead) && lexicalFile.number != ADJ_ALL.number))
-
-        // words
-        words = wordBuilders
-            .map { it.toWord(this) }
-            .toList()
-
-        // related synset map
-        related = ids?.entries
-            ?.filterNot { it.value.isEmpty() }
-            ?.associate { it.key to it.value }
-            ?: emptyMap()
     }
 
     override fun hashCode(): Int {
@@ -154,7 +163,7 @@ class Synset(
      * @version 2.4.0
      * @since JWI 1.0
      */
-    data class WordBuilder (
+    data class WordBuilder(
         private val num: Int,
         private val lemma: String,
         private val lexID: Int,
@@ -175,7 +184,7 @@ class Synset(
         }
 
         fun addVerbFrame(frame: IVerbFrame) {
-             verbFrames.add(frame)
+            verbFrames.add(frame)
         }
     }
 
@@ -224,6 +233,19 @@ class Synset(
             if (offset < 0)
                 return false
             return offset <= 99999999
+        }
+
+        fun buildWords(wordBuilders: List<IWordBuilder>, synset: ISynset): List<IWord> {
+            return wordBuilders
+                .map { it.toWord(synset) }
+                .toList()
+        }
+
+        private fun normalizeRelated(related: Map<IPointer, List<ISynsetID>>?): Map<IPointer, List<ISynsetID>> {
+            return related?.entries
+                ?.filterNot { it.value.isEmpty() }
+                ?.associate { it.key to it.value }
+                ?: emptyMap()
         }
     }
 }

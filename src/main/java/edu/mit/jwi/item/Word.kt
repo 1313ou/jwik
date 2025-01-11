@@ -76,41 +76,22 @@ class Word(
         get() = adjMarker
 
     override fun getRelatedWords(ptrType: IPointer): List<IWordID> {
-        val result: List<IWordID>? = relatedMap[ptrType]
-        return result ?: emptyList<IWordID>()
+        return relatedMap[ptrType] ?: emptyList<IWordID>()
     }
 
     override fun toString(): String {
-        checkNotNull(this.iD)
-        val sid = checkNotNull(iD.synsetID)
-        return if (iD.wordNumber == 0) {
-            "W-" + sid.toString().substring(4) + "-?-" + iD.lemma
-        } else {
-            "W-" + sid.toString().substring(4) + "-" + iD.wordNumber + "-" + iD.lemma
-        }
+        val sid = iD.synsetID.toString().substring(4)
+        return if (iD.wordNumber == 0)
+            "W-$sid-?-${iD.lemma}"
+        else
+            "W-$sid-${iD.wordNumber}-${iD.lemma}"
+
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     override fun hashCode(): Int {
-        val PRIME = 31
-        var result: Int = PRIME + verbFrames.hashCode()
-        result = PRIME * result + relatedMap.hashCode()
-        checkNotNull(this.iD)
-        result = PRIME * result + iD.hashCode()
-        result = PRIME * result + this.lexicalID
-        result = PRIME * result + (adjMarker?.hashCode() ?: 0)
-        return result
+        return Objects.hash(iD, lexicalID, adjMarker, relatedMap, verbFrames)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     override fun equals(obj: Any?): Boolean {
         // check nulls
         if (this === obj) {
