@@ -32,8 +32,8 @@ class WordID : IWordID {
     override val lemma: String?
 
     /**
-     * Constructs a word id from the specified arguments. This constructor
-     * produces a word with an unknown lemma.
+     * Constructs a word id from the specified arguments.
+     * This constructor produces a word with an unknown lemma.
      *
      * @param offset the synset offset
      * @param pos    the part of speech; may not be null
@@ -44,20 +44,19 @@ class WordID : IWordID {
     constructor(offset: Int, pos: POS, num: Int) : this(SynsetID(offset, pos), num)
 
     /**
-     * Constructs a word id from the specified arguments. This constructor
-     * produces a word with an unknown word number.
+     * Constructs a word id from the specified arguments.
+     * This constructor produces a word with an unknown word number.
      *
      * @param offset the synset offset
      * @param pos    the part of speech; may not be null
-     * @param lemma  the lemma; may not be null, empty, or all
-     * whitespace
+     * @param lemma  the lemma; may not be empty, or all whitespace
      * @since JWI 1.0
      */
     constructor(offset: Int, pos: POS, lemma: String) : this(SynsetID(offset, pos), lemma)
 
     /**
-     * Constructs a word id from the specified arguments. This constructor
-     * produces a word with an unknown lemma.
+     * Constructs a word id from the specified arguments.
+     * This constructor produces a word with an unknown lemma.
      *
      * @param id  the synset id; may not be null
      * @param num the word number
@@ -66,9 +65,6 @@ class WordID : IWordID {
      * @since JWI 1.0
      */
     constructor(id: ISynsetID, num: Int) {
-        if (id == null) {
-            throw NullPointerException()
-        }
         checkWordNumber(num)
         this.synsetID = id
         this.wordNumber = num
@@ -87,13 +83,10 @@ class WordID : IWordID {
      * @since JWI 1.0
      */
     constructor(id: ISynsetID, lemma: String) {
-        if (id == null) {
-            throw NullPointerException()
-        }
         require(lemma.trim { it <= ' ' }.isNotEmpty())
         this.synsetID = id
         this.wordNumber = -1
-        this.lemma = lemma.lowercase(Locale.getDefault())
+        this.lemma = lemma.lowercase()
     }
 
     /**
@@ -109,9 +102,6 @@ class WordID : IWordID {
      * @since JWI 1.0
      */
     constructor(id: ISynsetID, num: Int, lemma: String) {
-        if (id == null) {
-            throw NullPointerException()
-        }
         require(lemma.trim { it <= ' ' }.isNotEmpty())
         checkWordNumber(num)
         this.synsetID = id
@@ -119,21 +109,10 @@ class WordID : IWordID {
         this.lemma = lemma
     }
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#hashCode()
-    */
     override fun hashCode(): Int {
-        checkNotNull(this.synsetID)
-        return 31 * synsetID.hashCode()
+        return Objects.hash(synsetID)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
@@ -145,11 +124,10 @@ class WordID : IWordID {
             return false
         }
         val other = obj as WordID
-        checkNotNull(this.synsetID)
-        if (this.synsetID != other.synsetID) {
+        if (synsetID != other.synsetID) {
             return false
         }
-        if (other.wordNumber != -1 && this.wordNumber != -1 && other.wordNumber != this.wordNumber) {
+        if (other.wordNumber != -1 && wordNumber != -1 && other.wordNumber != wordNumber) {
             return false
         }
         if (other.lemma != null && lemma != null) {
@@ -157,12 +135,6 @@ class WordID : IWordID {
         }
         return true
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
 
     override fun toString(): String {
         checkNotNull(this.synsetID)
@@ -177,13 +149,6 @@ class WordID : IWordID {
     }
 
     companion object {
-
-        /**
-         * Generated serial version id.
-         *
-         * @since JWI 2.2.5
-         */
-        private const val serialVersionUID = 3163309710173885763L
 
         /**
          * String prefix for the [.toString] method.
@@ -222,9 +187,6 @@ class WordID : IWordID {
          */
 
         fun parseWordID(value: String): IWordID {
-            if (value == null) {
-                throw NullPointerException()
-            }
             require(value.length >= 19)
             require(value.startsWith("WID-"))
 

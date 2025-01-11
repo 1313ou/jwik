@@ -19,22 +19,33 @@ import java.util.*
  * @since JWI 1.0
  */
 class Word(
-    synset: ISynset,
-    id: IWordID,
-    lexID: Int,
-    adjMarker: AdjMarker?,
+    override val synset: ISynset,
+    override val iD: IWordID,
+    override val lexicalID: Int,
+    private val adjMarker: AdjMarker?,
     frames: List<IVerbFrame>?,
     pointers: Map<IPointer, List<IWordID>>,
 ) : IWord {
 
-    override val iD: IWordID
-    override val synset: ISynset
     override val senseKey: ISenseKey
-    override val lexicalID: Int
     override val verbFrames: List<IVerbFrame>
     override val relatedWords: List<IWordID>
     override val relatedMap: Map<IPointer, List<IWordID>>
-    private val adjMarker: AdjMarker?
+
+    override val lemma: String
+        get() {
+            checkNotNull(this.iD)
+            return iD.lemma!!
+        }
+
+    override val pOS: POS
+        get() {
+            val sid = iD.synsetID
+            return sid.pOS!!
+        }
+
+    override val adjectiveMarker: AdjMarker?
+        get() = adjMarker
 
     /**
      * Constructs a new word object.
@@ -60,20 +71,48 @@ class Word(
         pointers: Map<IPointer, List<IWordID>>,
     ) : this(synset, WordID(synset.iD, number, lemma), lexID, adjMarker, frames, pointers)
 
-    override val lemma: String
-        get() {
-            checkNotNull(this.iD)
-            return iD.lemma!!
+
+    /**
+     * Constructs a new word object.
+     *
+     * @param synset    the synset for the word; may not be null the word
+     * lemma; may not be empty or all whitespace
+     * @param id        the word id; may not be null
+     * @param lexID     the lexical id
+     * @param adjMarker non-null only if this is an adjective
+     * @param frames    verb frames if this is a verb
+     * @param pointers  lexical pointers
+     * @throws NullPointerException     if the synset or word ID is null
+     * @throws IllegalArgumentException if the adjective marker is non-null and this is
+     * not an adjective
+     * @since JWI 1.0
+     */
+    init {
+        // check arguments
+        checkLexicalID(lexicalID)
+        require(!(synset.pOS !== POS.ADJECTIVE && adjMarker != null))
+
+        // fill synset map
+        var hiddenSet: Set<IWordID>? = null
+        var hiddenMap: Map<IPointer, MutableList<IWordID>>? = null
+        if (pointers != null) {
+            hiddenSet = LinkedHashSet<IWordID>()
+            hiddenMap = HashMap<IPointer, MutableList<IWordID>>(pointers.size)
+            for (entry in pointers.entries) {
+                if (entry.value != null && !entry.value.isEmpty()) {
+                    hiddenMap.put(entry.key, Collections.unmodifiableList<IWordID?>(ArrayList<IWordID?>(entry.value)))
+                    hiddenSet.addAll(entry.value)
+                }
+            }
         }
 
-    override val pOS: POS
-        get() {
-            val sid = iD.synsetID
-            return sid.pOS!!
-        }
-
-    override val adjectiveMarker: AdjMarker?
-        get() = adjMarker
+        // field assignments
+        val lemma = checkNotNull(iD.lemma)
+        this.senseKey = SenseKey(lemma, lexicalID, synset)
+        this.relatedWords = if (hiddenSet != null && !hiddenSet.isEmpty()) Collections.unmodifiableList<IWordID>(ArrayList<IWordID>(hiddenSet)) else listOf<IWordID>()
+        this.relatedMap = if (hiddenMap != null && !hiddenMap.isEmpty()) Collections.unmodifiableMap<IPointer, List<IWordID>>(hiddenMap) else mapOf<IPointer, List<IWordID>>()
+        this.verbFrames = if (frames == null || frames.isEmpty()) listOf<IVerbFrame>() else Collections.unmodifiableList<IVerbFrame>(ArrayList<IVerbFrame>(frames))
+    }
 
     override fun getRelatedWords(ptrType: IPointer): List<IWordID> {
         return relatedMap[ptrType] ?: emptyList<IWordID>()
@@ -132,58 +171,6 @@ class Word(
             return false
         }
         return this.relatedMap == that.relatedMap
-    }
-
-    /**
-     * Constructs a new word object.
-     *
-     * @param synset    the synset for the word; may not be null the word
-     * lemma; may not be empty or all whitespace
-     * @param id        the word id; may not be null
-     * @param lexID     the lexical id
-     * @param adjMarker non-null only if this is an adjective
-     * @param frames    verb frames if this is a verb
-     * @param pointers  lexical pointers
-     * @throws NullPointerException     if the synset or word ID is null
-     * @throws IllegalArgumentException if the adjective marker is non-null and this is
-     * not an adjective
-     * @since JWI 1.0
-     */
-    init {
-        // check arguments
-        if (synset == null) {
-            throw NullPointerException()
-        }
-        if (id == null) {
-            throw NullPointerException()
-        }
-        checkLexicalID(lexID)
-        require(!(synset.pOS !== POS.ADJECTIVE && adjMarker != null))
-
-        // fill synset map
-        var hiddenSet: Set<IWordID>? = null
-        var hiddenMap: Map<IPointer, MutableList<IWordID>>? = null
-        if (pointers != null) {
-            hiddenSet = LinkedHashSet<IWordID>()
-            hiddenMap = HashMap<IPointer, MutableList<IWordID>>(pointers.size)
-            for (entry in pointers.entries) {
-                if (entry.value != null && !entry.value.isEmpty()) {
-                    hiddenMap.put(entry.key, Collections.unmodifiableList<IWordID?>(ArrayList<IWordID?>(entry.value)))
-                    hiddenSet.addAll(entry.value)
-                }
-            }
-        }
-
-        // field assignments
-        this.synset = synset
-        this.iD = id
-        this.lexicalID = lexID
-        this.adjMarker = adjMarker
-        val lemma = checkNotNull(id.lemma)
-        this.senseKey = SenseKey(lemma, lexID, synset)
-        this.relatedWords = if (hiddenSet != null && !hiddenSet.isEmpty()) Collections.unmodifiableList<IWordID>(ArrayList<IWordID>(hiddenSet)) else listOf<IWordID>()
-        this.relatedMap = if (hiddenMap != null && !hiddenMap.isEmpty()) Collections.unmodifiableMap<IPointer, List<IWordID>>(hiddenMap) else mapOf<IPointer, List<IWordID>>()
-        this.verbFrames = if (frames == null || frames.isEmpty()) listOf<IVerbFrame>() else Collections.unmodifiableList<IVerbFrame>(ArrayList<IVerbFrame>(frames))
     }
 
     companion object {
