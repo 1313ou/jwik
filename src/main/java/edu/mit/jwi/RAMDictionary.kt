@@ -25,7 +25,6 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
-import kotlin.Throws
 
 /**
  * Default implementation of the `IRAMDictionary` interface. This
@@ -986,8 +985,7 @@ class RAMDictionary private constructor(
         }
 
         /**
-         * Creates a new synset object that replaces all the old internal
-         * `ISynsetID` objects with those from the denoted synsets,
+         * Creates a new synset object that replaces all the old internal `ISynsetID` objects with those from the denoted synsets,
          * thus throwing away redundant synset ids.
          *
          * @param old the synset to be replicated
@@ -1001,10 +999,10 @@ class RAMDictionary private constructor(
                 .map { WordBuilder(it) }
                 .toList()
 
-            // related
-            val newRelatedIDs = old.relatedMap
+            // related synsets
+            val newRelated = old.relatedMap
                 .map { (ptr, oldTargets) ->
-                    val newTargets = oldTargets
+                    val newTargets: List<ISynsetID> = oldTargets
                         .map {
                             val resolver: Map<ISynsetID, ISynset> = synsets[it.pOS]!!
                             val otherSynset: ISynset = resolver[it]!!
@@ -1015,13 +1013,12 @@ class RAMDictionary private constructor(
                 }
                 .toMap()
 
-            return Synset(old.iD, old.lexicalFile, old.isAdjectiveSatellite, old.isAdjectiveHead, old.gloss, wordBuilders, newRelatedIDs)
+            return Synset(old.iD, old.lexicalFile, old.isAdjectiveSatellite, old.isAdjectiveHead, old.gloss, wordBuilders, newRelated)
         }
 
         /**
-         * Creates a new word object that replaces all the old internal
-         * `IWordID` objects with those from the denoted words, thus
-         * throwing away redundant word ids.
+         * Creates a new word object that replaces all the old internal `IWordID` objects with those from the denoted words,
+         * thus throwing away redundant word ids.
          *
          * @param newSynset the synset for which the word is being made
          * @param old       the word to be replicated
@@ -1029,26 +1026,26 @@ class RAMDictionary private constructor(
          * @since JWI 2.2.0
          */
         private fun makeWord(newSynset: ISynset, old: IWord): IWord {
-            val oldPtrs: Map<IPointer, List<IWordID>> = old.relatedMap
-            val newPtrs: MutableMap<IPointer, MutableList<IWordID>> = HashMap<IPointer, MutableList<IWordID>>(oldPtrs.size)
-            var newList: MutableList<IWordID>
-            var otherSynset: ISynset
-            for (entry in oldPtrs.entries) {
-                newList = ArrayList<IWordID>(entry.value.size)
-                for (otherID in entry.value) {
-                    val m = checkNotNull(synsets[otherID.pOS])
-                    otherSynset = m[otherID.synsetID]!!
-                    checkNotNull(otherSynset)
-                    newList.add(otherSynset.words[otherID.wordNumber - 1].iD)
-                }
-                newPtrs.put(entry.key, newList)
-            }
 
-            val word: IWord = Word(newSynset, old.iD, old.lexicalID, old.adjectiveMarker, old.verbFrames, newPtrs)
-            val key = word.senseKey
-            if (key.needsHeadSet()) {
+            // related words
+            val newRelated = old.relatedMap
+                .map { (ptr, oldTargets) ->
+                    val newTargets: List<IWordID> = oldTargets
+                        .map {
+                            val resolver: Map<ISynsetID, ISynset> = synsets[it.pOS]!!
+                            val otherSynset: ISynset = resolver[it.synsetID]!!
+                            otherSynset.words[it.wordNumber - 1].iD
+                        }
+                        .toList()
+                    ptr to newTargets
+                }
+                .toMap()
+
+            // word
+            val word: IWord = Word(newSynset, old.iD, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
+            if (word.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey
-                key.setHead(oldKey.headWord!!, oldKey.headID)
+                word.senseKey.setHead(oldKey.headWord!!, oldKey.headID)
             }
             return word
         }
