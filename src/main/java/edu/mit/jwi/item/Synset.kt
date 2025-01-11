@@ -29,7 +29,7 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 1.0
  */
-class Synset private constructor (
+class Synset private constructor(
     override val iD: ISynsetID,
     override val lexicalFile: ILexFile,
     override val isAdjectiveSatellite: Boolean,
@@ -164,7 +164,7 @@ class Synset private constructor (
      * @since JWI 1.0
      */
     data class WordBuilder(
-        private val num: Int,
+        private val number: Int,
         private val lemma: String,
         private val lexID: Int,
         private val marker: AdjMarker?,
@@ -175,7 +175,7 @@ class Synset private constructor (
         private val verbFrames = ArrayList<IVerbFrame>()
 
         override fun toWord(synset: ISynset): IWord {
-            return Word(synset, num, lemma, lexID, marker, verbFrames, relatedWords)
+            return Word(synset, WordID(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
         }
 
         fun addRelatedWord(ptrType: IPointer, id: IWordID) {

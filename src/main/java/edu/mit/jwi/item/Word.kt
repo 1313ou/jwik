@@ -14,6 +14,17 @@ import java.util.*
 /**
  * Default implementation of the `IWord` interface.
  *
+ * Constructs a new word object.
+ *
+ * @param synset the synset for the word
+ * @param iD the word id; its word lemma may not be empty or all whitespace
+ * @param lexicalID the lexical id
+ * @param adjMarker non-null only if this is an adjective
+ * @param frames  verb frames if this is a verb
+ * @param related lexical pointers
+ * @throws IllegalArgumentException if the adjective marker is non-null and this is not an adjective
+ * @since JWI 1.0
+
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
@@ -34,7 +45,7 @@ class Word(
     override val related: Map<IPointer, List<IWordID>>
 
     override val relatedWords: List<IWordID>
-        get() = this@Word.related.values
+        get() = related.values
             .flatMap { it.toList() }
             .distinct()
             .toList()
@@ -54,44 +65,6 @@ class Word(
     override val adjectiveMarker: AdjMarker?
         get() = adjMarker
 
-    /**
-     * Constructs a new word object.
-     *
-     * @param synset    the synset for the word; may not be null
-     * @param number    the word number
-     * @param lemma     the word lemma; may not be empty or all whitespace
-     * @param lexID     the lexical id
-     * @param adjMarker non-null only if this is an adjective
-     * @param frames verb frames if this is a verb
-     * @param related lexical pointers
-     * @throws NullPointerException     if the synset is null
-     * @throws IllegalArgumentException if the adjective marker is non-null and this is not an adjective
-     * @since JWI 1.0
-     */
-    constructor(
-        synset: ISynset,
-        number: Int,
-        lemma: String,
-        lexID: Int,
-        adjMarker: AdjMarker?,
-        frames: List<IVerbFrame>?,
-        related: Map<IPointer, List<IWordID>>,
-    ) : this(synset, WordID(synset.iD, number, lemma), lexID, adjMarker, frames, related)
-
-    /**
-     * Constructs a new word object.
-     *
-     * @param synset the synset for the word; may not be null the word
-     * lemma; may not be empty or all whitespace
-     * @param iD the word id; may not be null
-     * @param lexicalID the lexical id
-     * @param adjMarker non-null only if this is an adjective
-     * @param frames  verb frames if this is a verb
-     * @param related lexical pointers
-     * @throws IllegalArgumentException if the adjective marker is non-null and this is
-     * not an adjective
-     * @since JWI 1.0
-     */
     init {
         // check arguments
         checkLexicalID(lexicalID)
@@ -100,8 +73,8 @@ class Word(
         // related
         this.related = normalizeRelated(
             related.entries
-                                            .filter { !it.value.isEmpty() }
-                                            .associate { it.key to it.value }
+                .filter { !it.value.isEmpty() }
+                .associate { it.key to it.value }
         )
 
         // field assignments
