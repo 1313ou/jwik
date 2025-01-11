@@ -17,6 +17,7 @@ import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
 import edu.mit.jwi.data.ILoadPolicy
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.*
+import edu.mit.jwi.item.Synset.IWordBuilder
 import java.io.*
 import java.net.URL
 import java.nio.charset.Charset
@@ -1082,20 +1083,12 @@ class RAMDictionary private constructor(
          * @version 2.4.0
          * @since JWI 2.2.0
          */
-        inner class WordBuilder(private val oldWord: IWord) : Synset.IWordBuilder {
+        inner class WordBuilder(private val oldWord: IWord) : IWordBuilder {
 
             override fun toWord(synset: ISynset): IWord {
                 return makeWord(synset, oldWord)
             }
-
-            override fun addVerbFrame(frame: IVerbFrame) {
-                throw UnsupportedOperationException()
-            }
-
-            override fun addRelatedWord(ptrType: IPointer, id: IWordID) {
-                throw UnsupportedOperationException()
-            }
-        }
+       }
     }
 
     override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {

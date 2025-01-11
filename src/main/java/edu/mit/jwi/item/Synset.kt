@@ -138,25 +138,6 @@ class Synset(
          */
 
         fun toWord(synset: ISynset): IWord
-
-        /**
-         * Adds the specified verb frame to this word.
-         *
-         * @param frame the frame to be added
-         * @throws NullPointerException if the specified frame is null
-         * @since JWI 2.2.0
-         */
-        fun addVerbFrame(frame: IVerbFrame)
-
-        /**
-         * Adds a pointer from this word to another word with the specified id.
-         *
-         * @param ptrType the pointer type
-         * @param id      the word id
-         * @throws NullPointerException if either argument is null
-         * @since JWI 2.2.0
-         */
-        fun addRelatedWord(ptrType: IPointer, id: IWordID)
     }
 
     /**
@@ -184,17 +165,17 @@ class Synset(
 
         private val verbFrames = ArrayList<IVerbFrame>()
 
-        override fun addRelatedWord(ptrType: IPointer, id: IWordID) {
+        override fun toWord(synset: ISynset): IWord {
+            return Word(synset, num, lemma, lexID, marker, verbFrames, relatedWords)
+        }
+
+        fun addRelatedWord(ptrType: IPointer, id: IWordID) {
             val words = relatedWords.computeIfAbsent(ptrType) { k: IPointer -> ArrayList<IWordID>() }
             words.add(id)
         }
 
-        override fun addVerbFrame(frame: IVerbFrame) {
+        fun addVerbFrame(frame: IVerbFrame) {
              verbFrames.add(frame)
-        }
-
-        override fun toWord(synset: ISynset): IWord {
-            return Word(synset, num, lemma, lexID, marker, verbFrames, relatedWords)
         }
     }
 
