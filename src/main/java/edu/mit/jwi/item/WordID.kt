@@ -9,7 +9,6 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.item.Word.Companion.checkWordNumber
 import edu.mit.jwi.item.Word.Companion.zeroFillWordNumber
 import java.util.*
 
@@ -35,29 +34,6 @@ class WordID : IWordID {
      * Constructs a word id from the specified arguments.
      * This constructor produces a word with an unknown lemma.
      *
-     * @param offset the synset offset
-     * @param pos    the part of speech; may not be null
-     * @param num    the word number
-     * @throws IllegalArgumentException if the offset or number are not legal
-     * @since JWI 1.0
-     */
-    constructor(offset: Int, pos: POS, num: Int) : this(SynsetID(offset, pos), num)
-
-    /**
-     * Constructs a word id from the specified arguments.
-     * This constructor produces a word with an unknown word number.
-     *
-     * @param offset the synset offset
-     * @param pos    the part of speech; may not be null
-     * @param lemma  the lemma; may not be empty, or all whitespace
-     * @since JWI 1.0
-     */
-    constructor(offset: Int, pos: POS, lemma: String) : this(SynsetID(offset, pos), lemma)
-
-    /**
-     * Constructs a word id from the specified arguments.
-     * This constructor produces a word with an unknown lemma.
-     *
      * @param id  the synset id; may not be null
      * @param num the word number
      * @throws NullPointerException     if the synset id is null
@@ -70,16 +46,7 @@ class WordID : IWordID {
         this.lemma = null
     }
 
-    /**
-     * Constructs a word id from the specified arguments.
-     * This constructor produces a word with an unknown word number.
-     *
-     * @param id the synset id
-     * @param lemma the lemma; may not be empty or all whitespace
-     * @throws IllegalArgumentException if the lemma is empty or all whitespace
-     * @since JWI 1.0
-     */
-    constructor(id: ISynsetID, lemma: String): this(id, -1, lemma)
+    // WITH LEMMA
 
     /**
      * Constructs a fully specified word id
@@ -91,7 +58,7 @@ class WordID : IWordID {
      * is not legal
      * @since JWI 1.0
      */
-    constructor(id: ISynsetID, num: Int, lemma: String) {
+    constructor(id: ISynsetID, lemma: String, num: Int = -1) {
         require(lemma.trim { it <= ' ' }.isNotEmpty())
         this.synsetID = id
         this.wordNumber = num
@@ -167,7 +134,6 @@ class WordID : IWordID {
          * @throws NullPointerException     if the specified string is null
          * @since JWI 1.0
          */
-
         fun parseWordID(value: String): IWordID {
             require(value.length >= 19)
             require(value.startsWith("WID-"))
