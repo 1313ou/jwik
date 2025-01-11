@@ -24,13 +24,20 @@ class Word(
     override val lexicalID: Int,
     private val adjMarker: AdjMarker?,
     frames: List<IVerbFrame>?,
-    pointers: Map<IPointer, List<IWordID>>,
+    related: Map<IPointer, List<IWordID>>,
 ) : IWord {
 
     override val senseKey: ISenseKey
+
     override val verbFrames: List<IVerbFrame>
+
+    override val related: Map<IPointer, List<IWordID>>
+
     override val relatedWords: List<IWordID>
-    override val relatedMap: Map<IPointer, List<IWordID>>
+        get() = this@Word.related.values
+            .flatMap { it.toList() }
+            .distinct()
+            .toList()
 
     override val lemma: String
         get() {
@@ -55,8 +62,8 @@ class Word(
      * @param lemma     the word lemma; may not be empty or all whitespace
      * @param lexID     the lexical id
      * @param adjMarker non-null only if this is an adjective
-     * @param frames    verb frames if this is a verb
-     * @param pointers  lexical pointers
+     * @param frames verb frames if this is a verb
+     * @param related lexical pointers
      * @throws NullPointerException     if the synset is null
      * @throws IllegalArgumentException if the adjective marker is non-null and this is not an adjective
      * @since JWI 1.0
@@ -68,21 +75,19 @@ class Word(
         lexID: Int,
         adjMarker: AdjMarker?,
         frames: List<IVerbFrame>?,
-        pointers: Map<IPointer, List<IWordID>>,
-    ) : this(synset, WordID(synset.iD, number, lemma), lexID, adjMarker, frames, pointers)
-
+        related: Map<IPointer, List<IWordID>>,
+    ) : this(synset, WordID(synset.iD, number, lemma), lexID, adjMarker, frames, related)
 
     /**
      * Constructs a new word object.
      *
-     * @param synset    the synset for the word; may not be null the word
+     * @param synset the synset for the word; may not be null the word
      * lemma; may not be empty or all whitespace
-     * @param id        the word id; may not be null
-     * @param lexID     the lexical id
+     * @param iD the word id; may not be null
+     * @param lexicalID the lexical id
      * @param adjMarker non-null only if this is an adjective
-     * @param frames    verb frames if this is a verb
-     * @param pointers  lexical pointers
-     * @throws NullPointerException     if the synset or word ID is null
+     * @param frames  verb frames if this is a verb
+     * @param related lexical pointers
      * @throws IllegalArgumentException if the adjective marker is non-null and this is
      * not an adjective
      * @since JWI 1.0
@@ -92,30 +97,21 @@ class Word(
         checkLexicalID(lexicalID)
         require(!(synset.pOS !== POS.ADJECTIVE && adjMarker != null))
 
-        // fill synset map
-        var hiddenSet: Set<IWordID>? = null
-        var hiddenMap: Map<IPointer, MutableList<IWordID>>? = null
-        if (pointers != null) {
-            hiddenSet = LinkedHashSet<IWordID>()
-            hiddenMap = HashMap<IPointer, MutableList<IWordID>>(pointers.size)
-            for (entry in pointers.entries) {
-                if (entry.value != null && !entry.value.isEmpty()) {
-                    hiddenMap.put(entry.key, Collections.unmodifiableList<IWordID?>(ArrayList<IWordID?>(entry.value)))
-                    hiddenSet.addAll(entry.value)
-                }
-            }
-        }
+        // related
+        this.related = normalizeRelated(
+            related.entries
+                                            .filter { !it.value.isEmpty() }
+                                            .associate { it.key to it.value }
+        )
 
         // field assignments
         val lemma = checkNotNull(iD.lemma)
         this.senseKey = SenseKey(lemma, lexicalID, synset)
-        this.relatedWords = if (hiddenSet != null && !hiddenSet.isEmpty()) Collections.unmodifiableList<IWordID>(ArrayList<IWordID>(hiddenSet)) else listOf<IWordID>()
-        this.relatedMap = if (hiddenMap != null && !hiddenMap.isEmpty()) Collections.unmodifiableMap<IPointer, List<IWordID>>(hiddenMap) else mapOf<IPointer, List<IWordID>>()
         this.verbFrames = if (frames == null || frames.isEmpty()) listOf<IVerbFrame>() else Collections.unmodifiableList<IVerbFrame>(ArrayList<IVerbFrame>(frames))
     }
 
     override fun getRelatedWords(ptrType: IPointer): List<IWordID> {
-        return relatedMap[ptrType] ?: emptyList<IWordID>()
+        return this@Word.related[ptrType] ?: emptyList<IWordID>()
     }
 
     override fun toString(): String {
@@ -124,11 +120,10 @@ class Word(
             "W-$sid-?-${iD.lemma}"
         else
             "W-$sid-${iD.wordNumber}-${iD.lemma}"
-
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(iD, lexicalID, adjMarker, relatedMap, verbFrames)
+        return Objects.hash(iD, lexicalID, adjMarker, this@Word.related, verbFrames)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -148,17 +143,17 @@ class Word(
 
         // check id
         checkNotNull(this.iD)
-        if (this.iD != that.iD) {
+        if (iD != that.iD) {
             return false
         }
 
         // check lexical id
-        if (this.lexicalID != that.lexicalID) {
+        if (lexicalID != that.lexicalID) {
             return false
         }
 
         // check adjective marker
-        if (this.adjMarker == null) {
+        if (adjMarker == null) {
             if (that.adjMarker != null) {
                 return false
             }
@@ -170,19 +165,10 @@ class Word(
         if (this.verbFrames != that.verbFrames) {
             return false
         }
-        return this.relatedMap == that.relatedMap
+        return this@Word.related == that.related
     }
 
     companion object {
-
-        /**
-         * This serial version UID identifies the last version of JWI whose
-         * serialized instances of the Word class are compatible with this
-         * implementation.
-         *
-         * @since JWI 2.4.0
-         */
-        private const val serialVersionUID: Long = 240
 
         /**
          * Checks the specified word number, and throws an
@@ -286,13 +272,12 @@ class Word(
         }
 
         /**
-         * Returns a string representation of the specified integer as a two hex
-         * digit zero-filled string. E.g., "1" becomes "01", "10" becomes "0A", and
-         * so on. This is used for the generation of Word ID numbers.
+         * Returns a string representation of the specified integer as a two hex digit zero-filled string.
+         * E.g., "1" becomes "01", "10" becomes "0A", and so on.
+         * This is used for the generation of Word ID numbers.
          *
          * @param num the number to be converted
-         * @return a two hex digit zero-filled string representing the specified
-         * number
+         * @return a two hex digit zero-filled string representing the specified number
          * @throws IllegalArgumentException if the specified number is not a legal word number
          * @since JWI 2.1.0
          */
@@ -300,16 +285,14 @@ class Word(
 
         fun zeroFillWordNumber(num: Int): String {
             checkWordNumber(num)
-            val sb = StringBuilder(2)
-            val str = Integer.toHexString(num)
-            val numZeros = 2 - str.length
-            for (i in 0..<numZeros) {
-                sb.append('0')
-            }
-            for (i in 0..<str.length) {
-                sb.append(str[i].uppercaseChar())
-            }
-            return sb.toString()
+            return "%02x".format(num)
+        }
+
+        private fun normalizeRelated(related: Map<IPointer, List<IWordID>>?): Map<IPointer, List<IWordID>> {
+            return related?.entries
+                ?.filterNot { it.value.isEmpty() }
+                ?.associate { it.key to it.value }
+                ?: emptyMap()
         }
     }
 }

@@ -38,6 +38,25 @@ class Synset private constructor (
     override val related: Map<IPointer, List<ISynsetID>>,
 ) : ISynset {
 
+    override val offset: Int
+        get() {
+            return iD.offset
+        }
+
+    override val pOS: POS
+        get() {
+            return iD.pOS!!
+        }
+
+    override val type: Int
+        get() {
+            val pos = pOS
+            if (pos == POS.ADJECTIVE) {
+                return if (isAdjectiveSatellite) NUM_ADJECTIVE_SATELLITE else NUM_ADJECTIVE
+            }
+            return pos.number
+        }
+
     override lateinit var words: List<IWord>
 
     /**
@@ -63,25 +82,6 @@ class Synset private constructor (
         require(!wordBuilders.isEmpty())
         words = buildWords(wordBuilders, this)
     }
-
-    override val offset: Int
-        get() {
-            return iD.offset
-        }
-
-    override val pOS: POS
-        get() {
-            return iD.pOS!!
-        }
-
-    override val type: Int
-        get() {
-            val pos = pOS
-            if (pos == POS.ADJECTIVE) {
-                return if (isAdjectiveSatellite) NUM_ADJECTIVE_SATELLITE else NUM_ADJECTIVE
-            }
-            return pos.number
-        }
 
     /**
      * @throws IllegalArgumentException if the word list is empty, or both the adjective satellite and adjective head flags are set

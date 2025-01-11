@@ -289,7 +289,7 @@ class JWI
         }
 
         // lexical relations
-        val relatedMap: Map<IPointer, List<IWordID>> = sense.relatedMap
+        val relatedMap: Map<IPointer, List<IWordID>> = sense.related
         walk(relatedMap, ps)
 
         // verb frames

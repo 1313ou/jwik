@@ -40,7 +40,7 @@ interface IWord : IHasPOS, IItem<IWordID> {
      */
     val lexicalID: Int
 
-    val relatedMap: Map<IPointer, List<IWordID>>
+    val related: Map<IPointer, List<IWordID>>
 
     /**
      * Returns an immutable list of all word ids related to this word by the

@@ -1029,7 +1029,7 @@ class RAMDictionary private constructor(
         private fun makeWord(newSynset: ISynset, old: IWord): IWord {
 
             // related words
-            val newRelated = old.relatedMap
+            val newRelated = old.related
                 .map { (ptr, oldTargets) ->
                     val newTargets: List<IWordID> = oldTargets
                         .map {
