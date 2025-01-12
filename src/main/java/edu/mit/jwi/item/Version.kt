@@ -12,7 +12,6 @@ package edu.mit.jwi.item
 import edu.mit.jwi.data.ContentType
 import edu.mit.jwi.data.IDataType
 import edu.mit.jwi.data.WordnetFile.Companion.getLine
-import edu.mit.jwi.data.compare.ILineComparator
 import java.io.Serializable
 import java.nio.ByteBuffer
 import java.util.*
@@ -398,7 +397,7 @@ open class Version(
 
             // if direct access doesn't work, try walking forward in file
             // until we find a string that looks like "WordNet 2.1 Copyright"
-            val cd = contentType.lineComparator?.commentDetector
+            val cd = contentType.lineComparator?.commentProcessor
             if (cd == null) {
                 return null
             }

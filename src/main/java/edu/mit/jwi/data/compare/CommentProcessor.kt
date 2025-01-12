@@ -21,16 +21,14 @@ package edu.mit.jwi.data.compare
 object CommentProcessor : Comparator<String> {
 
     override fun compare(s1: String, s2: String): Int {
-        var s1 = s1
-        var s2 = s2
-        s1 = s1.trim { it <= ' ' }
-        s2 = s2.trim { it <= ' ' }
+        var s1 = s1.trim { it <= ' ' }
+        var s2 = s2.trim { it <= ' ' }
 
         var idx1 = s1.indexOf(' ')
-        var idx2 = s2.indexOf(' ')
         if (idx1 == -1) {
             idx1 = s1.length
         }
+        var idx2 = s2.indexOf(' ')
         if (idx2 == -1) {
             idx2 = s2.length
         }

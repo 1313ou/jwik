@@ -15,5 +15,5 @@ package edu.mit.jwi.data.compare
  */
 interface ILineComparator : Comparator<String> {
 
-    val commentDetector: CommentProcessor?
+    val commentProcessor: CommentProcessor?
 }

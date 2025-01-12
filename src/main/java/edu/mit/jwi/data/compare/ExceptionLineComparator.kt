@@ -19,7 +19,7 @@ import java.util.regex.Pattern
  */
 object ExceptionLineComparator : ILineComparator {
 
-    override val commentDetector: CommentProcessor? = null
+    override val commentProcessor: CommentProcessor? = null
 
     override fun compare(line1: String, line2: String): Int {
         val words1: Array<String?> = spacePattern.split(line1)

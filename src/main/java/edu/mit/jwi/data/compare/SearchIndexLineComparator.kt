@@ -16,21 +16,6 @@ import kotlin.math.min
  * A comparator that captures the ordering of lines in Wordnet index files
  * (e.g., `index.adv` or `adv.idx` files). These files are
  * ordered alphabetically.
- *
- * This constructor is marked protected so that the class may be
- * sub-classed, but not directly instantiated. Obtain instances of this
- * class via the static [.getInstance] method.
- *
- * @param detector the comment detector for this line comparator, or
- * null if there is none
- *
- * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the [.getInstance] method to get
- * the singleton instance.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
  */
 object SearchIndexLineComparator : IndexLineComparator(CommentProcessor) {
 

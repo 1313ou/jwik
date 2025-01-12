@@ -31,16 +31,16 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 1.0
  */
-open class IndexLineComparator(override val commentDetector: CommentProcessor) : ILineComparator {
+open class IndexLineComparator(override val commentProcessor: CommentProcessor) : ILineComparator {
 
     override fun compare(s1: String, s2: String): Int {
         // check for comments
-        val c1 = commentDetector.isCommentLine(s1)
-        val c2 = commentDetector.isCommentLine(s2)
+        val c1 = commentProcessor.isCommentLine(s1)
+        val c2 = commentProcessor.isCommentLine(s2)
 
         if (c1 and c2) {
             // both lines are comments, defer to comment comparator
-            return commentDetector.compare(s1, s2)
+            return commentProcessor.compare(s1, s2)
         } else if (c1 and !c2) {
             // first line is a comment, should come before the other
             return -1
