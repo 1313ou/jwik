@@ -11,52 +11,68 @@ package edu.mit.jwi.item
 
 import edu.mit.jwi.item.Word.Companion.checkLexicalID
 import edu.mit.jwi.item.Word.Companion.getLexicalIDForSenseKey
+import java.io.Serializable
+import java.util.*
 
 /**
- * Concrete, default implementation of the `ISenseKey` interface.
+ * Concrete, default implementation of the `SenseKey` interface.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.1.0
  */
 class SenseKey(
-    lemma: String,
-    lexID: Int,
-    pos: POS,
-    isAdjSat: Boolean,
-    lexFile: ILexFile,
-) : ISenseKey {
 
-    override val lemma: String
+    val lemma: String,
 
-    override val lexicalID: Int
+    /**
+     * The lexical id for this sense key, which is a non-negative integer.
+     */
+    val lexicalID: Int,
 
-    override val pOS: POS
+    override val pOS: POS,
 
-    override val isAdjectiveSatellite: Boolean
+    /**
+     * Whether this sense key points to an adjective satellite
+     */
+    val isAdjectiveSatellite: Boolean,
 
-    override val lexicalFile: ILexFile
+    val lexicalFile: ILexFile,
+) : IHasPOS, Comparable<SenseKey>, Serializable {
 
-    override val synsetType: Int
+    /**
+     * The synset type for the key.
+     * The synset type is a one digit decimal integer representing the synset type for the sense.
+     * 1=NOUN
+     * 2=VERB
+     * 3=ADJECTIVE
+     * 4=ADVERB
+     * 5=ADJECTIVE SATELLITE
+     */
+    val synsetType: Int
         get() {
-            checkNotNull(this.pOS)
-            return if (this.isAdjectiveSatellite) 5 else pOS.number
+            return if (this.isAdjectiveSatellite) NUM_ADJECTIVE_SATELLITE else pOS.number
         }
 
-    override val headWord: String?
+    val headWord: String?
         get() {
             checkHeadSet()
             return headLemma
         }
 
-    override val headID: Int
+    /**
+     * The head id for this sense key
+     * The head id is only present if the sense is an adjective satellite synset,
+     * It is a two digit decimal integer that, when appended onto the head word, uniquely identifies the sense within a lexicographer file.
+     * If this sense key is not for an adjective synset, this method returns `-1`.
+     */
+    val headID: Int
         get() {
             checkHeadSet()
             return headLexID
         }
 
-    // dynamic fields
-    private var isHeadSet: Boolean
+    private var isHeadSet: Boolean = !isAdjectiveSatellite
 
     private var headLemma: String? = null
 
@@ -73,7 +89,7 @@ class SenseKey(
      * @throws NullPointerException if either the lemma or synset is null
      * @since JWI 2.1.0
      */
-    constructor(lemma: String, lexID: Int, synset: Synset) : this(lemma, lexID, synset.pOS!!, synset.isAdjectiveSatellite, synset.lexicalFile)
+    constructor(lemma: String, lexID: Int, synset: Synset) : this(lemma, lexID, synset.pOS, synset.isAdjectiveSatellite, synset.lexicalFile)
 
     /**
      * Constructs a new sense key.
@@ -90,10 +106,7 @@ class SenseKey(
      * @since JWI 2.1.0
      */
     constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: ILexFile, originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
-        if (originalKey == null) {
-            throw NullPointerException()
-        }
-        this.toString = originalKey
+        toString = originalKey
     }
 
     /**
@@ -116,44 +129,22 @@ class SenseKey(
         } else {
             setHead(headLemma, headLexID)
         }
-        if (originalKey == null) {
-            throw NullPointerException()
-        }
         this.toString = originalKey
     }
 
     /**
-     * Constructs a new sense key.
+     * This method is used to set the head for sense keys for adjective
+     * satellites, and it can only be called once, directly after the relevant
+     * word is created. If this method is called on a sense key that has had its
+     * head set already, or is not an adjective satellite, it will throw an
+     * exception.
      *
-     * @param lemma    the lemma; may not be null
-     * @param lexID    the lexical id
-     * @param pos      the part of speech; may not be null
-     * @param isAdjSat true if this is an adjective satellite sense key;
-     * false otherwise
-     * @param lexFile  the lexical file; may not be null
-     * @throws NullPointerException if the lemma, part of speech, or lexical file is
-     * null
+     * @param headLemma the head lemma to be set
+     * @param headLexID the head lexid to be set
+     * @throws IllegalStateException if this method has already been called, if the headLemma is empty or all whitespace or if the headLexID is illegal.
      * @since JWI 2.1.0
      */
-    init {
-        if (pos == null) {
-            throw NullPointerException()
-        }
-        if (lexFile == null) {
-            throw NullPointerException()
-        }
-
-        // all sense key lemmas need not be in lower case
-        // also checks for null
-        this.lemma = lemma //.toLowerCase();
-        this.lexicalID = lexID
-        this.pOS = pos
-        this.isAdjectiveSatellite = isAdjSat
-        this.lexicalFile = lexFile
-        this.isHeadSet = !isAdjSat
-    }
-
-    override fun setHead(headLemma: String, headLexID: Int) {
+    fun setHead(headLemma: String, headLexID: Int) {
         check(needsHeadSet())
         checkLexicalID(headLexID)
         require(headLemma.trim { it <= ' ' }.isNotEmpty())
@@ -162,11 +153,17 @@ class SenseKey(
         this.isHeadSet = true
     }
 
-    override fun needsHeadSet(): Boolean {
+    /**
+     * Whether the head lemma and lexical id need to be  set
+     * This method will always return false if the [.isAdjectiveSatellite] returns false.
+     * If that method returns true, this method will only return true if [.setHead] has not yet been called.
+     *
+     */
+    fun needsHeadSet(): Boolean {
         return !isHeadSet
     }
 
-    override fun compareTo(key: ISenseKey): Int {
+    override fun compareTo(key: SenseKey): Int {
 
         // first sort alphabetically by lemma
         var cmp: Int = this.lemma.compareTo(key.lemma)
@@ -216,12 +213,6 @@ class SenseKey(
         return this.headID.toFloat().compareTo(key.headID.toFloat())
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
-
     override fun toString(): String {
         checkHeadSet()
         if (toString == null) {
@@ -247,27 +238,9 @@ class SenseKey(
      * @see java.lang.Object#hashCode()
      */
     override fun hashCode(): Int {
-        val prime = 31
-        var result = 1
-        result = prime * result + lemma.hashCode()
-        result = prime * result + this.lexicalID
-        checkNotNull(this.pOS)
-        result = prime * result + pOS.hashCode()
-        checkNotNull(this.lexicalFile)
-        result = prime * result + lexicalFile.hashCode()
-        result = prime * result + (if (this.isAdjectiveSatellite) 1231 else 1237)
-        if (this.isAdjectiveSatellite) {
-            result = prime * result + (headLemma?.hashCode() ?: 0)
-            result = prime * result + headLexID
-        }
-        return result
+        return Objects.hash(lemma, lexicalID, pOS, lexicalFile, isAdjectiveSatellite, headLemma, headLexID)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
@@ -282,22 +255,19 @@ class SenseKey(
         if (lemma != other.lemma) {
             return false
         }
-        if (this.lexicalID != other.lexicalID) {
+        if (lexicalID != other.lexicalID) {
             return false
         }
-        if (this.pOS != other.pOS) {
+        if (pOS != other.pOS) {
             return false
         }
-        checkNotNull(other.lexicalFile)
-        checkNotNull(this.lexicalFile)
         if (lexicalFile.number != other.lexicalFile.number) {
             return false
         }
-        if (this.isAdjectiveSatellite != other.isAdjectiveSatellite) {
+        if (isAdjectiveSatellite != other.isAdjectiveSatellite) {
             return false
         }
-        if (this.isAdjectiveSatellite) {
-            checkNotNull(headLemma)
+        if (isAdjectiveSatellite) {
             if (headLemma != other.headWord) {
                 return false
             }
@@ -317,7 +287,7 @@ class SenseKey(
          * @since JWI 2.1.0
          */
 
-        fun toString(key: ISenseKey): String {
+        fun toString(key: SenseKey): String {
             val lf: ILexFile? = checkNotNull(key.lexicalFile)
             // figure out appropriate size
             var size = key.lemma.length + 10

@@ -457,7 +457,7 @@ class RAMDictionary private constructor(
         }
     }
 
-    override fun getWord(key: ISenseKey): Word? {
+    override fun getWord(key: SenseKey): Word? {
         if (data != null) {
             return data!!.words[key]
         } else {
@@ -484,7 +484,7 @@ class RAMDictionary private constructor(
 
     // SENSE ENTRY
 
-    override fun getSenseEntry(key: ISenseKey): ISenseEntry? {
+    override fun getSenseEntry(key: SenseKey): ISenseEntry? {
         if (data != null) {
             return data!!.senses[key]
         } else {
@@ -822,7 +822,7 @@ class RAMDictionary private constructor(
          * @throws NullPointerException if either argument is null
          * @since JWI 2.2.0
          */
-        private fun makeSenseEntry(key: ISenseKey, old: ISenseEntry): ISenseEntry {
+        private fun makeSenseEntry(key: SenseKey, old: ISenseEntry): ISenseEntry {
             return SenseEntry(key, old.offset, old.senseNumber, old.tagCount)
         }
     }
@@ -843,9 +843,9 @@ class RAMDictionary private constructor(
 
         val exceptions: MutableMap<POS, MutableMap<IExceptionEntryID, IExceptionEntry>>
 
-        var words: MutableMap<ISenseKey, Word>
+        var words: MutableMap<SenseKey, Word>
 
-        var senses: MutableMap<ISenseKey, ISenseEntry>
+        var senses: MutableMap<SenseKey, ISenseEntry>
 
         /**
          * Constructs an empty dictionary data object.
@@ -856,8 +856,8 @@ class RAMDictionary private constructor(
             idxWords = makePOSMap<IIndexWordID, IIndexWord>()
             synsets = makePOSMap<SynsetID, Synset>()
             exceptions = makePOSMap<IExceptionEntryID, IExceptionEntry>()
-            words = makeMap<ISenseKey, Word>(208000, null)
-            senses = makeMap<ISenseKey, ISenseEntry>(208000, null)
+            words = makeMap<SenseKey, Word>(208000, null)
+            senses = makeMap<SenseKey, ISenseEntry>(208000, null)
         }
 
         /**
@@ -919,8 +919,8 @@ class RAMDictionary private constructor(
             compactPOSMap<IIndexWordID, IIndexWord>(idxWords)
             compactPOSMap<SynsetID, Synset>(synsets)
             compactPOSMap<IExceptionEntryID, IExceptionEntry>(exceptions)
-            words = compactMap<ISenseKey, Word>(words)
-            senses = compactMap<ISenseKey, ISenseEntry>(senses)
+            words = compactMap<SenseKey, Word>(words)
+            senses = compactMap<SenseKey, ISenseEntry>(senses)
         }
 
         /**

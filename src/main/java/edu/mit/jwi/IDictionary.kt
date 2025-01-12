@@ -139,7 +139,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
-    fun getWord(key: ISenseKey): Word?
+    fun getWord(key: SenseKey): Word?
 
     /**
      * Retrieves the synset with the specified id from the database. If the
@@ -177,7 +177,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
-    fun getSenseEntry(key: ISenseKey): ISenseEntry?
+    fun getSenseEntry(key: SenseKey): ISenseEntry?
 
     /**
      * Returns an iterator that will iterate over all sense entries in the

@@ -61,7 +61,7 @@ class Word(
     override val pOS: POS
         get() = iD.synsetID.pOS!!
 
-    val senseKey: ISenseKey = SenseKey(iD.lemma, lexicalID, synset)
+    val senseKey: SenseKey = SenseKey(iD.lemma, lexicalID, synset)
 
     val verbFrames: List<IVerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
 

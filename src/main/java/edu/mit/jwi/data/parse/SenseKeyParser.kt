@@ -10,15 +10,14 @@
 package edu.mit.jwi.data.parse
 
 import edu.mit.jwi.item.ILexFile
-import edu.mit.jwi.item.ISenseKey
+import edu.mit.jwi.item.SenseKey
 import edu.mit.jwi.item.LexFile.Companion.getLexicalFile
 import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
 import edu.mit.jwi.item.POS.Companion.isAdjectiveSatellite
-import edu.mit.jwi.item.SenseKey
 import edu.mit.jwi.item.UnknownLexFile.Companion.getUnknownLexicalFile
 
 /**
- * A parser that takes a sense key string and produces an `ISenseKey`
+ * A parser that takes a sense key string and produces an `SenseKey`
  * object.
  *
  * This class follows a singleton design pattern, and is not intended to be
@@ -38,9 +37,9 @@ class SenseKeyParser
  *
  * @since JWI 2.1.4
  */
-private constructor() : ILineParser<ISenseKey> {
+private constructor() : ILineParser<SenseKey> {
 
-    override fun parseLine(key: String): ISenseKey {
+    override fun parseLine(key: String): SenseKey {
         try {
             var begin = 0
 

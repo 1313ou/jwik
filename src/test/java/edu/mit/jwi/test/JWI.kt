@@ -158,7 +158,7 @@ class JWI
         }
     }
 
-    fun forAllSensekeys(f: Consumer<ISenseKey>?) {
+    fun forAllSensekeys(f: Consumer<SenseKey>?) {
         for (pos in POS.entries) {
             val it: Iterator<IIndexWord> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {

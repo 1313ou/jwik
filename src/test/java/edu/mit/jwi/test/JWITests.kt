@@ -53,7 +53,7 @@ class JWITests {
 
     @Test
     fun allSensekeysAreNonNull() {
-        jwi!!.forAllSensekeys(Consumer { actual: ISenseKey? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSensekeys(Consumer { actual: SenseKey? -> Assertions.assertNotNull(actual) })
     }
 
     @Test

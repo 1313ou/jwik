@@ -16,7 +16,7 @@ object TestLib {
         return sensekeyIsLive(jwi, sk)
     }
 
-    fun sensekeyIsLive(jwi: JWI, sk: ISenseKey): Boolean {
+    fun sensekeyIsLive(jwi: JWI, sk: SenseKey): Boolean {
         // println("● sensekey=" + sk)
         val senseEntry = jwi.dict.getSenseEntry(sk)
         if (senseEntry == null) {
@@ -44,7 +44,7 @@ object TestLib {
 
     @JvmStatic
     fun allSensekeysAreLive(jwi: JWI) {
-        jwi.forAllSensekeys(Consumer { sk: ISenseKey? ->
+        jwi.forAllSensekeys(Consumer { sk: SenseKey? ->
             Assertions.assertNotNull(sk)
             val senseEntry = jwi.dict.getSenseEntry(sk!!)
             Assertions.assertNotNull(senseEntry)

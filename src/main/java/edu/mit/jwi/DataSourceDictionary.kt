@@ -153,7 +153,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         }
     }
 
-    override fun getWord(key: ISenseKey): Word? {
+    override fun getWord(key: SenseKey): Word? {
         checkOpen()
 
         // no need to cache result from the following calls as this will have been
@@ -201,7 +201,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return word
     }
 
-    override fun getSenseEntry(key: ISenseKey): ISenseEntry? {
+    override fun getSenseEntry(key: SenseKey): ISenseEntry? {
         checkOpen()
         val content = dataProvider.resolveContentType<ISenseEntry>(DataType.SENSE, null)
         val file = checkNotNull(dataProvider.getSource<ISenseEntry>(content!!))
@@ -215,7 +215,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return parser.parseLine(line)
     }
 
-    fun getSenseEntries(key: ISenseKey): Array<ISenseEntry>? {
+    fun getSenseEntries(key: SenseKey): Array<ISenseEntry>? {
         checkOpen()
         val content = dataProvider.resolveContentType<Array<ISenseEntry>>(DataType.SENSES, null)
         val file = checkNotNull(dataProvider.getSource<Array<ISenseEntry>>(content!!))

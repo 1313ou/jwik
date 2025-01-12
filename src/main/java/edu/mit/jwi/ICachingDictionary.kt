@@ -101,7 +101,7 @@ interface ICachingDictionary : IDictionary {
          * present in the cache
          * @since JWI 2.2.0
          */
-        fun retrieveWord(key: ISenseKey): Word?
+        fun retrieveWord(key: SenseKey): Word?
 
         /**
          * Retrieves the sense entry identified by the specified sense key.
@@ -110,7 +110,7 @@ interface ICachingDictionary : IDictionary {
          * @return the sense entry for the specified key, or null if not present in the cache
          * @since JWI 2.2.0
          */
-        fun retrieveSenseEntry(key: ISenseKey): ISenseEntry?
+        fun retrieveSenseEntry(key: SenseKey): ISenseEntry?
 
         /**
          * Removes all entries from the cache.

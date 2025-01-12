@@ -142,7 +142,7 @@ open class CachingDictionary(
         return item
     }
 
-    override fun getWord(key: ISenseKey): Word? {
+    override fun getWord(key: SenseKey): Word? {
         checkOpen()
         var item = cache.retrieveWord(key)
         if (item == null) {
@@ -187,7 +187,7 @@ open class CachingDictionary(
         return backingDictionary.getSynsetIterator(pos)
     }
 
-    override fun getSenseEntry(key: ISenseKey): ISenseEntry? {
+    override fun getSenseEntry(key: SenseKey): ISenseEntry? {
         checkOpen()
         var entry = cache.retrieveSenseEntry(key)
         if (entry == null) {
@@ -260,11 +260,11 @@ open class CachingDictionary(
         // The caches themselves
         var itemCache: MutableMap<IItemID, IItem<*>>? = null
 
-        var keyCache: MutableMap<ISenseKey, Word>? = null
+        var keyCache: MutableMap<SenseKey, Word>? = null
 
-        var senseCache: MutableMap<ISenseKey, ISenseEntry>? = null
+        var senseCache: MutableMap<SenseKey, ISenseEntry>? = null
 
-        var sensesCache: MutableMap<ISenseKey, Array<ISenseEntry>>? = null
+        var sensesCache: MutableMap<SenseKey, Array<ISenseEntry>>? = null
 
         var initialCapacity: Int = initialCapacity0
             set(capacity) {
@@ -295,9 +295,9 @@ open class CachingDictionary(
                 lifecycleLock.lock()
                 val capacity = if (initialCapacity < 1) DEFAULT_INITIAL_CAPACITY else initialCapacity
                 itemCache = makeCache<IItemID, IItem<*>>(capacity)
-                keyCache = makeCache<ISenseKey, Word>(capacity)
-                senseCache = makeCache<ISenseKey, ISenseEntry>(capacity)
-                sensesCache = makeCache<ISenseKey, Array<ISenseEntry>>(capacity)
+                keyCache = makeCache<SenseKey, Word>(capacity)
+                senseCache = makeCache<SenseKey, ISenseEntry>(capacity)
+                sensesCache = makeCache<SenseKey, Array<ISenseEntry>>(capacity)
             } finally {
                 lifecycleLock.unlock()
             }
@@ -424,12 +424,12 @@ open class CachingDictionary(
             return itemCache!![id] as T?
         }
 
-        override fun retrieveWord(key: ISenseKey): Word? {
+        override fun retrieveWord(key: SenseKey): Word? {
             checkOpen()
             return keyCache!![key]
         }
 
-        override fun retrieveSenseEntry(key: ISenseKey): ISenseEntry? {
+        override fun retrieveSenseEntry(key: SenseKey): ISenseEntry? {
             checkOpen()
             return senseCache!![key]
         }

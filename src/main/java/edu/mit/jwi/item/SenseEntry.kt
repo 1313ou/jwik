@@ -18,7 +18,7 @@ import edu.mit.jwi.item.Synset.Companion.checkOffset
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class SenseEntry(key: ISenseKey, offset: Int, num: Int, count: Int) : ISenseEntry {
+class SenseEntry(key: SenseKey, offset: Int, num: Int, count: Int) : ISenseEntry {
 
     override val offset: Int
 
@@ -26,7 +26,7 @@ class SenseEntry(key: ISenseKey, offset: Int, num: Int, count: Int) : ISenseEntr
 
     override val tagCount: Int
 
-    override val senseKey: ISenseKey
+    override val senseKey: SenseKey
 
     override val pOS: POS
         get() {

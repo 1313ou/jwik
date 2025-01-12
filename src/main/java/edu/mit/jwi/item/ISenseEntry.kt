@@ -21,7 +21,7 @@ import java.io.Serializable
  */
 interface ISenseEntry : IHasPOS, Serializable {
 
-    val senseKey: ISenseKey
+    val senseKey: SenseKey
 
     /**
      * Returns the synset offset for this sense entry, a non-negative integer.

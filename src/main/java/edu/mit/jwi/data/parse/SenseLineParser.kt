@@ -10,7 +10,7 @@
 package edu.mit.jwi.data.parse
 
 import edu.mit.jwi.item.ISenseEntry
-import edu.mit.jwi.item.ISenseKey
+import edu.mit.jwi.item.SenseKey
 import edu.mit.jwi.item.SenseEntry
 import java.util.*
 
@@ -32,7 +32,7 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class SenseLineParser private constructor(private val keyParser: ILineParser<ISenseKey> = SenseKeyParser.instance!!) : ILineParser<ISenseEntry> {
+class SenseLineParser private constructor(private val keyParser: ILineParser<SenseKey> = SenseKeyParser.instance!!) : ILineParser<ISenseEntry> {
 
     override fun parseLine(line: String): ISenseEntry {
 
@@ -72,7 +72,7 @@ class SenseLineParser private constructor(private val keyParser: ILineParser<ISe
             private set
 
         @JvmStatic
-        fun parseSenseEntry(tokenizer: StringTokenizer, senseKey: ISenseKey): SenseEntry {
+        fun parseSenseEntry(tokenizer: StringTokenizer, senseKey: SenseKey): SenseEntry {
             // get offset
             val synsetOffset = tokenizer.nextToken().toInt()
 
