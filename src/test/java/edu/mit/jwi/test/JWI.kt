@@ -115,16 +115,16 @@ class JWI
         }
     }
 
-    fun forAllSenseEntries(f: Consumer<ISenseEntry>?) {
-        val it: Iterator<ISenseEntry> = dict.getSenseEntryIterator()
+    fun forAllSenseEntries(f: Consumer<SenseEntry>?) {
+        val it: Iterator<SenseEntry> = dict.getSenseEntryIterator()
         while (it.hasNext()) {
             val entry = it.next()
             f?.accept(entry)
         }
     }
 
-    fun tryForAllSenseEntries(f: Consumer<ISenseEntry>?) {
-        val it: Iterator<ISenseEntry> = dict.getSenseEntryIterator()
+    fun tryForAllSenseEntries(f: Consumer<SenseEntry>?) {
+        val it: Iterator<SenseEntry> = dict.getSenseEntryIterator()
         while (it.hasNext()) {
             try {
                 val entry = it.next()

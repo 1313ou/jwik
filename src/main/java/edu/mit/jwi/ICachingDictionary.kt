@@ -78,7 +78,7 @@ interface ICachingDictionary : IDictionary {
          * @param entry the entry to be cached; may not be null
          * @since JWI 2.2.0
          */
-        fun cacheSenseEntry(entry: ISenseEntry)
+        fun cacheSenseEntry(entry: SenseEntry)
 
         /**
          * Retrieves the item identified by the specified id.
@@ -110,7 +110,7 @@ interface ICachingDictionary : IDictionary {
          * @return the sense entry for the specified key, or null if not present in the cache
          * @since JWI 2.2.0
          */
-        fun retrieveSenseEntry(key: SenseKey): ISenseEntry?
+        fun retrieveSenseEntry(key: SenseKey): SenseEntry?
 
         /**
          * Removes all entries from the cache.

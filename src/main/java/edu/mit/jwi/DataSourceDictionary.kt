@@ -201,10 +201,10 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return word
     }
 
-    override fun getSenseEntry(key: SenseKey): ISenseEntry? {
+    override fun getSenseEntry(key: SenseKey): SenseEntry? {
         checkOpen()
-        val content = dataProvider.resolveContentType<ISenseEntry>(DataType.SENSE, null)
-        val file = checkNotNull(dataProvider.getSource<ISenseEntry>(content!!))
+        val content = dataProvider.resolveContentType<SenseEntry>(DataType.SENSE, null)
+        val file = checkNotNull(dataProvider.getSource<SenseEntry>(content!!))
         val line = file.getLine(key.toString())
         if (line == null) {
             return null
@@ -215,10 +215,10 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return parser.parseLine(line)
     }
 
-    fun getSenseEntries(key: SenseKey): Array<ISenseEntry>? {
+    fun getSenseEntries(key: SenseKey): Array<SenseEntry>? {
         checkOpen()
-        val content = dataProvider.resolveContentType<Array<ISenseEntry>>(DataType.SENSES, null)
-        val file = checkNotNull(dataProvider.getSource<Array<ISenseEntry>>(content!!))
+        val content = dataProvider.resolveContentType<Array<SenseEntry>>(DataType.SENSES, null)
+        val file = checkNotNull(dataProvider.getSource<Array<SenseEntry>>(content!!))
         val line = file.getLine(key.toString())
         if (line == null) {
             return null
@@ -340,7 +340,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return ExceptionFileIterator(pos)
     }
 
-    override fun getSenseEntryIterator(): Iterator<ISenseEntry> {
+    override fun getSenseEntryIterator(): Iterator<SenseEntry> {
         checkOpen()
         return SenseEntryFileIterator()
     }
@@ -435,11 +435,11 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
     /**
      * Iterates over the sense file.
      */
-    inner class SenseEntryFileIterator : FileIterator2<ISenseEntry>(
-        dataProvider.resolveContentType<ISenseEntry>(DataType.SENSE, null)!!
+    inner class SenseEntryFileIterator : FileIterator2<SenseEntry>(
+        dataProvider.resolveContentType<SenseEntry>(DataType.SENSE, null)!!
     ) {
 
-        override fun parseLine(line: String): ISenseEntry {
+        override fun parseLine(line: String): SenseEntry {
             checkNotNull(fParser)
             return fParser.parseLine(line)
         }

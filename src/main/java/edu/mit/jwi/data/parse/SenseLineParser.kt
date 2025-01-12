@@ -9,14 +9,13 @@
  *******************************************************************************/
 package edu.mit.jwi.data.parse
 
-import edu.mit.jwi.item.ISenseEntry
-import edu.mit.jwi.item.SenseKey
 import edu.mit.jwi.item.SenseEntry
+import edu.mit.jwi.item.SenseKey
 import java.util.*
 
 /**
  * Parser for Wordnet sense index files (e.g., `index.sense` or
- * `sense.index`). It produces an `ISenseEntry` object.
+ * `sense.index`). It produces an `SenseEntry` object.
  *
  *
  * This class follows a singleton design pattern, and is not intended to be
@@ -32,9 +31,9 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class SenseLineParser private constructor(private val keyParser: ILineParser<SenseKey> = SenseKeyParser.instance!!) : ILineParser<ISenseEntry> {
+class SenseLineParser private constructor(private val keyParser: ILineParser<SenseKey> = SenseKeyParser.instance!!) : ILineParser<SenseEntry> {
 
-    override fun parseLine(line: String): ISenseEntry {
+    override fun parseLine(line: String): SenseEntry {
 
         try {
             // get sense key

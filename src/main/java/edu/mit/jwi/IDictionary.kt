@@ -177,7 +177,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
-    fun getSenseEntry(key: SenseKey): ISenseEntry?
+    fun getSenseEntry(key: SenseKey): SenseEntry?
 
     /**
      * Returns an iterator that will iterate over all sense entries in the
@@ -186,7 +186,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @return an iterator that will iterate over all sense entries
      * @since JWI 1.0
      */
-    fun getSenseEntryIterator(): Iterator<ISenseEntry>
+    fun getSenseEntryIterator(): Iterator<SenseEntry>
 
     /**
      * Retrieves the exception entry for the specified surface form and part of

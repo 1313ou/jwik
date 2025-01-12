@@ -484,7 +484,7 @@ class RAMDictionary private constructor(
 
     // SENSE ENTRY
 
-    override fun getSenseEntry(key: SenseKey): ISenseEntry? {
+    override fun getSenseEntry(key: SenseKey): SenseEntry? {
         if (data != null) {
             return data!!.senses[key]
         } else {
@@ -493,7 +493,7 @@ class RAMDictionary private constructor(
         }
     }
 
-    override fun getSenseEntryIterator(): Iterator<ISenseEntry> {
+    override fun getSenseEntryIterator(): Iterator<SenseEntry> {
         return HotSwappableSenseEntryIterator()
     }
 
@@ -663,12 +663,12 @@ class RAMDictionary private constructor(
      * @since JWI 2.2.0
      */
     private inner class HotSwappableSenseEntryIterator :
-        HotSwappableIterator<ISenseEntry>(
+        HotSwappableIterator<SenseEntry>(
             if (data == null) backingDictionary!!.getSenseEntryIterator() else data!!.senses.values.iterator(),
             data == null
         ) {
 
-        override fun makeIterator(): Iterator<ISenseEntry> {
+        override fun makeIterator(): Iterator<SenseEntry> {
             checkNotNull(data)
             return data!!.senses.values.iterator()
         }
@@ -786,7 +786,7 @@ class RAMDictionary private constructor(
             }
 
             // sense entries
-            val i: Iterator<ISenseEntry> = source.getSenseEntryIterator()
+            val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
             while (i.hasNext()) {
                 val entry = i.next()
                 val word: Word = result.words[entry.senseKey]!!
@@ -822,7 +822,7 @@ class RAMDictionary private constructor(
          * @throws NullPointerException if either argument is null
          * @since JWI 2.2.0
          */
-        private fun makeSenseEntry(key: SenseKey, old: ISenseEntry): ISenseEntry {
+        private fun makeSenseEntry(key: SenseKey, old: SenseEntry): SenseEntry {
             return SenseEntry(key, old.offset, old.senseNumber, old.tagCount)
         }
     }
@@ -845,7 +845,7 @@ class RAMDictionary private constructor(
 
         var words: MutableMap<SenseKey, Word>
 
-        var senses: MutableMap<SenseKey, ISenseEntry>
+        var senses: MutableMap<SenseKey, SenseEntry>
 
         /**
          * Constructs an empty dictionary data object.
@@ -857,7 +857,7 @@ class RAMDictionary private constructor(
             synsets = makePOSMap<SynsetID, Synset>()
             exceptions = makePOSMap<IExceptionEntryID, IExceptionEntry>()
             words = makeMap<SenseKey, Word>(208000, null)
-            senses = makeMap<SenseKey, ISenseEntry>(208000, null)
+            senses = makeMap<SenseKey, SenseEntry>(208000, null)
         }
 
         /**
@@ -920,7 +920,7 @@ class RAMDictionary private constructor(
             compactPOSMap<SynsetID, Synset>(synsets)
             compactPOSMap<IExceptionEntryID, IExceptionEntry>(exceptions)
             words = compactMap<SenseKey, Word>(words)
-            senses = compactMap<SenseKey, ISenseEntry>(senses)
+            senses = compactMap<SenseKey, SenseEntry>(senses)
         }
 
         /**

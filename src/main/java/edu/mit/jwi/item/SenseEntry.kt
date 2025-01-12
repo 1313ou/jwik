@@ -10,70 +10,55 @@
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.Synset.Companion.checkOffset
+import java.io.Serializable
+import java.util.*
 
 /**
- * Concrete implementation of the `ISenseEntry` interface.
+ * A Wordnet sense entry object, represented in the Wordnet files as a line in the sense entry.
  *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.0
+ * @param senseKey the sense key of the entry
+ * @param offset the synset offset of the entry
+ * @param senseNumber the sense number of the entry
+ * @param tagCount the tag count of the entry
  */
-class SenseEntry(key: SenseKey, offset: Int, num: Int, count: Int) : ISenseEntry {
+class SenseEntry(
+    /**
+     * The sense key
+     */
+    val senseKey: SenseKey,
 
-    override val offset: Int
+    /**
+     * The synset offset for this sense entry, a non-negative integer.
+     */
+    val offset: Int,
 
-    override val senseNumber: Int
+    /**
+     * Returns the sense number for the word indicated by this entry.
+     * A sense number is a positive integer.
+     */
+    val senseNumber: Int,
+    /**
+     * The non-negative tag count for the sense entry.
+     * A tag count is a non-negative integer that represents the number of times the sense is tagged in various semantic concordance texts.
+     * A count of 0 indicates that the sense has not been semantically tagged.
+     */
+    val tagCount: Int,
 
-    override val tagCount: Int
-
-    override val senseKey: SenseKey
+    ) : IHasPOS, Serializable {
 
     override val pOS: POS
         get() {
-            return senseKey.pOS!!
+            return senseKey.pOS
         }
 
-    /**
-     * Constructs a new sense entry object.
-     *
-     * @param key    the sense key of the entry
-     * @param offset the synset offset of the entry
-     * @param num    the sense number of the entry
-     * @param count  the tag count of the entry
-     * @since JWI 2.1.0
-     */
     init {
-        if (key == null) {
-            throw NullPointerException()
-        }
         checkOffset(offset)
-
-        this.senseKey = key
-        this.offset = offset
-        this.senseNumber = num
-        this.tagCount = count
     }
-    /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#hashCode()
-    */
+
     override fun hashCode(): Int {
-        val prime = 31
-        var result = 1
-        result = prime * result + this.tagCount
-        checkNotNull(this.senseKey)
-        result = prime * result + senseKey.hashCode()
-        result = prime * result + this.senseNumber
-        result = prime * result + offset
-        return result
+        return Objects.hash(senseKey, offset, senseNumber, tagCount)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
@@ -81,20 +66,19 @@ class SenseEntry(key: SenseKey, offset: Int, num: Int, count: Int) : ISenseEntry
         if (obj == null) {
             return false
         }
-        if (obj !is ISenseEntry) {
+        if (obj !is SenseEntry) {
             return false
         }
         val other = obj
-        if (this.tagCount != other.tagCount) {
-            return false
-        }
-        if (this.senseNumber != other.senseNumber) {
+        if (senseKey != other.senseKey) {
             return false
         }
         if (offset != other.offset) {
             return false
         }
-        checkNotNull(this.senseKey)
-        return this.senseKey == other.senseKey
+        if (this.senseNumber != other.senseNumber) {
+            return false
+        }
+        return this.tagCount == other.tagCount
     }
 }

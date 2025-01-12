@@ -40,7 +40,7 @@ class JWITests {
 
     @Test
     fun allSenseEntriesAreNonNull() {
-        jwi!!.forAllSenseEntries(Consumer { actual: ISenseEntry? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSenseEntries(Consumer { actual: SenseEntry? -> Assertions.assertNotNull(actual) })
     }
 
     @Test

@@ -58,7 +58,7 @@ object TestLib {
 
     @JvmStatic
     fun allSenseEntriesAreLive(jwi: JWI) {
-        jwi.forAllSenseEntries(Consumer { se: ISenseEntry? ->
+        jwi.forAllSenseEntries(Consumer { se: SenseEntry? ->
             Assertions.assertNotNull(se)
             val offset = se!!.offset
             val pos = se.pOS

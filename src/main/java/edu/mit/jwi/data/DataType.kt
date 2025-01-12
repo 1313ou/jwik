@@ -83,10 +83,10 @@ class DataType<T>(
         val EXCEPTION: DataType<IExceptionEntryProxy> = DataType<IExceptionEntryProxy>("Exception", false, ExceptionLineParser.Companion.instance!!, "exception", "exc")
 
         @JvmField
-        val SENSE: DataType<ISenseEntry> = DataType<ISenseEntry>("Sense", false, SenseLineParser.instance!!, "sense")
+        val SENSE: DataType<SenseEntry> = DataType<SenseEntry>("Sense", false, SenseLineParser.instance!!, "sense")
 
         @JvmField
-        val SENSES: DataType<Array<ISenseEntry>> = DataType<Array<ISenseEntry>>("Senses", false, SensesLineParser.instance!!, "sense")
+        val SENSES: DataType<Array<SenseEntry>> = DataType<Array<SenseEntry>>("Senses", false, SensesLineParser.instance!!, "sense")
 
         /**
          * Set of all data types implemented in this class

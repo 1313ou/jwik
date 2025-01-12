@@ -10,13 +10,13 @@
 package edu.mit.jwi.data.parse
 
 import edu.mit.jwi.data.parse.SenseLineParser.Companion.parseSenseEntry
-import edu.mit.jwi.item.ISenseEntry
+import edu.mit.jwi.item.SenseEntry
 import edu.mit.jwi.item.SenseKey
 import java.util.*
 
 /**
  * Parser for Wordnet sense index files (e.g., `index.sense` or
- * `sense.index`). It produces an `ISenseEntry` object.
+ * `sense.index`). It produces an `SenseEntry` object.
  *
  * This class follows a singleton design pattern, and is not intended to be
  * instantiated directly; rather, call the [.getInstance] method to get
@@ -30,11 +30,11 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class SensesLineParser private constructor(private val keyParser: ILineParser<SenseKey> = SenseKeyParser.instance!!) : ILineParser<Array<ISenseEntry>> {
+class SensesLineParser private constructor(private val keyParser: ILineParser<SenseKey> = SenseKeyParser.instance!!) : ILineParser<Array<SenseEntry>> {
 
-    override fun parseLine(line: String): Array<ISenseEntry> {
+    override fun parseLine(line: String): Array<SenseEntry> {
 
-        val senseEntries: MutableList<ISenseEntry> = ArrayList<ISenseEntry>()
+        val senseEntries: MutableList<SenseEntry> = ArrayList<SenseEntry>()
         try {
             // get sense key
             val end = line.indexOf(' ')
@@ -49,7 +49,7 @@ class SensesLineParser private constructor(private val keyParser: ILineParser<Se
             while (tokenizer.hasMoreTokens()) {
                 senseEntries.add(parseSenseEntry(tokenizer, senseKey))
             }
-            return senseEntries.toTypedArray<ISenseEntry>()
+            return senseEntries.toTypedArray<SenseEntry>()
         } catch (e: Exception) {
             throw MisformattedLineException(line, e)
         }

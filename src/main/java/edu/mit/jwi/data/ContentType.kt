@@ -75,8 +75,8 @@ class ContentType<T>
         val EXCEPTION_ADVERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADVERB, ExceptionLineComparator.instance)
         val EXCEPTION_ADJECTIVE: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADJECTIVE, ExceptionLineComparator.instance)
 
-        val SENSE: ContentType<ISenseEntry> = ContentType<ISenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator.instance)
-        val SENSES: ContentType<Array<ISenseEntry>> = ContentType<Array<ISenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator.instance)
+        val SENSE: ContentType<SenseEntry> = ContentType<SenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator.instance)
+        val SENSES: ContentType<Array<SenseEntry>> = ContentType<Array<SenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator.instance)
 
         // set of all content types implemented in this class
         private val contentTypes: Set<ContentType<*>> = Collections.unmodifiableSet<ContentType<*>>(
