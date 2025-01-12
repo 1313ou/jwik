@@ -35,7 +35,7 @@ package edu.mit.jwi.data.compare
  * @since JWI 1.0
  */
 class DataLineComparator private constructor(
-    private val detector: CommentComparator,
+    private val detector: CommentProcessor,
 ) : ILineComparator {
 
     override fun compare(s1: String, s2: String): Int {
@@ -79,7 +79,7 @@ class DataLineComparator private constructor(
         return 0
     }
 
-    override val commentDetector: CommentComparator
+    override val commentDetector: CommentProcessor
         get() = detector
 
     companion object {
@@ -96,7 +96,7 @@ class DataLineComparator private constructor(
              */
             get() {
                 if (field == null) {
-                    field = DataLineComparator(CommentComparator.instance!!)
+                    field = DataLineComparator(CommentProcessor)
                 }
                 return field
             }

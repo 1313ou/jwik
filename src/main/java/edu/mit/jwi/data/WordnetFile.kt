@@ -10,7 +10,7 @@
 package edu.mit.jwi.data
 
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
-import edu.mit.jwi.data.compare.CommentComparator
+import edu.mit.jwi.data.compare.CommentProcessor
 import edu.mit.jwi.item.Version
 import java.io.File
 import java.io.IOException
@@ -20,7 +20,6 @@ import java.nio.channels.FileChannel
 import java.nio.charset.Charset
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.Throws
 
 /**
  * Abstract superclass of wordnet data file objects. Provides all the
@@ -59,7 +58,7 @@ abstract class WordnetFile<T>(
 
     override val name: String = file.getName()
 
-    private val detector: CommentComparator? = contentType.lineComparator!!.commentDetector
+    private val detector: CommentProcessor? = contentType.lineComparator!!.commentDetector
 
     // loading locks and status flag
     // the flag is marked transient to avoid different values in different threads

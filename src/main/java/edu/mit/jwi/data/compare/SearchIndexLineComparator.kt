@@ -32,7 +32,7 @@ import kotlin.math.min
  * @version 2.4.0
  * @since JWI 1.0
  */
-class SearchIndexLineComparator private constructor(detector: CommentComparator) : IndexLineComparator(detector) {
+class SearchIndexLineComparator private constructor(detector: CommentProcessor) : IndexLineComparator(detector) {
 
     /**
      * Compare lemmas (overridable if non-standard compare is needed)
@@ -63,7 +63,7 @@ class SearchIndexLineComparator private constructor(detector: CommentComparator)
         var instance: SearchIndexLineComparator? = null
             get() {
                 if (field == null) {
-                    field = SearchIndexLineComparator(CommentComparator.instance!!)
+                    field = SearchIndexLineComparator(CommentProcessor)
                 }
                 return field
             }

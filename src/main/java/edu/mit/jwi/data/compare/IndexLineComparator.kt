@@ -31,7 +31,7 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 1.0
  */
-open class IndexLineComparator(private val detector: CommentComparator) : ILineComparator {
+open class IndexLineComparator(private val detector: CommentProcessor) : ILineComparator {
 
     override fun compare(s1: String, s2: String): Int {
         // check for comments
@@ -80,7 +80,7 @@ open class IndexLineComparator(private val detector: CommentComparator) : ILineC
         return lemma1.compareTo(lemma2)
     }
 
-    override val commentDetector: CommentComparator
+    override val commentDetector: CommentProcessor
         get() = detector
 
     companion object {
@@ -96,7 +96,7 @@ open class IndexLineComparator(private val detector: CommentComparator) : ILineC
         var instance: IndexLineComparator? = null
             get() {
                 if (field == null) {
-                    field = IndexLineComparator(CommentComparator.instance!!)
+                    field = IndexLineComparator(CommentProcessor)
                 }
                 return field
             }

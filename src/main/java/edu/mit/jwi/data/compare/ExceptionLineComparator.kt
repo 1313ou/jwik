@@ -48,7 +48,7 @@ class ExceptionLineComparator private constructor() : ILineComparator {
         return words1[0]!!.compareTo(words2[0]!!)
     }
 
-    override val commentDetector: CommentComparator?
+    override val commentDetector: CommentProcessor?
         get() = null
 
     companion object {

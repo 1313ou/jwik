@@ -54,7 +54,7 @@ open class SenseKeyLineComparator protected constructor() : ILineComparator {
         return senseKey1.compareTo(senseKey2, ignoreCase = true)
     }
 
-    override val commentDetector: CommentComparator?
+    override val commentDetector: CommentProcessor?
         get() = null
 
     companion object {
