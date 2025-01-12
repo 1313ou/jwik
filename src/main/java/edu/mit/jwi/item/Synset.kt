@@ -238,7 +238,7 @@ class Synset private constructor(
 
         private val relatedWords: MutableMap<Pointer, MutableList<IWordID>> = HashMap<Pointer, MutableList<IWordID>>()
 
-        private val verbFrames = ArrayList<IVerbFrame>()
+        private val verbFrames = ArrayList<VerbFrame>()
 
         override fun toWord(synset: Synset): Word {
             return Word(synset, WordLemmaNumID(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
@@ -249,7 +249,7 @@ class Synset private constructor(
             words.add(id)
         }
 
-        fun addVerbFrame(frame: IVerbFrame) {
+        fun addVerbFrame(frame: VerbFrame) {
             verbFrames.add(frame)
         }
     }

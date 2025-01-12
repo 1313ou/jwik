@@ -293,7 +293,7 @@ class JWI
         walk(relatedMap, ps)
 
         // verb frames
-        val verbFrames: List<IVerbFrame>? = sense.verbFrames
+        val verbFrames: List<VerbFrame>? = sense.verbFrames
         walk(verbFrames, sense.lemma, ps)
 
         ps.printf("  sensenum: %s tag cnt:%s%n", senseEntry?.senseNumber ?: "<missing>", senseEntry?.tagCount ?: "<missing>")
@@ -310,7 +310,7 @@ class JWI
         }
     }
 
-    fun walk(verbFrames: List<IVerbFrame>?, lemma: String, ps: PrintStream) {
+    fun walk(verbFrames: List<VerbFrame>?, lemma: String, ps: PrintStream) {
         if (verbFrames != null) {
             for (verbFrame in verbFrames) {
                 ps.printf("  verb frame: %s : %s%n", verbFrame.template, verbFrame.instantiateTemplate(lemma))

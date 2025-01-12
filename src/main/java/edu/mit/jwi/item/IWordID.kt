@@ -20,4 +20,4 @@ package edu.mit.jwi.item
 interface IWordID : IHasPOS, IItemID {
 
     val synsetID: SynsetID
- }
+}

@@ -9,25 +9,40 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
+import java.io.Serializable
 import java.util.*
 
 /**
- * Default, hard-coded, implementation of `IVerbFrame` that does not read
- * from the actual file. This is not implemented as an `Enum` so that
- * clients can instantiate their own custom verb frame objects.
+ * A verb frame as specified from the verb frames data file in the Wordnet distribution
+ * Hard-coded, implementation that does not read from the actual file.
+ * This is not implemented as an `Enum` so that clients can instantiate their own custom verb frame objects.
  *
  * @param number      the verb frame number
  * @param template the template representing the verb frame
- *
- * @version 2.4.0
- * @since JWI 2.1.0
  */
 class VerbFrame(
-    override val number: Int,
-    override val template: String,
-) : IVerbFrame {
+    /**
+     * The id number of this verb frame. Should always return 1 or greater.
+     */
+    val number: Int,
+    /**
+     * The string form of the template, drawn directly from the data file.
+     * Will never return null
+     *
+     * @return the non-null, non-empty template of the verb frame
+     * @since JWI 1.0
+     */
+    val template: String,
+) : Serializable {
 
-    override fun instantiateTemplate(verb: String): String {
+    /**
+     * Takes the supplied surface form of a verb and instantiates it into the template for the verb frame.
+     * This is a convenience method; the method does no morphological processing; it does not check to see if the passed in word is actually a verb.
+     *
+     * @param verb the string to be substituted into the template
+     * @return the instantiated template
+     */
+    fun instantiateTemplate(verb: String): String {
         val index = template.indexOf("----")
         if (index == -1) {
             return ""
@@ -36,7 +51,7 @@ class VerbFrame(
     }
 
     override fun toString(): String {
-        return "[" + this.number + " : " + template + " ]"
+        return "[$number : $template]"
     }
 
     /**
@@ -47,7 +62,7 @@ class VerbFrame(
      * @since JWI 2.4.0
      */
     private fun readResolve(): Any {
-        val staticFrame: VerbFrame? = getFrame(this.number)
+        val staticFrame: VerbFrame? = getFrame(number)
         return staticFrame ?: this
     }
 

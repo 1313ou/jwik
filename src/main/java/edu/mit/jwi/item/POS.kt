@@ -53,6 +53,7 @@ enum class POS
 
     vararg names: String,
 ) {
+
     /**
      * Object representing the Noun part of speech.
      */

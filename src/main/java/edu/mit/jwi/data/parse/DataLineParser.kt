@@ -154,17 +154,16 @@ private constructor() : ILineParser<Synset> {
                 val peekTok = tokenizer.nextToken()
                 if (!peekTok.startsWith("|")) {
                     val verbFrameCount = peekTok.toInt()
-                    var frame: IVerbFrame
                     repeat(verbFrameCount) {
                         // Consume '+'
                         tokenizer.nextToken()
                         // Get frame number
-                        var frame_num: Int = tokenizer.nextToken().toInt()
-                        frame = resolveVerbFrame(frame_num)
+                        var frameNum: Int = tokenizer.nextToken().toInt()
+                        var frame: VerbFrame = resolveVerbFrame(frameNum)
                         // Get word number
-                        val word_num: Int = tokenizer.nextToken().toInt(16)
-                        if (word_num > 0) {
-                            wordProxies[word_num - 1].addVerbFrame(frame)
+                        val wordNum: Int = tokenizer.nextToken().toInt(16)
+                        if (wordNum > 0) {
+                            wordProxies[wordNum - 1].addVerbFrame(frame)
                         } else {
                             for (proxy in wordProxies) {
                                 proxy.addVerbFrame(frame)
@@ -206,7 +205,7 @@ private constructor() : ILineParser<Synset> {
      * null if there is none
      * @since JWI 2.1.0
      */
-    private fun resolveVerbFrame(frameNum: Int): IVerbFrame {
+    private fun resolveVerbFrame(frameNum: Int): VerbFrame {
         return getFrame(frameNum)!!
     }
 

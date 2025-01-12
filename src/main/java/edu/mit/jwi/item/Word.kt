@@ -53,7 +53,7 @@ class Word(
 
     private val adjMarker: AdjMarker?,
 
-    verbFrames: List<IVerbFrame>?,
+    verbFrames: List<VerbFrame>?,
 
     related: Map<Pointer, List<IWordID>>,
 ) : IHasPOS, IItem<IWordID> {
@@ -63,7 +63,7 @@ class Word(
 
     val senseKey: SenseKey = SenseKey(iD.lemma, lexicalID, synset)
 
-    val verbFrames: List<IVerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
+    val verbFrames: List<VerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
 
     val related: Map<Pointer, List<IWordID>> = normalizeRelated(related)
 
@@ -137,7 +137,6 @@ class Word(
         }
         return related == that.related
     }
-
 
     /**
      * Returns an immutable list of all word ids related to this word by the
