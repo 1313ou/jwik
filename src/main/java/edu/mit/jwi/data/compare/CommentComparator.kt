@@ -10,7 +10,9 @@
 package edu.mit.jwi.data.compare
 
 /**
- *
+ * A detector for comment lines in data resources. Objects that implement this
+ * interface also serve as comparators that say how comment lines are ordered,
+ * if at all.
  *
  * Default comment detector that is designed for comments found at the head of
  * Wordnet dictionary files. It assumes that each comment line starts with two
@@ -29,8 +31,8 @@ package edu.mit.jwi.data.compare
  * @version 2.4.0
  * @since JWI 1.0
  */
-class CommentComparator
-private constructor() : Comparator<String>, ICommentDetector {
+class CommentComparator private constructor(
+) : Comparator<String> {
 
     override fun compare(s1: String, s2: String): Int {
         var s1 = s1
@@ -58,12 +60,15 @@ private constructor() : Comparator<String>, ICommentDetector {
         return 0
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns true if the specified string is a comment line,
+     * false otherwise.
      *
-     * @see edu.edu.mit.jwi.data.compare.ICommentDetector#isCommentLine(java.lang.String)
+     * @param line the line to be analyzed
+     * @return true if the specified string is a comment line,
+     * false otherwise.
      */
-    override fun isCommentLine(line: String): Boolean {
+    fun isCommentLine(line: String): Boolean {
         return line.length >= 2 && line[0] == ' ' && line[1] == ' '
     }
 

@@ -10,7 +10,7 @@
 package edu.mit.jwi.data
 
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
-import edu.mit.jwi.data.compare.ICommentDetector
+import edu.mit.jwi.data.compare.CommentComparator
 import edu.mit.jwi.item.Version
 import java.io.File
 import java.io.IOException
@@ -59,7 +59,7 @@ abstract class WordnetFile<T>(
 
     override val name: String = file.getName()
 
-    private val detector: ICommentDetector? = contentType.lineComparator!!.commentDetector
+    private val detector: CommentComparator? = contentType.lineComparator!!.commentDetector
 
     // loading locks and status flag
     // the flag is marked transient to avoid different values in different threads

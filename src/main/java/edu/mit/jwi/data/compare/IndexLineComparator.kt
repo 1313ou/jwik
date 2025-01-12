@@ -80,7 +80,7 @@ open class IndexLineComparator(private val detector: CommentComparator) : ILineC
         return lemma1.compareTo(lemma2)
     }
 
-    override val commentDetector: ICommentDetector
+    override val commentDetector: CommentComparator
         get() = detector
 
     companion object {

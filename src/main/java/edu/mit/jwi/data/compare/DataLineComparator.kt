@@ -79,7 +79,7 @@ class DataLineComparator private constructor(
         return 0
     }
 
-    override val commentDetector: ICommentDetector
+    override val commentDetector: CommentComparator
         get() = detector
 
     companion object {

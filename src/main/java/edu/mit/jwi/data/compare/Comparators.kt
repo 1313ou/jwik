@@ -1,6 +1,7 @@
 package edu.mit.jwi.data.compare
 
 class Comparators {
+
     /**
      * Case-sensitive index processing.
      */
