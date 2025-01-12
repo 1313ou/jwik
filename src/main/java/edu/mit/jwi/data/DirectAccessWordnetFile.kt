@@ -21,9 +21,8 @@ import java.nio.ByteBuffer
  * Constructs a new direct access wordnet file, on the specified file with
  * the specified content type.
  *
- * @param file        the file which backs this wordnet file; may not be
- * null
- * @param contentType the content type for this file; may not be null
+ * @param file        the file which backs this wordnet file
+ * @param contentType the content type for this file
  *
  * @param <T> the type of object represented in this data resource
  * @author Mark A. Finlayson
