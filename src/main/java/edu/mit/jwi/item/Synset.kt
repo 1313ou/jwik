@@ -34,7 +34,7 @@ class Synset private constructor(
     override val isAdjectiveSatellite: Boolean,
     override val isAdjectiveHead: Boolean,
     override val gloss: String,
-    override val related: Map<IPointer, List<ISynsetID>>,
+    override val related: Map<Pointer, List<ISynsetID>>,
 ) : ISynset {
 
     override val offset: Int
@@ -76,7 +76,7 @@ class Synset private constructor(
         isAdjectiveHead: Boolean,
         gloss: String,
         wordBuilders: List<IWordBuilder>,
-        related: Map<IPointer, List<ISynsetID>>?,
+        related: Map<Pointer, List<ISynsetID>>?,
     ) : this(iD, lexicalFile, isAdjectiveSatellite, isAdjectiveHead, gloss, normalizeRelated(related)) {
         require(!wordBuilders.isEmpty())
         words = buildWords(wordBuilders, this)
@@ -173,7 +173,7 @@ class Synset private constructor(
             checkWordNumber(number)
         }
 
-        private val relatedWords: MutableMap<IPointer, MutableList<IWordID>> = HashMap<IPointer, MutableList<IWordID>>()
+        private val relatedWords: MutableMap<Pointer, MutableList<IWordID>> = HashMap<Pointer, MutableList<IWordID>>()
 
         private val verbFrames = ArrayList<IVerbFrame>()
 
@@ -181,8 +181,8 @@ class Synset private constructor(
             return Word(synset, WordLemmaNumID(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
         }
 
-        fun addRelatedWord(ptrType: IPointer, id: IWordID) {
-            val words = relatedWords.computeIfAbsent(ptrType) { k: IPointer -> ArrayList<IWordID>() }
+        fun addRelatedWord(ptrType: Pointer, id: IWordID) {
+            val words = relatedWords.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<IWordID>() }
             words.add(id)
         }
 
@@ -244,7 +244,7 @@ class Synset private constructor(
                 .toList()
         }
 
-        private fun normalizeRelated(related: Map<IPointer, List<ISynsetID>>?): Map<IPointer, List<ISynsetID>> {
+        private fun normalizeRelated(related: Map<Pointer, List<ISynsetID>>?): Map<Pointer, List<ISynsetID>> {
             return related?.entries
                 ?.filterNot { it.value.isEmpty() }
                 ?.associate { it.key to it.value }

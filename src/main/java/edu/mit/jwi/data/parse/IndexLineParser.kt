@@ -53,7 +53,7 @@ private constructor() : ILineParser<IIndexWord> {
 
             // consume ptr_symbols
             val ptrCnt = tokenizer.nextToken().toInt()
-            val ptrs = Array<IPointer>(ptrCnt) {
+            val ptrs = Array<Pointer>(ptrCnt) {
                 val tok: String = tokenizer.nextToken()
                 resolvePointer(tok, pos)
             }
@@ -90,7 +90,7 @@ private constructor() : ILineParser<IIndexWord> {
      * correspond to a known pointer
      * @since JWI 2.3.0
      */
-    private fun resolvePointer(symbol: String, pos: POS?): IPointer {
+    private fun resolvePointer(symbol: String, pos: POS?): Pointer {
         return getPointerType(symbol, pos)
     }
 

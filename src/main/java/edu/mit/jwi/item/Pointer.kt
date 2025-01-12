@@ -12,23 +12,21 @@ package edu.mit.jwi.item
 import java.util.*
 
 /**
- * Concrete implementation of the `IPointer` interface. This class
- * includes, as public fields, all pointers, lexical and semantic, defined in
+ * This class includes, as public fields, all pointers, lexical and semantic, defined in
  * the standard WordNet distribution.
  *
  *
- * This class in not implemented as an `Enum` so that clients may
- * instantiate their own pointers using this implementation.
+ * This class in not implemented as an `Enum` so that clients may instantiate their own pointers using this implementation.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class Pointer(symbol: String, name: String) : IPointer {
+class Pointer(symbol: String, name: String) {
 
-    override val symbol: String = checkString(symbol)
+    val symbol: String = checkString(symbol)
 
-    override val name: String = checkString(name)
+    val name: String = checkString(name)
 
     private val toString: String = name.lowercase(Locale.getDefault()).replace(' ', '_').replace(",", "")
 
@@ -106,8 +104,7 @@ class Pointer(symbol: String, name: String) : IPointer {
          * @since JWI 2.2.0
          */
         private fun checkString(str: String): String {
-            var str = str
-            str = str.trim { it <= ' ' }
+            var str = str.trim { it <= ' ' }
             require(str.isNotEmpty())
             return str
         }

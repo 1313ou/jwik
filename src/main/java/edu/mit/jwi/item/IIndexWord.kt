@@ -39,5 +39,5 @@ interface IIndexWord : IHasPOS, IItem<IIndexWordID> {
      * If all senses of the word have no pointers, this method returns an empty set.
      * @since JWI 2.3.0
      */
-    val pointers: Set<IPointer>
+    val pointers: Set<Pointer>
 }

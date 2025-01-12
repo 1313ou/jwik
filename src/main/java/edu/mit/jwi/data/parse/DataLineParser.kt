@@ -106,12 +106,12 @@ private constructor() : ILineParser<ISynset> {
             }
 
             // Get pointers
-            var synsetPointerMap: MutableMap<IPointer, ArrayList<ISynsetID>>? = null
+            var synsetPointerMap: MutableMap<Pointer, ArrayList<ISynsetID>>? = null
             val pointerCount = tokenizer.nextToken().toInt()
             repeat(pointerCount) {
 
                 // get pointer symbol
-                val pointer_type: IPointer = resolvePointer(tokenizer.nextToken(), synset_pos)
+                val pointer_type: Pointer = resolvePointer(tokenizer.nextToken(), synset_pos)
                 checkNotNull(pointer_type)
 
                 // get synset target offset
@@ -128,9 +128,9 @@ private constructor() : ILineParser<ISynset> {
                 // this is a semantic pointer if the source/target numbers are zero
                 if (source_target_num == 0) {
                     if (synsetPointerMap == null) {
-                        synsetPointerMap = HashMap<IPointer, ArrayList<ISynsetID>>()
+                        synsetPointerMap = HashMap<Pointer, ArrayList<ISynsetID>>()
                     }
-                    var pointerList: ArrayList<ISynsetID> = synsetPointerMap.computeIfAbsent(pointer_type) { k: IPointer -> ArrayList<ISynsetID>() }
+                    var pointerList: ArrayList<ISynsetID> = synsetPointerMap.computeIfAbsent(pointer_type) { k: Pointer -> ArrayList<ISynsetID>() }
                     pointerList.add(target_synset_id)
                 } else {
                     // this is a lexical pointer
@@ -255,7 +255,7 @@ private constructor() : ILineParser<ISynset> {
      * correspond to a known pointer
      * @since JWI 2.1.0
      */
-    private fun resolvePointer(symbol: String, pos: POS?): IPointer {
+    private fun resolvePointer(symbol: String, pos: POS?): Pointer {
         return getPointerType(symbol, pos)
     }
 

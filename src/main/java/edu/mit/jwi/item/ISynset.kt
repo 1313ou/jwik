@@ -65,7 +65,7 @@ interface ISynset : IHasPOS, IItem<ISynsetID> {
     /**
      * Semantic relations
      */
-    val related: Map<IPointer, List<ISynsetID>>
+    val related: Map<Pointer, List<ISynsetID>>
 
     /**
      * Returns an immutable list of the ids of all synsets that are related to
@@ -80,7 +80,7 @@ interface ISynset : IHasPOS, IItem<ISynsetID> {
      * @return the list of synsets related by the specified pointer; if there are no such synsets, returns the empty list
      * @since JWI 2.0.0
      */
-    fun getRelatedFor(ptr: IPointer): List<ISynsetID> {
+    fun getRelatedFor(ptr: Pointer): List<ISynsetID> {
         return related[ptr] ?: emptyList()
     }
 

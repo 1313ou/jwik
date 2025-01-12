@@ -40,7 +40,7 @@ interface IWord : IHasPOS, IItem<IWordID> {
      */
     val lexicalID: Int
 
-    val related: Map<IPointer, List<IWordID>>
+    val related: Map<Pointer, List<IWordID>>
 
     /**
      * Returns an immutable list of all word ids related to this word by the
@@ -55,7 +55,7 @@ interface IWord : IHasPOS, IItem<IWordID> {
      * list if none.
      * @since JWI 2.0.0
      */
-    fun getRelatedFor(ptr: IPointer): List<IWordID> {
+    fun getRelatedFor(ptr: Pointer): List<IWordID> {
         return related[ptr] ?: emptyList<IWordID>()
     }
 

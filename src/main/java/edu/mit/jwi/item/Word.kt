@@ -36,14 +36,14 @@ class Word(
     override val lexicalID: Int,
     private val adjMarker: AdjMarker?,
     verbFrames: List<IVerbFrame>?,
-    related: Map<IPointer, List<IWordID>>,
+    related: Map<Pointer, List<IWordID>>,
 ) : IWord {
 
     override val senseKey: ISenseKey = SenseKey(iD.lemma, lexicalID, synset)
 
     override val verbFrames: List<IVerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
 
-    override val related: Map<IPointer, List<IWordID>> = normalizeRelated(related)
+    override val related: Map<Pointer, List<IWordID>> = normalizeRelated(related)
 
     override val relatedWords: List<IWordID>
         get() = related.values
@@ -238,7 +238,7 @@ class Word(
             return "%02x".format(num)
         }
 
-        private fun normalizeRelated(related: Map<IPointer, List<IWordID>>?): Map<IPointer, List<IWordID>> {
+        private fun normalizeRelated(related: Map<Pointer, List<IWordID>>?): Map<Pointer, List<IWordID>> {
             return related?.entries
                 ?.filterNot { it.value.isEmpty() }
                 ?.associate { it.key to it.value }

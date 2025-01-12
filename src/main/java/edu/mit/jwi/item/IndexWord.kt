@@ -18,13 +18,13 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 1.0
  */
-class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, words: Array<IWordID>) : IIndexWord {
+class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<Pointer>?, words: Array<IWordID>) : IIndexWord {
 
     override val iD: IIndexWordID
 
     override val tagSenseCount: Int
 
-    override val pointers: Set<IPointer>
+    override val pointers: Set<Pointer>
 
     override val wordIDs: List<IWordID>
 
@@ -69,7 +69,7 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
      * empty
      * @since JWI 2.3.0
      */
-    constructor(lemma: String, pos: POS, tagSenseCnt: Int, ptrs: Array<IPointer>, words: Array<IWordID>) : this(IndexWordID(lemma, pos), tagSenseCnt, ptrs, words)
+    constructor(lemma: String, pos: POS, tagSenseCnt: Int, ptrs: Array<Pointer>, words: Array<IWordID>) : this(IndexWordID(lemma, pos), tagSenseCnt, ptrs, words)
 
     /**
      * Constructs a new index word.
@@ -112,11 +112,11 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<IPointer>?, word
         }
 
         // do pointers as of v2.3.0
-        val pointers: MutableSet<IPointer>
+        val pointers: MutableSet<Pointer>
         if (ptrs == null || ptrs.isEmpty()) {
-            pointers = mutableSetOf<IPointer>()
+            pointers = mutableSetOf<Pointer>()
         } else {
-            pointers = HashSet<IPointer>(ptrs.size)
+            pointers = HashSet<Pointer>(ptrs.size)
             for (p in ptrs) {
                 if (p == null) {
                     throw NullPointerException()
