@@ -9,12 +9,12 @@
  *******************************************************************************/
 package edu.mit.jwi
 
-import edu.mit.jwi.IRAMDictionary.IInputStreamFactory
 import edu.mit.jwi.data.ContentTypeKey
 import edu.mit.jwi.data.FileProvider
 import edu.mit.jwi.data.IHasLifecycle.LifecycleState
 import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
 import edu.mit.jwi.data.ILoadPolicy
+import edu.mit.jwi.data.ILoadable
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.*
 import edu.mit.jwi.item.Synset.IWordBuilder
@@ -29,15 +29,15 @@ import java.util.zip.GZIPOutputStream
 import kotlin.Throws
 
 /**
+ * Dictionary that can be completely loaded into memory.
+
  * Default implementation of the `IRAMDictionary` interface. This
- * implementation is designed to wrap an arbitrary dictionary object; however,
- * convenience constructors are provided for the most common use cases:
+ * implementation is designed to wrap an arbitrary dictionary object;
+ * However, convenience constructors are provided for the most common use cases:
  *
- *  * Wordnet files located on the local file system
- *  * Wordnet data to be loaded into memory from an exported stream
- *
- *
- *
+ * Wordnet files located on the local file system
+ * Wordnet data to be loaded into memory from an exported stream
+
  * **Note:** If you receive an [OutOfMemoryError] while using this
  * object (this can occur on 32 bit JVMs), try increasing your heap size, for
  * example, by using the `-Xmx` switch.
@@ -50,7 +50,7 @@ class RAMDictionary private constructor(
     backing: IDictionary?,
     factory: IInputStreamFactory?,
     loadPolicy: Int,
-) : IRAMDictionary {
+) : IDictionary, ILoadPolicy, ILoadable {
 
     /**
      * Returns the dictionary that backs this instance.
@@ -385,8 +385,19 @@ class RAMDictionary private constructor(
         }
     }
 
+    /**
+     * Exports the in-memory contents of the data to the specified output stream.
+     * This method flushes and closes the output stream when it is done writing
+     * the data.
+     *
+     * @param out the output stream to which the in-memory data will be written;
+     * may not be null
+     * @throws IOException           if there is a problem writing the in-memory data to the
+     * output stream.
+     * @throws IllegalStateException if the dictionary has not been loaded into memory
+     */
     @Throws(IOException::class)
-    override fun export(out: OutputStream) {
+    fun export(out: OutputStream) {
         var out = out
         try {
             loadLock.lock()
@@ -1102,7 +1113,7 @@ class RAMDictionary private constructor(
          * @since JWI 2.4.0
          */
         fun createInputStreamFactory(file: File): IInputStreamFactory? {
-            return if (FileProvider.isLocalDirectory(file)) null else IRAMDictionary.FileInputStreamFactory(file)
+            return if (FileProvider.isLocalDirectory(file)) null else FileInputStreamFactory(file)
         }
 
         /**
@@ -1117,7 +1128,7 @@ class RAMDictionary private constructor(
          * @since JWI 2.4.0
          */
         fun createInputStreamFactory(url: URL): IInputStreamFactory? {
-            return if (FileProvider.isLocalDirectory(url)) null else IRAMDictionary.URLInputStreamFactory(url)
+            return if (FileProvider.isLocalDirectory(url)) null else URLInputStreamFactory(url)
         }
 
         /**
@@ -1224,7 +1235,7 @@ class RAMDictionary private constructor(
          * @since JWI 2.4.0
          */
         @Throws(IOException::class)
-        private fun export(dict: IRAMDictionary, out: OutputStream): Boolean {
+        private fun export(dict: RAMDictionary, out: OutputStream): Boolean {
             // load initial data into memory
             var dict = dict
             print("Performing load...")

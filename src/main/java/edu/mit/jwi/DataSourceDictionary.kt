@@ -21,6 +21,8 @@ import java.util.*
 import kotlin.Throws
 
 /**
+ * A type of `IDictionary` which uses an instance of a `DataProvider` to obtain its data.
+
  * Basic implementation of the `IDictionary` interface. A path to the
  * Wordnet dictionary files must be provided. If no `IDataProvider` is
  * specified, it uses the default implementation provided with the distribution.
@@ -34,8 +36,8 @@ import kotlin.Throws
  * @since JWI 2.2.0
  */
 class DataSourceDictionary(
-    override val dataProvider: FileProvider,
-) : IDataSourceDictionary {
+    val dataProvider: FileProvider,
+) : IDictionary {
 
     override val version: Version?
         get() {

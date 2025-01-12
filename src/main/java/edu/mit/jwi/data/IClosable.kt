@@ -10,12 +10,7 @@
 package edu.mit.jwi.data
 
 /**
- * An object that can be closed. What 'closing' means is implementation
- * specific.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.2.0
+ * An object that can be closed. What 'closing' means is implementation specific.
  */
 interface IClosable {
 

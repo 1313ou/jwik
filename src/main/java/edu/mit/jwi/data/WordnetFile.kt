@@ -18,8 +18,10 @@ import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
 import java.nio.charset.Charset
+import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.Throws
 
 /**
  * Abstract superclass of wordnet data file objects. Provides all the
@@ -87,11 +89,6 @@ abstract class WordnetFile<T>(
         return buffer!!
     }
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see edu.edu.mit.jwi.data.IHasLifecycle#open()
-    */
     @Throws(IOException::class)
     override fun open(): Boolean {
         try {
@@ -137,20 +134,10 @@ abstract class WordnetFile<T>(
         }
     }
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see edu.edu.mit.jwi.data.ILoadable#load()
-    */
     override fun load() {
         load(false)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.ILoadable#load(boolean)
-     */
     override fun load(block: Boolean) {
         try {
             loadingLock.lock()
@@ -234,25 +221,10 @@ abstract class WordnetFile<T>(
      */
     abstract fun makeIterator(buffer: ByteBuffer, key: String?): LineIterator
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     override fun hashCode(): Int {
-        val prime = 31
-        var result = 1
-        checkNotNull(contentType)
-        result = prime * result + contentType.hashCode()
-        result = prime * result + file.hashCode()
-        return result
+        return Objects.hash(contentType, file)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
@@ -264,7 +236,6 @@ abstract class WordnetFile<T>(
             return false
         }
         val other = obj as WordnetFile<*>
-        checkNotNull(contentType)
         if (contentType != other.contentType) {
             return false
         }
