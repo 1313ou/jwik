@@ -9,8 +9,8 @@
  *******************************************************************************/
 package edu.mit.jwi
 
-import edu.mit.jwi.ICachingDictionary.IItemCache
 import edu.mit.jwi.data.ContentTypeKey
+import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.*
@@ -32,9 +32,9 @@ open class CachingDictionary(
      */
     val backingDictionary: IDictionary,
 
-    ) : ICachingDictionary {
+    ) : IDictionary {
 
-    override val cache: IItemCache = ItemCache()
+    val cache = ItemCache()
 
     /**
      * An internal method for assuring compliance with the dictionary interface
@@ -148,8 +148,7 @@ open class CachingDictionary(
         if (item == null) {
             item = backingDictionary.getWord(key)
             if (item != null) {
-                val s = checkNotNull(item.synset as Synset)
-                cacheSynset(s)
+                cacheSynset(item.synset)
             }
         }
         return item
@@ -175,7 +174,6 @@ open class CachingDictionary(
      * @since JWI 2.2.0
      */
     protected fun cacheSynset(synset: Synset) {
-        val cache: IItemCache = cache
         cache.cacheItem(synset)
         for (word in synset.words) {
             cache.cacheItem(word)
@@ -200,7 +198,6 @@ open class CachingDictionary(
     }
 
     override fun getSenseEntryIterator(): Iterator<SenseEntry> {
-        checkNotNull(this.backingDictionary)
         return backingDictionary.getSenseEntryIterator()
     }
 
@@ -253,11 +250,14 @@ open class CachingDictionary(
         initialCapacity0: Int = DEFAULT_INITIAL_CAPACITY,
         maximumCapacity0: Int = DEFAULT_MAXIMUM_CAPACITY,
         isEnabled0: Boolean = true,
-    ) : IItemCache {
+    ) : IHasLifecycle {
 
         private val lifecycleLock: Lock = ReentrantLock()
 
+        private val cacheLock = Any()
+
         // The caches themselves
+
         var itemCache: MutableMap<IItemID, IItem<*>>? = null
 
         var keyCache: MutableMap<SenseKey, Word>? = null
@@ -269,10 +269,12 @@ open class CachingDictionary(
         var initialCapacity: Int = initialCapacity0
             set(capacity) {
                 field = if (capacity < 1) DEFAULT_INITIAL_CAPACITY else capacity
-
             }
 
-        override var maximumCapacity: Int = maximumCapacity0
+        /**
+         * The maximum capacity of this cache.
+         */
+        var maximumCapacity: Int = maximumCapacity0
             set(capacity) {
                 val oldCapacity = maximumCapacity
                 maximumCapacity = capacity
@@ -285,7 +287,34 @@ open class CachingDictionary(
                 reduceCacheSize(sensesCache!!)
             }
 
-        override var isEnabled: Boolean = isEnabled0
+        /**
+         * Brings the map size into line with the specified maximum capacity of
+         * this cache.
+         *
+         * @param cache the map to be trimmed
+         * @since JWI 2.2.0
+         */
+        private fun reduceCacheSize(cache: MutableMap<*, *>) {
+            if (!isOpen || maximumCapacity < 1 || cache.size < maximumCapacity) {
+                return
+            }
+            synchronized(cacheLock) {
+                val remove = cache.size - maximumCapacity
+                val itr: MutableIterator<*> = cache.keys.iterator()
+                repeat(remove + 1) {
+                    if (itr.hasNext()) {
+                        itr.next()
+                        itr.remove()
+                    }
+                }
+            }
+        }
+
+        /**
+         * Whether this cache is enabled
+         * If a cache is enabled, it will cache an item passed to its `cache` methods
+         */
+        var isEnabled: Boolean = isEnabled0
 
         override fun open(): Boolean {
             if (isOpen) {
@@ -350,19 +379,34 @@ open class CachingDictionary(
             }
         }
 
-        override fun clear() {
+        /**
+         * Removes all entries from the cache.
+         *
+         * @since JWI 2.2.0
+         */
+        fun clear() {
             itemCache?.clear()
             keyCache?.clear()
             senseCache?.clear()
             sensesCache?.clear()
         }
 
-        override fun size(): Int {
+        /**
+         * The number of items in the cache.
+         *
+         * @return the number of items in the cache.
+         */
+        fun size(): Int {
             checkOpen()
             return itemCache!!.size + keyCache!!.size + senseCache!!.size + sensesCache!!.size
         }
 
-        override fun cacheItem(item: IItem<*>) {
+        /**
+         * Caches the specified item, if this cache is enabled. Otherwise, does nothing.
+         *
+         * @param item the item to be cached
+         */
+        fun cacheItem(item: IItem<*>) {
             checkOpen()
             if (!isEnabled) {
                 return
@@ -372,7 +416,12 @@ open class CachingDictionary(
             reduceCacheSize(itemCache!!)
         }
 
-        override fun cacheWordByKey(word: Word) {
+        /**
+         * Caches the specified word, indexed by its sense key.
+         *
+         * @param word the word to be cached; may not be null
+         */
+        fun cacheWordByKey(word: Word) {
             checkOpen()
             if (!isEnabled) {
                 return
@@ -382,7 +431,13 @@ open class CachingDictionary(
             reduceCacheSize(keyCache!!)
         }
 
-        override fun cacheSenseEntry(entry: SenseEntry) {
+        /**
+         * Caches the specified entry.
+         *
+         * @param entry the entry to be cached; may not be null
+         * @since JWI 2.2.0
+         */
+        fun cacheSenseEntry(entry: SenseEntry) {
             checkOpen()
             if (!isEnabled) {
                 return
@@ -393,43 +448,39 @@ open class CachingDictionary(
             reduceCacheSize(senseCache!!)
         }
 
-        private val cacheLock = Any()
-
         /**
-         * Brings the map size into line with the specified maximum capacity of
-         * this cache.
+         * Retrieves the item identified by the specified id.
          *
-         * @param cache the map to be trimmed
-         * @since JWI 2.2.0
+         * @param <T> the type of the item
+         * @param <D> the type of the item id
+         * @param id  the id for the requested item
+         * @return the item for the specified id, or null if not present in the cache
          */
-        private fun reduceCacheSize(cache: MutableMap<*, *>) {
-            if (!isOpen || maximumCapacity < 1 || cache.size < maximumCapacity) {
-                return
-            }
-            synchronized(cacheLock) {
-                val remove = cache.size - maximumCapacity
-                val itr: MutableIterator<*> = cache.keys.iterator()
-                repeat(remove + 1) {
-                    if (itr.hasNext()) {
-                        itr.next()
-                        itr.remove()
-                    }
-                }
-            }
-        }
-
-        override fun <T : IItem<D>, D : IItemID> retrieveItem(id: D): T? {
+        fun <T : IItem<D>, D : IItemID> retrieveItem(id: D): T? {
             checkOpen()
             @Suppress("UNCHECKED_CAST")
             return itemCache!![id] as T?
         }
 
-        override fun retrieveWord(key: SenseKey): Word? {
+        /**
+         * Retrieves the word identified by the specified sense key.
+         *
+         * @param key the sense key for the requested word
+         * @return the word for the specified key, or null if not
+         * present in the cache
+         */
+        fun retrieveWord(key: SenseKey): Word? {
             checkOpen()
             return keyCache!![key]
         }
 
-        override fun retrieveSenseEntry(key: SenseKey): SenseEntry? {
+        /**
+         * Retrieves the sense entry identified by the specified sense key.
+         *
+         * @param key the sense key for the requested sense entry
+         * @return the sense entry for the specified key, or null if not present in the cache
+         */
+        fun retrieveSenseEntry(key: SenseKey): SenseEntry? {
             checkOpen()
             return senseCache!![key]
         }
