@@ -140,7 +140,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return result
     }
 
-    override fun getWord(id: IWordID): IWord? {
+    override fun getWord(id: IWordID): Word? {
         checkOpen()
         val synset = getSynset(id.synsetID)
         if (synset == null) {
@@ -153,7 +153,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         }
     }
 
-    override fun getWord(key: ISenseKey): IWord? {
+    override fun getWord(key: ISenseKey): Word? {
         checkOpen()
 
         // no need to cache result from the following calls as this will have been
@@ -170,7 +170,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
             }
         }
 
-        var word: IWord? = null
+        var word: Word? = null
 
         // sometimes the sense.index file doesn't have the sense key entry
         // so try an alternate method of retrieving words by sense keys
@@ -180,12 +180,12 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         // are not found in the index file
         val indexWord = getIndexWord(key.lemma, key.pOS!!)
         if (indexWord != null) {
-            var possibleWord: IWord?
+            var possibleWord: Word?
             for (wordID in indexWord.wordIDs) {
                 possibleWord = getWord(wordID)
                 if (possibleWord != null) {
                     val synset = checkNotNull(possibleWord.synset)
-                    val words: List<IWord> = synset.words
+                    val words: List<Word> = synset.words
                     for (synonym in words) {
                         if (synonym.senseKey == key) {
                             word = synonym
@@ -265,7 +265,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
 
         // go find the head word
         var headSynset: Synset?
-        var headWord: IWord? = null
+        var headWord: Word? = null
         val related: List<ISynsetID> = checkNotNull(synset.getRelatedFor(Pointer.SIMILAR_TO))
         for (simID in related) {
             headSynset = getSynset(simID)

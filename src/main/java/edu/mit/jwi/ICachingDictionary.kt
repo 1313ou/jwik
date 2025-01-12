@@ -70,7 +70,7 @@ interface ICachingDictionary : IDictionary {
          * @param word the word to be cached; may not be null
          * @since JWI 2.2.0
          */
-        fun cacheWordByKey(word: IWord)
+        fun cacheWordByKey(word: Word)
 
         /**
          * Caches the specified entry.
@@ -101,7 +101,7 @@ interface ICachingDictionary : IDictionary {
          * present in the cache
          * @since JWI 2.2.0
          */
-        fun retrieveWord(key: ISenseKey): IWord?
+        fun retrieveWord(key: ISenseKey): Word?
 
         /**
          * Retrieves the sense entry identified by the specified sense key.

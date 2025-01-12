@@ -13,7 +13,7 @@ import java.io.Serializable
 
 /**
  * A sense key is a unique string that identifies a Wordnet word (an
- * [IWord]). The canonical string representation is:
+ * [Word]). The canonical string representation is:
  * <pre>
  * lemma%ss_type:lex_filenum:lex_id:head_word:head_id
 </pre> *

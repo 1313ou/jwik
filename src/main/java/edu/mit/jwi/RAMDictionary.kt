@@ -439,7 +439,7 @@ class RAMDictionary private constructor(
 
     // WORD
 
-    override fun getWord(id: IWordID): IWord? {
+    override fun getWord(id: IWordID): Word? {
         if (data != null) {
             val resolver = data!!.synsets[id.pOS]!!
             val synset = resolver[id.synsetID]
@@ -457,7 +457,7 @@ class RAMDictionary private constructor(
         }
     }
 
-    override fun getWord(key: ISenseKey): IWord? {
+    override fun getWord(key: ISenseKey): Word? {
         if (data != null) {
             return data!!.words[key]
         } else {
@@ -789,7 +789,7 @@ class RAMDictionary private constructor(
             val i: Iterator<ISenseEntry> = source.getSenseEntryIterator()
             while (i.hasNext()) {
                 val entry = i.next()
-                val word: IWord = result.words[entry.senseKey]!!
+                val word: Word = result.words[entry.senseKey]!!
                 if (word == null) {
                     throw NullPointerException()
                 }
@@ -843,7 +843,7 @@ class RAMDictionary private constructor(
 
         val exceptions: MutableMap<POS, MutableMap<IExceptionEntryID, IExceptionEntry>>
 
-        var words: MutableMap<ISenseKey, IWord>
+        var words: MutableMap<ISenseKey, Word>
 
         var senses: MutableMap<ISenseKey, ISenseEntry>
 
@@ -856,7 +856,7 @@ class RAMDictionary private constructor(
             idxWords = makePOSMap<IIndexWordID, IIndexWord>()
             synsets = makePOSMap<ISynsetID, Synset>()
             exceptions = makePOSMap<IExceptionEntryID, IExceptionEntry>()
-            words = makeMap<ISenseKey, IWord>(208000, null)
+            words = makeMap<ISenseKey, Word>(208000, null)
             senses = makeMap<ISenseKey, ISenseEntry>(208000, null)
         }
 
@@ -919,7 +919,7 @@ class RAMDictionary private constructor(
             compactPOSMap<IIndexWordID, IIndexWord>(idxWords)
             compactPOSMap<ISynsetID, Synset>(synsets)
             compactPOSMap<IExceptionEntryID, IExceptionEntry>(exceptions)
-            words = compactMap<ISenseKey, IWord>(words)
+            words = compactMap<ISenseKey, Word>(words)
             senses = compactMap<ISenseKey, ISenseEntry>(senses)
         }
 
@@ -1009,7 +1009,7 @@ class RAMDictionary private constructor(
          * @return the new synset, a copy of the first
          * @since JWI 2.2.0
          */
-        private fun makeWord(newSynset: Synset, old: IWord): IWord {
+        private fun makeWord(newSynset: Synset, old: Word): Word {
 
             // related words
             val newRelated = old.related
@@ -1027,7 +1027,7 @@ class RAMDictionary private constructor(
                 .toMap()
 
             // word
-            val word: IWord = Word(newSynset, old.iD as WordLemmaID, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
+            val word: Word = Word(newSynset, old.iD as WordLemmaID, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
             if (word.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey
                 word.senseKey.setHead(oldKey.headWord!!, oldKey.headID)
@@ -1067,9 +1067,9 @@ class RAMDictionary private constructor(
          * @version 2.4.0
          * @since JWI 2.2.0
          */
-        inner class WordBuilder(private val oldWord: IWord) : IWordBuilder {
+        inner class WordBuilder(private val oldWord: Word) : IWordBuilder {
 
-            override fun toWord(synset: Synset): IWord {
+            override fun toWord(synset: Synset): Word {
                 return makeWord(synset, oldWord)
             }
         }

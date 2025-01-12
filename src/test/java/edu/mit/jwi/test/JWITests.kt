@@ -30,7 +30,7 @@ class JWITests {
     // enum non null
     @Test
     fun allSensesAreNonNull() {
-        jwi!!.forAllSenses(Consumer { actual: IWord? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSenses(Consumer { actual: Word? -> Assertions.assertNotNull(actual) })
     }
 
     @Test
@@ -63,7 +63,7 @@ class JWITests {
 
     @Test
     fun allSenseRelationsAreNonNull() {
-        jwi!!.forAllSenseRelations(Consumer { actual: IWord? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSenseRelations(Consumer { actual: Word? -> Assertions.assertNotNull(actual) })
     }
 
     // enum live

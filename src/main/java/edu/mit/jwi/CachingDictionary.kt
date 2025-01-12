@@ -129,9 +129,9 @@ open class CachingDictionary(
         return backingDictionary.getIndexWordIterator(pos)
     }
 
-    override fun getWord(id: IWordID): IWord? {
+    override fun getWord(id: IWordID): Word? {
         checkOpen()
-        var item = cache.retrieveItem<IWord, IWordID>(id)
+        var item = cache.retrieveItem<Word, IWordID>(id)
         if (item == null) {
             item = backingDictionary.getWord(id)
             if (item != null) {
@@ -142,7 +142,7 @@ open class CachingDictionary(
         return item
     }
 
-    override fun getWord(key: ISenseKey): IWord? {
+    override fun getWord(key: ISenseKey): Word? {
         checkOpen()
         var item = cache.retrieveWord(key)
         if (item == null) {
@@ -260,7 +260,7 @@ open class CachingDictionary(
         // The caches themselves
         var itemCache: MutableMap<IItemID, IItem<*>>? = null
 
-        var keyCache: MutableMap<ISenseKey, IWord>? = null
+        var keyCache: MutableMap<ISenseKey, Word>? = null
 
         var senseCache: MutableMap<ISenseKey, ISenseEntry>? = null
 
@@ -295,7 +295,7 @@ open class CachingDictionary(
                 lifecycleLock.lock()
                 val capacity = if (initialCapacity < 1) DEFAULT_INITIAL_CAPACITY else initialCapacity
                 itemCache = makeCache<IItemID, IItem<*>>(capacity)
-                keyCache = makeCache<ISenseKey, IWord>(capacity)
+                keyCache = makeCache<ISenseKey, Word>(capacity)
                 senseCache = makeCache<ISenseKey, ISenseEntry>(capacity)
                 sensesCache = makeCache<ISenseKey, Array<ISenseEntry>>(capacity)
             } finally {
@@ -372,7 +372,7 @@ open class CachingDictionary(
             reduceCacheSize(itemCache!!)
         }
 
-        override fun cacheWordByKey(word: IWord) {
+        override fun cacheWordByKey(word: Word) {
             checkOpen()
             if (!isEnabled) {
                 return
@@ -424,7 +424,7 @@ open class CachingDictionary(
             return itemCache!![id] as T?
         }
 
-        override fun retrieveWord(key: ISenseKey): IWord? {
+        override fun retrieveWord(key: ISenseKey): Word? {
             checkOpen()
             return keyCache!![key]
         }

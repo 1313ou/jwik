@@ -30,7 +30,7 @@ object TestLib {
     @JvmStatic
     fun listDeadSensekeys(jwi: JWI) {
         val errorCount = AtomicInteger()
-        jwi.forAllSenses(Consumer { sense: IWord? ->
+        jwi.forAllSenses(Consumer { sense: Word? ->
             val sk = sense!!.senseKey
             val isLive = sensekeyIsLive(jwi, sk)
             if (!isLive) {

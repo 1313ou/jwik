@@ -93,7 +93,7 @@ class Synset private constructor(
     /**
      * The words that are members of the synset
      */
-    lateinit var words: List<IWord>
+    lateinit var words: List<Word>
 
     /**
      * Default implementation of the `Synset` interface.
@@ -166,7 +166,7 @@ class Synset private constructor(
     /**
      * List of the ids of all synsets that are related to this synset by the specified pointer type.
      * Note that this only returns a non-empty result for semantic pointers (i.e., non-lexical pointers).
-     * To obtain lexical pointers, call [IWord.getRelatedFor] on the appropriate object.
+     * To obtain lexical pointers, call [Word.getRelatedFor] on the appropriate object.
      * If there are no such synsets, this method returns the empty list.
      *
      * @param ptr the pointer for which related synsets are to be retrieved.
@@ -205,7 +205,7 @@ class Synset private constructor(
          * @since JWI 2.2.0
          */
 
-        fun toWord(synset: Synset): IWord
+        fun toWord(synset: Synset): Word
     }
 
     /**
@@ -237,7 +237,7 @@ class Synset private constructor(
 
         private val verbFrames = ArrayList<IVerbFrame>()
 
-        override fun toWord(synset: Synset): IWord {
+        override fun toWord(synset: Synset): Word {
             return Word(synset, WordLemmaNumID(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
         }
 
@@ -298,7 +298,7 @@ class Synset private constructor(
             return offset <= 99999999
         }
 
-        fun buildWords(wordBuilders: List<IWordBuilder>, synset: Synset): List<IWord> {
+        fun buildWords(wordBuilders: List<IWordBuilder>, synset: Synset): List<Word> {
             return wordBuilders
                 .map { it.toWord(synset) }
                 .toList()

@@ -13,7 +13,7 @@ import edu.mit.jwi.item.WordLemmaID.Companion.UNKNOWN_NUMBER
 import java.util.*
 
 /**
- * Default implementation of the `IWord` interface.
+ * A word, which in Wordnet is an index word paired with a synset.
  *
  * Constructs a new word object.
  *
@@ -31,33 +31,52 @@ import java.util.*
  * @since JWI 1.0
  */
 class Word(
-    override val synset: Synset,
+    val synset: Synset,
+
     override val iD: WordLemmaID,
-    override val lexicalID: Int,
+
+    /**
+     * An integer in the closed range [0,15] that, when appended onto lemma,
+     * uniquely identifies a sense within a lexicographer file. Lexical id
+     * numbers usually start with 0, and are incremented as additional senses of
+     * the word are added to the same file, although there is no requirement
+     * that the numbers be consecutive or begin with 0. Note that a value of 0
+     * is the default, and therefore is not present in lexicographer files. In
+     * the wordnet data files the lexical id is represented as a one digit
+     * hexadecimal integer.
+     *
+     * @return the lexical id of the word, an integer between 0 and 15,
+     * inclusive
+     * @since JWI 1.0
+     */
+    val lexicalID: Int,
+
     private val adjMarker: AdjMarker?,
+
     verbFrames: List<IVerbFrame>?,
+
     related: Map<Pointer, List<IWordID>>,
-) : IWord {
+) : IHasPOS, IItem<IWordID> {
 
-    override val senseKey: ISenseKey = SenseKey(iD.lemma, lexicalID, synset)
+    override val pOS: POS
+        get() = iD.synsetID.pOS!!
 
-    override val verbFrames: List<IVerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
+    val senseKey: ISenseKey = SenseKey(iD.lemma, lexicalID, synset)
 
-    override val related: Map<Pointer, List<IWordID>> = normalizeRelated(related)
+    val verbFrames: List<IVerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
 
-    override val relatedWords: List<IWordID>
+    val related: Map<Pointer, List<IWordID>> = normalizeRelated(related)
+
+    val relatedWords: List<IWordID>
         get() = related.values
             .flatMap { it.toList() }
             .distinct()
             .toList()
 
-    override val lemma: String
+    val lemma: String
         get() = iD.lemma
 
-    override val pOS: POS
-        get() = iD.synsetID.pOS!!
-
-    override val adjectiveMarker: AdjMarker?
+    val adjectiveMarker: AdjMarker?
         get() = adjMarker
 
     init {
@@ -117,6 +136,24 @@ class Word(
             return false
         }
         return related == that.related
+    }
+
+
+    /**
+     * Returns an immutable list of all word ids related to this word by the
+     * specified pointer type. Note that this only returns words related by
+     * lexical pointers (i.e., not semantic pointers). To retrieve items related
+     * by semantic pointers, call [Synset.getRelatedFor]. If this
+     * word has no targets for the specified pointer, this method
+     * returns an empty list. This method never returns null.
+     *
+     * @param ptr the pointer for which related words are requested
+     * @return the list of words related by the specified pointer, or an empty
+     * list if none.
+     * @since JWI 2.0.0
+     */
+    fun getRelatedFor(ptr: Pointer): List<IWordID> {
+        return related[ptr] ?: emptyList<IWordID>()
     }
 
     companion object {
