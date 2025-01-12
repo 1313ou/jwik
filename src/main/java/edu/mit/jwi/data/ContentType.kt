@@ -56,7 +56,7 @@ class ContentType<T>
 
 ) : IHasPOS, IHasCharset {
 
-    val dataType: IDataType<T>
+    val dataType: DataType<T>
         get() {
             return key.getDataType<T>()
         }

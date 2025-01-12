@@ -10,7 +10,7 @@
 package edu.mit.jwi.item
 
 import edu.mit.jwi.data.ContentType
-import edu.mit.jwi.data.IDataType
+import edu.mit.jwi.data.DataType
 import edu.mit.jwi.data.WordnetFile.Companion.getLine
 import java.io.Serializable
 import java.nio.ByteBuffer
@@ -375,7 +375,7 @@ open class Version(
          */
 
         fun extractVersion(contentType: ContentType<*>, buffer: ByteBuffer): Version? {
-            val dataType: IDataType<*> = contentType.dataType
+            val dataType: DataType<*> = contentType.dataType
             if (!dataType.hasVersion()) {
                 return null
             }

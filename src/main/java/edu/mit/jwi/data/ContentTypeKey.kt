@@ -18,7 +18,7 @@ import edu.mit.jwi.item.POS
  * @version 2.4.1
  * @since JWI 2.4.1
  */
-enum class ContentTypeKey(private val fType: IDataType<*>, val pOS: POS?) {
+enum class ContentTypeKey(private val fType: DataType<*>, val pOS: POS?) {
 
     INDEX_NOUN(DataType.INDEX, POS.NOUN),  //
     INDEX_VERB(DataType.INDEX, POS.VERB),  //
@@ -38,7 +38,7 @@ enum class ContentTypeKey(private val fType: IDataType<*>, val pOS: POS?) {
     EXCEPTION_ADJECTIVE(DataType.EXCEPTION, POS.ADJECTIVE),  //
     SENSE(DataType.SENSE, null), SENSES(DataType.SENSES, null);
 
-    fun <T> getDataType(): IDataType<T> {
-        return fType as IDataType<T>
+    fun <T> getDataType(): DataType<T> {
+        return fType as DataType<T>
     }
 }

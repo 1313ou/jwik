@@ -15,11 +15,24 @@ import java.io.File
 import java.util.*
 
 /**
- * A concrete implementation of the `IDataType` interface. This class
- * provides the data types necessary for Wordnet in the form of static
+ * Objects that represent possible types of data that occur in the dictionary data directory.
+ *
+ * In the standard Wordnet distributions, data types would include, but would
+ * not be limited to, *Index* files, *Data* files, and
+ * *Exception* files. The objects implementing this interface are then
+ * paired with an [edu.mit.jwi.item.POS] instance and
+ * [ILineComparator] instance to form an instance of an
+ * [IContentType] class, which identifies the specific data contained in
+ * the file. Note that here, 'data' refers not to an actual file, but to an
+ * instance of the `IDataSource` interface that provides access to the
+ * data, be it a file in the file system, a socket connection to a database, or
+ * something else.
+ *
+ * This class provides the data types necessary for Wordnet in the form of static
  * fields. It is not implemented as an `Enum` so that clients may add
  * their own content types by instantiating this class.
  *
+ * @param <T> the type of the object returned by the parser for this data type
  * @param <T> the type of object for the content type
  * @author Mark A. Finlayson
  * @version 2.4.0
@@ -28,14 +41,22 @@ import java.util.*
 class DataType<T>(
     userFriendlyName: String?,
     private val hasVersion: Boolean,
-    override val parser: ILineParser<T>,
+    val parser: ILineParser<T>,
     hints: Collection<String>?,
-) : IDataType<T> {
+) {
 
     // fields set on construction
     private val name: String? = userFriendlyName
 
-    override var resourceNameHints: Set<String> = if (hints == null || hints.isEmpty()) setOf<String>() else Collections.unmodifiableSet<String>(HashSet<String>(hints))
+    /**
+    * Returns an immutable set of strings that can be used as keywords to
+    * identify resources that are of this type.
+    * Set strings that can be used as keywords to identify resources that
+    * are of this type.
+    *
+    * A set of resource name fragments
+    */
+    var resourceNameHints: Set<String> = if (hints == null || hints.isEmpty()) setOf<String>() else Collections.unmodifiableSet<String>(HashSet<String>(hints))
 
     /**
      * Constructs a new data type. This constructor takes the hints as a
@@ -60,7 +81,11 @@ class DataType<T>(
         vararg hints: String,
     ) : this(userFriendlyName, hasVersion, parser, if (hints == null) null else listOf<String>(*hints))
 
-    override fun hasVersion(): Boolean {
+    /**
+     * Whether this content type usually has wordnet version information encoded in its header.
+     * Whether the content file that underlies this content usually has wordnet version information in its comment header
+     */
+    fun hasVersion(): Boolean {
         return hasVersion
     }
 
@@ -120,7 +145,7 @@ class DataType<T>(
          * @throws NullPointerException if the data type or file collection is null
          * @since JWI 2.2.0
          */
-        fun find(dataType: IDataType<*>, pos: POS?, files: Collection<File>): File? {
+        fun find(dataType: DataType<*>, pos: POS?, files: Collection<File>): File? {
             val typePatterns = dataType.resourceNameHints
             val posPatterns: Set<String> = pos?.resourceNameHints ?: setOf<String>()
             if (typePatterns == null || typePatterns.isEmpty()) {

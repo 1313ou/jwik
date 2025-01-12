@@ -348,7 +348,7 @@ class FileProvider @JvmOverloads constructor(
      * @param pos the part of speech, possibly null, of the desired content type
      * @return the first content type that matches the specified data type and part of speech.
      */
-    fun <T> resolveContentType(dt: IDataType<T>, pos: POS?): ContentType<T>? {
+    fun <T> resolveContentType(dt: DataType<T>, pos: POS?): ContentType<T>? {
         for (e in prototypeMap.entries) {
             if (e.key.getDataType<Any?>() == dt && e.key.pOS == pos) {
                 return e.value as ContentType<*>? as ContentType<T>?
@@ -500,7 +500,7 @@ class FileProvider @JvmOverloads constructor(
 
             // if it failed fall back on data types
             if (file == null) {
-                val dataType: IDataType<*> = contentType.dataType
+                val dataType: DataType<*> = contentType.dataType
                 file = find(dataType, contentType.pOS, files)
             }
 
