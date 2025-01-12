@@ -13,6 +13,7 @@ import edu.mit.jwi.data.IContentType
 import edu.mit.jwi.data.IDataType
 import edu.mit.jwi.data.WordnetFile.Companion.getLine
 import edu.mit.jwi.data.compare.ILineComparator
+import java.io.Serializable
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.regex.Matcher
@@ -41,25 +42,40 @@ import java.util.regex.Pattern
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class Version(
+open class Version(
 
-    override val majorVersion: Int,
+    /**
+     * The major version number, i.e., the '1' in '1.7.2'.
+     * Never negative
+     */
+    open val majorVersion: Int,
 
-    override val minorVersion: Int,
+    /**
+     * The minor version number, i.e., the '7' in '1.7.2'.
+     * Never negative
+     */
+    open val minorVersion: Int,
 
-    override val bugfixVersion: Int,
+    /**
+     * Bugfix version number, i.e., the '2' in '1.7.2'.
+     * Never negative
+     */
+    open val bugfixVersion: Int,
 
     qualifier0: String,
 
-    ) : IVersion {
+    ) : Serializable {
 
-    override var qualifier: String = checkVersion(majorVersion, minorVersion, bugfixVersion, qualifier0)
+    /**
+     * The version qualifier, i.e., the 'abc' in '1.7.2.abc'. The qualifier is never null, but may be empty.
+     */
+    open val qualifier: String? = checkVersion(majorVersion, minorVersion, bugfixVersion, qualifier0)
 
     @Transient
     private var toString: String? = null
 
     override fun hashCode(): Int {
-        return hashCode(this.majorVersion, this.minorVersion, this.bugfixVersion, qualifier)
+        return hashCode(majorVersion, minorVersion, bugfixVersion, qualifier)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -73,13 +89,13 @@ class Version(
             return false
         }
         val other = obj
-        if (this.majorVersion != other.majorVersion) {
+        if (majorVersion != other.majorVersion) {
             return false
         }
-        if (this.minorVersion != other.minorVersion) {
+        if (minorVersion != other.minorVersion) {
             return false
         }
-        if (this.bugfixVersion != other.bugfixVersion) {
+        if (bugfixVersion != other.bugfixVersion) {
             return false
         }
         return qualifier == other.qualifier
@@ -184,8 +200,7 @@ class Version(
         }
 
         /**
-         * Returns true if the arguments identify a legal version;
-         * false otherwise.
+         * Returns true if the arguments identify a legal version; false otherwise.
          *
          * @param major     the major version number
          * @param minor     the minor version number
@@ -223,7 +238,7 @@ class Version(
         }
 
         /**
-         * Returns falseif the specified qualifier is legal, namely, if
+         * Returns false if the specified qualifier is legal, namely, if
          * the string is either the empty string, or contains only characters that
          * are found in valid java identifiers.
          *
@@ -525,6 +540,35 @@ class Version(
          */
         fun values(): List<Version?> {
             return versions
+        }
+
+        /**
+         * A dummy version object used to indicate that the version has been calculated, and determined to be null.
+         */
+        @JvmField
+        val NO_VERSION: Version = object : Version(-1, -1, -1, "") {
+
+            override val bugfixVersion: Int
+                get() = throw UnsupportedOperationException()
+
+            override val majorVersion: Int
+                get() = throw UnsupportedOperationException()
+
+            override val minorVersion: Int
+                get() = throw UnsupportedOperationException()
+
+            override val qualifier: String
+                get() = throw UnsupportedOperationException()
+
+            /**
+             * Deserialization implementation. When deserializing this object, make sure to return the singleton object.
+             *
+             * @return the singleton dummy version object.
+             * @since JWI 2.4.0
+             */
+            private fun readResolve(): Any {
+                return NO_VERSION
+            }
         }
     }
 }

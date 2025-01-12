@@ -11,7 +11,6 @@ package edu.mit.jwi.data
 
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ICommentDetector
-import edu.mit.jwi.item.IVersion
 import edu.mit.jwi.item.Version
 import java.io.File
 import java.io.IOException
@@ -194,7 +193,7 @@ abstract class WordnetFile<T>(
      * @throws ObjectClosedException if the object is closed when this method is called
      * @see edu.mit.jwi.item.IHasVersion.version
      */
-    override var version: IVersion? = null
+    override var version: Version? = null
         get() {
             if (!isOpen) {
                 throw ObjectClosedException()
@@ -202,10 +201,10 @@ abstract class WordnetFile<T>(
             if (field == null) {
                 val v = Version.extractVersion(contentType, buffer!!.asReadOnlyBuffer())
                 if (v == null) {
-                    field = IVersion.NO_VERSION
+                    field = Version.NO_VERSION
                 }
             }
-            return if (field === IVersion.NO_VERSION) null else field
+            return if (field === Version.NO_VERSION) null else field
         }
 
     override fun iterator(): LineIterator {

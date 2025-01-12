@@ -18,5 +18,5 @@ package edu.mit.jwi.item
  */
 interface IHasVersion {
 
-    val version: IVersion?
+    val version: Version?
 }

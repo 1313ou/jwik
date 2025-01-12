@@ -404,7 +404,7 @@ class RAMDictionary private constructor(
         }
     }
 
-    override val version: IVersion?
+    override val version: Version?
         get() {
             if (backingDictionary != null) {
                 return backingDictionary.version
@@ -835,7 +835,7 @@ class RAMDictionary private constructor(
      */
     class DictionaryData : Serializable {
 
-        var version: IVersion? = null
+        var version: Version? = null
 
         val idxWords: MutableMap<POS, MutableMap<IndexWordID, IndexWord>>
 

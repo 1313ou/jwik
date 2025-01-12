@@ -95,7 +95,7 @@ open class CachingDictionary(
         backingDictionary.close()
     }
 
-    override val version: IVersion?
+    override val version: Version?
         get() {
             return backingDictionary.version
         }

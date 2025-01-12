@@ -35,7 +35,7 @@ import kotlin.Throws
  */
 class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSourceDictionary {
 
-    override val version: IVersion?
+    override val version: Version?
         get() {
             checkOpen()
             return dataProvider.version

@@ -13,10 +13,10 @@ import edu.mit.jwi.data.ContentType.Companion.values
 import edu.mit.jwi.data.DataType.Companion.find
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
-import edu.mit.jwi.item.Synset
-import edu.mit.jwi.item.IVersion
 import edu.mit.jwi.item.POS
+import edu.mit.jwi.item.Synset
 import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
+import edu.mit.jwi.item.Version
 import java.io.File
 import java.io.FileFilter
 import java.io.IOException
@@ -71,14 +71,14 @@ class FileProvider @JvmOverloads constructor(
 
     private val prototypeMap: MutableMap<ContentTypeKey, IContentType<*>>
 
-    override var version: IVersion? = null
+    override var version: Version? = null
         get() {
             checkOpen()
             if (field == null) {
                 checkNotNull(fileMap)
                 field = determineVersion(fileMap!!.values)
             }
-            if (field === IVersion.NO_VERSION) {
+            if (field === Version.NO_VERSION) {
                 return null
             }
             return field
@@ -703,8 +703,8 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 2.1.0
      */
 
-    private fun determineVersion(srcs: Collection<IDataSource<*>>): IVersion? {
-        var ver: IVersion? = IVersion.NO_VERSION
+    private fun determineVersion(srcs: Collection<IDataSource<*>>): Version? {
+        var ver: Version? = Version.NO_VERSION
         for (dataSrc in srcs) {
             // if no version to set, ignore
             if (dataSrc.version == null) {
@@ -712,14 +712,14 @@ class FileProvider @JvmOverloads constructor(
             }
 
             // init version
-            if (ver === IVersion.NO_VERSION) {
+            if (ver === Version.NO_VERSION) {
                 ver = dataSrc.version
                 continue
             }
 
             // if version different from current
             if (ver != dataSrc.version) {
-                return IVersion.NO_VERSION
+                return Version.NO_VERSION
             }
         }
         return ver
