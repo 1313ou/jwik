@@ -99,12 +99,7 @@ class ExceptionEntryID(
          * @since JWI 2.2.0
          */
         fun parseExceptionEntryID(value: String): ExceptionEntryID {
-            if (value == null) {
-                throw NullPointerException()
-            }
-
             require(value.startsWith("EID-"))
-
             require(value[value.length - 2] == '-')
 
             val pos = getPartOfSpeech(value[value.length - 1])

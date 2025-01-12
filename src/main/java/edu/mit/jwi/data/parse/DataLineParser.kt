@@ -102,7 +102,7 @@ private constructor() : ILineParser<ISynset> {
                 // parse lex_id
                 lexID = tokenizer.nextToken().toInt(16)
 
-                Synset.WordBuilder(it + 1, lemma, lexID, marker)
+                WordBuilder(it + 1, lemma, lexID, marker)
             }
 
             // Get pointers

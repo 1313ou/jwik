@@ -9,7 +9,19 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import java.util.*
+// standard WordNet numbering scheme for parts of speech
+const val NUM_NOUN: Int = 1
+const val NUM_VERB: Int = 2
+const val NUM_ADJECTIVE: Int = 3
+const val NUM_ADVERB: Int = 4
+const val NUM_ADJECTIVE_SATELLITE: Int = 5
+
+// standard character tags for the parts of speech
+const val TAG_NOUN: Char = 'n'
+const val TAG_VERB: Char = 'v'
+const val TAG_ADJECTIVE: Char = 'a'
+const val TAG_ADVERB: Char = 'r'
+const val TAG_ADJECTIVE_SATELLITE: Char = 's'
 
 /**
  * Represents part of speech objects.
@@ -39,65 +51,41 @@ enum class POS
      */
     val number: Int,
 
-    vararg patterns: String,
+    vararg names: String,
 ) {
-
     /**
      * Object representing the Noun part of speech.
-     *
-     * @since JWI 2.0.0
      */
-    NOUN("noun", 'n', 1, "noun"),
+    NOUN("noun", TAG_NOUN, NUM_NOUN, "noun"),
 
     /**
      * Object representing the Verb part of speech.
-     *
-     * @since JWI 2.0.0
      */
-    VERB("verb", 'v', 2, "verb"),
+    VERB("verb", TAG_VERB, NUM_VERB, "verb"),
 
     /**
      * Object representing the Adjective part of speech.
-     *
-     * @since JWI 2.0.0
      */
-    ADJECTIVE("adjective", 'a', 3, "adj", "adjective"),
+    ADJECTIVE("adjective", TAG_ADJECTIVE, NUM_ADJECTIVE, "adj", "adjective"),
 
     /**
      * Object representing the Adverb part of speech.
-     *
-     * @since JWI 2.0.0
      */
-    ADVERB("adverb", 'r', 4, "adv", "adverb");
+    ADVERB("adverb", TAG_ADVERB, NUM_ADVERB, "adv", "adverb");
 
     /**
      * Returns a set of strings that can be used to identify resource
      * corresponding to objects with this part of speech.
-     *
-     * @return an immutable set of resource name hints
+
      * @since JWI 2.2
      */
-    val resourceNameHints: Set<String> = Collections.unmodifiableSet<String>(HashSet<String>(listOf<String>(*patterns)))
+    val resourceNameHints: Set<String> = setOf(*names)
 
     override fun toString(): String {
         return posName
     }
 
     companion object {
-
-        // standard WordNet numbering scheme for parts of speech
-        const val NUM_NOUN: Int = 1
-        const val NUM_VERB: Int = 2
-        const val NUM_ADJECTIVE: Int = 3
-        const val NUM_ADVERB: Int = 4
-        const val NUM_ADJECTIVE_SATELLITE: Int = 5
-
-        // standard character tags for the parts of speech
-        const val TAG_NOUN: Char = 'n'
-        const val TAG_VERB: Char = 'v'
-        const val TAG_ADJECTIVE: Char = 'a'
-        const val TAG_ADVERB: Char = 'r'
-        const val TAG_ADJECTIVE_SATELLITE: Char = 's'
 
         /**
          * Returns true if the specified number represents an adjective
@@ -110,7 +98,7 @@ enum class POS
          */
         @JvmStatic
         fun isAdjectiveSatellite(num: Int): Boolean {
-            return num == 5
+            return num == NUM_ADJECTIVE_SATELLITE
         }
 
         /**
@@ -125,7 +113,7 @@ enum class POS
          * @since JWI 2.0.0
          */
         fun isAdjectiveSatellite(tag: Char): Boolean {
-            return tag == 's' || tag == 'S'
+            return tag.lowercase()[0] == TAG_ADJECTIVE_SATELLITE
         }
 
         /**
@@ -140,10 +128,10 @@ enum class POS
 
         fun getPartOfSpeech(num: Int): POS? {
             when (num) {
-                (1)      -> return NOUN
-                (2)      -> return VERB
-                (4)      -> return ADVERB
-                (5), (3) -> return ADJECTIVE
+                NUM_NOUN                               -> return NOUN
+                NUM_VERB                               -> return VERB
+                NUM_ADVERB                             -> return ADVERB
+                NUM_ADJECTIVE, NUM_ADJECTIVE_SATELLITE -> return ADJECTIVE
             }
             return null
         }
@@ -159,11 +147,11 @@ enum class POS
          */
         @JvmStatic
         fun getPartOfSpeech(tag: Char): POS {
-            when (tag) {
-                ('N'), ('n')               -> return NOUN
-                ('V'), ('v')               -> return VERB
-                ('R'), ('r')               -> return ADVERB
-                ('S'), ('s'), ('A'), ('a') -> return ADJECTIVE
+            when (tag.lowercase()[0]) {
+                TAG_NOUN                               -> return NOUN
+                TAG_VERB                               -> return VERB
+                TAG_ADVERB                             -> return ADVERB
+                TAG_ADJECTIVE_SATELLITE, TAG_ADJECTIVE -> return ADJECTIVE
             }
             return throw IllegalArgumentException(tag.toString())
         }

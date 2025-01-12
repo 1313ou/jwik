@@ -10,8 +10,6 @@
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.LexFile.Companion.ADJ_ALL
-import edu.mit.jwi.item.POS.Companion.NUM_ADJECTIVE
-import edu.mit.jwi.item.POS.Companion.NUM_ADJECTIVE_SATELLITE
 import edu.mit.jwi.item.Word.Companion.checkWordNumber
 import java.util.*
 

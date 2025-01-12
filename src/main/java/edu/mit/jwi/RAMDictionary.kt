@@ -26,6 +26,7 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
+import kotlin.Throws
 
 /**
  * Default implementation of the `IRAMDictionary` interface. This
@@ -589,10 +590,6 @@ class RAMDictionary private constructor(
          * @since JWI 2.2.0
          */
         abstract fun makeIterator(): Iterator<E>
-
-        fun remove() {
-            throw UnsupportedOperationException()
-        }
     }
 
     /**
@@ -1075,7 +1072,7 @@ class RAMDictionary private constructor(
             override fun toWord(synset: ISynset): IWord {
                 return makeWord(synset, oldWord)
             }
-       }
+        }
     }
 
     override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {

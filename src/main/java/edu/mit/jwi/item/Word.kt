@@ -10,7 +10,6 @@
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.WordLemmaID.Companion.UNKNOWN_NUMBER
-import edu.mit.jwi.item.WordNumID.Companion.UNKNOWN_LEMMA
 import java.util.*
 
 /**

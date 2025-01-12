@@ -63,14 +63,6 @@ interface IVersion : Serializable {
          */
         @JvmField
         val NO_VERSION: IVersion = object : IVersion {
-            /**
-             * This serial version UID identifies the last version of JWI whose
-             * serialized instances of the NO_VERSION instance are compatible with this
-             * implementation.
-             *
-             * @since JWI 2.4.0
-             */
-            private val serialVersionUID: Long = 240
 
             override val bugfixVersion: Int
                 get() {

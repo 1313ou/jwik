@@ -43,14 +43,6 @@ interface ILineParser<T> {
 class MisformattedLineException : RuntimeException {
 
     /**
-     * Constructs a new exception with null as its detail message. The
-     * cause is not initialized, and may subsequently be initialized by a call
-     * to [.initCause].
-     *
-     * @since JWI 2.0.0
-     */
-    constructor() : super()
-    /**
      * Constructs a new exception with the specified detail message. The cause
      * is not initialized, and may subsequently be initialized by a call to
      * [.initCause].
