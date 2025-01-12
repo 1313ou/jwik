@@ -13,6 +13,7 @@ import edu.mit.jwi.data.ContentType.Companion.values
 import edu.mit.jwi.data.DataType.Companion.find
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
+import edu.mit.jwi.item.IHasVersion
 import edu.mit.jwi.item.POS
 import edu.mit.jwi.item.Synset
 import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
@@ -34,6 +35,10 @@ import kotlin.Throws
 
 /**
  *
+ **
+ * Manage access to data source objects.
+ * Before the provider can be used, a client must call [.setSource] (or call the appropriate constructor) followed by [.open].
+ * Otherwise, the provider will throw an exception.
  *
  * Implementation of a data provider for Wordnet that uses files in the file
  * system to back instances of its data sources. This implementation takes a
@@ -41,8 +46,6 @@ import kotlin.Throws
  * the resource hints from the data types and parts of speech for its content
  * types to examine the filenames in the that directory to determine which files
  * contain which data.
- *
- *
  *
  * This implementation supports loading the wordnet files into memory,
  * but this is actually not that beneficial for speed. This is because the
@@ -53,17 +56,12 @@ import kotlin.Throws
  * should rely on the implementation in [RAMDictionary], or something
  * similar, which pre-processes the Wordnet data into objects before caching
  * them.
- *
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
  */
 class FileProvider @JvmOverloads constructor(
     url: URL,
     loadPolicy: Int = ILoadPolicy.Companion.NO_LOAD,
     contentTypes: Collection<ContentType<*>> = values(),
-) : IDataProvider, ILoadable, ILoadPolicy {
+) : IHasVersion, IHasLifecycle, IHasCharset, ILoadable, ILoadPolicy {
 
     private val lifecycleLock: Lock = ReentrantLock()
 
@@ -94,10 +92,51 @@ class FileProvider @JvmOverloads constructor(
 
     private val sourceMatcher: MutableMap<ContentTypeKey, String> = HashMap<ContentTypeKey, String>()
 
-    override var source: URL = url
+    /**
+     * The location of the data.
+     * The source URL from which the provider accesses the data from which it instantiates data sources
+     * The data at the specified location may be in an implementation-specific format.
+     * If the provider is currently open, this method throws an `IllegalStateException`.
+     */
+    var source: URL = url
         set(url) {
             check(!isOpen) { "provider currently open" }
             field = url
+        }
+
+    /**
+     * Returns a data source object for the specified content type, if one is
+     * available; otherwise returns null.
+     *
+     * @param <T>         the content type of the data source
+     * @param contentType the content type of the data source to be retrieved
+     * @return the data source for the specified content type, or
+     * null if this provider has no such data source
+     * @throws NullPointerException  if the type is null
+     * @throws ObjectClosedException if the provider is not open when this call is made
+     */
+    fun <T> getSource(contentType: ContentType<T>): ILoadableDataSource<T>? {
+        checkOpen()
+
+        // assume at first this the prototype
+        var actualType = prototypeMap[contentType!!.key]
+
+        // if this does not map to an adjusted type, we will check under it directly
+        if (actualType == null) {
+            actualType = contentType
+        }
+        checkNotNull(fileMap)
+        return fileMap!![actualType] as ILoadableDataSource<T>
+    }
+
+    val types: Set<ContentType<*>>
+        get() {
+            try {
+                lifecycleLock.lock()
+                return LinkedHashSet<ContentType<*>>(prototypeMap.values)
+            } finally {
+                lifecycleLock.unlock()
+            }
         }
 
     override var loadPolicy: Int = 0
@@ -110,6 +149,12 @@ class FileProvider @JvmOverloads constructor(
             }
         }
 
+    /**
+     * Sets the character set associated with this dictionary. The character set may be null.
+     *
+     * @param charset the possibly null character set to use when decoding files.
+     * @throws IllegalStateException if the provider is currently open
+     */
     override var charset: Charset? = null
         set(charset) {
             if (verbose) {
@@ -231,53 +276,79 @@ class FileProvider @JvmOverloads constructor(
         return null
     }
 
-    override fun setComparator(key: ContentTypeKey, comparator: ILineComparator?) {
+    /**
+     * Sets the comparator associated with this content type in this dictionary.
+     * The comparator may be null in which case it is reset.
+     *
+     * @param contentTypeKey the `non-null` content type key for which
+     * the comparator is to be set.
+     * @param comparator     the possibly null comparator to use when
+     * decoding files.
+     * @throws IllegalStateException if the provider is currently open
+     * @since JWI 2.4.1
+     */
+    fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
         if (verbose) {
             checkNotNull(comparator)
-            System.out.printf("Comparator for %s %s%n", key, comparator.javaClass.getName())
+            System.out.printf("Comparator for %s %s%n", contentTypeKey, comparator.javaClass.getName())
         }
         try {
             lifecycleLock.lock()
             check(!isOpen) { "provider currently open" }
-            val value: ContentType<*> = prototypeMap[key]!!
+            val value: ContentType<*> = prototypeMap[contentTypeKey]!!
             if (comparator == null) {
                 // if we get a null comparator, reset to the prototype but preserve charset
-                val defaultContentType: ContentType<*>? = checkNotNull(getDefault(key))
+                val defaultContentType: ContentType<*>? = checkNotNull(getDefault(contentTypeKey))
                 checkNotNull(value)
-                prototypeMap.put(key, ContentType<Any?>(key, defaultContentType!!.lineComparator, value.charset))
+                prototypeMap.put(contentTypeKey, ContentType<Any?>(contentTypeKey, defaultContentType!!.lineComparator, value.charset))
             } else {
                 // if we get a non-null comparator, generate a new type using the new comparator but preserve charset
                 checkNotNull(value)
-                prototypeMap.put(key, ContentType<Any?>(key, comparator, value.charset))
+                prototypeMap.put(contentTypeKey, ContentType<Any?>(contentTypeKey, comparator, value.charset))
             }
         } finally {
             lifecycleLock.unlock()
         }
     }
 
-    override fun setSourceMatcher(key: ContentTypeKey, pattern: String?) {
+    /**
+     * Sets pattern attached to content type key, that source files have to
+     * match to be selected.
+     * This gives selection a first opportunity before falling back on standard data
+     * type selection.
+     *
+     * @param contentTypeKey the `non-null` content type key for which
+     * the matcher is to be set.
+     * @param pattern        regexp pattern
+     * @since JWI 2.4.1
+     */
+    fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
         if (verbose) {
-            System.out.printf("Matcher for %s: '%s'%n", key, pattern)
+            System.out.printf("Matcher for %s: '%s'%n", contentTypeKey, pattern)
         }
         try {
             lifecycleLock.lock()
             check(!isOpen) { "provider currently open" }
             if (pattern == null) {
-                sourceMatcher.remove(key)
+                sourceMatcher.remove(contentTypeKey)
             } else {
-                sourceMatcher.put(key, pattern)
+                sourceMatcher.put(contentTypeKey, pattern)
             }
         } finally {
             lifecycleLock.unlock()
         }
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Returns the first content type, if any, that matches the specified data
+     * type and pos object. Either parameter may be null.
      *
-     * @see edu.edu.mit.jwi.data.IDataProvider#resolveContentType(edu.edu.mit.jwi.data.IDataType, edu.edu.mit.jwi.item.POS)
+     * @param <T> type
+     * @param dt  the data type, possibly null, of the desired content type
+     * @param pos the part of speech, possibly null, of the desired content type
+     * @return the first content type that matches the specified data type and part of speech.
      */
-    override fun <T> resolveContentType(dt: IDataType<T>, pos: POS?): ContentType<T>? {
+    fun <T> resolveContentType(dt: IDataType<T>, pos: POS?): ContentType<T>? {
         for (e in prototypeMap.entries) {
             if (e.key.getDataType<Any?>() == dt && e.key.pOS == pos) {
                 return e.value as ContentType<*>? as ContentType<T>?
@@ -286,11 +357,6 @@ class FileProvider @JvmOverloads constructor(
         return null
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.IHasLifecycle#open()
-     */
     @Throws(IOException::class)
     override fun open(): Boolean {
         try {
@@ -609,30 +675,6 @@ class FileProvider @JvmOverloads constructor(
         }
     }
 
-    override fun <T> getSource(contentType: ContentType<T>): ILoadableDataSource<T>? {
-        checkOpen()
-
-        // assume at first this the prototype
-        var actualType = prototypeMap[contentType!!.key]
-
-        // if this does not map to an adjusted type, we will check under it directly
-        if (actualType == null) {
-            actualType = contentType
-        }
-        checkNotNull(fileMap)
-        return fileMap!![actualType] as ILoadableDataSource<T>
-    }
-
-    override val types: Set<ContentType<*>>
-        get() {
-            try {
-                lifecycleLock.lock()
-                return LinkedHashSet<ContentType<*>>(prototypeMap.values)
-            } finally {
-                lifecycleLock.unlock()
-            }
-        }
-
     /**
      * A thread class which tries to load each data source in this provider.
      *
@@ -656,11 +698,6 @@ class FileProvider @JvmOverloads constructor(
             setDaemon(true)
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see java.lang.Thread#run()
-         */
         override fun run() {
             try {
                 checkNotNull(fileMap)
@@ -680,8 +717,6 @@ class FileProvider @JvmOverloads constructor(
 
         /**
          * Sets the cancel flag for this loader.
-         *
-         * @since JWI 2.2.0
          */
         fun cancel() {
             cancel = true

@@ -34,7 +34,7 @@ import kotlin.Throws
  * @since JWI 2.2.0
  */
 class DataSourceDictionary(
-    override val dataProvider: IDataProvider,
+    override val dataProvider: FileProvider,
 ) : IDataSourceDictionary {
 
     override val version: Version?

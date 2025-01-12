@@ -9,7 +9,7 @@
  *******************************************************************************/
 package edu.mit.jwi
 
-import edu.mit.jwi.data.IDataProvider
+import edu.mit.jwi.data.FileProvider
 
 /**
  * A type of `IDictionary` which uses an instance of an
@@ -21,5 +21,5 @@ import edu.mit.jwi.data.IDataProvider
  */
 interface IDataSourceDictionary : IDictionary {
 
-    val dataProvider: IDataProvider
+    val dataProvider: FileProvider
 }
