@@ -103,7 +103,7 @@ class WordNumID(synsetID: ISynsetID, val wordNumber: Int) : BaseWordID(synsetID)
         if (javaClass != obj.javaClass) {
             return false
         }
-        val other = obj as WordLemmaNumID
+        val other = obj as WordNumID
         if (synsetID != other.synsetID) {
             return false
         }
