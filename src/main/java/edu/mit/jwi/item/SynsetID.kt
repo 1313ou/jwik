@@ -9,57 +9,40 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
+import java.util.*
+
 /**
- * Default implementation of the `ISynsetID` interface
+ * A unique identifier for a synset,
+ * sufficient to retrieve it from the Wordnet database. It consists of a
+ * part of speech and an offset.
  *
+ * @param offset the offset
+ * @param pOS the part of speech; may not be null
+ * @throws IllegalArgumentException if the specified offset is not a legal offset
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-class SynsetID(offset: Int, pos: POS) : ISynsetID {
-
-    override val offset: Int
-
-    override val pOS: POS
+class SynsetID(
+    /**
+     * The byte offset for the synset.
+     */
+    val offset: Int,
 
     /**
-     * Constructs a new synset id with the specified offset and part of speech.
-     *
-     * @param offset the offset
-     * @param pos    the part of speech; may not be null
-     * @throws NullPointerException     if the specified part of speech is null
-     * @throws IllegalArgumentException if the specified offset is not a legal offset
-     * @since JWI 1.0
+     * The Part Of Speech
      */
+    override val pOS: POS,
+) : IHasPOS, IItemID {
+
     init {
-        if (pos == null) {
-            throw NullPointerException()
-        }
         Synset.checkOffset(offset)
-
-        this.offset = offset
-        this.pOS = pos
     }
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#hashCode()
-    */
     override fun hashCode(): Int {
-        val PRIME = 31
-        var result = 1
-        result = PRIME * result + offset
-        checkNotNull(this.pOS)
-        result = PRIME * result + pOS.hashCode()
-        return result
+        return Objects.hash(offset, pOS)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
@@ -67,26 +50,18 @@ class SynsetID(offset: Int, pos: POS) : ISynsetID {
         if (obj == null) {
             return false
         }
-        if (obj !is ISynsetID) {
+        if (obj !is SynsetID) {
             return false
         }
         val other = obj
         if (offset != other.offset) {
             return false
         }
-        checkNotNull(this.pOS)
-        return this.pOS == other.pOS
+        return pOS == other.pOS
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
-
     override fun toString(): String {
-        checkNotNull(this.pOS)
-        return synsetIDPrefix + Synset.zeroFillOffset(offset) + '-' + pOS.tag.uppercaseChar()
+        return "$SYNSETID_PREFIX${Synset.zeroFillOffset(offset)}-${pOS.tag.uppercaseChar()}"
     }
 
     companion object {
@@ -96,7 +71,7 @@ class SynsetID(offset: Int, pos: POS) : ISynsetID {
          *
          * @since JWI 2.0.0
          */
-        const val synsetIDPrefix: String = "SID-"
+        const val SYNSETID_PREFIX: String = "SID-"
 
         /**
          * Convenience method for transforming the result of the [.toString]
@@ -115,14 +90,8 @@ class SynsetID(offset: Int, pos: POS) : ISynsetID {
          */
 
         fun parseSynsetID(value: String): SynsetID {
-            var value = value
-            if (value == null) {
-                throw NullPointerException()
-            }
-
-            value = value.trim { it <= ' ' }
+            var value = value.trim { it <= ' ' }
             require(value.length == 14)
-
             require(value.startsWith("SID-"))
 
             // get offset

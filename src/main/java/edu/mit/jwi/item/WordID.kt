@@ -18,13 +18,13 @@ import java.util.*
  *
  * @property synsetID the synset id
  */
-abstract class BaseWordID(override val synsetID: ISynsetID) : IWordID {
+abstract class BaseWordID(override val synsetID: SynsetID) : IWordID {
 
     override val pOS: POS
-        get() = synsetID.pOS!!
+        get() = synsetID.pOS
 
     override fun toString(): String {
-        val pos = synsetID.pOS!!
+        val pos = synsetID.pOS
         return "$WORDID_PREFIX ${Synset.zeroFillOffset(synsetID.offset)}-${pos.tag.uppercaseChar()}"
     }
 
@@ -52,7 +52,7 @@ abstract class BaseWordID(override val synsetID: ISynsetID) : IWordID {
             // get synset id
             val offset = value.substring(4, 12).toInt()
             val pos = POS.getPartOfSpeech(value[13])
-            val id: ISynsetID = SynsetID(offset, pos)
+            val id = SynsetID(offset, pos)
 
             // get word number
             val numStr = value.substring(15, 17)
@@ -79,7 +79,7 @@ abstract class BaseWordID(override val synsetID: ISynsetID) : IWordID {
  * @param synsetID the synset id
  * @property wordNumber the word number
  */
-class WordNumID(synsetID: ISynsetID, val wordNumber: Int) : BaseWordID(synsetID), IWordID {
+class WordNumID(synsetID: SynsetID, val wordNumber: Int) : BaseWordID(synsetID), IWordID {
 
     init {
         checkWordNumber(wordNumber)
@@ -129,7 +129,7 @@ class WordNumID(synsetID: ISynsetID, val wordNumber: Int) : BaseWordID(synsetID)
  * @property lemma lemma
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
-open class WordLemmaID(synsetID: ISynsetID, lemma: String) : BaseWordID(synsetID), IWordID {
+open class WordLemmaID(synsetID: SynsetID, lemma: String) : BaseWordID(synsetID), IWordID {
 
     val lemma: String = lemma.trim { it <= ' ' }
 
@@ -180,7 +180,7 @@ open class WordLemmaID(synsetID: ISynsetID, lemma: String) : BaseWordID(synsetID
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  * @since JWI 1.0
  */
-class WordLemmaNumID(synsetID: ISynsetID, val wordNumber: Int, lemma: String) : WordLemmaID(synsetID, lemma), IWordID {
+class WordLemmaNumID(synsetID: SynsetID, val wordNumber: Int, lemma: String) : WordLemmaID(synsetID, lemma), IWordID {
 
     init {
         checkWordNumber(wordNumber)

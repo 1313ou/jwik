@@ -29,7 +29,10 @@ import java.util.*
  * @since JWI 1.0
  */
 class Synset private constructor(
-    override val iD: ISynsetID,
+    /**
+     * Synset ID
+     */
+    override val iD: SynsetID,
 
     /**
      * The lexical file it was found in
@@ -54,8 +57,8 @@ class Synset private constructor(
     /**
      * Semantic relations
      */
-    val related: Map<Pointer, List<ISynsetID>>,
-) : IHasPOS, IItem<ISynsetID> {
+    val related: Map<Pointer, List<SynsetID>>,
+) : IHasPOS, IItem<SynsetID> {
 
     /**
      * Part Of Speech
@@ -107,13 +110,13 @@ class Synset private constructor(
      * @param related a map of related synset lists, indexed by pointer
      */
     constructor(
-        iD: ISynsetID,
+        iD: SynsetID,
         lexicalFile: ILexFile,
         isAdjectiveSatellite: Boolean,
         isAdjectiveHead: Boolean,
         gloss: String,
         wordBuilders: List<IWordBuilder>,
-        related: Map<Pointer, List<ISynsetID>>?,
+        related: Map<Pointer, List<SynsetID>>?,
     ) : this(iD, lexicalFile, isAdjectiveSatellite, isAdjectiveHead, gloss, normalizeRelated(related)) {
         require(!wordBuilders.isEmpty())
         words = buildWords(wordBuilders, this)
@@ -173,14 +176,14 @@ class Synset private constructor(
      * @return the list of synsets related by the specified pointer; if there are no such synsets, returns the empty list
      * @since JWI 2.0.0
      */
-    fun getRelatedFor(ptr: Pointer): List<ISynsetID> {
+    fun getRelatedFor(ptr: Pointer): List<SynsetID> {
         return related[ptr] ?: emptyList()
     }
 
     /**
      * List of the ids of all synsets that are related to this synset
      */
-    val allRelated: List<ISynsetID>
+    val allRelated: List<SynsetID>
         get() = related.values
             .flatMap { it.toList() }
             .distinct()
@@ -304,7 +307,7 @@ class Synset private constructor(
                 .toList()
         }
 
-        private fun normalizeRelated(related: Map<Pointer, List<ISynsetID>>?): Map<Pointer, List<ISynsetID>> {
+        private fun normalizeRelated(related: Map<Pointer, List<SynsetID>>?): Map<Pointer, List<SynsetID>> {
             return related?.entries
                 ?.filterNot { it.value.isEmpty() }
                 ?.associate { it.key to it.value }

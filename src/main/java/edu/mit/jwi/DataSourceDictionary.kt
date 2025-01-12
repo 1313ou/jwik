@@ -229,7 +229,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return parser.parseLine(line)
     }
 
-    override fun getSynset(id: ISynsetID): Synset? {
+    override fun getSynset(id: SynsetID): Synset? {
         checkOpen()
         val content = dataProvider.resolveContentType<Synset>(DataType.DATA, id.pOS)
         val file = dataProvider.getSource<Synset>(content!!)
@@ -266,7 +266,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         // go find the head word
         var headSynset: Synset?
         var headWord: Word? = null
-        val related: List<ISynsetID> = checkNotNull(synset.getRelatedFor(Pointer.SIMILAR_TO))
+        val related: List<SynsetID> = synset.getRelatedFor(Pointer.SIMILAR_TO)
         for (simID in related) {
             headSynset = getSynset(simID)
             // assume first 'similar' adjective head is the right one

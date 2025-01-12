@@ -62,7 +62,7 @@ private constructor() : ILineParser<Synset> {
             val synset_tag = tokenizer.nextToken()[0]
             synset_pos = getPartOfSpeech(synset_tag)
 
-            val synsetID: ISynsetID = SynsetID(offset, synset_pos)
+            val synsetID = SynsetID(offset, synset_pos)
 
             // Determine if it is an adjective satellite
             val isAdjSat = (synset_tag == 's')
@@ -106,7 +106,7 @@ private constructor() : ILineParser<Synset> {
             }
 
             // Get pointers
-            var synsetPointerMap: MutableMap<Pointer, ArrayList<ISynsetID>>? = null
+            var synsetPointerMap: MutableMap<Pointer, ArrayList<SynsetID>>? = null
             val pointerCount = tokenizer.nextToken().toInt()
             repeat(pointerCount) {
 
@@ -120,7 +120,7 @@ private constructor() : ILineParser<Synset> {
                 // get target synset part of speech
                 val target_pos = getPartOfSpeech(tokenizer.nextToken()[0])
 
-                var target_synset_id: ISynsetID = SynsetID(target_offset, target_pos)
+                var target_synset_id = SynsetID(target_offset, target_pos)
 
                 // get source/target numbers
                 var source_target_num: Int = tokenizer.nextToken().toInt(16)
@@ -128,9 +128,9 @@ private constructor() : ILineParser<Synset> {
                 // this is a semantic pointer if the source/target numbers are zero
                 if (source_target_num == 0) {
                     if (synsetPointerMap == null) {
-                        synsetPointerMap = HashMap<Pointer, ArrayList<ISynsetID>>()
+                        synsetPointerMap = HashMap<Pointer, ArrayList<SynsetID>>()
                     }
-                    var pointerList: ArrayList<ISynsetID> = synsetPointerMap.computeIfAbsent(pointer_type) { k: Pointer -> ArrayList<ISynsetID>() }
+                    var pointerList: ArrayList<SynsetID> = synsetPointerMap.computeIfAbsent(pointer_type) { k: Pointer -> ArrayList<SynsetID>() }
                     pointerList.add(target_synset_id)
                 } else {
                     // this is a lexical pointer

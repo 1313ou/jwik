@@ -62,7 +62,7 @@ object TestLib {
             Assertions.assertNotNull(se)
             val offset = se!!.offset
             val pos = se.pOS
-            val sid: ISynsetID = SynsetID(offset, pos!!)
+            val sid = SynsetID(offset, pos!!)
             Assertions.assertNotNull(sid)
             val synset = jwi.dict.getSynset(sid)
             Assertions.assertNotNull(synset)

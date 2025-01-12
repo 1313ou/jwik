@@ -155,9 +155,9 @@ open class CachingDictionary(
         return item
     }
 
-    override fun getSynset(id: ISynsetID): Synset? {
+    override fun getSynset(id: SynsetID): Synset? {
         checkOpen()
-        var item = cache.retrieveItem<Synset, ISynsetID>(id)
+        var item = cache.retrieveItem<Synset, SynsetID>(id)
         if (item == null) {
             item = backingDictionary.getSynset(id)
             if (item != null) {

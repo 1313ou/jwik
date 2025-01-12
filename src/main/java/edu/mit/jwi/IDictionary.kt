@@ -151,7 +151,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
-    fun getSynset(id: ISynsetID): Synset?
+    fun getSynset(id: SynsetID): Synset?
 
     /**
      * Returns an iterator that will iterate over all synsets of the specified

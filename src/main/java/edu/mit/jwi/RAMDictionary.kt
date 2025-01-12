@@ -468,7 +468,7 @@ class RAMDictionary private constructor(
 
     // SYNSET
 
-    override fun getSynset(id: ISynsetID): Synset? {
+    override fun getSynset(id: SynsetID): Synset? {
         if (data != null) {
             val m = checkNotNull(data!!.synsets[id.pOS])
             return m[id]
@@ -839,7 +839,7 @@ class RAMDictionary private constructor(
 
         val idxWords: MutableMap<POS, MutableMap<IIndexWordID, IIndexWord>>
 
-        val synsets: MutableMap<POS, MutableMap<ISynsetID, Synset>>
+        val synsets: MutableMap<POS, MutableMap<SynsetID, Synset>>
 
         val exceptions: MutableMap<POS, MutableMap<IExceptionEntryID, IExceptionEntry>>
 
@@ -854,7 +854,7 @@ class RAMDictionary private constructor(
          */
         init {
             idxWords = makePOSMap<IIndexWordID, IIndexWord>()
-            synsets = makePOSMap<ISynsetID, Synset>()
+            synsets = makePOSMap<SynsetID, Synset>()
             exceptions = makePOSMap<IExceptionEntryID, IExceptionEntry>()
             words = makeMap<ISenseKey, Word>(208000, null)
             senses = makeMap<ISenseKey, ISenseEntry>(208000, null)
@@ -917,7 +917,7 @@ class RAMDictionary private constructor(
          */
         fun compactSize() {
             compactPOSMap<IIndexWordID, IIndexWord>(idxWords)
-            compactPOSMap<ISynsetID, Synset>(synsets)
+            compactPOSMap<SynsetID, Synset>(synsets)
             compactPOSMap<IExceptionEntryID, IExceptionEntry>(exceptions)
             words = compactMap<ISenseKey, Word>(words)
             senses = compactMap<ISenseKey, ISenseEntry>(senses)
@@ -986,9 +986,9 @@ class RAMDictionary private constructor(
             // related synsets
             val newRelated = old.related
                 .map { (ptr, oldTargets) ->
-                    val newTargets: List<ISynsetID> = oldTargets
+                    val newTargets: List<SynsetID> = oldTargets
                         .map {
-                            val resolver: Map<ISynsetID, Synset> = synsets[it.pOS]!!
+                            val resolver: Map<SynsetID, Synset> = synsets[it.pOS]!!
                             val otherSynset: Synset = resolver[it]!!
                             otherSynset.iD
                         }
@@ -1017,7 +1017,7 @@ class RAMDictionary private constructor(
                     val newTargets: List<IWordID> = oldTargets
                         .map { it as WordNumID }
                         .map {
-                            val resolver: Map<ISynsetID, Synset> = synsets[it.pOS]!!
+                            val resolver: Map<SynsetID, Synset> = synsets[it.pOS]!!
                             val otherSynset: Synset = resolver[it.synsetID]!!
                             otherSynset.words[it.wordNumber - 1].iD
                         }
