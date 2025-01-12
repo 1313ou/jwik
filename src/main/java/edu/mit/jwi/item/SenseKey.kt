@@ -37,7 +37,7 @@ class SenseKey(
      */
     val isAdjectiveSatellite: Boolean,
 
-    val lexicalFile: ILexFile,
+    val lexicalFile: LexFile,
 ) : IHasPOS, Comparable<SenseKey>, Serializable {
 
     /**
@@ -105,7 +105,7 @@ class SenseKey(
      * null
      * @since JWI 2.1.0
      */
-    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: ILexFile, originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
+    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: LexFile, originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
         toString = originalKey
     }
 
@@ -123,7 +123,7 @@ class SenseKey(
      * null
      * @since JWI 2.1.0
      */
-    constructor(lemma: String, lexID: Int, pos: POS, lexFile: ILexFile, headLemma: String?, headLexID: Int, originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
+    constructor(lemma: String, lexID: Int, pos: POS, lexFile: LexFile, headLemma: String?, headLexID: Int, originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
         if (headLemma == null) {
             isHeadSet = true
         } else {
@@ -179,7 +179,7 @@ class SenseKey(
 
         // then sort by lex_filenum
         val lf = checkNotNull(this.lexicalFile)
-        val lf2: ILexFile? = checkNotNull(key.lexicalFile)
+        val lf2: LexFile? = checkNotNull(key.lexicalFile)
         cmp = lf.number.toFloat().compareTo(lf2!!.number.toFloat())
         if (cmp != 0) {
             return cmp
@@ -288,7 +288,7 @@ class SenseKey(
          */
 
         fun toString(key: SenseKey): String {
-            val lf: ILexFile? = checkNotNull(key.lexicalFile)
+            val lf: LexFile? = checkNotNull(key.lexicalFile)
             // figure out appropriate size
             var size = key.lemma.length + 10
             if (key.isAdjectiveSatellite) {

@@ -9,12 +9,11 @@
  *******************************************************************************/
 package edu.mit.jwi.data.parse
 
-import edu.mit.jwi.item.ILexFile
-import edu.mit.jwi.item.SenseKey
+import edu.mit.jwi.item.LexFile
 import edu.mit.jwi.item.LexFile.Companion.getLexicalFile
 import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
 import edu.mit.jwi.item.POS.Companion.isAdjectiveSatellite
-import edu.mit.jwi.item.UnknownLexFile.Companion.getUnknownLexicalFile
+import edu.mit.jwi.item.SenseKey
 
 /**
  * A parser that takes a sense key string and produces an `SenseKey`
@@ -101,12 +100,8 @@ private constructor() : ILineParser<SenseKey> {
      * @return the lexical file corresponding to the specified frame number
      * @since JWI 2.1.0
      */
-    private fun resolveLexicalFile(lexFileNum: Int): ILexFile {
-        var lexFile: ILexFile = getLexicalFile(lexFileNum)
-        if (lexFile == null) {
-            lexFile = getUnknownLexicalFile(lexFileNum)
-        }
-        return lexFile
+    private fun resolveLexicalFile(lexFileNum: Int): LexFile {
+        return getLexicalFile(lexFileNum)
     }
 
     companion object {

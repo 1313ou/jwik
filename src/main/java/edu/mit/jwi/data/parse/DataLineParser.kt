@@ -226,12 +226,8 @@ private constructor() : ILineParser<Synset> {
      * @return the lexical file corresponding to the specified frame number
      * @since JWI 2.1.0
      */
-    private fun resolveLexicalFile(lexFileNum: Int): ILexFile {
-        var lexFile: ILexFile = getLexicalFile(lexFileNum)
-        if (lexFile == null) {
-            lexFile = getUnknownLexicalFile(lexFileNum)
-        }
-        return lexFile
+    private fun resolveLexicalFile(lexFileNum: Int): LexFile {
+        return getLexicalFile(lexFileNum)
     }
 
     /**

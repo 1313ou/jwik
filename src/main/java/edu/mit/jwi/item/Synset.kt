@@ -37,7 +37,7 @@ class Synset private constructor(
     /**
      * The lexical file it was found in
      */
-    val lexicalFile: ILexFile,
+    val lexicalFile: LexFile,
 
     /**
      * Whether this synset is / represents an adjective satellite
@@ -111,7 +111,7 @@ class Synset private constructor(
      */
     constructor(
         iD: SynsetID,
-        lexicalFile: ILexFile,
+        lexicalFile: LexFile,
         isAdjectiveSatellite: Boolean,
         isAdjectiveHead: Boolean,
         gloss: String,

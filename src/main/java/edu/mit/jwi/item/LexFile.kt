@@ -9,19 +9,17 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
+import java.io.Serializable
 import java.util.*
 
 /**
- * Concrete implementation of the `ILexFile` interface. This class
- * includes, as public fields, all lexical files defined in the standard WordNet
- * distribution.
- *
- * This class in not implemented as an `Enum` so that clients may
- * instantiate their own lexical file objects using this implementation.
+ * A description of a Wordnet lexical file, giving the name of the file, it's assigned number, and a brief description.
+ * This class includes, as public fields, all lexical files defined in the standard WordNet distribution.
+ * This class in not implemented as an `Enum` so that clients may instantiate their own lexical file objects using this implementation.
 
  * Constructs a new lexical file description object.
  *
- * @param num  the lexical file number, in the closed range [0,99]
+ * @param number the lexical file number, in the closed range [0,99]
  * @param name the name of the lexical file, may not be null, empty, or all whitespace
  * @property description the description of the lexical file, may not be null, empty, or all whitespace
  * @property pOS  the part of speech for the lexical file, may be null
@@ -31,24 +29,43 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-open class LexFile(num: Int, name: String, override val description: String, override val pOS: POS?) : ILexFile {
+open class LexFile(
 
-    override val number: Int = checkLexicalFileNumber(num)
+    /**
+     * The number of the lexicographer file.
+     * This is used in sense keys and the data files.
+     * A lexical file number is always in the closed range , between 0 and 99, inclusive [0, 99].
+     */
+    val number: Int,
 
-    override val name: String = checkString(name)
+    /**
+     * The name of the lexicographer file. The string will not be empty or all whitespace.
+     */
+    val name: String,
+
+    /**
+     * Returns a description of the lexicographer file contents.
+     * The string will not be empty or all whitespace.
+     */
+    val description: String,
+
+    /**
+     * Part Of Speech
+     */
+    override val pOS: POS?,
+) : IHasPOS, Serializable {
+
+    init {
+        checkLexicalFileNumber(number)
+        checkString(name)
+    }
 
     override fun toString(): String {
         return name
     }
 
     override fun hashCode(): Int {
-        val prime = 31
-        var result = 1
-        result = prime * result + description.hashCode()
-        result = prime * result + name.hashCode()
-        result = prime * result + number
-        result = prime * result + (pOS?.hashCode() ?: 0)
-        return result
+        return Objects.hash(name, description, POS, number)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -61,7 +78,7 @@ open class LexFile(num: Int, name: String, override val description: String, ove
         if (javaClass != obj.javaClass) {
             return false
         }
-        val other = obj as ILexFile
+        val other = obj as LexFile
         if (description != other.description) {
             return false
         }
@@ -281,7 +298,7 @@ open class LexFile(num: Int, name: String, override val description: String, ove
          * the method returns null.
          *
          * @param num the number for the lexical file object
-         * @return ILexFile the lexical file corresponding to the specified tag, or
+         * @return LexFile the lexical file corresponding to the specified tag, or
          * null if none is found
          * @since JWI 2.1.0
          */
