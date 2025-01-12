@@ -76,28 +76,28 @@ class ContentType<T>
 
     companion object {
 
-        val INDEX_NOUN: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.INDEX_NOUN, IndexLineComparator.instance)
-        val INDEX_VERB: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.INDEX_VERB, IndexLineComparator.instance)
-        val INDEX_ADVERB: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator.instance)
-        val INDEX_ADJECTIVE: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator.instance)
+        val INDEX_NOUN = ContentType<IndexWord>(ContentTypeKey.INDEX_NOUN, IndexLineComparator.INSTANCE)
+        val INDEX_VERB = ContentType<IndexWord>(ContentTypeKey.INDEX_VERB, IndexLineComparator.INSTANCE)
+        val INDEX_ADVERB = ContentType<IndexWord>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator.INSTANCE)
+        val INDEX_ADJECTIVE = ContentType<IndexWord>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator.INSTANCE)
 
-        val WORD_NOUN: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.WORD_NOUN, IndexLineComparator.instance)
-        val WORD_VERB: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.WORD_VERB, IndexLineComparator.instance)
-        val WORD_ADVERB: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.WORD_ADVERB, IndexLineComparator.instance)
-        val WORD_ADJECTIVE: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator.instance)
+        val WORD_NOUN = ContentType<IndexWord>(ContentTypeKey.WORD_NOUN, IndexLineComparator.INSTANCE)
+        val WORD_VERB = ContentType<IndexWord>(ContentTypeKey.WORD_VERB, IndexLineComparator.INSTANCE)
+        val WORD_ADVERB = ContentType<IndexWord>(ContentTypeKey.WORD_ADVERB, IndexLineComparator.INSTANCE)
+        val WORD_ADJECTIVE = ContentType<IndexWord>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator.INSTANCE)
 
-        val DATA_NOUN: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_NOUN, DataLineComparator.instance)
-        val DATA_VERB: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_VERB, DataLineComparator.instance)
-        val DATA_ADVERB: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_ADVERB, DataLineComparator.instance)
-        val DATA_ADJECTIVE: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_ADJECTIVE, DataLineComparator.instance)
+        val DATA_NOUN = ContentType<Synset>(ContentTypeKey.DATA_NOUN, DataLineComparator)
+        val DATA_VERB = ContentType<Synset>(ContentTypeKey.DATA_VERB, DataLineComparator)
+        val DATA_ADVERB = ContentType<Synset>(ContentTypeKey.DATA_ADVERB, DataLineComparator)
+        val DATA_ADJECTIVE = ContentType<Synset>(ContentTypeKey.DATA_ADJECTIVE, DataLineComparator)
 
-        val EXCEPTION_NOUN: ContentType<ExceptionEntryProxy> = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_NOUN, ExceptionLineComparator.instance)
-        val EXCEPTION_VERB: ContentType<ExceptionEntryProxy> = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_VERB, ExceptionLineComparator.instance)
-        val EXCEPTION_ADVERB: ContentType<ExceptionEntryProxy> = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADVERB, ExceptionLineComparator.instance)
-        val EXCEPTION_ADJECTIVE: ContentType<ExceptionEntryProxy> = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADJECTIVE, ExceptionLineComparator.instance)
+        val EXCEPTION_NOUN = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_NOUN, ExceptionLineComparator)
+        val EXCEPTION_VERB = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_VERB, ExceptionLineComparator)
+        val EXCEPTION_ADVERB = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADVERB, ExceptionLineComparator)
+        val EXCEPTION_ADJECTIVE = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADJECTIVE, ExceptionLineComparator)
 
-        val SENSE: ContentType<SenseEntry> = ContentType<SenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator.instance)
-        val SENSES: ContentType<Array<SenseEntry>> = ContentType<Array<SenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator.instance)
+        val SENSE = ContentType<SenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator.INSTANCE)
+        val SENSES = ContentType<Array<SenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator.INSTANCE)
 
         // set of all content types implemented in this class
         private val contentTypes: Set<ContentType<*>> = Collections.unmodifiableSet<ContentType<*>>(

@@ -32,7 +32,7 @@ import kotlin.math.min
  * @version 2.4.0
  * @since JWI 1.0
  */
-class SearchIndexLineComparator private constructor(detector: CommentProcessor) : IndexLineComparator(detector) {
+object SearchIndexLineComparator : IndexLineComparator(CommentProcessor) {
 
     /**
      * Compare lemmas (overridable if non-standard compare is needed)
@@ -48,25 +48,5 @@ class SearchIndexLineComparator private constructor(detector: CommentProcessor) 
         lemma2 = lemma2.lowercase(Locale.getDefault())
         val l = min(lemma1.length.toDouble(), lemma2.length.toDouble()).toInt()
         return lemma1.substring(0, l).compareTo(lemma2.substring(0, l))
-    }
-
-    companion object {
-
-        /**
-         * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be null.
-         *
-         * @return the non-null singleton instance of this class,
-         * instantiating it if necessary.
-         * @since JWI 2.0.0
-         */
-        var instance: SearchIndexLineComparator? = null
-            get() {
-                if (field == null) {
-                    field = SearchIndexLineComparator(CommentProcessor)
-                }
-                return field
-            }
-            private set
     }
 }

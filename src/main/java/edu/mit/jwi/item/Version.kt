@@ -398,7 +398,7 @@ open class Version(
 
             // if direct access doesn't work, try walking forward in file
             // until we find a string that looks like "WordNet 2.1 Copyright"
-            val cd = Objects.requireNonNull<ILineComparator?>(contentType.lineComparator).commentDetector
+            val cd = contentType.lineComparator?.commentDetector
             if (cd == null) {
                 return null
             }

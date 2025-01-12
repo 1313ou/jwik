@@ -13,27 +13,13 @@ import edu.mit.jwi.data.parse.MisformattedLineException
 import java.util.regex.Pattern
 
 /**
- *
- *
  * A comparator that captures the ordering of lines in Wordnet exception files
- * (e.g., `exc.adv` or `adv.exc` files). These files are
- * ordered alphabetically.
- *
- *
- *
- * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the [.getInstance] method to get
- * the singleton instance.
- *
- * This constructor is marked protected so that the class may be
- * sub-classed, but not directly instantiated. Obtain instances of this
- * class via the static [.getInstance] method.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * (e.g., `exc.adv` or `adv.exc` files).
+ * These files are ordered alphabetically.
  */
-class ExceptionLineComparator private constructor() : ILineComparator {
+object ExceptionLineComparator : ILineComparator {
+
+    override val commentDetector: CommentProcessor? = null
 
     override fun compare(line1: String, line2: String): Int {
         val words1: Array<String?> = spacePattern.split(line1)
@@ -48,29 +34,5 @@ class ExceptionLineComparator private constructor() : ILineComparator {
         return words1[0]!!.compareTo(words2[0]!!)
     }
 
-    override val commentDetector: CommentProcessor?
-        get() = null
-
-    companion object {
-
-        /**
-         * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be null.
-         *
-         * @return the non-null singleton instance of this class,
-         * instantiating it if necessary.
-         * @since JWI 2.0.0
-         */
-        var instance: ExceptionLineComparator? = null
-            get() {
-                if (field == null) {
-                    field = ExceptionLineComparator()
-                }
-                return field
-            }
-            private set
-
-        // static fields
-        private val spacePattern: Pattern = Pattern.compile(" ")
-    }
+    private val spacePattern: Pattern = Pattern.compile(" ")
 }

@@ -11,13 +11,7 @@ package edu.mit.jwi.data.compare
 
 /**
  * A string comparator that may have an associated comment detector. The
- * `compare` method of this class will throw an
- * [IllegalArgumentException] if the line data passed to that method is
- * ill-formed.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.0.0
+ * `compare` method of this class will throw an [IllegalArgumentException] if the line data passed to that method is ill-formed.
  */
 interface ILineComparator : Comparator<String> {
 

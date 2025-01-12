@@ -34,17 +34,17 @@ package edu.mit.jwi.data.compare
  * @version 2.4.0
  * @since JWI 1.0
  */
-class DataLineComparator private constructor(
-    private val detector: CommentProcessor,
-) : ILineComparator {
+object DataLineComparator : ILineComparator {
+
+    override val commentDetector = CommentProcessor
 
     override fun compare(s1: String, s2: String): Int {
-        val c1 = detector.isCommentLine(s1)
-        val c2 = detector.isCommentLine(s2)
+        val c1 = commentDetector.isCommentLine(s1)
+        val c2 = commentDetector.isCommentLine(s2)
 
         if (c1 and c2) {
             // both lines are comments, defer to comment comparator
-            return detector.compare(s1, s2)
+            return commentDetector.compare(s1, s2)
         } else if (c1 and !c2) {
             // first line is a comment, should come before the other
             return -1
@@ -77,29 +77,5 @@ class DataLineComparator private constructor(
             return 1
         }
         return 0
-    }
-
-    override val commentDetector: CommentProcessor
-        get() = detector
-
-    companion object {
-
-        // singleton instance
-        var instance: DataLineComparator? = null
-            /**
-             * Returns the singleton instance of this class, instantiating it if
-             * necessary. The singleton instance will not be null.
-             *
-             * @return the non-null singleton instance of this class,
-             * instantiating it if necessary.
-             * @since JWI 2.0.0
-             */
-            get() {
-                if (field == null) {
-                    field = DataLineComparator(CommentProcessor)
-                }
-                return field
-            }
-            private set
     }
 }

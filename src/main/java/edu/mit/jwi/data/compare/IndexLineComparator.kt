@@ -31,16 +31,16 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 1.0
  */
-open class IndexLineComparator(private val detector: CommentProcessor) : ILineComparator {
+open class IndexLineComparator(override val commentDetector: CommentProcessor) : ILineComparator {
 
     override fun compare(s1: String, s2: String): Int {
         // check for comments
-        val c1 = detector.isCommentLine(s1)
-        val c2 = detector.isCommentLine(s2)
+        val c1 = commentDetector.isCommentLine(s1)
+        val c2 = commentDetector.isCommentLine(s2)
 
         if (c1 and c2) {
             // both lines are comments, defer to comment comparator
-            return detector.compare(s1, s2)
+            return commentDetector.compare(s1, s2)
         } else if (c1 and !c2) {
             // first line is a comment, should come before the other
             return -1
@@ -80,26 +80,5 @@ open class IndexLineComparator(private val detector: CommentProcessor) : ILineCo
         return lemma1.compareTo(lemma2)
     }
 
-    override val commentDetector: CommentProcessor
-        get() = detector
-
-    companion object {
-
-        /**
-         * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be null.
-         *
-         * @return the non-null singleton instance of this class,
-         * instantiating it if necessary.
-         * @since JWI 2.0.0
-         */
-        var instance: IndexLineComparator? = null
-            get() {
-                if (field == null) {
-                    field = IndexLineComparator(CommentProcessor)
-                }
-                return field
-            }
-            private set
-    }
+    object INSTANCE : IndexLineComparator(CommentProcessor)
 }

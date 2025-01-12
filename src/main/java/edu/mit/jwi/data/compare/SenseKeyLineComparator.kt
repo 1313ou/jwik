@@ -10,27 +10,12 @@
 package edu.mit.jwi.data.compare
 
 /**
- *
- *
  * A comparator that captures the ordering of lines in sense index files (e.g.,
- * the `sense.index` file). These files are ordered alphabetically by
- * sense key.
- *
- *
- *
- * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the [.getInstance] method to get
- * the singleton instance.
- *
- * This constructor is marked protected so that the class may be
- * sub-classed, but not directly instantiated. Obtain instances of this
- * class via the static [.getInstance] method.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.0
+ * the `sense.index` file). These files are ordered alphabetically by sense key.
  */
-open class SenseKeyLineComparator protected constructor() : ILineComparator {
+open class SenseKeyLineComparator : ILineComparator {
+
+    override val commentDetector: CommentProcessor? = null
 
     override fun compare(line1: String, line2: String): Int {
         // get sense keys
@@ -54,26 +39,5 @@ open class SenseKeyLineComparator protected constructor() : ILineComparator {
         return senseKey1.compareTo(senseKey2, ignoreCase = true)
     }
 
-    override val commentDetector: CommentProcessor?
-        get() = null
-
-    companion object {
-
-        /**
-         * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be null.
-         *
-         * @return the non-null singleton instance of this class,
-         * instantiating it if necessary.
-         * @since JWI 2.1.0
-         */
-        var instance: SenseKeyLineComparator? = null
-            get() {
-                if (field == null) {
-                    field = SenseKeyLineComparator()
-                }
-                return field
-            }
-            private set
-    }
+    object INSTANCE : SenseKeyLineComparator()
 }
