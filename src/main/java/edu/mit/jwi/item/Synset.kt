@@ -14,7 +14,7 @@ import edu.mit.jwi.item.Word.Companion.checkWordNumber
 import java.util.*
 
 /**
- * Default implementation of the `ISynset` interface.
+ * Synset
  *
  * @property iD the synset id
  * @property lexicalFile the lexical file for this synset
@@ -30,24 +30,58 @@ import java.util.*
  */
 class Synset private constructor(
     override val iD: ISynsetID,
-    override val lexicalFile: ILexFile,
-    override val isAdjectiveSatellite: Boolean,
-    override val isAdjectiveHead: Boolean,
-    override val gloss: String,
-    override val related: Map<Pointer, List<ISynsetID>>,
-) : ISynset {
 
-    override val offset: Int
-        get() {
-            return iD.offset
-        }
+    /**
+     * The lexical file it was found in
+     */
+    val lexicalFile: ILexFile,
 
+    /**
+     * Whether this synset is / represents an adjective satellite
+     */
+    val isAdjectiveSatellite: Boolean,
+
+    /**
+     * Whether this synset is / represents an adjective head
+     */
+    val isAdjectiveHead: Boolean,
+
+    /**
+     * The gloss or definition that comes with the synset
+     */
+    val gloss: String,
+
+    /**
+     * Semantic relations
+     */
+    val related: Map<Pointer, List<ISynsetID>>,
+) : IHasPOS, IItem<ISynsetID> {
+
+    /**
+     * Part Of Speech
+     */
     override val pOS: POS
         get() {
             return iD.pOS!!
         }
 
-    override val type: Int
+    /**
+     * The data file byte offset of this synset in the associated data source
+     */
+    val offset: Int
+        get() {
+            return iD.offset
+        }
+
+    /**
+     * The type of the synset, encoded as follows:
+     * 1=Noun,
+     * 2=Verb,
+     * 3=Adjective,
+     * 4=Adverb,
+     * 5=Adjective Satellite.
+     */
+    val type: Int
         get() {
             val pos = pOS
             if (pos == POS.ADJECTIVE) {
@@ -56,10 +90,13 @@ class Synset private constructor(
             return pos.number
         }
 
-    override lateinit var words: List<IWord>
+    /**
+     * The words that are members of the synset
+     */
+    lateinit var words: List<IWord>
 
     /**
-     * Default implementation of the `ISynset` interface.
+     * Default implementation of the `Synset` interface.
      *
      * @param iD the synset id
      * @param lexicalFile the lexical file for this synset
@@ -127,6 +164,29 @@ class Synset private constructor(
     }
 
     /**
+     * List of the ids of all synsets that are related to this synset by the specified pointer type.
+     * Note that this only returns a non-empty result for semantic pointers (i.e., non-lexical pointers).
+     * To obtain lexical pointers, call [IWord.getRelatedFor] on the appropriate object.
+     * If there are no such synsets, this method returns the empty list.
+     *
+     * @param ptr the pointer for which related synsets are to be retrieved.
+     * @return the list of synsets related by the specified pointer; if there are no such synsets, returns the empty list
+     * @since JWI 2.0.0
+     */
+    fun getRelatedFor(ptr: Pointer): List<ISynsetID> {
+        return related[ptr] ?: emptyList()
+    }
+
+    /**
+     * List of the ids of all synsets that are related to this synset
+     */
+    val allRelated: List<ISynsetID>
+        get() = related.values
+            .flatMap { it.toList() }
+            .distinct()
+            .toList()
+
+    /**
      * A word builder used to construct word objects inside the synset object constructor.
      *
      * @author Mark A. Finlayson
@@ -145,7 +205,7 @@ class Synset private constructor(
          * @since JWI 2.2.0
          */
 
-        fun toWord(synset: ISynset): IWord
+        fun toWord(synset: Synset): IWord
     }
 
     /**
@@ -177,7 +237,7 @@ class Synset private constructor(
 
         private val verbFrames = ArrayList<IVerbFrame>()
 
-        override fun toWord(synset: ISynset): IWord {
+        override fun toWord(synset: Synset): IWord {
             return Word(synset, WordLemmaNumID(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
         }
 
@@ -238,7 +298,7 @@ class Synset private constructor(
             return offset <= 99999999
         }
 
-        fun buildWords(wordBuilders: List<IWordBuilder>, synset: ISynset): List<IWord> {
+        fun buildWords(wordBuilders: List<IWordBuilder>, synset: Synset): List<IWord> {
             return wordBuilders
                 .map { it.toWord(synset) }
                 .toList()

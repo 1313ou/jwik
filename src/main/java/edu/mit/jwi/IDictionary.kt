@@ -151,7 +151,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
-    fun getSynset(id: ISynsetID): ISynset?
+    fun getSynset(id: ISynsetID): Synset?
 
     /**
      * Returns an iterator that will iterate over all synsets of the specified
@@ -164,7 +164,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
-    fun getSynsetIterator(pos: POS): Iterator<ISynset>
+    fun getSynsetIterator(pos: POS): Iterator<Synset>
 
     /**
      * Retrieves the sense entry for the specified sense key from the database.

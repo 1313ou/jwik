@@ -77,7 +77,7 @@ class DataType<T>(
         val WORD: DataType<IIndexWord> = DataType<IIndexWord>("Word", true, IndexLineParser.Companion.instance!!, "index", "idx")
 
         @JvmField
-        val DATA: DataType<ISynset> = DataType<ISynset>("Data", true, DataLineParser.Companion.instance!!, "data", "dat")
+        val DATA: DataType<Synset> = DataType<Synset>("Data", true, DataLineParser.Companion.instance!!, "data", "dat")
 
         @JvmField
         val EXCEPTION: DataType<IExceptionEntryProxy> = DataType<IExceptionEntryProxy>("Exception", false, ExceptionLineParser.Companion.instance!!, "exception", "exc")

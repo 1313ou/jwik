@@ -468,7 +468,7 @@ class RAMDictionary private constructor(
 
     // SYNSET
 
-    override fun getSynset(id: ISynsetID): ISynset? {
+    override fun getSynset(id: ISynsetID): Synset? {
         if (data != null) {
             val m = checkNotNull(data!!.synsets[id.pOS])
             return m[id]
@@ -478,7 +478,7 @@ class RAMDictionary private constructor(
         }
     }
 
-    override fun getSynsetIterator(pos: POS): Iterator<ISynset> {
+    override fun getSynsetIterator(pos: POS): Iterator<Synset> {
         return HotSwappableSynsetIterator(pos)
     }
 
@@ -622,12 +622,12 @@ class RAMDictionary private constructor(
      * @since JWI 2.2.0
      */
     private inner class HotSwappableSynsetIterator(private val pos: POS) :
-        HotSwappableIterator<ISynset>(
+        HotSwappableIterator<Synset>(
             if (data == null) backingDictionary!!.getSynsetIterator(pos) else data!!.synsets[pos]!!.values.iterator(),
             data == null
         ) {
 
-        override fun makeIterator(): Iterator<ISynset> {
+        override fun makeIterator(): Iterator<Synset> {
             checkNotNull(data)
             val m = checkNotNull(data!!.synsets[pos])
             return m.values.iterator()
@@ -757,7 +757,7 @@ class RAMDictionary private constructor(
                 var synsets = result.synsets[pos]
                 checkNotNull(synsets)
                 run {
-                    val i: Iterator<ISynset> = source.getSynsetIterator(pos)
+                    val i: Iterator<Synset> = source.getSynsetIterator(pos)
                     while (i.hasNext()) {
                         val synset = i.next()
                         val id = checkNotNull(synset.iD)
@@ -839,7 +839,7 @@ class RAMDictionary private constructor(
 
         val idxWords: MutableMap<POS, MutableMap<IIndexWordID, IIndexWord>>
 
-        val synsets: MutableMap<POS, MutableMap<ISynsetID, ISynset>>
+        val synsets: MutableMap<POS, MutableMap<ISynsetID, Synset>>
 
         val exceptions: MutableMap<POS, MutableMap<IExceptionEntryID, IExceptionEntry>>
 
@@ -854,7 +854,7 @@ class RAMDictionary private constructor(
          */
         init {
             idxWords = makePOSMap<IIndexWordID, IIndexWord>()
-            synsets = makePOSMap<ISynsetID, ISynset>()
+            synsets = makePOSMap<ISynsetID, Synset>()
             exceptions = makePOSMap<IExceptionEntryID, IExceptionEntry>()
             words = makeMap<ISenseKey, IWord>(208000, null)
             senses = makeMap<ISenseKey, ISenseEntry>(208000, null)
@@ -917,7 +917,7 @@ class RAMDictionary private constructor(
          */
         fun compactSize() {
             compactPOSMap<IIndexWordID, IIndexWord>(idxWords)
-            compactPOSMap<ISynsetID, ISynset>(synsets)
+            compactPOSMap<ISynsetID, Synset>(synsets)
             compactPOSMap<IExceptionEntryID, IExceptionEntry>(exceptions)
             words = compactMap<ISenseKey, IWord>(words)
             senses = compactMap<ISenseKey, ISenseEntry>(senses)
@@ -976,7 +976,7 @@ class RAMDictionary private constructor(
          * @return the new synset, a copy of the first
          * @since JWI 2.2.0
          */
-        private fun makeSynset(old: ISynset): ISynset {
+        private fun makeSynset(old: Synset): Synset {
 
             // words
             val wordBuilders = old.words
@@ -988,8 +988,8 @@ class RAMDictionary private constructor(
                 .map { (ptr, oldTargets) ->
                     val newTargets: List<ISynsetID> = oldTargets
                         .map {
-                            val resolver: Map<ISynsetID, ISynset> = synsets[it.pOS]!!
-                            val otherSynset: ISynset = resolver[it]!!
+                            val resolver: Map<ISynsetID, Synset> = synsets[it.pOS]!!
+                            val otherSynset: Synset = resolver[it]!!
                             otherSynset.iD
                         }
                         .toList()
@@ -1009,7 +1009,7 @@ class RAMDictionary private constructor(
          * @return the new synset, a copy of the first
          * @since JWI 2.2.0
          */
-        private fun makeWord(newSynset: ISynset, old: IWord): IWord {
+        private fun makeWord(newSynset: Synset, old: IWord): IWord {
 
             // related words
             val newRelated = old.related
@@ -1017,8 +1017,8 @@ class RAMDictionary private constructor(
                     val newTargets: List<IWordID> = oldTargets
                         .map { it as WordNumID }
                         .map {
-                            val resolver: Map<ISynsetID, ISynset> = synsets[it.pOS]!!
-                            val otherSynset: ISynset = resolver[it.synsetID]!!
+                            val resolver: Map<ISynsetID, Synset> = synsets[it.pOS]!!
+                            val otherSynset: Synset = resolver[it.synsetID]!!
                             otherSynset.words[it.wordNumber - 1].iD
                         }
                         .toList()
@@ -1048,7 +1048,7 @@ class RAMDictionary private constructor(
             val newIDs: Array<IWordID> = Array(old.wordIDs.size) { i ->
                 var oldID: IWordID = old.wordIDs[i]
                 val resolver = synsets[oldID.pOS]!!
-                var synset: ISynset = resolver[oldID.synsetID]!!
+                var synset: Synset = resolver[oldID.synsetID]!!
                 val newWord = synset.words.first { it.iD == oldID }
                 newWord.iD
             }
@@ -1069,7 +1069,7 @@ class RAMDictionary private constructor(
          */
         inner class WordBuilder(private val oldWord: IWord) : IWordBuilder {
 
-            override fun toWord(synset: ISynset): IWord {
+            override fun toWord(synset: Synset): IWord {
                 return makeWord(synset, oldWord)
             }
         }

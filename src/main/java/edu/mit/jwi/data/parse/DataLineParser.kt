@@ -22,7 +22,7 @@ import java.util.*
  *
  *
  * Parser for Wordnet data files (e.g., `data.adv` or
- * `adv.dat`). This parser produces an `ISynset` object.
+ * `adv.dat`). This parser produces an `Synset` object.
  *
  *
  *
@@ -43,9 +43,9 @@ class DataLineParser
  *
  * @since JWI 2.0.0
  */
-private constructor() : ILineParser<ISynset> {
+private constructor() : ILineParser<Synset> {
 
-    override fun parseLine(line: String): ISynset {
+    override fun parseLine(line: String): Synset {
 
         try {
             val tokenizer = StringTokenizer(line, " ")

@@ -229,10 +229,10 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return parser.parseLine(line)
     }
 
-    override fun getSynset(id: ISynsetID): ISynset? {
+    override fun getSynset(id: ISynsetID): Synset? {
         checkOpen()
-        val content = dataProvider.resolveContentType<ISynset>(DataType.DATA, id.pOS)
-        val file = dataProvider.getSource<ISynset>(content!!)
+        val content = dataProvider.resolveContentType<Synset>(DataType.DATA, id.pOS)
+        val file = dataProvider.getSource<Synset>(content!!)
         val zeroFilledOffset = zeroFillOffset(id.offset)
         checkNotNull(file)
         val line = file.getLine(zeroFilledOffset)
@@ -257,14 +257,14 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
      *
      * @param synset synset
      */
-    private fun setHeadWord(synset: ISynset) {
+    private fun setHeadWord(synset: Synset) {
         // head words are only needed for adjective satellites
         if (!synset.isAdjectiveSatellite) {
             return
         }
 
         // go find the head word
-        var headSynset: ISynset?
+        var headSynset: Synset?
         var headWord: IWord? = null
         val related: List<ISynsetID> = checkNotNull(synset.getRelatedFor(Pointer.SIMILAR_TO))
         for (simID in related) {
@@ -330,7 +330,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return IndexFileIterator(pos)
     }
 
-    override fun getSynsetIterator(pos: POS): Iterator<ISynset> {
+    override fun getSynsetIterator(pos: POS): Iterator<Synset> {
         checkOpen()
         return DataFileIterator(pos)
     }
@@ -448,11 +448,11 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
     /**
      * Iterates over data files.
      */
-    inner class DataFileIterator(pos: POS?) : FileIterator2<ISynset>(
-        dataProvider.resolveContentType<ISynset>(DataType.DATA, pos)!!
+    inner class DataFileIterator(pos: POS?) : FileIterator2<Synset>(
+        dataProvider.resolveContentType<Synset>(DataType.DATA, pos)!!
     ) {
 
-        override fun parseLine(line: String): ISynset {
+        override fun parseLine(line: String): Synset {
             if (pOS == POS.ADJECTIVE) {
                 checkNotNull(fParser)
                 val synset = checkNotNull(fParser.parseLine(line))

@@ -31,7 +31,7 @@ import java.util.*
  * @since JWI 1.0
  */
 class Word(
-    override val synset: ISynset,
+    override val synset: Synset,
     override val iD: WordLemmaID,
     override val lexicalID: Int,
     private val adjMarker: AdjMarker?,

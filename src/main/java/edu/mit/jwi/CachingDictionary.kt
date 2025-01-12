@@ -155,9 +155,9 @@ open class CachingDictionary(
         return item
     }
 
-    override fun getSynset(id: ISynsetID): ISynset? {
+    override fun getSynset(id: ISynsetID): Synset? {
         checkOpen()
-        var item = cache.retrieveItem<ISynset, ISynsetID>(id)
+        var item = cache.retrieveItem<Synset, ISynsetID>(id)
         if (item == null) {
             item = backingDictionary.getSynset(id)
             if (item != null) {
@@ -174,7 +174,7 @@ open class CachingDictionary(
      * @throws NullPointerException if the specified synset is null
      * @since JWI 2.2.0
      */
-    protected fun cacheSynset(synset: ISynset) {
+    protected fun cacheSynset(synset: Synset) {
         val cache: IItemCache = cache
         cache.cacheItem(synset)
         for (word in synset.words) {
@@ -183,7 +183,7 @@ open class CachingDictionary(
         }
     }
 
-    override fun getSynsetIterator(pos: POS): Iterator<ISynset> {
+    override fun getSynsetIterator(pos: POS): Iterator<Synset> {
         return backingDictionary.getSynsetIterator(pos)
     }
 

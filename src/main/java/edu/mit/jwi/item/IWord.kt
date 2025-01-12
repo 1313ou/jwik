@@ -20,7 +20,7 @@ interface IWord : IHasPOS, IItem<IWordID> {
 
     val lemma: String
 
-    val synset: ISynset
+    val synset: Synset
 
     val senseKey: ISenseKey
 
@@ -46,7 +46,7 @@ interface IWord : IHasPOS, IItem<IWordID> {
      * Returns an immutable list of all word ids related to this word by the
      * specified pointer type. Note that this only returns words related by
      * lexical pointers (i.e., not semantic pointers). To retrieve items related
-     * by semantic pointers, call [ISynset.getRelatedFor]. If this
+     * by semantic pointers, call [Synset.getRelatedFor]. If this
      * word has no targets for the specified pointer, this method
      * returns an empty list. This method never returns null.
      *

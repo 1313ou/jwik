@@ -13,7 +13,7 @@ import edu.mit.jwi.data.ContentType.Companion.values
 import edu.mit.jwi.data.DataType.Companion.find
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
-import edu.mit.jwi.item.ISynset
+import edu.mit.jwi.item.Synset
 import edu.mit.jwi.item.IVersion
 import edu.mit.jwi.item.POS
 import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
@@ -507,7 +507,7 @@ class FileProvider @JvmOverloads constructor(
 
             // extract key
             val parser = checkNotNull(contentType.dataType.parser)
-            val s = checkNotNull(parser.parseLine(firstLine) as ISynset)
+            val s = checkNotNull(parser.parseLine(firstLine) as Synset)
             val key = zeroFillOffset(s.offset)
 
             // try to find line by direct access

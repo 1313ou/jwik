@@ -65,10 +65,10 @@ class ContentType<T>
         val WORD_ADVERB: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.WORD_ADVERB, IndexLineComparator.instance)
         val WORD_ADJECTIVE: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator.instance)
 
-        val DATA_NOUN: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_NOUN, DataLineComparator.instance)
-        val DATA_VERB: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_VERB, DataLineComparator.instance)
-        val DATA_ADVERB: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_ADVERB, DataLineComparator.instance)
-        val DATA_ADJECTIVE: ContentType<ISynset> = ContentType<ISynset>(ContentTypeKey.DATA_ADJECTIVE, DataLineComparator.instance)
+        val DATA_NOUN: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_NOUN, DataLineComparator.instance)
+        val DATA_VERB: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_VERB, DataLineComparator.instance)
+        val DATA_ADVERB: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_ADVERB, DataLineComparator.instance)
+        val DATA_ADJECTIVE: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_ADJECTIVE, DataLineComparator.instance)
 
         val EXCEPTION_NOUN: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_NOUN, ExceptionLineComparator.instance)
         val EXCEPTION_VERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_VERB, ExceptionLineComparator.instance)
@@ -145,7 +145,7 @@ class ContentType<T>
 
         /**
          * Use this convenience method to retrieve the appropriate
-         * `ISynset` content type for the specified POS.
+         * `Synset` content type for the specified POS.
          *
          * @param pos the part of speech for the content type, may not be
          * null
@@ -153,7 +153,7 @@ class ContentType<T>
          * @throws NullPointerException if the specified part of speech is null
          * @since JWI 2.0.0
          */
-        fun getDataContentType(pos: POS): IContentType<ISynset> {
+        fun getDataContentType(pos: POS): IContentType<Synset> {
             return when (pos) {
                 POS.NOUN      -> DATA_NOUN
                 POS.VERB      -> DATA_VERB

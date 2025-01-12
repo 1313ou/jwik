@@ -35,7 +35,7 @@ class JWITests {
 
     @Test
     fun allSynsetsAreNonNull() {
-        jwi!!.forAllSynsets(Consumer { actual: ISynset? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSynsets(Consumer { actual: Synset? -> Assertions.assertNotNull(actual) })
     }
 
     @Test
@@ -58,7 +58,7 @@ class JWITests {
 
     @Test
     fun allSynsetRelationsAreNonNull() {
-        jwi!!.forAllSynsetRelations(Consumer { actual: ISynset? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSynsetRelations(Consumer { actual: Synset? -> Assertions.assertNotNull(actual) })
     }
 
     @Test
