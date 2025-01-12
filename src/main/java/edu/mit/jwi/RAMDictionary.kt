@@ -499,11 +499,11 @@ class RAMDictionary private constructor(
 
     // EXCEPTION ENTRY
 
-    override fun getExceptionEntry(surfaceForm: String, pos: POS): IExceptionEntry? {
+    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
         return getExceptionEntry(ExceptionEntryID(surfaceForm, pos))
     }
 
-    override fun getExceptionEntry(id: IExceptionEntryID): IExceptionEntry? {
+    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
         if (data != null) {
             val m = checkNotNull(data!!.exceptions[id.pOS])
             return m[id]
@@ -513,7 +513,7 @@ class RAMDictionary private constructor(
         }
     }
 
-    override fun getExceptionEntryIterator(pos: POS): Iterator<IExceptionEntry> {
+    override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
         return HotSwappableExceptionEntryIterator(pos)
     }
 
@@ -644,12 +644,12 @@ class RAMDictionary private constructor(
      * @since JWI 2.2.0
      */
     private inner class HotSwappableExceptionEntryIterator(private val pos: POS) :
-        HotSwappableIterator<IExceptionEntry>(
+        HotSwappableIterator<ExceptionEntry>(
             if (data == null) backingDictionary!!.getExceptionEntryIterator(pos) else data!!.exceptions[pos]!!.values.iterator(),
             data == null
         ) {
 
-        override fun makeIterator(): Iterator<IExceptionEntry> {
+        override fun makeIterator(): Iterator<ExceptionEntry> {
             checkNotNull(data)
             val m = checkNotNull(data!!.exceptions[pos])
             return m.values.iterator()
@@ -774,7 +774,7 @@ class RAMDictionary private constructor(
                 // exceptions
                 var exceptions = result.exceptions[pos]!!
                 checkNotNull(exceptions)
-                val i: Iterator<IExceptionEntry> = source.getExceptionEntryIterator(pos)
+                val i: Iterator<ExceptionEntry> = source.getExceptionEntryIterator(pos)
                 while (i.hasNext()) {
                     val exception = i.next()
                     checkNotNull(exception.iD)
@@ -841,7 +841,7 @@ class RAMDictionary private constructor(
 
         val synsets: MutableMap<POS, MutableMap<SynsetID, Synset>>
 
-        val exceptions: MutableMap<POS, MutableMap<IExceptionEntryID, IExceptionEntry>>
+        val exceptions: MutableMap<POS, MutableMap<ExceptionEntryID, ExceptionEntry>>
 
         var words: MutableMap<SenseKey, Word>
 
@@ -855,7 +855,7 @@ class RAMDictionary private constructor(
         init {
             idxWords = makePOSMap<IndexWordID, IndexWord>()
             synsets = makePOSMap<SynsetID, Synset>()
-            exceptions = makePOSMap<IExceptionEntryID, IExceptionEntry>()
+            exceptions = makePOSMap<ExceptionEntryID, ExceptionEntry>()
             words = makeMap<SenseKey, Word>(208000, null)
             senses = makeMap<SenseKey, SenseEntry>(208000, null)
         }
@@ -918,7 +918,7 @@ class RAMDictionary private constructor(
         fun compactSize() {
             compactPOSMap<IndexWordID, IndexWord>(idxWords)
             compactPOSMap<SynsetID, Synset>(synsets)
-            compactPOSMap<IExceptionEntryID, IExceptionEntry>(exceptions)
+            compactPOSMap<ExceptionEntryID, ExceptionEntry>(exceptions)
             words = compactMap<SenseKey, Word>(words)
             senses = compactMap<SenseKey, SenseEntry>(senses)
         }

@@ -70,10 +70,10 @@ class ContentType<T>
         val DATA_ADVERB: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_ADVERB, DataLineComparator.instance)
         val DATA_ADJECTIVE: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_ADJECTIVE, DataLineComparator.instance)
 
-        val EXCEPTION_NOUN: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_NOUN, ExceptionLineComparator.instance)
-        val EXCEPTION_VERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_VERB, ExceptionLineComparator.instance)
-        val EXCEPTION_ADVERB: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADVERB, ExceptionLineComparator.instance)
-        val EXCEPTION_ADJECTIVE: ContentType<IExceptionEntryProxy> = ContentType<IExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADJECTIVE, ExceptionLineComparator.instance)
+        val EXCEPTION_NOUN: ContentType<ExceptionEntryProxy> = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_NOUN, ExceptionLineComparator.instance)
+        val EXCEPTION_VERB: ContentType<ExceptionEntryProxy> = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_VERB, ExceptionLineComparator.instance)
+        val EXCEPTION_ADVERB: ContentType<ExceptionEntryProxy> = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADVERB, ExceptionLineComparator.instance)
+        val EXCEPTION_ADJECTIVE: ContentType<ExceptionEntryProxy> = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADJECTIVE, ExceptionLineComparator.instance)
 
         val SENSE: ContentType<SenseEntry> = ContentType<SenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator.instance)
         val SENSES: ContentType<Array<SenseEntry>> = ContentType<Array<SenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator.instance)
@@ -165,7 +165,7 @@ class ContentType<T>
 
         /**
          * Use this convenience method to retrieve the appropriate
-         * `IExceptionEntryProxy` content type for the specified POS.
+         * `ExceptionEntryProxy` content type for the specified POS.
          *
          * @param pos the part of speech for the content type, may not be
          * null
@@ -173,7 +173,7 @@ class ContentType<T>
          * @throws NullPointerException if the specified part of speech is null
          * @since JWI 2.0.0
          */
-        fun getExceptionContentType(pos: POS): IContentType<IExceptionEntryProxy> {
+        fun getExceptionContentType(pos: POS): IContentType<ExceptionEntryProxy> {
             return when (pos) {
                 POS.NOUN      -> EXCEPTION_NOUN
                 POS.VERB      -> EXCEPTION_VERB

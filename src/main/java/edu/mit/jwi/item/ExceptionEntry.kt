@@ -16,11 +16,11 @@ package edu.mit.jwi.item
  * @version 2.4.0
  * @since JWI 1.0
  */
-class ExceptionEntry : ExceptionEntryProxy, IExceptionEntry {
+class ExceptionEntry : ExceptionEntryProxy, IHasPOS, IItem<ExceptionEntryID> {
 
     override val pOS: POS
 
-    override val iD: IExceptionEntryID
+     override val iD: ExceptionEntryID
 
     /**
      * Creates a new exception entry for the specified part of speech using the
@@ -31,11 +31,8 @@ class ExceptionEntry : ExceptionEntryProxy, IExceptionEntry {
      * @throws NullPointerException if either argument is null
      * @since JWI 1.0
      */
-    constructor(proxy: IExceptionEntryProxy, pos: POS) : super(proxy) {
-        if (pos == null) {
-            throw NullPointerException()
-        }
-        this.pOS = pos
+    constructor(proxy: ExceptionEntryProxy, pos: POS) : super(proxy) {
+          this.pOS = pos
         this.iD = ExceptionEntryID(surfaceForm, pos)
     }
 
@@ -50,18 +47,9 @@ class ExceptionEntry : ExceptionEntryProxy, IExceptionEntry {
      * @since JWI 1.0
      */
     constructor(surfaceForm: String, pos: POS, rootForms: Array<String>) : super(surfaceForm, rootForms) {
-        if (pos == null) {
-            throw NullPointerException()
-        }
-        this.iD = ExceptionEntryID(surfaceForm!!, pos)
+         this.iD = ExceptionEntryID(surfaceForm, pos)
         this.pOS = pos
     }
-
-    /*
-    * (non-Javadoc)
-    *
-    * @see edu.edu.mit.jwi.item.ExceptionEntryProxy#toString()
-    */
 
     override fun toString(): String {
         checkNotNull(this.pOS)

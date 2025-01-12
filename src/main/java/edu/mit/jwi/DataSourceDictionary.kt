@@ -33,7 +33,9 @@ import kotlin.Throws
  * @version 2.4.0
  * @since JWI 2.2.0
  */
-class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSourceDictionary {
+class DataSourceDictionary(
+    override val dataProvider: IDataProvider,
+) : IDataSourceDictionary {
 
     override val version: Version?
         get() {
@@ -298,14 +300,14 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         }
     }
 
-    override fun getExceptionEntry(surfaceForm: String, pos: POS): IExceptionEntry? {
+    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
         return getExceptionEntry(ExceptionEntryID(surfaceForm, pos))
     }
 
-    override fun getExceptionEntry(id: IExceptionEntryID): IExceptionEntry? {
+    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
         checkOpen()
-        val content = dataProvider.resolveContentType<IExceptionEntryProxy>(DataType.EXCEPTION, id.pOS)
-        val file = dataProvider.getSource<IExceptionEntryProxy>(content!!)
+        val content = dataProvider.resolveContentType<ExceptionEntryProxy>(DataType.EXCEPTION, id.pOS)
+        val file = dataProvider.getSource<ExceptionEntryProxy>(content!!)
         // fix for bug 010
         if (file == null) {
             return null
@@ -318,10 +320,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         val dataType = content.dataType
         val parser = checkNotNull(dataType.parser)
         val proxy = parser.parseLine(line)
-        if (proxy == null) {
-            return null
-        }
-        return ExceptionEntry(proxy, id.pOS!!)
+        return ExceptionEntry(proxy, id.pOS)
     }
 
     override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
@@ -334,7 +333,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return DataFileIterator(pos)
     }
 
-    override fun getExceptionEntryIterator(pos: POS): Iterator<IExceptionEntry> {
+    override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
         checkOpen()
         return ExceptionFileIterator(pos)
     }
@@ -467,11 +466,11 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
     /**
      * Iterates over exception files.
      */
-    inner class ExceptionFileIterator(pos: POS?) : FileIterator<IExceptionEntryProxy, IExceptionEntry>(
-        dataProvider.resolveContentType<IExceptionEntryProxy>(DataType.EXCEPTION, pos)!!
+    inner class ExceptionFileIterator(pos: POS?) : FileIterator<ExceptionEntryProxy, ExceptionEntry>(
+        dataProvider.resolveContentType<ExceptionEntryProxy>(DataType.EXCEPTION, pos)!!
     ) {
 
-        override fun parseLine(line: String): IExceptionEntry {
+        override fun parseLine(line: String): ExceptionEntry {
             checkNotNull(fParser)
             val proxy = fParser.parseLine(line)
             return ExceptionEntry(proxy, pOS)

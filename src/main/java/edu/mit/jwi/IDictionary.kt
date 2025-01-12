@@ -201,7 +201,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws IllegalArgumentException if the specified surface form is empty or all whitespace
      * @since JWI 1.0
      */
-    fun getExceptionEntry(surfaceForm: String, pos: POS): IExceptionEntry?
+    fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry?
 
     /**
      * Retrieves the exception entry for the specified id from the database. If
@@ -212,7 +212,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @return the exception entry for the specified id
      * @since JWI 1.1
      */
-    fun getExceptionEntry(id: IExceptionEntryID): IExceptionEntry?
+    fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry?
 
     /**
      * Returns an iterator that will iterate over all exception entries of the
@@ -225,7 +225,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
-    fun getExceptionEntryIterator(pos: POS): Iterator<IExceptionEntry>
+    fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry>
 
     /**
      * Returns list of lemmas that have the given start.

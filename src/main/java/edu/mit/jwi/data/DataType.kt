@@ -80,7 +80,7 @@ class DataType<T>(
         val DATA: DataType<Synset> = DataType<Synset>("Data", true, DataLineParser.Companion.instance!!, "data", "dat")
 
         @JvmField
-        val EXCEPTION: DataType<IExceptionEntryProxy> = DataType<IExceptionEntryProxy>("Exception", false, ExceptionLineParser.Companion.instance!!, "exception", "exc")
+        val EXCEPTION: DataType<ExceptionEntryProxy> = DataType<ExceptionEntryProxy>("Exception", false, ExceptionLineParser.Companion.instance!!, "exception", "exc")
 
         @JvmField
         val SENSE: DataType<SenseEntry> = DataType<SenseEntry>("Sense", false, SenseLineParser.instance!!, "sense")

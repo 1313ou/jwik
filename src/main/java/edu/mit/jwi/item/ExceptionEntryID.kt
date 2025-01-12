@@ -13,58 +13,35 @@ import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
 import java.util.*
 
 /**
- * Default implementation of `IExceptionEntryID`.
+ * A unique identifier sufficient to retrieve the specified
+ * exception entry from Wordnet.
  *
+ * @param surfaceForm the raw surface form for the entry
+ * @property surfaceForm the surface form for the entry
+ * @property pOS the part of speech for the entry
+ * @throws NullPointerException     if either argument is null
+ * @throws IllegalArgumentException if the surface form is empty or all whitespace
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
 class ExceptionEntryID(
     surfaceForm: String,
-    pos: POS,
-) : IExceptionEntryID {
+    override val pOS: POS,
+) : IHasPOS, IItemID {
 
-    override val surfaceForm: String
+    val surfaceForm: String = surfaceForm.trim { it <= ' ' }.lowercase()
 
-    override val pOS: POS
-
-    /**
-     * Creates a new exception entry id with the specified information.
-     *
-     * @param surfaceForm the surface form for the entry
-     * @param pos         the part of speech for the entry
-     * @throws NullPointerException     if either argument is null
-     * @throws IllegalArgumentException if the surface form is empty or all whitespace
-     * @since JWI 1.0
-     */
     init {
-        var surfaceForm = surfaceForm
-        if (pos == null) {
-            throw NullPointerException()
-        }
-        if (surfaceForm == null) {
-            throw NullPointerException()
-        }
-        surfaceForm = surfaceForm.trim { it <= ' ' }
         require(surfaceForm.isNotEmpty())
-        // all exception entries are lower-case
-        // this call also checks for null
-        this.surfaceForm = surfaceForm.lowercase(Locale.getDefault())
-        this.pOS = pos
     }
 
     override fun toString(): String {
-        checkNotNull(this.pOS)
-        return "EID-" + surfaceForm + "-" + pOS.tag
+        return "EID-$surfaceForm -${pOS.tag}"
     }
 
     override fun hashCode(): Int {
-        val prime = 31
-        var result = 1
-        result = prime * result + surfaceForm.hashCode()
-        checkNotNull(this.pOS)
-        result = prime * result + pOS.hashCode()
-        return result
+        return Objects.hash(surfaceForm, pOS)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -74,15 +51,14 @@ class ExceptionEntryID(
         if (obj == null) {
             return false
         }
-        if (obj !is IExceptionEntryID) {
+        if (obj !is ExceptionEntryID) {
             return false
         }
         val other = obj
         if (surfaceForm != other.surfaceForm) {
             return false
         }
-        checkNotNull(this.pOS)
-        return this.pOS == other.pOS
+        return pOS == other.pOS
     }
 
     companion object {

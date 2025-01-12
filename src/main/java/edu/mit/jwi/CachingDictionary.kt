@@ -204,10 +204,10 @@ open class CachingDictionary(
         return backingDictionary.getSenseEntryIterator()
     }
 
-    override fun getExceptionEntry(surfaceForm: String, pos: POS): IExceptionEntry? {
+    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
         checkOpen()
-        val id: IExceptionEntryID = ExceptionEntryID(surfaceForm, pos)
-        var item = cache.retrieveItem<IExceptionEntry, IExceptionEntryID>(id)
+        val id = ExceptionEntryID(surfaceForm, pos)
+        var item = cache.retrieveItem<ExceptionEntry, ExceptionEntryID>(id)
         if (item == null) {
             item = backingDictionary.getExceptionEntry(id)
             if (item != null) {
@@ -217,9 +217,9 @@ open class CachingDictionary(
         return item
     }
 
-    override fun getExceptionEntry(id: IExceptionEntryID): IExceptionEntry? {
+    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
         checkOpen()
-        var item = cache.retrieveItem<IExceptionEntry, IExceptionEntryID>(id)
+        var item = cache.retrieveItem<ExceptionEntry, ExceptionEntryID>(id)
         if (item == null) {
             item = backingDictionary.getExceptionEntry(id)
             if (item != null) {
@@ -229,7 +229,7 @@ open class CachingDictionary(
         return item
     }
 
-    override fun getExceptionEntryIterator(pos: POS): Iterator<IExceptionEntry> {
+    override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
         return backingDictionary.getExceptionEntryIterator(pos)
     }
 

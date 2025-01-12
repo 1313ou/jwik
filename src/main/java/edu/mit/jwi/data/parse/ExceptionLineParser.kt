@@ -10,14 +10,13 @@
 package edu.mit.jwi.data.parse
 
 import edu.mit.jwi.item.ExceptionEntryProxy
-import edu.mit.jwi.item.IExceptionEntryProxy
 import java.util.regex.Pattern
 
 /**
  *
  *
  * Parser for Wordnet exception files (e.g., `exc.adv` or
- * `adv.exc`). This parser produces `IExceptionEntryProxy`
+ * `adv.exc`). This parser produces `ExceptionEntryProxy`
  * objects instead of `IExceptionEntry` objects directly because the
  * exception files do not contain information about part of speech. This needs
  * to be added by the governing object to create a full-fledged
@@ -42,9 +41,9 @@ class ExceptionLineParser
  *
  * @since JWI 2.0.0
  */
-private constructor() : ILineParser<IExceptionEntryProxy> {
+private constructor() : ILineParser<ExceptionEntryProxy> {
 
-    override fun parseLine(line: String): IExceptionEntryProxy {
+    override fun parseLine(line: String): ExceptionEntryProxy {
 
         val forms: Array<String?> = spacePattern.split(line)
         if (forms.size < 2) {

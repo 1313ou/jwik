@@ -9,20 +9,23 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import java.util.*
+import java.io.Serializable
 
 /**
- * Default implementation `IExceptionEntryProxy`l
+ * The data that can be obtained from a line in an exception entry file. Because
+ * each exception entry does not specify its associated part of speech, this object
+ * is just a proxy and must be supplemented by the part of speech at some
+ * point to make a full `IExceptionEntry` object.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-open class ExceptionEntryProxy : IExceptionEntryProxy {
+open class ExceptionEntryProxy : Serializable {
 
-    override lateinit var surfaceForm: String
+    var surfaceForm: String
 
-    override lateinit var rootForms: List<String>
+    var rootForms: List<String>
 
     /**
      * Constructs a new proxy that is a copy of the specified proxy
@@ -31,10 +34,7 @@ open class ExceptionEntryProxy : IExceptionEntryProxy {
      * @throws NullPointerException if the specified proxy is null
      * @since JWI 1.0
      */
-    constructor(proxy: IExceptionEntryProxy) {
-        if (proxy == null) {
-            throw NullPointerException()
-        }
+    constructor(proxy: ExceptionEntryProxy) {
         this.surfaceForm = proxy.surfaceForm
         this.rootForms = proxy.rootForms
     }
@@ -47,39 +47,14 @@ open class ExceptionEntryProxy : IExceptionEntryProxy {
      * @since JWI 1.0
      */
     constructor(surfaceForm: String, rootForms: Array<String>) {
-        if (surfaceForm == null) {
-            throw NullPointerException()
-        }
-        for (i in rootForms.indices) {
-            if (rootForms[i] == null) {
-                throw NullPointerException()
-            }
-            rootForms[i] = rootForms[i].trim { it <= ' ' }
-            require(rootForms[i].isNotEmpty())
-        }
-
         this.surfaceForm = surfaceForm
-        this.rootForms = Collections.unmodifiableList<String>(listOf<String>(*rootForms))
+        this.rootForms = rootForms
+            .map { it.trim { it <= ' ' } }
+            .also { it.isNotEmpty() }
+            .toList()
     }
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#toString()
-    */
     override fun toString(): String {
-        val sb = StringBuilder()
-        sb.append("EXC-")
-        sb.append(surfaceForm)
-        sb.append('[')
-        val i: Iterator<String> = rootForms.iterator()
-        while (i.hasNext()) {
-            sb.append(i.next())
-            if (i.hasNext()) {
-                sb.append(',')
-            }
-        }
-        sb.append(']')
-        return sb.toString()
+        return "EXC-$surfaceForm[${rootForms.joinToString(separator = ", ")}]"
     }
 }
