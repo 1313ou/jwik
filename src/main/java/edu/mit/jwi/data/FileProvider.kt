@@ -17,6 +17,7 @@ import edu.mit.jwi.item.POS
 import edu.mit.jwi.item.Synset
 import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
 import edu.mit.jwi.item.Version
+import edu.mit.jwi.item.Version.Companion.NO_VERSION
 import java.io.File
 import java.io.FileFilter
 import java.io.IOException
@@ -64,7 +65,6 @@ class FileProvider @JvmOverloads constructor(
     contentTypes: Collection<IContentType<*>> = values(),
 ) : IDataProvider, ILoadable, ILoadPolicy {
 
-    // final instance fields
     private val lifecycleLock: Lock = ReentrantLock()
 
     private val loadingLock: Lock = ReentrantLock()
@@ -694,17 +694,16 @@ class FileProvider @JvmOverloads constructor(
     }
 
     /**
-     * Determines a version from the set of data sources, if possible, otherwise
-     * returns [IVersion.NO_VERSION]
+     * Determines a version from the set of data sources, if possible, otherwise returns [NO_VERSION]
      *
      * @param srcs the data sources to be used to determine the version
      * @return the single version that describes these data sources, or
-     * [IVersion.NO_VERSION] if there is none
+     * [NO_VERSION] if there is none
      * @since JWI 2.1.0
      */
 
     private fun determineVersion(srcs: Collection<IDataSource<*>>): Version? {
-        var ver: Version? = Version.NO_VERSION
+        var ver: Version? = NO_VERSION
         for (dataSrc in srcs) {
             // if no version to set, ignore
             if (dataSrc.version == null) {
@@ -712,14 +711,14 @@ class FileProvider @JvmOverloads constructor(
             }
 
             // init version
-            if (ver === Version.NO_VERSION) {
+            if (ver === NO_VERSION) {
                 ver = dataSrc.version
                 continue
             }
 
             // if version different from current
             if (ver != dataSrc.version) {
-                return Version.NO_VERSION
+                return NO_VERSION
             }
         }
         return ver
@@ -740,7 +739,6 @@ class FileProvider @JvmOverloads constructor(
          * @throws IllegalArgumentException if the url does not use the 'file' protocol
          * @since JWI 1.0
          */
-
         fun toFile(url: URL): File {
             require(url.protocol == "file") { "URL source must use 'file' protocol" }
             try {

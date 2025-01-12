@@ -109,8 +109,7 @@ open class Version(
     }
 
     /**
-     * This utility method implements the appropriate deserialization for this
-     * object.
+     * This utility method implements the appropriate deserialization for this object.
      *
      * @return the appropriate deserialized object.
      * @since JWI 2.4.0
@@ -218,7 +217,7 @@ open class Version(
         }
 
         /**
-         * Returns true if any of three numbers are negative
+         * Returns true if any of three numbers are negative (unless specific NO_VERSION)
          *
          * @param major  the major version number
          * @param minor  the minor version number
@@ -228,12 +227,11 @@ open class Version(
          * @since JWI 2.1.0
          */
         fun isIllegalVersionNumber(major: Int, minor: Int, bugfix: Int): Boolean {
-            if (major < 0) {
+            if (major == -1 && minor == -1 && bugfix == -1) return false
+            if (major < 0)
                 return true
-            }
-            if (minor < 0) {
+            if (minor < 0)
                 return true
-            }
             return bugfix < 0
         }
 
@@ -546,29 +544,6 @@ open class Version(
          * A dummy version object used to indicate that the version has been calculated, and determined to be null.
          */
         @JvmField
-        val NO_VERSION: Version = object : Version(-1, -1, -1, "") {
-
-            override val bugfixVersion: Int
-                get() = throw UnsupportedOperationException()
-
-            override val majorVersion: Int
-                get() = throw UnsupportedOperationException()
-
-            override val minorVersion: Int
-                get() = throw UnsupportedOperationException()
-
-            override val qualifier: String
-                get() = throw UnsupportedOperationException()
-
-            /**
-             * Deserialization implementation. When deserializing this object, make sure to return the singleton object.
-             *
-             * @return the singleton dummy version object.
-             * @since JWI 2.4.0
-             */
-            private fun readResolve(): Any {
-                return NO_VERSION
-            }
-        }
+        val NO_VERSION: Version = Version(-1, -1, -1, "unversioned")
     }
 }
