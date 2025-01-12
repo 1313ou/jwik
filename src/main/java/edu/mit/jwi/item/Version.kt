@@ -9,7 +9,7 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
-import edu.mit.jwi.data.IContentType
+import edu.mit.jwi.data.ContentType
 import edu.mit.jwi.data.IDataType
 import edu.mit.jwi.data.WordnetFile.Companion.getLine
 import edu.mit.jwi.data.compare.ILineComparator
@@ -375,7 +375,7 @@ open class Version(
          * @since JWI 2.1.0
          */
 
-        fun extractVersion(contentType: IContentType<*>, buffer: ByteBuffer): Version? {
+        fun extractVersion(contentType: ContentType<*>, buffer: ByteBuffer): Version? {
             val dataType: IDataType<*> = contentType.dataType
             if (!dataType.hasVersion()) {
                 return null

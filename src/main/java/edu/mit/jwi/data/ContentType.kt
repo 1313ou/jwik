@@ -15,27 +15,48 @@ import java.nio.charset.Charset
 import java.util.*
 
 /**
- * A concrete implementation of the `IContentType` interface. This class
- * provides the content types necessary for Wordnet in the form of static
- * fields. It is not implemented as an `Enum` so that clients may add
- * their own content types by instantiating this class.
+ * Objects that represent all possible types of content
+ * that are contained in the dictionary data resources.
+ * Each unique object of this type will correspond to a particular resource or file.
+ *
+ * In the standard Wordnet distributions, examples of content types would
+ * include, but would not be limited to,
+ * *Index*,
+ * *Data*, and
+ * *Exception*
+ * files for each part of speech.
+ *
+ * This class provides the content types necessary for Wordnet in the form of static fields.
+ * It is not implemented as an `Enum` so that clients may add their own content types by instantiating this class.
  *
  * @param <T> the type of object for the content type
  * @param key        content type key
  * @param lineComparator the line comparator for this content type; may be null if the lines are not ordered
  * @param charset    the character set for this content type, may be null
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.0.0
  */
 class ContentType<T>
 @JvmOverloads constructor(
-    override val key: ContentTypeKey,
-    override val lineComparator: ILineComparator?,
-    override val charset: Charset? = null,
-) : IContentType<T> {
+    /**
+     * Content type key
+     */
+    val key: ContentTypeKey,
 
-    override val dataType: IDataType<T>
+    /**
+     * Comparator that can be used to determine ordering between different lines of data in the resource.
+     * It imposes an ordering on the lines in the data file
+     * This is used for searching
+     * If the data in the resource is not ordered, then this property is null.
+     */
+    val lineComparator: ILineComparator?,
+
+    /**
+     * Character set used by the data
+     */
+    override val charset: Charset? = null,
+
+) : IHasPOS, IHasCharset {
+
+    val dataType: IDataType<T>
         get() {
             return key.getDataType<T>()
         }
@@ -123,7 +144,7 @@ class ContentType<T>
          * @throws NullPointerException if the specified part of speech is null
          * @since JWI 2.0.0
          */
-        fun getIndexContentType(pos: POS): IContentType<IndexWord> {
+        fun getIndexContentType(pos: POS): ContentType<IndexWord> {
             return when (pos) {
                 POS.NOUN      -> INDEX_NOUN
                 POS.VERB      -> INDEX_VERB
@@ -133,7 +154,7 @@ class ContentType<T>
             throw IllegalStateException("This should not happen.")
         }
 
-        fun getWordContentType(pos: POS): IContentType<IndexWord> {
+        fun getWordContentType(pos: POS): ContentType<IndexWord> {
             return when (pos) {
                 POS.NOUN      -> WORD_NOUN
                 POS.VERB      -> WORD_VERB
@@ -153,7 +174,7 @@ class ContentType<T>
          * @throws NullPointerException if the specified part of speech is null
          * @since JWI 2.0.0
          */
-        fun getDataContentType(pos: POS): IContentType<Synset> {
+        fun getDataContentType(pos: POS): ContentType<Synset> {
             return when (pos) {
                 POS.NOUN      -> DATA_NOUN
                 POS.VERB      -> DATA_VERB
@@ -173,7 +194,7 @@ class ContentType<T>
          * @throws NullPointerException if the specified part of speech is null
          * @since JWI 2.0.0
          */
-        fun getExceptionContentType(pos: POS): IContentType<ExceptionEntryProxy> {
+        fun getExceptionContentType(pos: POS): ContentType<ExceptionEntryProxy> {
             return when (pos) {
                 POS.NOUN      -> EXCEPTION_NOUN
                 POS.VERB      -> EXCEPTION_VERB

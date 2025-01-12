@@ -30,7 +30,7 @@ import java.nio.ByteBuffer
  * @version 2.4.0
  * @since JWI 2.0.0
 </T> */
-class DirectAccessWordnetFile<T>(file: File, contentType: IContentType<T>) : WordnetFile<T>(file, contentType) {
+class DirectAccessWordnetFile<T>(file: File, contentType: ContentType<T>) : WordnetFile<T>(file, contentType) {
 
     private val bufferLock = Any()
 

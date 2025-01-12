@@ -53,7 +53,7 @@ abstract class WordnetFile<T>(
      * The file which backs this object.
      */
     val file: File,
-    override val contentType: IContentType<T>,
+    override val contentType: ContentType<T>,
 ) : ILoadableDataSource<T> {
 
     override val name: String = file.getName()

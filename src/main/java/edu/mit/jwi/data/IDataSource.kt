@@ -32,7 +32,7 @@ interface IDataSource<T> : IHasVersion, Iterable<String?>, IHasLifecycle {
 
     val name: String?
 
-    val contentType: IContentType<T>
+    val contentType: ContentType<T>
 
     /**
      * Returns the line in the resource contains the data indexed by the

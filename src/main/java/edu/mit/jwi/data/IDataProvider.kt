@@ -79,7 +79,7 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
      */
     fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?)
 
-    val types: Set<IContentType<*>>?
+    val types: Set<ContentType<*>>?
 
     /**
      * Returns the first content type, if any, that matches the specified data
@@ -94,7 +94,7 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
      * part of speech.
      * @since JWI 2.3.4
      */
-    fun <T> resolveContentType(dt: IDataType<T>, pos: POS?): IContentType<T>?
+    fun <T> resolveContentType(dt: IDataType<T>, pos: POS?): ContentType<T>?
 
     /**
      * Returns a data source object for the specified content type, if one is
@@ -108,5 +108,5 @@ interface IDataProvider : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws ObjectClosedException if the provider is not open when this call is made
      * @since JWI 2.0.0
      */
-    fun <T> getSource(contentType: IContentType<T>): IDataSource<T>?
+    fun <T> getSource(contentType: ContentType<T>): IDataSource<T>?
 }

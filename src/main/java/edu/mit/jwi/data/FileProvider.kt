@@ -62,14 +62,14 @@ import kotlin.Throws
 class FileProvider @JvmOverloads constructor(
     url: URL,
     loadPolicy: Int = ILoadPolicy.Companion.NO_LOAD,
-    contentTypes: Collection<IContentType<*>> = values(),
+    contentTypes: Collection<ContentType<*>> = values(),
 ) : IDataProvider, ILoadable, ILoadPolicy {
 
     private val lifecycleLock: Lock = ReentrantLock()
 
     private val loadingLock: Lock = ReentrantLock()
 
-    private val prototypeMap: MutableMap<ContentTypeKey, IContentType<*>>
+    private val prototypeMap: MutableMap<ContentTypeKey, ContentType<*>>
 
     override var version: Version? = null
         get() {
@@ -85,12 +85,12 @@ class FileProvider @JvmOverloads constructor(
         }
         private set
 
-    private var fileMap: Map<IContentType<*>, ILoadableDataSource<*>>? = null
+    private var fileMap: Map<ContentType<*>, ILoadableDataSource<*>>? = null
 
     @Transient
     private var loader: JWIBackgroundLoader? = null
 
-    private val defaultContentTypes: Collection<IContentType<*>>
+    private val defaultContentTypes: Collection<ContentType<*>>
 
     private val sourceMatcher: MutableMap<ContentTypeKey, String> = HashMap<ContentTypeKey, String>()
 
@@ -123,7 +123,7 @@ class FileProvider @JvmOverloads constructor(
                     val value = e.value
                     if (charset == null) {
                         // if we get a null charset, reset to the prototype value but preserve line comparator
-                        val defaultContentType: IContentType<*> = checkNotNull(getDefault(key))
+                        val defaultContentType: ContentType<*> = checkNotNull(getDefault(key))
                         e.setValue(ContentType<Any?>(key, value.lineComparator, defaultContentType.charset))
                     } else {
                         // if we get a non-null charset, generate new  type using the new charset but preserve line comparator
@@ -174,7 +174,7 @@ class FileProvider @JvmOverloads constructor(
      * @throws IllegalArgumentException if the set of types is empty
      * @since JWI 2.2.0
      */
-    constructor(file: File, loadPolicy: Int, types: MutableCollection<out IContentType<*>>) : this(toURL(file)!!, loadPolicy, types)
+    constructor(file: File, loadPolicy: Int, types: MutableCollection<out ContentType<*>>) : this(toURL(file)!!, loadPolicy, types)
 
     /**
      * Constructs the file provider pointing to the resource indicated by the
@@ -221,7 +221,7 @@ class FileProvider @JvmOverloads constructor(
             .toMutableMap()
     }
 
-    private fun getDefault(key: ContentTypeKey?): IContentType<*>? {
+    private fun getDefault(key: ContentTypeKey?): ContentType<*>? {
         for (contentType in this.defaultContentTypes) {
             if (contentType.key == key) {
                 return contentType
@@ -239,10 +239,10 @@ class FileProvider @JvmOverloads constructor(
         try {
             lifecycleLock.lock()
             check(!isOpen) { "provider currently open" }
-            val value: IContentType<*> = prototypeMap[key]!!
+            val value: ContentType<*> = prototypeMap[key]!!
             if (comparator == null) {
                 // if we get a null comparator, reset to the prototype but preserve charset
-                val defaultContentType: IContentType<*>? = checkNotNull(getDefault(key))
+                val defaultContentType: ContentType<*>? = checkNotNull(getDefault(key))
                 checkNotNull(value)
                 prototypeMap.put(key, ContentType<Any?>(key, defaultContentType!!.lineComparator, value.charset))
             } else {
@@ -277,10 +277,10 @@ class FileProvider @JvmOverloads constructor(
      *
      * @see edu.edu.mit.jwi.data.IDataProvider#resolveContentType(edu.edu.mit.jwi.data.IDataType, edu.edu.mit.jwi.item.POS)
      */
-    override fun <T> resolveContentType(dt: IDataType<T>, pos: POS?): IContentType<T>? {
+    override fun <T> resolveContentType(dt: IDataType<T>, pos: POS?): ContentType<T>? {
         for (e in prototypeMap.entries) {
             if (e.key.getDataType<Any?>() == dt && e.key.pOS == pos) {
-                return e.value as IContentType<*>? as IContentType<T>?
+                return e.value as ContentType<*>? as ContentType<T>?
             }
         }
         return null
@@ -328,9 +328,9 @@ class FileProvider @JvmOverloads constructor(
             // determine if it's already unmodifiable, wrap if not
             val map: MutableMap<*, *> = mutableMapOf<Any?, Any?>()
             if (hiddenMap.javaClass != map.javaClass) {
-                hiddenMap = Collections.unmodifiableMap<IContentType<*>, ILoadableDataSource<*>>(hiddenMap)
+                hiddenMap = Collections.unmodifiableMap<ContentType<*>, ILoadableDataSource<*>>(hiddenMap)
             }
-            this.fileMap = hiddenMap as Map<IContentType<*>, ILoadableDataSource<*>>?
+            this.fileMap = hiddenMap as Map<ContentType<*>, ILoadableDataSource<*>>?
 
             // do load
             try {
@@ -421,8 +421,8 @@ class FileProvider @JvmOverloads constructor(
      */
 
     @Throws(IOException::class)
-    private fun createSourceMap(files: MutableList<File>, policy: Int): MutableMap<IContentType<*>?, ILoadableDataSource<*>> {
-        val result: MutableMap<IContentType<*>?, ILoadableDataSource<*>> = HashMap<IContentType<*>?, ILoadableDataSource<*>>()
+    private fun createSourceMap(files: MutableList<File>, policy: Int): MutableMap<ContentType<*>?, ILoadableDataSource<*>> {
+        val result: MutableMap<ContentType<*>?, ILoadableDataSource<*>> = HashMap<ContentType<*>?, ILoadableDataSource<*>>()
         for (contentType in prototypeMap.values) {
             var file: File? = null
 
@@ -481,7 +481,7 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 2.2.0
      */
     @Throws(IOException::class)
-    private fun <T> createDataSource(file: File, contentType: IContentType<T>, policy: Int): ILoadableDataSource<T> {
+    private fun <T> createDataSource(file: File, contentType: ContentType<T>, policy: Int): ILoadableDataSource<T> {
         var src: ILoadableDataSource<T>
         if (contentType.dataType === DataType.DATA) {
             src = createDirectAccess<T>(file, contentType)
@@ -546,7 +546,7 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 2.2.0
     </T> */
 
-    private fun <T> createDirectAccess(file: File, contentType: IContentType<T>): ILoadableDataSource<T> {
+    private fun <T> createDirectAccess(file: File, contentType: ContentType<T>): ILoadableDataSource<T> {
         return DirectAccessWordnetFile<T>(file, contentType)
     }
 
@@ -564,7 +564,7 @@ class FileProvider @JvmOverloads constructor(
      * @since JWI 2.2.0
     </T> */
 
-    private fun <T> createBinarySearch(file: File, contentType: IContentType<T>): ILoadableDataSource<T> {
+    private fun <T> createBinarySearch(file: File, contentType: ContentType<T>): ILoadableDataSource<T> {
         return if ("Word" == contentType.dataType.toString()) BinaryStartSearchWordnetFile<T>(file, contentType) else BinarySearchWordnetFile<T>(file, contentType)
     }
 
@@ -609,7 +609,7 @@ class FileProvider @JvmOverloads constructor(
         }
     }
 
-    override fun <T> getSource(contentType: IContentType<T>): ILoadableDataSource<T>? {
+    override fun <T> getSource(contentType: ContentType<T>): ILoadableDataSource<T>? {
         checkOpen()
 
         // assume at first this the prototype
@@ -623,11 +623,11 @@ class FileProvider @JvmOverloads constructor(
         return fileMap!![actualType] as ILoadableDataSource<T>
     }
 
-    override val types: Set<IContentType<*>>
+    override val types: Set<ContentType<*>>
         get() {
             try {
                 lifecycleLock.lock()
-                return LinkedHashSet<IContentType<*>>(prototypeMap.values)
+                return LinkedHashSet<ContentType<*>>(prototypeMap.values)
             } finally {
                 lifecycleLock.unlock()
             }

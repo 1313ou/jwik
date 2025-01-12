@@ -346,7 +346,7 @@ class DataSourceDictionary(
     /**
      * Abstract class used for iterating over line-based files.
      */
-    abstract inner class FileIterator<T, N> @JvmOverloads constructor(content: IContentType<T>, startKey: String? = null) : Iterator<N>, IHasPOS {
+    abstract inner class FileIterator<T, N> @JvmOverloads constructor(content: ContentType<T>, startKey: String? = null) : Iterator<N>, IHasPOS {
 
         protected val fFile: IDataSource<T>?
 
@@ -404,7 +404,7 @@ class DataSourceDictionary(
          * @param content content type
          * @since JWI 2.1.5
          */
-        constructor(content: IContentType<T>) : super(content)
+        constructor(content: ContentType<T>) : super(content)
 
         /**
          * Constructs a new file iterator with the specified content type and start key.
@@ -413,7 +413,7 @@ class DataSourceDictionary(
          * @param startKey start key
          * @since JWI 2.1.5
          */
-        constructor(content: IContentType<T>, startKey: String) : super(content, startKey)
+        constructor(content: ContentType<T>, startKey: String) : super(content, startKey)
     }
 
     /**

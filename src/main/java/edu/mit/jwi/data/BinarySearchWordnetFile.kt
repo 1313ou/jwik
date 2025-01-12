@@ -28,7 +28,7 @@ import java.nio.ByteBuffer
  * @version 2.4.0
  * @since JWI 2.0.0
  */
-class BinarySearchWordnetFile<T>(file: File, contentType: IContentType<T>) : WordnetFile<T>(file, contentType) {
+class BinarySearchWordnetFile<T>(file: File, contentType: ContentType<T>) : WordnetFile<T>(file, contentType) {
 
     private val fComparator: Comparator<String>? = contentType.lineComparator
 
