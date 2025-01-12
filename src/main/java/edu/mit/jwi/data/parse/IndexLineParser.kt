@@ -67,7 +67,7 @@ private constructor() : ILineParser<IIndexWord> {
             // get words
             val words = Array<IWordID>(senseCount) {
                 val offset: Int = tokenizer.nextToken().toInt()
-                WordID(SynsetID(offset, pos), lemma)
+                WordLemmaID(SynsetID(offset, pos), lemma)
             }
             return IndexWord(lemma, pos, tagSenseCnt, ptrs, words)
         } catch (e: Exception) {

@@ -9,6 +9,8 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
+import edu.mit.jwi.item.WordLemmaID.Companion.UNKNOWN_NUMBER
+import edu.mit.jwi.item.WordNumID.Companion.UNKNOWN_LEMMA
 import java.util.*
 
 /**
@@ -20,7 +22,7 @@ import java.util.*
  * @param iD the word id; its word lemma may not be empty or all whitespace
  * @param lexicalID the lexical id
  * @param adjMarker non-null only if this is an adjective
- * @param frames  verb frames if this is a verb
+ * @param verbFrames verb frames if this is a verb
  * @param related lexical pointers
  * @throws IllegalArgumentException if the adjective marker is non-null and this is not an adjective
  * @since JWI 1.0
@@ -31,14 +33,14 @@ import java.util.*
  */
 class Word(
     override val synset: ISynset,
-    override val iD: IWordID,
+    override val iD: WordLemmaID,
     override val lexicalID: Int,
     private val adjMarker: AdjMarker?,
     verbFrames: List<IVerbFrame>?,
     related: Map<IPointer, List<IWordID>>,
 ) : IWord {
 
-    override val senseKey: ISenseKey = SenseKey(iD.lemma!!, lexicalID, synset)
+    override val senseKey: ISenseKey = SenseKey(iD.lemma, lexicalID, synset)
 
     override val verbFrames: List<IVerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
 
@@ -51,7 +53,7 @@ class Word(
             .toList()
 
     override val lemma: String
-        get() = iD.lemma!!
+        get() = iD.lemma
 
     override val pOS: POS
         get() = iD.synsetID.pOS!!
@@ -66,10 +68,10 @@ class Word(
 
     override fun toString(): String {
         val sid = iD.synsetID.toString().substring(4)
-        return if (iD.wordNumber == 0)
-            "W-$sid-?-${iD.lemma}"
-        else
-            "W-$sid-${iD.wordNumber}-${iD.lemma}"
+        return when (iD) {
+            is WordLemmaNumID -> "W-$sid-${iD.wordNumber}-${iD.lemma}"
+            else              -> "W-$sid-$UNKNOWN_NUMBER-${iD.lemma}"
+        }
     }
 
     override fun hashCode(): Int {
@@ -234,7 +236,6 @@ class Word(
         @JvmStatic
 
         fun zeroFillWordNumber(num: Int): String {
-            checkWordNumber(num)
             return "%02x".format(num)
         }
 

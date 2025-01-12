@@ -180,7 +180,7 @@ class Synset private constructor(
         private val verbFrames = ArrayList<IVerbFrame>()
 
         override fun toWord(synset: ISynset): IWord {
-            return Word(synset, WordID(synset.iD, lemma, number), lexID, marker, verbFrames, relatedWords)
+            return Word(synset, WordLemmaNumID(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
         }
 
         fun addRelatedWord(ptrType: IPointer, id: IWordID) {

@@ -18,6 +18,7 @@ import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
 import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
+import kotlin.Throws
 
 /**
  * Basic implementation of the `IDictionary` interface. A path to the
@@ -141,27 +142,14 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
 
     override fun getWord(id: IWordID): IWord? {
         checkOpen()
-        val sid = checkNotNull(id.synsetID)
-        val synset = getSynset(sid)
+        val synset = getSynset(id.synsetID)
         if (synset == null) {
             return null
         }
-
-        // One or the other of the WordID number or lemma may not exist,
-        // depending on whence the word id came, so we have to check
-        // them before trying.
-        if (id.wordNumber > 0) {
-            return synset.words[id.wordNumber - 1]
-        } else if (id.lemma != null) {
-            for (word in synset.words) {
-                val lemma = checkNotNull(word.lemma)
-                if (lemma.equals(id.lemma, ignoreCase = true)) {
-                    return word
-                }
-            }
-            return null
-        } else {
-            throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
+        return when (id) {
+            is WordNumID   -> synset.words[id.wordNumber - 1]
+            is WordLemmaID -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
+            else           -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
         }
     }
 
@@ -376,7 +364,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
             this.fFile = dataProvider.getSource<T>(content)
             val dataType = content.dataType
             this.fParser = dataType.parser
-            iterator = fFile?.iterator(startKey) ?:Collections.emptyIterator<String>() // Fix for Bug018
+            iterator = fFile?.iterator(startKey) ?: Collections.emptyIterator<String>() // Fix for Bug018
         }
 
         override val pOS: POS

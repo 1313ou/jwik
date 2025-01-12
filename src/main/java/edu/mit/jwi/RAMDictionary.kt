@@ -440,29 +440,15 @@ class RAMDictionary private constructor(
 
     override fun getWord(id: IWordID): IWord? {
         if (data != null) {
-            val m = checkNotNull(data!!.synsets[id.pOS])
-            val synset = m[id.synsetID]
-
-            // no synset found
+            val resolver = data!!.synsets[id.pOS]!!
+            val synset = resolver[id.synsetID]
             if (synset == null) {
                 return null
             }
-
-            // Fix for BUG One or the other of the WordID number or lemma may not exist,
-            // depending on whence the word id came, so we have to check
-            // them before trying.
-            if (id.wordNumber > 0) {
-                return synset.words[id.wordNumber - 1]
-            } else if (id.lemma != null) {
-                for (word in synset.words) {
-                    val lemma = checkNotNull(word.lemma)
-                    if (lemma.equals(id.lemma, ignoreCase = true)) {
-                        return word
-                    }
-                }
-                return null
-            } else {
-                throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
+            return when (id) {
+                is WordNumID   -> synset.words[id.wordNumber - 1]
+                is WordLemmaID -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
+                else           -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
             }
         } else {
             checkNotNull(backingDictionary)
@@ -1032,6 +1018,7 @@ class RAMDictionary private constructor(
             val newRelated = old.related
                 .map { (ptr, oldTargets) ->
                     val newTargets: List<IWordID> = oldTargets
+                        .map { it as WordNumID }
                         .map {
                             val resolver: Map<ISynsetID, ISynset> = synsets[it.pOS]!!
                             val otherSynset: ISynset = resolver[it.synsetID]!!
@@ -1043,7 +1030,7 @@ class RAMDictionary private constructor(
                 .toMap()
 
             // word
-            val word: IWord = Word(newSynset, old.iD, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
+            val word: IWord = Word(newSynset, old.iD as WordLemmaID, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
             if (word.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey
                 word.senseKey.setHead(oldKey.headWord!!, oldKey.headID)

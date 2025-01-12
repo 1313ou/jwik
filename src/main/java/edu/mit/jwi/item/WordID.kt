@@ -9,116 +9,28 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
+import edu.mit.jwi.item.Word.Companion.checkWordNumber
 import edu.mit.jwi.item.Word.Companion.zeroFillWordNumber
 import java.util.*
 
 /**
- * Default implementation of the `IWordID` interface.
+ * Base abstract class containing only reference to synset
  *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * @property synsetID the synset id
  */
-class WordID : IWordID {
-
-    override val synsetID: ISynsetID
-
-    override val wordNumber: Int
+abstract class BaseWordID(override val synsetID: ISynsetID) : IWordID {
 
     override val pOS: POS
         get() = synsetID.pOS!!
 
-    override val lemma: String?
-
-    /**
-     * Constructs a word id from the specified arguments.
-     * This constructor produces a word with an unknown lemma.
-     *
-     * @param id  the synset id; may not be null
-     * @param num the word number
-     * @throws NullPointerException     if the synset id is null
-     * @throws IllegalArgumentException if the lemma is empty or all whitespace
-     * @since JWI 1.0
-     */
-    constructor(id: ISynsetID, num: Int) {
-        this.synsetID = id
-        this.wordNumber = num
-        this.lemma = null
-    }
-
-    // WITH LEMMA
-
-    /**
-     * Constructs a fully specified word id
-     *
-     * @param id    the synset id; may not be null
-     * @param num   the word number
-     * @param lemma the lemma; may not be empty or all whitespace
-     * @throws IllegalArgumentException if the lemma is empty or all whitespace, or the word number
-     * is not legal
-     * @since JWI 1.0
-     */
-    constructor(id: ISynsetID, lemma: String, num: Int = -1) {
-        require(lemma.trim { it <= ' ' }.isNotEmpty())
-        this.synsetID = id
-        this.wordNumber = num
-        this.lemma = lemma
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(synsetID)
-    }
-
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
-            return true
-        }
-        if (obj == null) {
-            return false
-        }
-        if (javaClass != obj.javaClass) {
-            return false
-        }
-        val other = obj as WordID
-        if (synsetID != other.synsetID) {
-            return false
-        }
-        if (other.wordNumber != -1 && wordNumber != -1 && other.wordNumber != wordNumber) {
-            return false
-        }
-        if (other.lemma != null && lemma != null) {
-            return other.lemma.equals(lemma, ignoreCase = true)
-        }
-        return true
-    }
-
     override fun toString(): String {
         val pos = synsetID.pOS!!
-        return "$wordIDPrefix ${Synset.zeroFillOffset(synsetID.offset)}-${pos.tag.uppercaseChar()}-${if (wordNumber < 0) unknownWordNumber else zeroFillWordNumber(this.wordNumber)}-${lemma ?: unknownLemma}"
+        return "$WORDID_PREFIX ${Synset.zeroFillOffset(synsetID.offset)}-${pos.tag.uppercaseChar()}"
     }
 
     companion object {
 
-        /**
-         * String prefix for the [.toString] method.
-         *
-         * @since JWI 2.0.0
-         */
-        const val wordIDPrefix: String = "WID-"
-
-        /**
-         * Represents an unknown lemma for the [.toString] method.
-         *
-         * @since JWI 2.0.0
-         */
-        const val unknownLemma: String = "?"
-
-        /**
-         * Represents an unknown word number for the [.toString] method.
-         *
-         * @since JWI 2.0.0
-         */
-        const val unknownWordNumber: String = "??"
+        private const val WORDID_PREFIX = "WID-"
 
         /**
          * Parses the result of the [.toString] method back into an
@@ -145,15 +57,164 @@ class WordID : IWordID {
 
             // get word number
             val numStr = value.substring(15, 17)
-            if (numStr != unknownWordNumber) {
+            if (numStr != WordLemmaID.UNKNOWN_NUMBER) {
                 val num = numStr.toInt(16)
-                return WordID(id, num)
+                return WordNumID(id, num)
             }
 
             // get lemma
             val lemma = value.substring(18)
-            require(lemma != unknownLemma)
-            return WordID(id, lemma)
+            require(lemma != WordNumID.UNKNOWN_LEMMA)
+            return WordLemmaID(id, lemma)
         }
+    }
+}
+
+/**
+ * Constructs a word id from synset id and word number
+ * This constructor produces a word with a word number but with an unknown lemma
+
+ * The word number, which is a number from 1 to 255 that indicates
+ * the order this word is listed in the Wordnet data files.
+ * If the word number has not been specified, will return -1. If this method returns -1,
+ *
+ * @return an integer between 1 and 255, inclusive
+ *
+ * @param synsetID the synset id
+ * @property wordNumber the word number
+ */
+class WordNumID(synsetID: ISynsetID, val wordNumber: Int) : BaseWordID(synsetID), IWordID {
+
+    init {
+        checkWordNumber(wordNumber)
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(synsetID, wordNumber)
+    }
+
+    override fun equals(obj: Any?): Boolean {
+        if (this === obj) {
+            return true
+        }
+        if (obj == null) {
+            return false
+        }
+        if (javaClass != obj.javaClass) {
+            return false
+        }
+        val other = obj as WordLemmaNumID
+        if (synsetID != other.synsetID) {
+            return false
+        }
+        if (other.wordNumber != -1 && wordNumber != -1 && other.wordNumber != wordNumber) {
+            return false
+        }
+        return true
+    }
+
+    override fun toString(): String {
+        return "${super.toString()}-"
+        return "${super.toString()}-${zeroFillWordNumber(wordNumber)}-$UNKNOWN_LEMMA"
+    }
+
+    companion object {
+
+        const val UNKNOWN_LEMMA: String = "?"
+    }
+}
+
+/**
+ * Constructs a word id from synset id and lemma
+ * This constructor produces a word id with a lemma
+ * A non-empty string non-whitespace string.
+ *
+ * @param synsetID  the synset id
+ * @param lemma0 lemma arg
+ * @property lemma lemma
+ * @throws IllegalArgumentException if the lemma is empty or all whitespace
+ */
+open class WordLemmaID(synsetID: ISynsetID, lemma0: String) : BaseWordID(synsetID), IWordID {
+
+    val lemma: String = lemma0.trim { it <= ' ' }
+
+    init {
+        require(lemma.isNotEmpty())
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(synsetID, lemma)
+    }
+
+    override fun equals(obj: Any?): Boolean {
+        if (this === obj) {
+            return true
+        }
+        if (obj == null) {
+            return false
+        }
+        if (javaClass != obj.javaClass) {
+            return false
+        }
+        val other = obj as WordLemmaNumID
+        if (synsetID != other.synsetID) {
+            return false
+        }
+        return other.lemma.equals(lemma, ignoreCase = true)
+    }
+
+    override fun toString(): String {
+        return "${super.toString()}-$UNKNOWN_NUMBER-$lemma"
+    }
+
+    companion object {
+
+        const val UNKNOWN_NUMBER: String = "??"
+    }
+}
+
+/**
+ * Constructs a word id from the specified arguments.
+ * This constructor produces a word with an unknown lemma.
+ *
+ * @param synsetID  the synset id; may not be null
+ * @property wordNumber the word number
+ * @param lemma the lemma; may not be empty or all whitespace
+ * @throws IllegalArgumentException if the lemma is empty or all whitespace
+ * @since JWI 1.0
+ */
+class WordLemmaNumID(synsetID: ISynsetID, val wordNumber: Int, lemma: String) : WordLemmaID(synsetID, lemma), IWordID {
+
+    init {
+        require(lemma.isNotEmpty())
+        checkWordNumber(wordNumber)
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hash(synsetID, wordNumber, lemma)
+    }
+
+    override fun equals(obj: Any?): Boolean {
+        if (this === obj) {
+            return true
+        }
+        if (obj == null) {
+            return false
+        }
+        if (javaClass != obj.javaClass) {
+            return false
+        }
+        val other = obj as WordLemmaNumID
+        if (synsetID != other.synsetID) {
+            return false
+        }
+        if (other.wordNumber != -1 && wordNumber != -1 && other.wordNumber != wordNumber) {
+            return false
+        }
+        return other.lemma.equals(lemma, ignoreCase = true)
+    }
+
+    override fun toString(): String {
+        return "${super.toString()}-${zeroFillWordNumber(wordNumber)}-$lemma"
     }
 }

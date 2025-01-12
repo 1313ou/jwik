@@ -136,7 +136,7 @@ private constructor() : ILineParser<ISynset> {
                     // this is a lexical pointer
                     val source_num: Int = source_target_num / 256
                     val target_num: Int = source_target_num and 255
-                    val target_word_id: IWordID = WordID(target_synset_id, target_num)
+                    val target_word_id: IWordID = WordNumID(target_synset_id, target_num)
                     wordProxies[source_num - 1].addRelatedWord(pointer_type, target_word_id)
                 }
             }
