@@ -33,17 +33,16 @@ abstract class BaseWordID(override val synsetID: ISynsetID) : IWordID {
         private const val WORDID_PREFIX = "WID-"
 
         /**
-         * Parses the result of the [.toString] method back into an
-         * `WordID`. Word ids are always of the following format:
-         * WID-########-P-##-lemma where ######## is the eight decimal digit
-         * zero-filled offset of the associated synset, P is the upper case
-         * character representing the part of speech, ## is the two hexadecimal
-         * digit zero-filled word number (or ?? if unknown), and lemma is the lemma.
+         * Parses the result of the [.toString] method back into an `WordID`.
+         * Word ids are always of the following format: WID-########-P-##-lemma where
+         * ######## is the eight decimal digit zero-filled offset of the associated synset,
+         * P is the upper case character representing the part of speech,
+         * ## is the two hexadecimal digit zero-filled word number (or ?? if unknown), and
+         * lemma is the lemma.
          *
          * @param value the string to be parsed
          * @return WordID the parsed id
          * @throws IllegalArgumentException if the specified string does not represent a word id
-         * @throws NullPointerException     if the specified string is null
          * @since JWI 1.0
          */
         fun parseWordID(value: String): IWordID {
@@ -72,11 +71,8 @@ abstract class BaseWordID(override val synsetID: ISynsetID) : IWordID {
 
 /**
  * Constructs a word id from synset id and word number
- * This constructor produces a word with a word number but with an unknown lemma
-
- * The word number, which is a number from 1 to 255 that indicates
- * the order this word is listed in the Wordnet data files.
- * If the word number has not been specified, will return -1. If this method returns -1,
+ * This constructor produces a word with a word number (but without a lemma)
+ * The word number, which is a number from 1 to 255, indicates the order this word is listed in the Wordnet data files
  *
  * @return an integer between 1 and 255, inclusive
  *
@@ -114,7 +110,6 @@ class WordNumID(synsetID: ISynsetID, val wordNumber: Int) : BaseWordID(synsetID)
     }
 
     override fun toString(): String {
-        return "${super.toString()}-"
         return "${super.toString()}-${zeroFillWordNumber(wordNumber)}-$UNKNOWN_LEMMA"
     }
 
@@ -127,16 +122,16 @@ class WordNumID(synsetID: ISynsetID, val wordNumber: Int) : BaseWordID(synsetID)
 /**
  * Constructs a word id from synset id and lemma
  * This constructor produces a word id with a lemma
- * A non-empty string non-whitespace string.
+ * The lemma is a non-empty string non-whitespace string
  *
  * @param synsetID  the synset id
- * @param lemma0 lemma arg
+ * @param lemma lemma arg
  * @property lemma lemma
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
-open class WordLemmaID(synsetID: ISynsetID, lemma0: String) : BaseWordID(synsetID), IWordID {
+open class WordLemmaID(synsetID: ISynsetID, lemma: String) : BaseWordID(synsetID), IWordID {
 
-    val lemma: String = lemma0.trim { it <= ' ' }
+    val lemma: String = lemma.trim { it <= ' ' }
 
     init {
         require(lemma.isNotEmpty())
@@ -156,7 +151,7 @@ open class WordLemmaID(synsetID: ISynsetID, lemma0: String) : BaseWordID(synsetI
         if (javaClass != obj.javaClass) {
             return false
         }
-        val other = obj as WordLemmaNumID
+        val other = obj as WordLemmaID
         if (synsetID != other.synsetID) {
             return false
         }
@@ -175,7 +170,9 @@ open class WordLemmaID(synsetID: ISynsetID, lemma0: String) : BaseWordID(synsetI
 
 /**
  * Constructs a word id from the specified arguments.
- * This constructor produces a word with an unknown lemma.
+ * This constructor produces a word id with a word number and a lemma
+ * The word number, which is a number from 1 to 255, indicates the order this word is listed in the Wordnet data files
+ * The lemma is a non-empty string non-whitespace string
  *
  * @param synsetID  the synset id; may not be null
  * @property wordNumber the word number
@@ -186,7 +183,6 @@ open class WordLemmaID(synsetID: ISynsetID, lemma0: String) : BaseWordID(synsetI
 class WordLemmaNumID(synsetID: ISynsetID, val wordNumber: Int, lemma: String) : WordLemmaID(synsetID, lemma), IWordID {
 
     init {
-        require(lemma.isNotEmpty())
         checkWordNumber(wordNumber)
     }
 
