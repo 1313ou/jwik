@@ -16,7 +16,7 @@ import java.util.*
 
 /**
  * Parser for Wordnet index files (e.g., `idx.adv` or
- * `adv.idx`). It produces an `IIndexWord` object.
+ * `adv.idx`). It produces an `IndexWord` object.
  *
  * This class follows a singleton design pattern, and is not intended to be
  * instantiated directly; rather, call the [.getInstance] method to get
@@ -34,9 +34,9 @@ class IndexLineParser
  *
  * @since JWI 2.0.0
  */
-private constructor() : ILineParser<IIndexWord> {
+private constructor() : ILineParser<IndexWord> {
 
-    override fun parseLine(line: String): IIndexWord {
+    override fun parseLine(line: String): IndexWord {
 
         try {
             val tokenizer = StringTokenizer(line, " ")

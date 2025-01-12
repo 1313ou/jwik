@@ -80,23 +80,22 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         dataProvider.setSourceMatcher(contentTypeKey, pattern)
     }
 
-    override fun getIndexWord(lemma: String, pos: POS): IIndexWord? {
+    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
         checkOpen()
         return getIndexWord(IndexWordID(lemma, pos))
     }
 
-    override fun getIndexWord(id: IIndexWordID): IIndexWord? {
+    override fun getIndexWord(id: IndexWordID): IndexWord? {
         checkOpen()
-        val content = dataProvider.resolveContentType<IIndexWord>(DataType.INDEX, id.pOS)
-        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IIndexWord>(content!!))
+        val content = dataProvider.resolveContentType<IndexWord>(DataType.INDEX, id.pOS)
+        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IndexWord>(content!!))
         val line = file.getLine(id.lemma)
         if (line == null) {
             return null
         }
         checkNotNull(content)
         val dataType = content.dataType
-        val parser = checkNotNull(dataType.parser)
-        return parser.parseLine(line)
+        return dataType.parser!!.parseLine(line)
     }
 
     override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
@@ -114,10 +113,10 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
 
     private fun getWords(start: String, pos: POS, limit: Int, result: MutableSet<String>): MutableCollection<String> {
         checkOpen()
-        val content = checkNotNull(dataProvider.resolveContentType<IIndexWord>(DataType.WORD, pos))
+        val content = checkNotNull(dataProvider.resolveContentType<IndexWord>(DataType.WORD, pos))
         val dataType = content.dataType
-        val parser: ILineParser<IIndexWord> = checkNotNull(dataType.parser)
-        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IIndexWord>(content))
+        val parser: ILineParser<IndexWord> = checkNotNull(dataType.parser)
+        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IndexWord>(content))
         var found = false
         val lines = file.iterator(start)
         while (lines.hasNext()) {
@@ -325,7 +324,7 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
         return ExceptionEntry(proxy, id.pOS!!)
     }
 
-    override fun getIndexWordIterator(pos: POS): Iterator<IIndexWord> {
+    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
         checkOpen()
         return IndexFileIterator(pos)
     }
@@ -421,12 +420,12 @@ class DataSourceDictionary(override val dataProvider: IDataProvider) : IDataSour
     /**
      * Iterates over index files.
      */
-    inner class IndexFileIterator @JvmOverloads constructor(pos: POS, pattern: String = "") : FileIterator2<IIndexWord>(
-        dataProvider.resolveContentType<IIndexWord>(DataType.INDEX, pos)!!,
+    inner class IndexFileIterator @JvmOverloads constructor(pos: POS, pattern: String = "") : FileIterator2<IndexWord>(
+        dataProvider.resolveContentType<IndexWord>(DataType.INDEX, pos)!!,
         pattern
     ) {
 
-        override fun parseLine(line: String): IIndexWord {
+        override fun parseLine(line: String): IndexWord {
             checkNotNull(fParser)
             return fParser.parseLine(line)
         }

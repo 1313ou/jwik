@@ -55,15 +55,15 @@ class ContentType<T>
 
     companion object {
 
-        val INDEX_NOUN: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.INDEX_NOUN, IndexLineComparator.instance)
-        val INDEX_VERB: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.INDEX_VERB, IndexLineComparator.instance)
-        val INDEX_ADVERB: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator.instance)
-        val INDEX_ADJECTIVE: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator.instance)
+        val INDEX_NOUN: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.INDEX_NOUN, IndexLineComparator.instance)
+        val INDEX_VERB: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.INDEX_VERB, IndexLineComparator.instance)
+        val INDEX_ADVERB: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator.instance)
+        val INDEX_ADJECTIVE: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator.instance)
 
-        val WORD_NOUN: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.WORD_NOUN, IndexLineComparator.instance)
-        val WORD_VERB: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.WORD_VERB, IndexLineComparator.instance)
-        val WORD_ADVERB: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.WORD_ADVERB, IndexLineComparator.instance)
-        val WORD_ADJECTIVE: ContentType<IIndexWord> = ContentType<IIndexWord>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator.instance)
+        val WORD_NOUN: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.WORD_NOUN, IndexLineComparator.instance)
+        val WORD_VERB: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.WORD_VERB, IndexLineComparator.instance)
+        val WORD_ADVERB: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.WORD_ADVERB, IndexLineComparator.instance)
+        val WORD_ADJECTIVE: ContentType<IndexWord> = ContentType<IndexWord>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator.instance)
 
         val DATA_NOUN: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_NOUN, DataLineComparator.instance)
         val DATA_VERB: ContentType<Synset> = ContentType<Synset>(ContentTypeKey.DATA_VERB, DataLineComparator.instance)
@@ -116,14 +116,14 @@ class ContentType<T>
 
         /**
          * Use this convenience method to retrieve the appropriate
-         * `IIndexWord` content type for the specified POS.
+         * `IndexWord` content type for the specified POS.
          *
          * @param pos the part of speech for the content type, may not be null
          * @return the index content type for the specified part of speech
          * @throws NullPointerException if the specified part of speech is null
          * @since JWI 2.0.0
          */
-        fun getIndexContentType(pos: POS): IContentType<IIndexWord> {
+        fun getIndexContentType(pos: POS): IContentType<IndexWord> {
             return when (pos) {
                 POS.NOUN      -> INDEX_NOUN
                 POS.VERB      -> INDEX_VERB
@@ -133,7 +133,7 @@ class ContentType<T>
             throw IllegalStateException("This should not happen.")
         }
 
-        fun getWordContentType(pos: POS): IContentType<IIndexWord> {
+        fun getWordContentType(pos: POS): IContentType<IndexWord> {
             return when (pos) {
                 POS.NOUN      -> WORD_NOUN
                 POS.VERB      -> WORD_VERB

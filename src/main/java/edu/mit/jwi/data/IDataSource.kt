@@ -21,7 +21,7 @@ import edu.mit.jwi.item.IHasVersion
  * that can be passed into the [.getLine] method to find a
  * particular piece of data in the resource. The `String` return can
  * be parsed by the parser associated with the content type to produce a data
- * object (e.g., an `Synset` or `IIndexWord` object).
+ * object (e.g., an `Synset` or `IndexWord` object).
  *
  * @param <T> the type of object represented in this data resource
  * @author Mark A. Finlayson

@@ -100,10 +100,10 @@ open class CachingDictionary(
             return backingDictionary.version
         }
 
-    override fun getIndexWord(lemma: String, pos: POS): IIndexWord? {
+    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
         checkOpen()
-        val id: IIndexWordID = IndexWordID(lemma, pos)
-        var item = cache.retrieveItem<IIndexWord, IIndexWordID>(id)
+        val id: IndexWordID = IndexWordID(lemma, pos)
+        var item = cache.retrieveItem<IndexWord, IndexWordID>(id)
         if (item == null) {
             item = backingDictionary.getIndexWord(id)
             if (item != null) {
@@ -113,9 +113,9 @@ open class CachingDictionary(
         return item
     }
 
-    override fun getIndexWord(id: IIndexWordID): IIndexWord? {
+    override fun getIndexWord(id: IndexWordID): IndexWord? {
         checkOpen()
-        var item = cache.retrieveItem<IIndexWord, IIndexWordID>(id)
+        var item = cache.retrieveItem<IndexWord, IndexWordID>(id)
         if (item == null) {
             item = backingDictionary.getIndexWord(id)
             if (item != null) {
@@ -125,7 +125,7 @@ open class CachingDictionary(
         return item
     }
 
-    override fun getIndexWordIterator(pos: POS): Iterator<IIndexWord> {
+    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
         return backingDictionary.getIndexWordIterator(pos)
     }
 
@@ -135,7 +135,7 @@ open class CachingDictionary(
         if (item == null) {
             item = backingDictionary.getWord(id)
             if (item != null) {
-                val s = checkNotNull(item.synset as Synset)
+                val s = checkNotNull(item.synset)
                 cacheSynset(s)
             }
         }

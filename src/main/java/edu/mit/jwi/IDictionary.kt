@@ -69,7 +69,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
     // F I N D
 
     /**
-     * This method is identical to `getIndexWord(IIndexWordID)` and
+     * This method is identical to `getIndexWord(IndexWordID)` and
      * is provided as a convenience.
      *
      * @param lemma the lemma for the index word requested; may not be
@@ -81,7 +81,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws IllegalArgumentException if the specified lemma is empty or all whitespace
      * @since JWI 1.0
      */
-    fun getIndexWord(lemma: String, pos: POS): IIndexWord?
+    fun getIndexWord(lemma: String, pos: POS): IndexWord?
 
     /**
      * Retrieves the specified index word object from the database. If the
@@ -103,7 +103,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
-    fun getIndexWord(id: IIndexWordID): IIndexWord?
+    fun getIndexWord(id: IndexWordID): IndexWord?
 
     /**
      * Returns an iterator that will iterate over all index words of the
@@ -116,7 +116,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @throws NullPointerException if the argument is null
      * @since JWI 1.0
      */
-    fun getIndexWordIterator(pos: POS): Iterator<IIndexWord>
+    fun getIndexWordIterator(pos: POS): Iterator<IndexWord>
 
     /**
      * Retrieves the word with the specified id from the database. If the

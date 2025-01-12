@@ -419,13 +419,13 @@ class RAMDictionary private constructor(
 
     // INDEXWORD
 
-    override fun getIndexWord(lemma: String, pos: POS): IIndexWord? {
+    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
         return getIndexWord(IndexWordID(lemma, pos))
     }
 
-    override fun getIndexWord(id: IIndexWordID): IIndexWord? {
+    override fun getIndexWord(id: IndexWordID): IndexWord? {
         if (data != null) {
-            val m = checkNotNull(data!!.idxWords[id.pOS])
+            val m = data!!.idxWords[id.pOS]!!
             return m[id]
         } else {
             checkNotNull(backingDictionary)
@@ -433,7 +433,7 @@ class RAMDictionary private constructor(
         }
     }
 
-    override fun getIndexWordIterator(pos: POS): Iterator<IIndexWord> {
+    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
         return HotSwappableIndexWordIterator(pos)
     }
 
@@ -601,12 +601,12 @@ class RAMDictionary private constructor(
      * @since JWI 2.2.0
      */
     private inner class HotSwappableIndexWordIterator(private val pos: POS) :
-        HotSwappableIterator<IIndexWord>(
+        HotSwappableIterator<IndexWord>(
             if (data == null) backingDictionary!!.getIndexWordIterator(pos) else data!!.idxWords[pos]!!.values.iterator(),
             data == null
         ) {
 
-        override fun makeIterator(): Iterator<IIndexWord> {
+        override fun makeIterator(): Iterator<IndexWord> {
             checkNotNull(data)
             val m = checkNotNull(data!!.idxWords[pos])
             return m.values.iterator()
@@ -741,7 +741,7 @@ class RAMDictionary private constructor(
                 // index words
                 var idxWords = result.idxWords[pos]!!
                 run {
-                    val i: Iterator<IIndexWord> = source.getIndexWordIterator(pos)
+                    val i: Iterator<IndexWord> = source.getIndexWordIterator(pos)
                     while (i.hasNext()) {
                         val idxWord = i.next()
                         checkNotNull(idxWords)
@@ -837,7 +837,7 @@ class RAMDictionary private constructor(
 
         var version: IVersion? = null
 
-        val idxWords: MutableMap<POS, MutableMap<IIndexWordID, IIndexWord>>
+        val idxWords: MutableMap<POS, MutableMap<IndexWordID, IndexWord>>
 
         val synsets: MutableMap<POS, MutableMap<SynsetID, Synset>>
 
@@ -853,7 +853,7 @@ class RAMDictionary private constructor(
          * @since JWI 2.2.0
          */
         init {
-            idxWords = makePOSMap<IIndexWordID, IIndexWord>()
+            idxWords = makePOSMap<IndexWordID, IndexWord>()
             synsets = makePOSMap<SynsetID, Synset>()
             exceptions = makePOSMap<IExceptionEntryID, IExceptionEntry>()
             words = makeMap<SenseKey, Word>(208000, null)
@@ -916,7 +916,7 @@ class RAMDictionary private constructor(
          * @since JWI 2.2.0
          */
         fun compactSize() {
-            compactPOSMap<IIndexWordID, IIndexWord>(idxWords)
+            compactPOSMap<IndexWordID, IndexWord>(idxWords)
             compactPOSMap<SynsetID, Synset>(synsets)
             compactPOSMap<IExceptionEntryID, IExceptionEntry>(exceptions)
             words = compactMap<SenseKey, Word>(words)
@@ -1044,7 +1044,7 @@ class RAMDictionary private constructor(
          * @return the new index word object
          * @since JWI 2.2.0
          */
-        private fun makeIndexWord(old: IIndexWord): IIndexWord {
+        private fun makeIndexWord(old: IndexWord): IndexWord {
             val newIDs: Array<IWordID> = Array(old.wordIDs.size) { i ->
                 var oldID: IWordID = old.wordIDs[i]
                 val resolver = synsets[oldID.pOS]!!

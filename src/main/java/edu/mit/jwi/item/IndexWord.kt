@@ -12,31 +12,48 @@ package edu.mit.jwi.item
 import java.util.*
 
 /**
- * Default implementation of `IIndexWord`.
+ * A Wordnet index word object, represented in the Wordnet files as a line in an index file.
  *
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<Pointer>?, words: Array<IWordID>) : IIndexWord {
+class IndexWord(
+    id: IndexWordID,
+    tagSenseCnt: Int,
+    ptrs: Array<Pointer>?,
+    words: Array<IWordID>,
 
-    override val iD: IIndexWordID
+    ) : IHasPOS, IItem<IndexWordID> {
 
-    override val tagSenseCount: Int
+    /**
+     * The lemma (word root) associated with this index word.
+     * Never empty or all whitespace.
+     */
+    override val iD: IndexWordID = id
 
-    override val pointers: Set<Pointer>
+    /**
+     * The number of senses of lemma that are ranked according to their frequency of occurrence in semantic concordance texts.
+     * This will be a non-negative number.
+      */
+    val tagSenseCount: Int = tagSenseCnt
 
-    override val wordIDs: List<IWordID>
+    /**
+     * An immutable set containing all the different types of pointers that this index word has across all synsets containing this word.
+     * If all senses of the word have no pointers, this method returns an empty set.
+     */
+    val pointers: Set<Pointer>
 
-    override val lemma: String
+    val wordIDs: List<IWordID> = words.toList()
+
+    val lemma: String
         get() {
-            checkNotNull(this.iD)
             return iD.lemma
         }
 
     override val pOS: POS
         get() {
-            return iD.pOS!!
+            return iD.pOS
         }
 
     /**
@@ -83,7 +100,7 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<Pointer>?, words
      * empty
      * @since JWI 1.0
      */
-    constructor(id: IIndexWordID, tagSenseCnt: Int, words: Array<IWordID>) : this(id, tagSenseCnt, null, words)
+    constructor(id: IndexWordID, tagSenseCnt: Int, words: Array<IWordID>) : this(id, tagSenseCnt, null, words)
 
     /**
      * Constructs a new index word.
@@ -100,16 +117,8 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<Pointer>?, words
      * @since JWI 2.3.0
      */
     init {
-        if (id == null) {
-            throw NullPointerException()
-        }
         require(tagSenseCnt >= 0)
         require(words.isNotEmpty())
-        for (wid in words) {
-            if (wid == null) {
-                throw NullPointerException()
-            }
-        }
 
         // do pointers as of v2.3.0
         val pointers: MutableSet<Pointer>
@@ -118,66 +127,20 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<Pointer>?, words
         } else {
             pointers = HashSet<Pointer>(ptrs.size)
             for (p in ptrs) {
-                if (p == null) {
-                    throw NullPointerException()
-                } else {
-                    pointers.add(p)
-                }
+                pointers.add(p)
             }
         }
-
-        this.iD = id
-        this.tagSenseCount = tagSenseCnt
-        this.wordIDs = Collections.unmodifiableList<IWordID>(listOf<IWordID>(*words))
         this.pointers = pointers
     }
 
-    /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#toString()
-    */
-
     override fun toString(): String {
-        val sb = StringBuilder()
-        sb.append('[')
-        checkNotNull(this.iD)
-        sb.append(iD.lemma)
-        sb.append(" (")
-        sb.append(iD.pOS)
-        sb.append(") ")
-        val i: Iterator<IWordID> = wordIDs.iterator()
-        while (i.hasNext()) {
-            sb.append(i.next().toString())
-            if (i.hasNext()) {
-                sb.append(", ")
-            }
-        }
-        sb.append(']')
-        return sb.toString()
+        return "[$iD${iD.lemma} (${iD.pOS}) ${wordIDs.joinToString(separator = ", ")}]"
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     override fun hashCode(): Int {
-        val prime = 31
-        var result = 1
-        checkNotNull(this.iD)
-        result = prime * result + iD.hashCode()
-        result = prime * result + tagSenseCount
-        result = prime * result + wordIDs.hashCode()
-        result = prime * result + pointers.hashCode()
-        return result
+        return Objects.hash(iD, tagSenseCount, wordIDs, pointers)
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     override fun equals(obj: Any?): Boolean {
         if (this === obj) {
             return true
@@ -185,12 +148,11 @@ class IndexWord(id: IIndexWordID, tagSenseCnt: Int, ptrs: Array<Pointer>?, words
         if (obj == null) {
             return false
         }
-        if (obj !is IIndexWord) {
+        if (obj !is IndexWord) {
             return false
         }
-        val other: IIndexWord = obj as IndexWord
-        checkNotNull(this.iD)
-        if (this.iD != other.iD) {
+        val other: IndexWord = obj
+        if (iD != other.iD) {
             return false
         }
         if (tagSenseCount != other.tagSenseCount) {

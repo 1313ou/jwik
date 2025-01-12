@@ -13,47 +13,38 @@ import java.util.*
 import java.util.regex.Pattern
 
 /**
- * Default implementation of `IIndexWordID`.
+ * A unique identifier for an index word. An index word ID is sufficient to
+ * retrieve a specific index word from the Wordnet database. It consists of both
+ * a lemma (root form) and part of speech.
  *
+ * Constructs an index word id object with the specified lemma and part of
+ * speech. Since all index entries are in lower case, with whitespace
+ * converted to underscores, this constructor applies this conversion.
+ *
+ * @param lemma the lemma for the id
+ * @param pOS   the part of speech for the id
+ * @throws IllegalArgumentException if the lemma is empty or all whitespace
  * @author Mark A. Finlayson
  * @version 2.4.0
  * @since JWI 1.0
  */
-class IndexWordID(lemma: String, pos: POS) : IIndexWordID {
-
-    override val lemma: String
-
-    override val pOS: POS
+class IndexWordID(
+    lemma: String,
+    override val pOS: POS,
+) : IHasPOS, IItemID {
 
     /**
-     * Constructs an index word id object with the specified lemma and part of
-     * speech. Since all index entries are in lower case, with whitespace
-     * converted to underscores, this constructor applies this conversion.
-     *
-     * @param lemma the lemma for the id
-     * @param pos   the part of speech for the id
-     * @throws NullPointerException     if either argument is null
-     * @throws IllegalArgumentException if the lemma is empty or all whitespace
-     * @since JWI 1.0
+     * The lemma (root form) of the index word that this ID indicates.
+     * The lemma will never be empty, or all whitespace.
      */
+    val lemma: String = whitespace.matcher(lemma.lowercase(Locale.getDefault())).replaceAll("_").trim { it <= ' ' }
+
     init {
-        var lemma = lemma
-        if (pos == null) {
-            throw NullPointerException()
-        }
-        lemma = lemma.lowercase(Locale.getDefault()).trim { it <= ' ' }
         require(lemma.isNotEmpty())
-        this.lemma = whitespace.matcher(lemma).replaceAll("_")
-        this.pOS = pos
     }
 
     override fun hashCode(): Int {
-        val prime = 31
-        var result = 1
-        result = prime * result + lemma.hashCode()
-        checkNotNull(this.pOS)
-        result = prime * result + pOS.hashCode()
-        return result
+        return Objects.hash(lemma, pOS)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -63,20 +54,18 @@ class IndexWordID(lemma: String, pos: POS) : IIndexWordID {
         if (obj == null) {
             return false
         }
-        if (obj !is IIndexWordID) {
+        if (obj !is IndexWordID) {
             return false
         }
         val other = obj
         if (lemma != other.lemma) {
             return false
         }
-        checkNotNull(this.pOS)
-        return this.pOS == other.pOS
+        return pOS == other.pOS
     }
 
     override fun toString(): String {
-        checkNotNull(this.pOS)
-        return "XID-" + lemma + "-" + pOS.tag
+        return "XID-$lemma-${pOS.tag}"
     }
 
     companion object {
@@ -100,16 +89,11 @@ class IndexWordID(lemma: String, pos: POS) : IIndexWordID {
          * @since JWI 1.0
          */
         fun parseIndexWordID(value: String): IndexWordID {
-            if (value == null) {
-                throw NullPointerException()
-            }
-
             require(value.startsWith("XID-"))
-
             require(value[value.length - 2] == '-')
 
             val pos = POS.getPartOfSpeech(value[value.length - 1])
-            return IndexWordID(value.substring(4, value.length - 2), pos!!)
+            return IndexWordID(value.substring(4, value.length - 2), pos)
         }
     }
 }
