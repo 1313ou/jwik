@@ -23,7 +23,6 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
-import kotlin.Throws
 
 /**
  * Dictionary that can be completely loaded into memory.
@@ -33,30 +32,26 @@ import kotlin.Throws
  * * Wordnet files located on the local file system
  * * Wordnet data to be loaded into memory from an exported stream
 
- * **Note:** If you receive an [OutOfMemoryError] while using this object, try increasing your heap size,
- * by using the `-Xmx` switch.
+ * **Note:** If you receive an [OutOfMemoryError] while using this object, try increasing your heap size, by using the `-Xmx` switch.
  *
- * @param backing the backing dictionary; may be null
- * @param factory the input stream factory; may be null
+ * @property backingDictionary the backing dictionary; may be null if factory is not null
+ * @property streamFactory the input stream factory; may be null if backing is not null
  * @param loadPolicy the load policy of the dictionary; see constants in [ILoadPolicy].
  * @param config config bundle
  */
 class RAMDictionary private constructor(
-    backing: IDictionary?,
-    factory: IInputStreamFactory?,
+    /**
+     * The dictionary that backs this instance; may be null. if factory is not null
+     */
+    val backingDictionary: IDictionary?,
+    /**
+     * The stream factory that backs this instance; may be null if backing is not null
+     */
+    val streamFactory: IInputStreamFactory?,
+
     loadPolicy: Int,
     config: Config? = null,
 ) : IDictionary, ILoadPolicy, ILoadable {
-
-    /**
-     * The dictionary that backs this instance; may be null.
-     */
-    val backingDictionary: IDictionary?
-
-    /**
-     * The stream factory that backs this instance; may be null
-     */
-    val streamFactory: IInputStreamFactory?
 
     private val lifecycleLock: Lock = ReentrantLock()
 
@@ -70,7 +65,7 @@ class RAMDictionary private constructor(
 
     private var data: DictionaryData? = null
 
-    override var loadPolicy: Int = if (factory == null) loadPolicy else ILoadPolicy.IMMEDIATE_LOAD
+    override var loadPolicy: Int = if (streamFactory == null) loadPolicy else ILoadPolicy.IMMEDIATE_LOAD
         set(policy) {
             if (isOpen)
                 throw ObjectOpenException()
@@ -156,12 +151,8 @@ class RAMDictionary private constructor(
      * If the factory is non-null, the dictionary will ignore the specified load policy and set the load policy to "immediate load".
      */
     init {
-        check(backing != null || factory != null)  { "One of backing dictionary and input stream factory must be non-null" }
-        check(backing == null || factory == null) { "Both backing dictionary and input stream factory need not be non-null" }
-
-        backingDictionary = backing
-        streamFactory = factory
-
+        check(backingDictionary != null || streamFactory != null) { "One of backing dictionary and input stream factory must be non-null" }
+        check(backingDictionary == null || streamFactory == null) { "Both backing dictionary and input stream factory need not be non-null" }
         configure(config)
     }
 
@@ -169,6 +160,8 @@ class RAMDictionary private constructor(
         backingDictionary?.configure(config)
         streamFactory?.configure(config)
     }
+
+    // LOAD
 
     override val isLoaded: Boolean
         get() = data != null
@@ -209,6 +202,8 @@ class RAMDictionary private constructor(
         }
     }
 
+    // OPEN
+
     override val isOpen: Boolean
         get() {
             try {
@@ -238,8 +233,7 @@ class RAMDictionary private constructor(
             state = LifecycleState.OPENING
 
             if (backingDictionary == null) {
-                // behavior when loading from an
-                // input stream is immediate load
+                // behavior when loading from an input stream is immediate load
                 try {
                     load(true)
                 } catch (e: InterruptedException) {
@@ -248,9 +242,7 @@ class RAMDictionary private constructor(
                 }
                 return true
             } else {
-                // behavior when loading from a
-                // backing dictionary depends on the
-                // load policy
+                // behavior when loading from a backing dictionary depends on the load policy
                 val result = backingDictionary.open()
                 if (result) {
                     try {
@@ -338,31 +330,31 @@ class RAMDictionary private constructor(
         }
     }
 
+    // EXPORT
+
     /**
      * Exports the in-memory contents of the data to the specified output stream.
      * This method flushes and closes the output stream when it is done writing
      * the data.
      *
-     * @param out the output stream to which the in-memory data will be written;
-     * may not be null
-     * @throws IOException           if there is a problem writing the in-memory data to the
-     * output stream.
+     * @param out the output stream to which the in-memory data will be written
+     * @throws IOException           if there is a problem writing the in-memory data to the output stream.
      * @throws IllegalStateException if the dictionary has not been loaded into memory
      */
     @Throws(IOException::class)
     fun export(out: OutputStream) {
-        var out = out
         try {
             loadLock.lock()
             check(isLoaded) { "RAMDictionary not loaded into memory" }
 
-            out = GZIPOutputStream(out)
-            out = BufferedOutputStream(out)
-            val oos = ObjectOutputStream(out)
-
-            oos.writeObject(data)
-            oos.flush()
-            oos.close()
+            GZIPOutputStream(out).use {
+                BufferedOutputStream(it).use {
+                    ObjectOutputStream(it).use {
+                        it.writeObject(data)
+                        it.flush()
+                    }
+                }
+            }
         } finally {
             loadLock.unlock()
         }
@@ -389,11 +381,10 @@ class RAMDictionary private constructor(
 
     override fun getIndexWord(id: IndexWordID): IndexWord? {
         if (data != null) {
-            val m = data!!.idxWords[id.pOS]!!
-            return m[id]
+            val resolver = data!!.idxWords[id.pOS]!!
+            return resolver[id]
         } else {
-            checkNotNull(backingDictionary)
-            return backingDictionary.getIndexWord(id)
+            return backingDictionary!!.getIndexWord(id)
         }
     }
 
@@ -416,17 +407,15 @@ class RAMDictionary private constructor(
                 else           -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
             }
         } else {
-            checkNotNull(backingDictionary)
-            return backingDictionary.getWord(id)
+            return backingDictionary!!.getWord(id)
         }
     }
 
     override fun getWord(key: SenseKey): Word? {
-        if (data != null) {
-            return data!!.words[key]
+        return if (data != null) {
+            data!!.words[key]
         } else {
-            checkNotNull(backingDictionary)
-            return backingDictionary.getWord(key)
+            backingDictionary!!.getWord(key)
         }
     }
 
@@ -434,11 +423,10 @@ class RAMDictionary private constructor(
 
     override fun getSynset(id: SynsetID): Synset? {
         if (data != null) {
-            val m = checkNotNull(data!!.synsets[id.pOS])
-            return m[id]
+            val resolver = data!!.synsets[id.pOS]!!
+            return resolver[id]
         } else {
-            checkNotNull(backingDictionary)
-            return backingDictionary.getSynset(id)
+            return backingDictionary!!.getSynset(id)
         }
     }
 
@@ -452,8 +440,7 @@ class RAMDictionary private constructor(
         if (data != null) {
             return data!!.senses[key]
         } else {
-            checkNotNull(backingDictionary)
-            return backingDictionary.getSenseEntry(key)
+            return backingDictionary!!.getSenseEntry(key)
         }
     }
 
@@ -469,11 +456,10 @@ class RAMDictionary private constructor(
 
     override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
         if (data != null) {
-            val m = checkNotNull(data!!.exceptions[id.pOS])
-            return m[id]
+            val resolver = data!!.exceptions[id.pOS]!!
+            return resolver[id]
         } else {
-            checkNotNull(backingDictionary)
-            return backingDictionary.getExceptionEntry(id)
+            return backingDictionary!!.getExceptionEntry(id)
         }
     }
 
@@ -501,7 +487,6 @@ class RAMDictionary private constructor(
             if (checkForLoad) {
                 checkForLoad()
             }
-            checkNotNull(itr)
             return itr.hasNext()
         }
 
@@ -557,8 +542,7 @@ class RAMDictionary private constructor(
         ) {
 
         override fun makeIterator(): Iterator<IndexWord> {
-            checkNotNull(data)
-            val m = checkNotNull(data!!.idxWords[pos])
+            val m = data!!.idxWords[pos]!!
             return m.values.iterator()
         }
     }
@@ -575,8 +559,7 @@ class RAMDictionary private constructor(
         ) {
 
         override fun makeIterator(): Iterator<Synset> {
-            checkNotNull(data)
-            val m = checkNotNull(data!!.synsets[pos])
+            val m = data!!.synsets[pos]!!
             return m.values.iterator()
         }
     }
@@ -593,9 +576,7 @@ class RAMDictionary private constructor(
         ) {
 
         override fun makeIterator(): Iterator<ExceptionEntry> {
-            checkNotNull(data)
-            val m = checkNotNull(data!!.exceptions[pos])
-            return m.values.iterator()
+            return data!!.exceptions[pos]!!.values.iterator()
         }
     }
 
@@ -609,7 +590,6 @@ class RAMDictionary private constructor(
         ) {
 
         override fun makeIterator(): Iterator<SenseEntry> {
-            checkNotNull(data)
             return data!!.senses.values.iterator()
         }
     }
@@ -675,9 +655,7 @@ class RAMDictionary private constructor(
                     val i: Iterator<IndexWord> = source.getIndexWordIterator(pos)
                     while (i.hasNext()) {
                         val idxWord = i.next()
-                        checkNotNull(idxWords)
-                        val id = checkNotNull(idxWord.iD)
-                        idxWords.put(id, idxWord)
+                        idxWords.put(idxWord.iD, idxWord)
                     }
                 }
                 if (t.isInterrupted) {
@@ -685,14 +663,12 @@ class RAMDictionary private constructor(
                 }
 
                 // synsets and words
-                var synsets = result.synsets[pos]
-                checkNotNull(synsets)
+                var synsets = result.synsets[pos]!!
                 run {
                     val i: Iterator<Synset> = source.getSynsetIterator(pos)
                     while (i.hasNext()) {
                         val synset = i.next()
-                        val id = checkNotNull(synset.iD)
-                        synsets.put(id, synset)
+                        synsets.put(synset.iD, synset)
                         for (word in synset.words) {
                             result.words.put(word.senseKey, word)
                         }
@@ -704,11 +680,9 @@ class RAMDictionary private constructor(
 
                 // exceptions
                 var exceptions = result.exceptions[pos]!!
-                checkNotNull(exceptions)
                 val i: Iterator<ExceptionEntry> = source.getExceptionEntryIterator(pos)
                 while (i.hasNext()) {
                     val exception = i.next()
-                    checkNotNull(exception.iD)
                     exceptions.put(exception.iD, exception)
                 }
                 if (t.isInterrupted) {
@@ -768,9 +742,9 @@ class RAMDictionary private constructor(
 
         val exceptions: MutableMap<POS, MutableMap<ExceptionEntryID, ExceptionEntry>> = makePOSMap<ExceptionEntryID, ExceptionEntry>()
 
-        var words: MutableMap<SenseKey, Word> = makeMap<SenseKey, Word>(208000, null)
+        var words: MutableMap<SenseKey, Word> = makeMap<SenseKey, Word>(212500, null)
 
-        var senses: MutableMap<SenseKey, SenseEntry> = makeMap<SenseKey, SenseEntry>(208000, null)
+        var senses: MutableMap<SenseKey, SenseEntry> = makeMap<SenseKey, SenseEntry>(212500, null)
 
         /**
          * This method is used when constructing the dictionary data object.
@@ -853,12 +827,12 @@ class RAMDictionary private constructor(
          */
         fun compactObjects() {
             for (pos in POS.entries) {
-                val sMap = checkNotNull(synsets[pos])
-                for (entry in sMap.entries) {
+                val synsetMap = synsets[pos]!!
+                for (entry in synsetMap.entries) {
                     entry.setValue(makeSynset(entry.value))
                 }
-                val iMap = checkNotNull(idxWords[pos])
-                for (entry in iMap.entries) {
+                val indexMap = idxWords[pos]!!
+                for (entry in indexMap.entries) {
                     entry.setValue(makeIndexWord(entry.value))
                 }
             }
@@ -964,8 +938,7 @@ class RAMDictionary private constructor(
     }
 
     override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
-        checkNotNull(backingDictionary)
-        return backingDictionary.getWords(start, pos, limit)
+        return backingDictionary!!.getWords(start, pos, limit)
     }
 
     companion object {
@@ -1144,5 +1117,5 @@ class RAMDictionary private constructor(
         override fun configure(config: Config?) {
             TODO("Not yet implemented")
         }
-   }
+    }
 }
