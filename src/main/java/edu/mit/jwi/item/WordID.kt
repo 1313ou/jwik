@@ -25,7 +25,7 @@ abstract class BaseWordID(override val synsetID: SynsetID) : IWordID {
 
     override fun toString(): String {
         val pos = synsetID.pOS
-        return "$WORDID_PREFIX ${Synset.zeroFillOffset(synsetID.offset)}-${pos.tag.uppercaseChar()}"
+        return "$WORDID_PREFIX${Synset.zeroFillOffset(synsetID.offset)}-${pos.tag.uppercaseChar()}"
     }
 
     companion object {
@@ -89,24 +89,22 @@ class WordNumID(synsetID: SynsetID, val wordNumber: Int) : BaseWordID(synsetID),
         return Objects.hash(synsetID, wordNumber)
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (obj == null) {
+        if (other == null) {
             return false
         }
-        if (javaClass != obj.javaClass) {
+        if (other is BaseWordID && synsetID != other.synsetID)
             return false
+
+        return when (other) {
+            is WordLemmaNumID -> wordNumber == other.wordNumber
+            is WordNumID      -> wordNumber == other.wordNumber
+            is WordLemmaID    -> false
+            else              -> false
         }
-        val other = obj as WordNumID
-        if (synsetID != other.synsetID) {
-            return false
-        }
-        if (other.wordNumber != -1 && wordNumber != -1 && other.wordNumber != wordNumber) {
-            return false
-        }
-        return true
     }
 
     override fun toString(): String {
@@ -141,21 +139,22 @@ open class WordLemmaID(synsetID: SynsetID, lemma: String) : BaseWordID(synsetID)
         return Objects.hash(synsetID, lemma)
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (obj == null) {
+        if (other == null) {
             return false
         }
-        if (javaClass != obj.javaClass) {
+        if (other is BaseWordID && synsetID != other.synsetID)
             return false
+
+        return when (other) {
+            is WordLemmaNumID -> lemma.equals(other.lemma, ignoreCase = true)
+            is WordLemmaID    -> lemma.equals(other.lemma, ignoreCase = true)
+            is WordNumID      -> false
+            else              -> false
         }
-        val other = obj as WordLemmaID
-        if (synsetID != other.synsetID) {
-            return false
-        }
-        return other.lemma.equals(lemma, ignoreCase = true)
     }
 
     override fun toString(): String {
@@ -190,24 +189,22 @@ class WordLemmaNumID(synsetID: SynsetID, val wordNumber: Int, lemma: String) : W
         return Objects.hash(synsetID, wordNumber, lemma)
     }
 
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (obj == null) {
+        if (other == null) {
             return false
         }
-        if (javaClass != obj.javaClass) {
+        if (other is BaseWordID && synsetID != other.synsetID)
             return false
+
+        return when (other) {
+            is WordLemmaNumID -> lemma.equals(other.lemma, ignoreCase = true) && wordNumber == other.wordNumber
+            is WordLemmaID    -> lemma.equals(other.lemma, ignoreCase = true)
+            is WordNumID      -> wordNumber == other.wordNumber
+            else              -> false
         }
-        val other = obj as WordLemmaNumID
-        if (synsetID != other.synsetID) {
-            return false
-        }
-        if (other.wordNumber != -1 && wordNumber != -1 && other.wordNumber != wordNumber) {
-            return false
-        }
-        return other.lemma.equals(lemma, ignoreCase = true)
     }
 
     override fun toString(): String {
