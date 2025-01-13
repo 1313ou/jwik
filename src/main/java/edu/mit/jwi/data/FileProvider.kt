@@ -76,7 +76,7 @@ class FileProvider @JvmOverloads constructor(
                 checkNotNull(fileMap)
                 field = determineVersion(fileMap!!.values)
             }
-            if (field === Version.NO_VERSION) {
+            if (field === NO_VERSION) {
                 return null
             }
             return field

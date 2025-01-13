@@ -9,13 +9,16 @@
  *******************************************************************************/
 package edu.mit.jwi
 
+import edu.mit.jwi.CachingDictionary
 import edu.mit.jwi.data.*
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.data.parse.ILineParser
 import edu.mit.jwi.item.*
 import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
+import java.io.File
 import java.io.IOException
+import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
 import kotlin.Throws
@@ -36,6 +39,28 @@ class DataSourceDictionary(
     val dataProvider: FileProvider,
     config: Config? = null,
 ) : IDictionary {
+
+    /**
+     * Constructs a new dictionary that uses the Wordnet files located in a directory pointed to by the specified url
+     *
+     * @param wordnetDir an url pointing to a directory containing the wordnet data files on the filesystem
+     * @param config     config parameters
+      */
+    @JvmOverloads
+    constructor(wordnetDir: URL, config: Config? = null) : this(FileProvider(wordnetDir)) {
+        configure(config)
+    }
+
+    /**
+     * Constructs a new dictionary that uses the Wordnet files located in the specified directory
+     *
+     * @param wordnetDir a directory containing the wordnet data files on the filesystem
+     * @param config     config parameters
+     */
+    @JvmOverloads
+    constructor(wordnetDir: File, config: Config? = null) : this(FileProvider(wordnetDir)) {
+        configure(config)
+    }
 
     init {
         configure(config)

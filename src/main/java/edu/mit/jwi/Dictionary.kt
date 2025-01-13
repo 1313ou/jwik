@@ -28,12 +28,10 @@ import java.nio.charset.Charset
 class Dictionary : CachingDictionary {
 
     /**
-     * Constructs a new dictionary that uses the Wordnet files located in a
-     * directory pointed to by the specified url
+     * Constructs a new dictionary that uses the Wordnet files located in a directory pointed to by the specified url
      *
      * @param wordnetDir an url pointing to a directory containing the wordnet data files on the filesystem
      * @param config     config parameters
-     * @since JWI 1.0
      */
     @JvmOverloads
     constructor(wordnetDir: URL, config: Config? = null) : super(DataSourceDictionary(FileProvider(wordnetDir))) {
@@ -41,13 +39,10 @@ class Dictionary : CachingDictionary {
     }
 
     /**
-     * Constructs a new dictionary that uses the Wordnet files located in a
-     * directory pointed to by the specified file
+     * Constructs a new dictionary that uses the Wordnet files located in the specified directory
      *
-     * @param wordnetDir a file pointing to a directory containing the wordnet data files on the filesystem
+     * @param wordnetDir a directory containing the wordnet data files on the filesystem
      * @param config     config parameters
-     * @throws NullPointerException if the specified file is null
-     * @since JWI 1.0
      */
     @JvmOverloads
     constructor(wordnetDir: File, config: Config? = null) : super(DataSourceDictionary(FileProvider(wordnetDir))) {
