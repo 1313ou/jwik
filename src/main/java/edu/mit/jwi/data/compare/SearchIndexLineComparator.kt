@@ -29,8 +29,8 @@ object SearchIndexLineComparator : IndexLineComparator(CommentProcessor) {
     override fun compareLemmas(lemma1: String, lemma2: String): Int {
         var lemma1 = lemma1
         var lemma2 = lemma2
-        lemma1 = lemma1.lowercase(Locale.getDefault())
-        lemma2 = lemma2.lowercase(Locale.getDefault())
+        lemma1 = lemma1.lowercase()
+        lemma2 = lemma2.lowercase()
         val l = min(lemma1.length.toDouble(), lemma2.length.toDouble()).toInt()
         return lemma1.substring(0, l).compareTo(lemma2.substring(0, l))
     }

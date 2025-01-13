@@ -150,7 +150,7 @@ class DataType<T>(
             val posPatterns: Set<String> = pos?.resourceNameHints ?: setOf<String>()
             if (typePatterns == null || typePatterns.isEmpty()) {
                 for (file in files) {
-                    val name = file.getName().lowercase(Locale.getDefault()) // added toLowerCase() as fix for Bug 017
+                    val name = file.getName().lowercase() // added lowerCase() as fix for Bug 017
                     if (containsOneOf(name, posPatterns)) {
                         return file
                     }
@@ -158,7 +158,7 @@ class DataType<T>(
             } else {
                 for (typePattern in typePatterns) {
                     for (file in files) {
-                        val name = file.getName().lowercase(Locale.getDefault()) // added toLowerCase() as fix for Bug 017
+                        val name = file.getName().lowercase() // added lowerCase() as fix for Bug 017
                         if (name.contains(typePattern) && containsOneOf(name, posPatterns)) {
                             return file
                         }

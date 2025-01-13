@@ -1,59 +1,37 @@
 package edu.mit.jwi.test
 
+import edu.mit.jwi.item.LexFile.Companion.NOUN_LOCATION
+import edu.mit.jwi.item.LexFile.Companion.NOUN_TOPS
+import edu.mit.jwi.item.POS
+import edu.mit.jwi.item.SenseKey
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import java.io.OutputStream
 import java.io.PrintStream
 
 class SensekeyTests {
 
     @Test
-    fun sensekeysLive() {
-        try {
-            TestLib.allSensekeysAreLive(jwi!!)
-        } catch (ae: AssertionError) {
-            TestLib.listDeadSensekeys(jwi!!)
-            throw ae
-        }
-    }
-
-    @Test
-    fun senseEntriesLive() {
-        TestLib.allSenseEntriesAreLive(jwi!!)
-    }
-
-    @Test
     fun sensekey() {
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "galore%5:00:00:abundant:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "galore%5:00:00:many:00"))
+        val sk1 = SenseKey("entity", 0, POS.NOUN, false, NOUN_TOPS)
+        val sk2 = SenseKey("entity", 0, POS.NOUN, false, NOUN_TOPS)
+        val sk3 = SenseKey("'entity", 0, POS.NOUN, false, NOUN_TOPS)
+        println(sk1)
+        println(sk2)
+        println(sk3)
+        Assertions.assertEquals(sk1, sk2)
+        Assertions.assertEquals(sk1.hashCode(), sk2.hashCode())
+        Assertions.assertNotEquals(sk1, sk3)
+    }
 
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "aborigine%1:18:00::"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "aborigine%1:18:01::"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "Aborigine%1:18:00::"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "Aborigine%1:18:01::"))
-
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%3:00:01::"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%3:00:02::"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:active:01"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:charged:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:eager:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:fast:01"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:fresh:01"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:good:01"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:illegal:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:lucky:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:near:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:new:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:popular:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:radioactive:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:sexy:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:skilled:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:tasty:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:unpleasant:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:violent:00"))
-        Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:wanted:00"))
+    @Test
+    fun sensekey2() {
+        val sk1 = SenseKey("'s_Gravenhage", 0, POS.NOUN, false, NOUN_LOCATION)
+        val sk2 = SenseKey("'s_gravenhage", 0, POS.NOUN, false, NOUN_LOCATION)
+        println(sk1)
+        println(sk2)
+        Assertions.assertEquals(sk1, sk2)
+        Assertions.assertEquals(sk1.hashCode(), sk2.hashCode())
     }
 
     companion object {
@@ -65,15 +43,5 @@ class SensekeyTests {
                 //DO NOTHING
             }
         })
-
-        private var jwi: JWI? = null
-
-        @JvmStatic
-        @BeforeAll
-        @Throws(IOException::class)
-        fun init() {
-            val wnHome = System.getProperty("SOURCE")
-            jwi = JWI(wnHome)
-        }
     }
 }

@@ -122,7 +122,7 @@ open class SimpleStemmer : IStemmer {
     protected fun normalize(word: String): String {
         // make lowercase
         var word = word
-        word = word.lowercase(Locale.getDefault())
+        word = word.lowercase()
 
         // replace all underscores with spaces
         word = word.replace('_', ' ')

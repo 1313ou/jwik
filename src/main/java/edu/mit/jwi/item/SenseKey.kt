@@ -23,6 +23,9 @@ import java.util.*
  */
 class SenseKey(
 
+    /**
+     * Lemma
+     */
     val lemma: String,
 
     /**
@@ -30,6 +33,9 @@ class SenseKey(
      */
     val lexicalID: Int,
 
+    /**
+     * Part of Speech
+     */
     override val pOS: POS,
 
     /**
@@ -37,6 +43,9 @@ class SenseKey(
      */
     val isAdjectiveSatellite: Boolean,
 
+    /**
+     * Lexical File
+     */
     val lexicalFile: LexFile,
 ) : IHasPOS, Comparable<SenseKey>, Serializable {
 
@@ -78,7 +87,7 @@ class SenseKey(
 
     private var headLexID = -1
 
-    private var toString: String? = null
+    private var key: String? = null
 
     /**
      * Constructs a new sense key.
@@ -86,8 +95,6 @@ class SenseKey(
      * @param lemma  the lemma for the sense key
      * @param lexID  the lexical id of the sense key
      * @param synset the synset for the sense key
-     * @throws NullPointerException if either the lemma or synset is null
-     * @since JWI 2.1.0
      */
     constructor(lemma: String, lexID: Int, synset: Synset) : this(lemma, lexID, synset.pOS, synset.isAdjectiveSatellite, synset.lexicalFile)
 
@@ -97,16 +104,12 @@ class SenseKey(
      * @param lemma       the lemma; may not be null
      * @param lexID       the lexical id
      * @param pos         the part of speech; may not be null
-     * @param isAdjSat    true if this represents an adjective satellite;
-     * false otherwise
+     * @param isAdjSat    true if this represents an adjective satellite; false otherwise
      * @param lexFile     the lexical file; may not be null
      * @param originalKey the original key string
-     * @throws NullPointerException if the lemma, lexical file, or original key is
-     * null
-     * @since JWI 2.1.0
      */
     constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: LexFile, originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
-        toString = originalKey
+        key = originalKey
     }
 
     /**
@@ -119,8 +122,7 @@ class SenseKey(
      * @param originalKey the original key string
      * @param headLemma   the head lemma
      * @param headLexID   the head lexical id; ignored if head lemma is null
-     * @throws NullPointerException if the lemma, lexical file, or original key is
-     * null
+     * @throws NullPointerException if the lemma, lexical file, or original key is null
      * @since JWI 2.1.0
      */
     constructor(lemma: String, lexID: Int, pos: POS, lexFile: LexFile, headLemma: String?, headLexID: Int, originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
@@ -129,7 +131,7 @@ class SenseKey(
         } else {
             setHead(headLemma, headLexID)
         }
-        this.toString = originalKey
+        key = originalKey
     }
 
     /**
@@ -166,19 +168,19 @@ class SenseKey(
     override fun compareTo(key: SenseKey): Int {
 
         // first sort alphabetically by lemma
-        var cmp: Int = this.lemma.compareTo(key.lemma)
+        var cmp: Int = lemma.compareTo(key.lemma) //, ignoreCase = true)
         if (cmp != 0) {
             return cmp
         }
 
         // then sort by synset type
-        cmp = this.synsetType.toFloat().compareTo(key.synsetType.toFloat())
+        cmp = synsetType.toFloat().compareTo(key.synsetType.toFloat())
         if (cmp != 0) {
             return cmp
         }
 
         // then sort by lex_filenum
-        val lf = checkNotNull(this.lexicalFile)
+        val lf = checkNotNull(lexicalFile)
         val lf2: LexFile? = checkNotNull(key.lexicalFile)
         cmp = lf.number.toFloat().compareTo(lf2!!.number.toFloat())
         if (cmp != 0) {
@@ -186,23 +188,23 @@ class SenseKey(
         }
 
         // then sort by lex_id
-        cmp = this.lexicalID.toFloat().compareTo(key.lexicalID.toFloat())
+        cmp = lexicalID.toFloat().compareTo(key.lexicalID.toFloat())
         if (cmp != 0) {
             return cmp
         }
 
-        if (!this.isAdjectiveSatellite && !key.isAdjectiveSatellite) {
+        if (!isAdjectiveSatellite && !key.isAdjectiveSatellite) {
             return 0
         }
-        if (!this.isAdjectiveSatellite and key.isAdjectiveSatellite) {
+        if (!isAdjectiveSatellite and key.isAdjectiveSatellite) {
             return -1
         }
-        if (this.isAdjectiveSatellite and !key.isAdjectiveSatellite) {
+        if (isAdjectiveSatellite and !key.isAdjectiveSatellite) {
             return 1
         }
 
         // then sort by head_word
-        val hw: String? = checkNotNull(this.headWord)
+        val hw: String? = checkNotNull(headWord)
         val hw2: String? = checkNotNull(key.headWord)
         cmp = hw!!.compareTo(hw2!!)
         if (cmp != 0) {
@@ -215,10 +217,10 @@ class SenseKey(
 
     override fun toString(): String {
         checkHeadSet()
-        if (toString == null) {
-            toString = toString(this)
+        if (key == null) {
+            key = toString(this)
         }
-        return toString!!
+        return key!!
     }
 
     /**
@@ -232,11 +234,6 @@ class SenseKey(
         check(!needsHeadSet()) { "Head word and id not yet set" }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
     override fun hashCode(): Int {
         return Objects.hash(lemma, lexicalID, pOS, lexicalFile, isAdjectiveSatellite, headLemma, headLexID)
     }
@@ -300,7 +297,7 @@ class SenseKey(
             val sb = StringBuilder(size)
 
             // make string
-            sb.append(key.lemma) //.toLowerCase());
+            sb.append(key.lemma) //.lowercase())
             sb.append('%')
             sb.append(key.synsetType)
             sb.append(':')

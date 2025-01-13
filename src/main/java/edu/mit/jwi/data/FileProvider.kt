@@ -12,6 +12,7 @@ package edu.mit.jwi.data
 import edu.mit.jwi.data.ContentType.Companion.values
 import edu.mit.jwi.data.DataType.Companion.find
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
+import edu.mit.jwi.data.ILoadPolicy.Companion.IMMEDIATE_LOAD
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.IHasVersion
 import edu.mit.jwi.item.POS
@@ -581,7 +582,7 @@ class FileProvider @JvmOverloads constructor(
 
         src = createBinarySearch<T>(file, contentType)
         src.open()
-        if (policy == ILoadPolicy.Companion.IMMEDIATE_LOAD) {
+        if (policy == IMMEDIATE_LOAD) {
             try {
                 src.load(true)
             } catch (e: InterruptedException) {

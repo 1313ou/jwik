@@ -28,7 +28,7 @@ class Pointer(symbol: String, name: String) {
 
     val name: String = checkString(name)
 
-    private val toString: String = name.lowercase(Locale.getDefault()).replace(' ', '_').replace(",", "")
+    private val toString: String = name.lowercase().replace(' ', '_').replace(",", "")
 
     override fun toString(): String {
         return toString

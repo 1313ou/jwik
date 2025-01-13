@@ -37,7 +37,7 @@ class IndexWordID(
      * The lemma (root form) of the index word that this ID indicates.
      * The lemma will never be empty, or all whitespace.
      */
-    val lemma: String = whitespace.matcher(lemma.lowercase(Locale.getDefault())).replaceAll("_").trim { it <= ' ' }
+    val lemma: String = whitespace.matcher(lemma.lowercase()).replaceAll("_").trim { it <= ' ' }
 
     init {
         require(lemma.isNotEmpty())

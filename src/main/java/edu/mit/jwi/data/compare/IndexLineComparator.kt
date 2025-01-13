@@ -75,8 +75,8 @@ open class IndexLineComparator(override val commentProcessor: CommentProcessor) 
     protected open fun compareLemmas(lemma1: String, lemma2: String): Int {
         var lemma1 = lemma1
         var lemma2 = lemma2
-        lemma1 = lemma1.lowercase(Locale.getDefault())
-        lemma2 = lemma2.lowercase(Locale.getDefault())
+        lemma1 = lemma1.lowercase()
+        lemma2 = lemma2.lowercase()
         return lemma1.compareTo(lemma2)
     }
 

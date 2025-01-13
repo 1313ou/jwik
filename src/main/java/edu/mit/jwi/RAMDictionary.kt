@@ -98,7 +98,7 @@ class RAMDictionary private constructor(
         file: File,
         loadPolicy: Int = DEFAULT_LOAD_POLICY,
         config: Config? = null,
-    ) : this(createBackingDictionary(file)!!, createInputStreamFactory(file)!!, loadPolicy, config)
+    ) : this(createBackingDictionary(file), createInputStreamFactory(file), loadPolicy, config)
 
     /**
      * Loads data from the specified URL using the specified load policy.
@@ -120,7 +120,7 @@ class RAMDictionary private constructor(
         url: URL,
         loadPolicy: Int = DEFAULT_LOAD_POLICY,
         config: Config? = null,
-    ) : this(createBackingDictionary(url)!!, createInputStreamFactory(url)!!, loadPolicy, config)
+    ) : this(createBackingDictionary(url), createInputStreamFactory(url), loadPolicy, config)
 
     /**
      * Constructs a new RAMDictionary that will load the contents of the wrapped dictionary into memory, with the specified load policy.
@@ -156,10 +156,8 @@ class RAMDictionary private constructor(
      * If the factory is non-null, the dictionary will ignore the specified load policy and set the load policy to "immediate load".
      */
     init {
-        if (backing == null && factory == null) {
-            throw NullPointerException()
-        }
-        check(!(backing != null && factory != null)) { "Both backing dictionary and input stream factory may not be non-null" }
+        check(backing != null || factory != null)  { "One of backing dictionary and input stream factory must be non-null" }
+        check(backing == null || factory == null) { "Both backing dictionary and input stream factory need not be non-null" }
 
         backingDictionary = backing
         streamFactory = factory
