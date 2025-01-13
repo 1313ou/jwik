@@ -32,8 +32,14 @@ open class CachingDictionary(
 
     ) : IDictionary {
 
+    /**
+     * Cache
+     */
     val cache = ItemCache()
 
+    /**
+     * Configure
+     */
     override fun configure(config: Config?) {
         backingDictionary.configure(config)
     }

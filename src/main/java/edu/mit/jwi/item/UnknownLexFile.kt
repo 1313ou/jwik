@@ -33,15 +33,6 @@ private constructor(num: Int) : LexFile(num, "Unknown", "Unknown Lexical File", 
 
     companion object {
 
-        /**
-         * This serial version UID identifies the last version of JWI whose
-         * serialized instances of the UnknownLexFile class are compatible with this
-         * implementation.
-         *
-         * @since JWI 2.4.0
-         */
-        private const val serialVersionUID: Long = 240
-
         // cache for unknown lexical file objects.
         private val lexFileMap: MutableMap<Int?, UnknownLexFile?> = HashMap<Int?, UnknownLexFile?>()
 
