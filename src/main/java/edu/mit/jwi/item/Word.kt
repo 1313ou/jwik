@@ -59,9 +59,9 @@ class Word(
 ) : IHasPOS, IItem<IWordID> {
 
     override val pOS: POS
-        get() = iD.synsetID.pOS!!
+        get() = iD.synsetID.pOS
 
-    val senseKey: SenseKey = SenseKey(iD.lemma, lexicalID, synset)
+    val senseKey: SenseKey = SenseKey(iD.lemma.lowercase(), lexicalID, synset)
 
     val verbFrames: List<VerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
 
