@@ -9,18 +9,19 @@
  *******************************************************************************/
 package edu.mit.jwi
 
-import edu.mit.jwi.CachingDictionary
 import edu.mit.jwi.data.*
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.data.parse.ILineParser
 import edu.mit.jwi.item.*
 import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
+import edu.mit.jwi.item.Word.Companion.checkLexicalId
 import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
+import java.util.Collections.emptyIterator
 import kotlin.Throws
 
 /**
@@ -38,14 +39,14 @@ import kotlin.Throws
 class DataSourceDictionary(
     val dataProvider: FileProvider,
     config: Config? = null,
-) : IDictionary {
+) : IDictionary, IHasCharset {
 
     /**
      * Constructs a new dictionary that uses the Wordnet files located in a directory pointed to by the specified url
      *
      * @param wordnetDir an url pointing to a directory containing the wordnet data files on the filesystem
      * @param config     config parameters
-      */
+     */
     @JvmOverloads
     constructor(wordnetDir: URL, config: Config? = null) : this(FileProvider(wordnetDir)) {
         configure(config)
@@ -72,6 +73,88 @@ class DataSourceDictionary(
             return dataProvider.version
         }
 
+    // C O N F I G
+
+    /**
+     * Sets the character set associated with this dictionary.
+     *
+     * @param charset the possibly null character set to use when decoding files.
+     */
+    override var charset: Charset?
+        get() = dataProvider.charset
+        set(charset) {
+            dataProvider.charset = charset
+        }
+
+    /**
+     * Sets the comparator associated with this content type in this dictionary.
+     * The comparator may be null in which case it is reset to defaults.
+     *
+     * @param contentTypeKey the content type for which the comparator is to be set.
+     * @param comparator the possibly null comparator set to use when decoding files.
+     * @throws IllegalStateException if the provider is currently open
+     */
+    private fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
+        dataProvider.setComparator(contentTypeKey, comparator)
+    }
+
+    /**
+     * Sets pattern attached to content type key, that source files have to match to be selected.
+     * This gives selection a first opportunity before falling back on standard data type selection.
+     *
+     * @param contentTypeKey the content type key for which the matcher is to be set.
+     * @param pattern regexp pattern
+     */
+    private fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
+        dataProvider.setSourceMatcher(contentTypeKey, pattern)
+    }
+
+    /**
+     * Configure from config bundle
+     */
+    override fun configure(config: Config?) {
+        // default
+        charset = Charset.defaultCharset()
+
+        // enforce config
+        if (config == null) {
+            return
+        }
+
+        // global params
+        if (config.checkLexicalId != null) {
+            checkLexicalId = config.checkLexicalId == true
+        }
+
+        // dictionary params
+        if (config.indexNounComparator != null) {
+            setComparator(ContentTypeKey.INDEX_NOUN, config.indexNounComparator)
+        }
+        if (config.indexVerbComparator != null) {
+            setComparator(ContentTypeKey.INDEX_VERB, config.indexVerbComparator)
+        }
+        if (config.indexAdjectiveComparator != null) {
+            setComparator(ContentTypeKey.INDEX_ADJECTIVE, config.indexAdjectiveComparator)
+        }
+        if (config.indexAdverbComparator != null) {
+            setComparator(ContentTypeKey.INDEX_ADVERB, config.indexAdverbComparator)
+        }
+
+        if (config.indexSensePattern != null) {
+            setSourceMatcher(ContentTypeKey.SENSE, config.indexSensePattern)
+            setSourceMatcher(ContentTypeKey.SENSES, config.indexSensePattern)
+        }
+        if (config.indexSenseKeyComparator != null) {
+            setComparator(ContentTypeKey.SENSE, config.indexSenseKeyComparator)
+            setComparator(ContentTypeKey.SENSES, config.indexSenseKeyComparator)
+        }
+        if (config.charSet != null) {
+            charset = config.charSet
+        }
+    }
+
+    // O P E N  /  C L O S E
+
     @Throws(IOException::class)
     override fun open(): Boolean {
         return dataProvider.open()
@@ -97,19 +180,7 @@ class DataSourceDictionary(
         }
     }
 
-    override var charset: Charset?
-        get() = dataProvider.charset
-        set(charset) {
-            dataProvider.charset = charset
-        }
-
-    override fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
-        dataProvider.setComparator(contentTypeKey, comparator)
-    }
-
-    override fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
-        dataProvider.setSourceMatcher(contentTypeKey, pattern)
-    }
+    // L O O K  U P
 
     override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
         checkOpen()
@@ -119,14 +190,13 @@ class DataSourceDictionary(
     override fun getIndexWord(id: IndexWordID): IndexWord? {
         checkOpen()
         val content = dataProvider.resolveContentType<IndexWord>(DataType.INDEX, id.pOS)
-        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IndexWord>(content!!))
+        val file: IDataSource<*> = dataProvider.getSource<IndexWord>(content!!)!!
         val line = file.getLine(id.lemma)
         if (line == null) {
             return null
         }
-        checkNotNull(content)
         val dataType = content.dataType
-        return dataType.parser!!.parseLine(line)
+        return dataType.parser.parseLine(line)
     }
 
     override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
@@ -144,27 +214,25 @@ class DataSourceDictionary(
 
     private fun getWords(start: String, pos: POS, limit: Int, result: MutableSet<String>): MutableCollection<String> {
         checkOpen()
-        val content = checkNotNull(dataProvider.resolveContentType<IndexWord>(DataType.WORD, pos))
+        val content = dataProvider.resolveContentType<IndexWord>(DataType.WORD, pos)!!
         val dataType = content.dataType
-        val parser: ILineParser<IndexWord> = checkNotNull(dataType.parser)
-        val file: IDataSource<*> = checkNotNull(dataProvider.getSource<IndexWord>(content))
+        val parser: ILineParser<IndexWord> = dataType.parser
+        val file: IDataSource<*> = dataProvider.getSource<IndexWord>(content)!!
         var found = false
         val lines = file.iterator(start)
         while (lines.hasNext()) {
             val line = lines.next()
-            if (line != null) {
-                val match = line.startsWith(start)
-                if (match) {
-                    val index = parser.parseLine(line)
-                    val lemma = index.lemma
-                    result.add(lemma)
-                    found = true
-                } else if (found) {
-                    break
-                }
-                if (limit > 0 && result.size >= limit) {
-                    break
-                }
+            val match = line.startsWith(start)
+            if (match) {
+                val index = parser.parseLine(line)
+                val lemma = index.lemma
+                result.add(lemma)
+                found = true
+            } else if (found) {
+                break
+            }
+            if (limit > 0 && result.size >= limit) {
+                break
             }
         }
         return result
@@ -190,7 +258,7 @@ class DataSourceDictionary(
         // done in the call to getSynset()
         val entry = getSenseEntry(key)
         if (entry != null) {
-            val synset = getSynset(SynsetID(entry.offset, entry.pOS!!))
+            val synset = getSynset(SynsetID(entry.offset, entry.pOS))
             if (synset != null) {
                 for (synonym in synset.words) {
                     if (synonym.senseKey == key) {
@@ -208,18 +276,18 @@ class DataSourceDictionary(
         // index word search because some synsets have lemmas that differ only in case
         // e.g., {earth, Earth} or {south, South}, and so separate entries
         // are not found in the index file
-        val indexWord = getIndexWord(key.lemma, key.pOS!!)
+        val indexWord = getIndexWord(key.lemma, key.pOS)
         if (indexWord != null) {
             var possibleWord: Word?
             for (wordID in indexWord.wordIDs) {
                 possibleWord = getWord(wordID)
                 if (possibleWord != null) {
-                    val synset = checkNotNull(possibleWord.synset)
+                    val synset = possibleWord.synset
                     val words: List<Word> = synset.words
                     for (synonym in words) {
                         if (synonym.senseKey == key) {
                             word = synonym
-                            val lemma = checkNotNull(synonym.lemma)
+                            val lemma = synonym.lemma
                             if (lemma == key.lemma) {
                                 return synonym
                             }
@@ -234,48 +302,42 @@ class DataSourceDictionary(
     override fun getSenseEntry(key: SenseKey): SenseEntry? {
         checkOpen()
         val content = dataProvider.resolveContentType<SenseEntry>(DataType.SENSE, null)
-        val file = checkNotNull(dataProvider.getSource<SenseEntry>(content!!))
+        val file = dataProvider.getSource<SenseEntry>(content!!)!!
         val line = file.getLine(key.toString())
         if (line == null) {
             return null
         }
-        checkNotNull(content)
         val dataType = content.dataType
-        val parser = checkNotNull(dataType.parser)
+        val parser = dataType.parser
         return parser.parseLine(line)
     }
 
     fun getSenseEntries(key: SenseKey): Array<SenseEntry>? {
         checkOpen()
         val content = dataProvider.resolveContentType<Array<SenseEntry>>(DataType.SENSES, null)
-        val file = checkNotNull(dataProvider.getSource<Array<SenseEntry>>(content!!))
+        val file = dataProvider.getSource<Array<SenseEntry>>(content!!)!!
         val line = file.getLine(key.toString())
         if (line == null) {
             return null
         }
-        checkNotNull(content)
         val dataType = content.dataType
-        val parser = checkNotNull(dataType.parser)
+        val parser = dataType.parser
         return parser.parseLine(line)
     }
 
     override fun getSynset(id: SynsetID): Synset? {
         checkOpen()
         val content = dataProvider.resolveContentType<Synset>(DataType.DATA, id.pOS)
-        val file = dataProvider.getSource<Synset>(content!!)
+        val file = dataProvider.getSource<Synset>(content!!)!!
         val zeroFilledOffset = zeroFillOffset(id.offset)
-        checkNotNull(file)
         val line = file.getLine(zeroFilledOffset)
         if (line == null) {
             return null
         }
-        checkNotNull(content)
         val dataType = content.dataType
-        val parser = checkNotNull(dataType.parser)
+        val parser = dataType.parser
         val result = parser.parseLine(line)
-        if (result != null) {
-            setHeadWord(result)
-        }
+        setHeadWord(result)
         return result
     }
 
@@ -298,9 +360,8 @@ class DataSourceDictionary(
         var headWord: Word? = null
         val related: List<SynsetID> = synset.getRelatedFor(Pointer.SIMILAR_TO)
         for (simID in related) {
-            headSynset = getSynset(simID)
+            headSynset = getSynset(simID)!!
             // assume first 'similar' adjective head is the right one
-            checkNotNull(headSynset)
             if (headSynset.isAdjectiveHead) {
                 headWord = headSynset.words[0]
                 break
@@ -345,9 +406,8 @@ class DataSourceDictionary(
         if (line == null) {
             return null
         }
-        checkNotNull(content)
         val dataType = content.dataType
-        val parser = checkNotNull(dataType.parser)
+        val parser = dataType.parser
         val proxy = parser.parseLine(line)
         return ExceptionEntry(proxy, id.pOS)
     }
@@ -377,26 +437,18 @@ class DataSourceDictionary(
      */
     abstract inner class FileIterator<T, N> @JvmOverloads constructor(content: ContentType<T>, startKey: String? = null) : Iterator<N>, IHasPOS {
 
-        protected val fFile: IDataSource<T>?
+        protected val source = dataProvider.getSource<T>(content)
 
-        protected var iterator: Iterator<String>? = null
+        protected var iterator: Iterator<String>? = source?.iterator(startKey) ?: emptyIterator<String>() // Fix for Bug018
 
-        protected val fParser: ILineParser<T>
+        protected val parser: ILineParser<T> = content.dataType.parser
 
         var currentLine: String? = null
             protected set
 
-        init {
-            checkNotNull(dataProvider)
-            this.fFile = dataProvider.getSource<T>(content)
-            val dataType = content.dataType
-            this.fParser = dataType.parser
-            iterator = fFile?.iterator(startKey) ?: Collections.emptyIterator<String>() // Fix for Bug018
-        }
-
         override val pOS: POS
             get() {
-                val contentType = fFile!!.contentType
+                val contentType = source!!.contentType
                 return contentType.pOS!!
             }
 
@@ -454,8 +506,7 @@ class DataSourceDictionary(
     ) {
 
         override fun parseLine(line: String): IndexWord {
-            checkNotNull(fParser)
-            return fParser.parseLine(line)
+            return parser.parseLine(line)
         }
     }
 
@@ -467,8 +518,7 @@ class DataSourceDictionary(
     ) {
 
         override fun parseLine(line: String): SenseEntry {
-            checkNotNull(fParser)
-            return fParser.parseLine(line)
+            return parser.parseLine(line)
         }
     }
 
@@ -481,13 +531,11 @@ class DataSourceDictionary(
 
         override fun parseLine(line: String): Synset {
             if (pOS == POS.ADJECTIVE) {
-                checkNotNull(fParser)
-                val synset = checkNotNull(fParser.parseLine(line))
+                val synset = parser.parseLine(line)
                 setHeadWord(synset)
                 return synset
             } else {
-                checkNotNull(fParser)
-                return fParser.parseLine(line)
+                return parser.parseLine(line)
             }
         }
     }
@@ -500,8 +548,7 @@ class DataSourceDictionary(
     ) {
 
         override fun parseLine(line: String): ExceptionEntry {
-            checkNotNull(fParser)
-            val proxy = fParser.parseLine(line)
+            val proxy = parser.parseLine(line)
             return ExceptionEntry(proxy, pOS)
         }
     }

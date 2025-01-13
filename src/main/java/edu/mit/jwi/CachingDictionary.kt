@@ -9,10 +9,8 @@
  *******************************************************************************/
 package edu.mit.jwi
 
-import edu.mit.jwi.data.ContentTypeKey
 import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
-import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.*
 import java.io.IOException
 import java.util.concurrent.locks.Lock
@@ -35,6 +33,10 @@ open class CachingDictionary(
     ) : IDictionary {
 
     val cache = ItemCache()
+
+    override fun configure(config: Config?) {
+        backingDictionary.configure(config)
+    }
 
     /**
      * An internal method for assuring compliance with the dictionary interface
@@ -59,20 +61,6 @@ open class CachingDictionary(
             }
             throw ObjectClosedException()
         }
-    }
-
-    override var charset
-        get() = backingDictionary.charset
-        set(charset) {
-            backingDictionary.charset = charset
-        }
-
-    override fun setComparator(contentType: ContentTypeKey, comparator: ILineComparator?) {
-        backingDictionary.setComparator(contentType, comparator)
-    }
-
-    override fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
-        backingDictionary.setSourceMatcher(contentTypeKey, pattern)
     }
 
     @Throws(IOException::class)

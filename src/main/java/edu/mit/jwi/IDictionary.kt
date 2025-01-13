@@ -27,81 +27,14 @@ import java.nio.charset.Charset
  * @version 2.4.0
  * @since JWI 1.0
  */
-interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
+interface IDictionary : IHasVersion, IHasLifecycle {
 
     // C O N F I G
 
     /**
-     * Sets the character set associated with this dictionary. The character set may be null.
-     *
-     * @param charset the possibly null character set to use when
-     * decoding files.
-     * @since JWI 2.3.4
-     */
-    override var charset: Charset?
-
-    /**
-     * Sets the comparator associated with this content type in this dictionary.
-     * The comparator may be null in which case it is reset to defaults.
-     *
-     * @param contentTypeKey the content type for which the comparator is to be set.
-     * @param comparator the possibly null comparator set to use when decoding files.
-     * @throws IllegalStateException if the provider is currently open
-     */
-    fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?)
-
-    /**
-     * Sets pattern attached to content type key, that source files have to match to be selected.
-     * This gives selection a first opportunity before falling back on standard data type selection.
-     *
-     * @param contentTypeKey the content type key for which the matcher is to be set.
-     * @param pattern regexp pattern
-     */
-    fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?)
-
-    /**
      * Configure from config bundle
      */
-    fun configure(config: Config?) {
-        // default
-        charset = Charset.defaultCharset()
-
-        // enforce config
-        if (config == null) {
-            return
-        }
-
-        // global params
-        if (config.checkLexicalId != null) {
-            checkLexicalId = config.checkLexicalId == true
-        }
-
-        // dictionary params
-        if (config.indexNounComparator != null) {
-            setComparator(ContentTypeKey.INDEX_NOUN, config.indexNounComparator)
-        }
-        if (config.indexVerbComparator != null) {
-            setComparator(ContentTypeKey.INDEX_VERB, config.indexVerbComparator)
-        }
-        if (config.indexAdjectiveComparator != null) {
-            setComparator(ContentTypeKey.INDEX_ADJECTIVE, config.indexAdjectiveComparator)
-        }
-        if (config.indexAdverbComparator != null) {
-            setComparator(ContentTypeKey.INDEX_ADVERB, config.indexAdverbComparator)
-        }
-
-        if (config.indexSensePattern != null) {
-            setSourceMatcher(ContentTypeKey.SENSE, config.indexSensePattern)
-            setSourceMatcher(ContentTypeKey.SENSES, config.indexSensePattern)
-        }
-        if (config.indexSenseKeyComparator != null) {
-            setComparator(ContentTypeKey.SENSE, config.indexSenseKeyComparator)
-            setComparator(ContentTypeKey.SENSES, config.indexSenseKeyComparator)
-        }
-        if (config.charSet != null) {
-            charset = config.charSet
-        }
-    }
+    fun configure(config: Config?)
 
     // F I N D
 

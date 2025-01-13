@@ -81,16 +81,6 @@ class RAMDictionary private constructor(
             loadPolicy = if (streamFactory == null) policy else ILoadPolicy.IMMEDIATE_LOAD
         }
 
-    override var charset: Charset?
-        get() {
-            return backingDictionary?.charset
-        }
-        set(charset) {
-            if (isOpen)
-                throw ObjectOpenException()
-            backingDictionary?.charset = charset
-        }
-
     /**
      * Loads data from the specified File using the specified load policy.
      * Note that if the file points to a resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
@@ -180,16 +170,9 @@ class RAMDictionary private constructor(
         configure(config)
     }
 
-    override fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
-        if (isOpen)
-            throw ObjectOpenException()
-        backingDictionary?.setComparator(contentTypeKey, comparator)
-    }
-
-    override fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
-        if (isOpen)
-            throw ObjectOpenException()
-        backingDictionary?.setSourceMatcher(contentTypeKey, pattern)
+    override fun configure(config: Config?) {
+        backingDictionary?.configure(config)
+        streamFactory?.configure(config)
     }
 
     override val isLoaded: Boolean
@@ -1126,6 +1109,8 @@ class RAMDictionary private constructor(
          */
         @Throws(IOException::class)
         fun makeInputStream(): InputStream
+
+        fun configure(config: Config?)
     }
 
     /**
@@ -1140,6 +1125,10 @@ class RAMDictionary private constructor(
         @Throws(IOException::class)
         override fun makeInputStream(): InputStream {
             return FileInputStream(file)
+        }
+
+        override fun configure(config: Config?) {
+            TODO("Not yet implemented")
         }
     }
 
@@ -1156,5 +1145,9 @@ class RAMDictionary private constructor(
         override fun makeInputStream(): InputStream {
             return url.openStream()
         }
-    }
+
+        override fun configure(config: Config?) {
+            TODO("Not yet implemented")
+        }
+   }
 }
