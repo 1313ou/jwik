@@ -24,91 +24,51 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
+import kotlin.Throws
 
-/**
- * Dictionary that can be completely loaded into memory.
-
- * Designed to wrap an arbitrary dictionary object.
- * Convenience constructors are provided for the most common use cases:
- * * Wordnet files located on the local file system
- * * Wordnet data to be loaded into memory from an exported stream
-
- * **Note:** If you receive an [OutOfMemoryError] while using this object, try increasing your heap size, by using the `-Xmx` switch.
- *
- * @property backingDictionary the backing dictionary; may be null if factory is not null
- * @property streamFactory the input stream factory; may be null if backing is not null
- * @param loadPolicy the load policy of the dictionary; see constants in [LoadPolicy].
- * @param config config bundle
- */
-class RAMDictionary private constructor(
+class RAMDictionary(
     /**
      * The dictionary that backs this instance; may be null. if factory is not null
      */
-    val backingDictionary: IDictionary?,
-
-    /**
-     * The stream factory that backs this instance; may be null if backing is not null
-     */
-    val streamFactory: IInputStreamFactory?,
-
+    val backingDictionary: IDictionary,
     loadPolicy: Int,
     config: Config? = null,
-) : IDictionary, ILoadable {
+) : BaseRAMDictionary(config) {
 
-    private val lifecycleLock: Lock = ReentrantLock()
-
-    private val loadLock: Lock = ReentrantLock()
-
-    @Volatile
-    private var state: LifecycleState = LifecycleState.CLOSED
-
-    @Transient
-    private var loader: Thread? = null
-
-    private var data: DictionaryData? = null
-
-    var loadPolicy: Int = if (streamFactory == null) loadPolicy else IMMEDIATE_LOAD
+    var loadPolicy: Int = loadPolicy
         set(policy) {
             if (isOpen)
                 throw ObjectOpenException()
-            // if the dictionary uses an input stream factory the load policy is effectively IMMEDIATE_LOAD so the load policy is set to this for information purposes
-            loadPolicy = if (streamFactory == null) policy else IMMEDIATE_LOAD
+            loadPolicy = policy
         }
+
+    override fun configure(config: Config?) {
+        backingDictionary.configure(config)
+    }
 
     /**
      * Loads data from the specified File using the specified load policy.
-     * Note that if the file points to a resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
-     * the dictionary is loaded into memory immediately.
      *
      * Constructs a new wrapper RAM dictionary that will load the contents the specified local Wordnet data, with the specified load policy.
-     * Note that if the file points to an exported image of an in-memory dictionary, the required load policy is to load immediately.
      *
-     * @param file       a file pointing to a local copy of wordnet
-     * @param loadPolicy the load policy of the dictionary; see constants in [LoadPolicy].
+     * @param file a file pointing to a local copy of wordnet
+     * @param loadPolicy the load policy of the dictionary
      * @param config config bundle
-     * Note that if the file points to a resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
-     * the dictionary is loaded into memory immediately.
-     * @see LoadPolicy
      */
     @JvmOverloads
     constructor(
         file: File,
         loadPolicy: Int = DEFAULT_LOAD_POLICY,
         config: Config? = null,
-    ) : this(createBackingDictionary(file), createInputStreamFactory(file), loadPolicy, config)
+    ) : this(createBackingDictionary(file)!!, loadPolicy, config)
 
     /**
      * Loads data from the specified URL using the specified load policy.
-     * Note that if the url points to a resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
-     * the dictionary is loaded into memory immediately.
      *
      * Constructs a new RAMDictionary that will load the contents the specified Wordnet data using the default load policy.
-     * Note that if the url points to a resource that is the exported image of an in-memory dictionary, the required load policy is to load immediately.
      *
-     * @param url        an url pointing to a local copy of wordnet; may not be null
-     * @param loadPolicy the load policy of the dictionary; see constants in [LoadPolicy].
-      * Note that if the url points to a  resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
-     * the dictionary is loaded into memory immediately.
+     * @param url an url pointing to a local copy of wordnet; may not be null
+     * @param loadPolicy the load policy of the dictionary
      * @param config config bundle
      */
     @JvmOverloads
@@ -116,149 +76,76 @@ class RAMDictionary private constructor(
         url: URL,
         loadPolicy: Int = DEFAULT_LOAD_POLICY,
         config: Config? = null,
-    ) : this(createBackingDictionary(url), createInputStreamFactory(url), loadPolicy, config)
+    ) : this(createBackingDictionary(url)!!, loadPolicy, config)
 
-    /**
-     * Constructs a new RAMDictionary that will load the contents of the wrapped dictionary into memory, with the specified load policy.
-     *
-     * @param dict       the dictionary to be wrapped, may not be null
-     * @param loadPolicy the load policy of the dictionary; see constants in [LoadPolicy].
-     * @param config config bundle
-     */
-    constructor(
-        dict: IDictionary,
-        loadPolicy: Int,
-        config: Config? = null,
-    ) : this(dict, null, loadPolicy, config)
+    override fun startLoad(): Boolean {
 
-    /**
-     * Constructs a new RAMDictionary that will load an in-memory image from the
-     * specified stream factory.
-     *
-     * @param factory the stream factory that provides the stream; may not be null
-     * @param config config bundle
-     */
-    constructor(
-        factory: IInputStreamFactory,
-        config: Config? = null,
-
-        ) : this(null, factory, IMMEDIATE_LOAD, config)
-
-    /**
-     * Unifies the constructor decision matrix.
-     * Exactly one of the backing dictionary or the input factory must be non-null, otherwise an exception is thrown.
-     * If the factory is non-null, the dictionary will ignore the specified load policy and set the load policy to "immediate load".
-     */
-    init {
-        check(backingDictionary != null || streamFactory != null) { "One of backing dictionary and input stream factory must be non-null" }
-        check(backingDictionary == null || streamFactory == null) { "Both backing dictionary and input stream factory need not be non-null" }
-        configure(config)
-    }
-
-    override fun configure(config: Config?) {
-        backingDictionary?.configure(config)
-        streamFactory?.configure(config)
-    }
-
-    // LOAD
-
-    override val isLoaded: Boolean
-        get() = data != null
-
-    override fun load() {
-        try {
-            load(false)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        }
-    }
-
-    @Throws(InterruptedException::class)
-    override fun load(block: Boolean) {
-        if (loader != null) {
-            return
-        }
-        try {
-            loadLock.lock()
-
-            // if we are closed or in the process of closing, do nothing
-            if (state == LifecycleState.CLOSED || state == LifecycleState.CLOSING) {
-                return
-            }
-
-            if (loader != null) {
-                return
-            }
-            loader = Thread(JWIBackgroundDataLoader())
-            loader!!.setName(JWIBackgroundDataLoader::class.java.getSimpleName())
-            loader!!.setDaemon(true)
-            loader!!.start()
-            if (block) {
-                loader!!.join()
-            }
-        } finally {
-            loadLock.unlock()
-        }
-    }
-
-    // OPEN
-
-    override val isOpen: Boolean
-        get() {
+        // behavior when loading from a backing dictionary depends on the load policy
+        val result = backingDictionary.open()
+        if (result) {
             try {
-                lifecycleLock.lock()
-                return state == LifecycleState.OPEN
-            } finally {
-                lifecycleLock.unlock()
+                when (loadPolicy) {
+                    IMMEDIATE_LOAD  -> load(true)
+                    BACKGROUND_LOAD -> load(false)
+                }
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+                return false
             }
         }
+        return result
+    }
 
-    @Throws(IOException::class)
-    override fun open(): Boolean {
+    /**
+     * This runnable loads the dictionary data into memory and sets the appropriate variable in the parent dictionary.
+     */
+    private inner class JWIBackgroundDataLoader : Runnable {
+
+        override fun run() {
+            try {
+                // we have a backing dictionary from which we should load our data
+                val loader = DataLoader(backingDictionary)
+                data = loader.call()
+                backingDictionary.close()
+            } catch (t: Throwable) {
+                if (!Thread.currentThread().isInterrupted) {
+                    t.printStackTrace()
+                    System.err.println("Unable to load dictionary data into memory")
+                }
+            }
+        }
+    }
+
+    override fun makeThread(): Thread {
+        val t = Thread(JWIBackgroundDataLoader())
+        t.setName(JWIBackgroundDataLoader::class.java.getSimpleName())
+        return t
+    }
+
+    /**
+     * This is an internal utility method that determines whether this
+     * dictionary should be considered open or closed.
+     *
+     * @return the lifecycle state object representing open if the object is
+     * open; otherwise the lifecycle state object representing closed
+     */
+    private fun assertLifecycleState(): LifecycleState {
         try {
             lifecycleLock.lock()
 
-            // if the dictionary is already open, return true
-            if (state == LifecycleState.OPEN) {
-                return true
+            // if the data object is present, then we are open
+            if (data != null) {
+                return LifecycleState.OPEN
             }
 
-            // if the dictionary is not closed, return false;
-            if (state != LifecycleState.CLOSED) {
-                return false
+            // if the backing dictionary is present and open, then we are open
+            if (backingDictionary.isOpen) {
+                return LifecycleState.OPEN
             }
 
-            // indicate the start of opening
-            state = LifecycleState.OPENING
-
-            if (backingDictionary == null) {
-                // behavior when loading from an input stream is immediate load
-                try {
-                    load(true)
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                    return false
-                }
-                return true
-            } else {
-                // behavior when loading from a backing dictionary depends on the load policy
-                val result = backingDictionary.open()
-                if (result) {
-                    try {
-                        when (loadPolicy) {
-                            IMMEDIATE_LOAD  -> load(true)
-                            BACKGROUND_LOAD -> load(false)
-                        }
-                    } catch (e: InterruptedException) {
-                        e.printStackTrace()
-                        return false
-                    }
-                }
-                return result
-            }
+            // otherwise we are closed
+            return LifecycleState.CLOSED
         } finally {
-            // make sure to clear the opening state
-            state = assertLifecycleState()
             lifecycleLock.unlock()
         }
     }
@@ -291,7 +178,7 @@ class RAMDictionary private constructor(
             }
 
             // next close backing dictionary if it exists
-            backingDictionary?.close()
+            backingDictionary.close()
 
             // null out backing data
             data = null
@@ -301,165 +188,49 @@ class RAMDictionary private constructor(
         }
     }
 
-    /**
-     * This is an internal utility method that determines whether this
-     * dictionary should be considered open or closed.
-     *
-     * @return the lifecycle state object representing open if the object is
-     * open; otherwise the lifecycle state object representing closed
-     */
-    private fun assertLifecycleState(): LifecycleState {
-        try {
-            lifecycleLock.lock()
-
-            // if the data object is present, then we are open
-            if (data != null) {
-                return LifecycleState.OPEN
-            }
-
-            // if the backing dictionary is present and open, then we are open
-            if (backingDictionary != null && backingDictionary.isOpen) {
-                return LifecycleState.OPEN
-            }
-
-            // otherwise we are closed
-            return LifecycleState.CLOSED
-        } finally {
-            lifecycleLock.unlock()
-        }
+    override fun getIndexWord(id: IndexWordID): IndexWord? {
+        return if (data != null) super.getIndexWord(id) else return backingDictionary.getIndexWord(id)
     }
 
-    // EXPORT
+    override fun getWord(id: IWordID): Word? {
+        return if (data != null) super.getWord(id) else backingDictionary.getWord(id)
+    }
 
-    /**
-     * Exports the in-memory contents of the data to the specified output stream.
-     * This method flushes and closes the output stream when it is done writing
-     * the data.
-     *
-     * @param out the output stream to which the in-memory data will be written
-     * @throws IOException           if there is a problem writing the in-memory data to the output stream.
-     * @throws IllegalStateException if the dictionary has not been loaded into memory
-     */
-    @Throws(IOException::class)
-    fun export(out: OutputStream) {
-        try {
-            loadLock.lock()
-            check(isLoaded) { "RAMDictionary not loaded into memory" }
+    override fun getWord(key: SenseKey): Word? {
+        return if (data != null) super.getWord(key) else backingDictionary.getWord(key)
+    }
 
-            GZIPOutputStream(out).use {
-                BufferedOutputStream(it).use {
-                    ObjectOutputStream(it).use {
-                        it.writeObject(data)
-                        it.flush()
-                    }
-                }
-            }
-        } finally {
-            loadLock.unlock()
-        }
+    override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
+        return if (data != null) super.getWords(start, pos, limit) else backingDictionary.getWords(start, pos, limit)
+    }
+
+    override fun getSynset(id: SynsetID): Synset? {
+        return if (data != null) super.getSynset(id) else return backingDictionary.getSynset(id)
+    }
+
+    override fun getSenseEntry(key: SenseKey): SenseEntry? {
+        return if (data != null) super.getSenseEntry(key) else backingDictionary.getSenseEntry(key)
+    }
+
+    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
+        return if (data != null) super.getExceptionEntry(id) else backingDictionary.getExceptionEntry(id)
     }
 
     override val version: Version?
         get() {
-            if (backingDictionary != null) {
-                return backingDictionary.version
-            }
-            if (data != null) {
-                return data!!.version
-            }
-            return null
+            return backingDictionary.version
         }
-
-    // F I N D
-
-    // INDEXWORD
-
-    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
-        return getIndexWord(IndexWordID(lemma, pos))
-    }
-
-    override fun getIndexWord(id: IndexWordID): IndexWord? {
-        if (data != null) {
-            val resolver = data!!.idxWords[id.pOS]!!
-            return resolver[id]
-        } else {
-            return backingDictionary!!.getIndexWord(id)
-        }
-    }
 
     override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
         return HotSwappableIndexWordIterator(pos)
-    }
-
-    // WORD
-
-    override fun getWord(id: IWordID): Word? {
-        if (data != null) {
-            val resolver = data!!.synsets[id.pOS]!!
-            val synset = resolver[id.synsetID]
-            if (synset == null) {
-                return null
-            }
-            return when (id) {
-                is WordNumID   -> synset.words[id.wordNumber - 1]
-                is WordLemmaID -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
-                else           -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
-            }
-        } else {
-            return backingDictionary!!.getWord(id)
-        }
-    }
-
-    override fun getWord(key: SenseKey): Word? {
-        return if (data != null) {
-            data!!.words[key]
-        } else {
-            backingDictionary!!.getWord(key)
-        }
-    }
-
-    // SYNSET
-
-    override fun getSynset(id: SynsetID): Synset? {
-        if (data != null) {
-            val resolver = data!!.synsets[id.pOS]!!
-            return resolver[id]
-        } else {
-            return backingDictionary!!.getSynset(id)
-        }
     }
 
     override fun getSynsetIterator(pos: POS): Iterator<Synset> {
         return HotSwappableSynsetIterator(pos)
     }
 
-    // SENSE ENTRY
-
-    override fun getSenseEntry(key: SenseKey): SenseEntry? {
-        return if (data != null) {
-            data!!.senses[key]
-        } else {
-            backingDictionary!!.getSenseEntry(key)
-        }
-    }
-
     override fun getSenseEntryIterator(): Iterator<SenseEntry> {
         return HotSwappableSenseEntryIterator()
-    }
-
-    // EXCEPTION ENTRY
-
-    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
-        return getExceptionEntry(ExceptionEntryID(surfaceForm, pos))
-    }
-
-    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
-        if (data != null) {
-            val resolver = data!!.exceptions[id.pOS]!!
-            return resolver[id]
-        } else {
-            return backingDictionary!!.getExceptionEntry(id)
-        }
     }
 
     override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
@@ -472,8 +243,8 @@ class RAMDictionary private constructor(
      * Constructs a new hot swappable iterator.
      *
      * @param itr the wrapped iterator
-     * @param checkForLoad if true, on each call the iterator checks to see if the dictionary has been loaded into memory, switching data sources if so
      * @param <E> the element type of the iterator
+     * @param checkForLoad if true, on each call the iterator checks to see if the dictionary has been loaded into memory, switching data sources if so
      */
     private abstract inner class HotSwappableIterator<E>(
         private var itr: Iterator<E>,
@@ -536,7 +307,7 @@ class RAMDictionary private constructor(
      */
     private inner class HotSwappableIndexWordIterator(private val pos: POS) :
         HotSwappableIterator<IndexWord>(
-            if (data == null) backingDictionary!!.getIndexWordIterator(pos) else data!!.idxWords[pos]!!.values.iterator(),
+            if (data == null) backingDictionary.getIndexWordIterator(pos) else data!!.idxWords[pos]!!.values.iterator(),
             data == null
         ) {
 
@@ -553,7 +324,7 @@ class RAMDictionary private constructor(
      */
     private inner class HotSwappableSynsetIterator(private val pos: POS) :
         HotSwappableIterator<Synset>(
-            if (data == null) backingDictionary!!.getSynsetIterator(pos) else data!!.synsets[pos]!!.values.iterator(),
+            if (data == null) backingDictionary.getSynsetIterator(pos) else data!!.synsets[pos]!!.values.iterator(),
             data == null
         ) {
 
@@ -570,7 +341,7 @@ class RAMDictionary private constructor(
      */
     private inner class HotSwappableExceptionEntryIterator(private val pos: POS) :
         HotSwappableIterator<ExceptionEntry>(
-            if (data == null) backingDictionary!!.getExceptionEntryIterator(pos) else data!!.exceptions[pos]!!.values.iterator(),
+            if (data == null) backingDictionary.getExceptionEntryIterator(pos) else data!!.exceptions[pos]!!.values.iterator(),
             data == null
         ) {
 
@@ -584,13 +355,105 @@ class RAMDictionary private constructor(
      */
     private inner class HotSwappableSenseEntryIterator :
         HotSwappableIterator<SenseEntry>(
-            if (data == null) backingDictionary!!.getSenseEntryIterator() else data!!.senses.values.iterator(),
+            if (data == null) backingDictionary.getSenseEntryIterator() else data!!.senses.values.iterator(),
             data == null
         ) {
 
         override fun makeIterator(): Iterator<SenseEntry> {
             return data!!.senses.values.iterator()
         }
+    }
+
+    companion object {
+
+        /**
+         * Creates a [DataSourceDictionary] out of the specified file, as long
+         * as the file points to an existing local directory.
+         *
+         * @param file the local directory for which to create a data source dictionary
+         * @return a dictionary object that uses the specified local directory as its data source; otherwise, null
+         */
+        fun createBackingDictionary(file: File): IDictionary? {
+            return if (FileProvider.isLocalDirectory(file)) DataSourceDictionary(FileProvider(file)) else null
+        }
+
+        /**
+         * Creates a [DataSourceDictionary] out of the specified url, as long
+         * as the url points to an existing local directory.
+         *
+         * @param url the local directory for which to create a data source dictionary
+         * @return a dictionary object that uses the specified local directory as its data source; otherwise, null
+         */
+        fun createBackingDictionary(url: URL): IDictionary? {
+            return if (FileProvider.isLocalDirectory(url)) DataSourceDictionary(FileProvider(url)) else null
+        }
+    }
+}
+
+class RAMSerDictionary(
+    /**
+     * The stream factory that backs this instance
+     */
+    val streamFactory: IInputStreamFactory,
+    config: Config? = null,
+) : BaseRAMDictionary(config) {
+
+    var loadPolicy: Int = IMMEDIATE_LOAD
+        set(_) {
+            if (isOpen)
+                throw ObjectOpenException()
+            // if the dictionary uses an input stream factory the load policy is effectively IMMEDIATE_LOAD so the load policy is set to this for information purposes
+            loadPolicy = IMMEDIATE_LOAD
+        }
+
+    /**
+     * Loads data from the specified File using the specified load policy.
+     *
+     * Constructs a new wrapper RAM dictionary that will load the contents the specified local Wordnet data, with the specified load policy.
+     *
+     * @param file a file pointing to a local copy of wordnet
+     * @param config config bundle
+     */
+    constructor(
+        file: File,
+        config: Config? = null,
+
+        ) : this(createInputStreamFactory(file)!!, config)
+
+    /**
+     * Loads data from the specified URL using the specified load policy.
+     *
+     * Constructs a new RAMDictionary that will load the contents the specified Wordnet data using the default load policy.
+     *
+     * @param url an url pointing to a local copy of wordnet; may not be null
+     * @param config config bundle
+     */
+    constructor(
+        url: URL,
+        config: Config? = null,
+
+        ) : this(createInputStreamFactory(url)!!, config)
+
+    override fun configure(config: Config?) {
+        streamFactory.configure(config)
+    }
+
+    override fun startLoad(): Boolean {
+
+        // behavior when loading from an input stream is immediate load
+        try {
+            load(true)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+            return false
+        }
+        return true
+    }
+
+    override fun makeThread(): Thread {
+        val t = Thread(JWIBackgroundDataLoader())
+        t.setName(JWIBackgroundDataLoader::class.java.getSimpleName())
+        return t
     }
 
     /**
@@ -600,23 +463,15 @@ class RAMDictionary private constructor(
 
         override fun run() {
             try {
-                // read the dictionary data
-                if (backingDictionary == null) {
-                    // if there is no backing dictionary from which to load our data, load it from the stream factory
-                    streamFactory!!.makeInputStream().use {
-                        GZIPInputStream(it).use {
-                            BufferedInputStream(it).use {
-                                ObjectInputStream(it).use {
-                                    data = it.readObject() as DictionaryData?
-                                }
+                // read the dictionary data from the stream factory
+                streamFactory.makeInputStream().use {
+                    GZIPInputStream(it).use {
+                        BufferedInputStream(it).use {
+                            ObjectInputStream(it).use {
+                                data = it.readObject() as DictionaryData?
                             }
                         }
                     }
-                } else {
-                    // here we have a backing dictionary from which we should load our data
-                    val loader = DataLoader(backingDictionary)
-                    data = loader.call()
-                    backingDictionary.close()
                 }
             } catch (t: Throwable) {
                 if (!Thread.currentThread().isInterrupted) {
@@ -625,6 +480,333 @@ class RAMDictionary private constructor(
                 }
             }
         }
+    }
+
+    override val version: Version?
+        get() {
+            if (data != null) {
+                return data!!.version
+            }
+            return null
+        }
+
+    companion object {
+
+        /**
+         * Creates an input stream factory out of the specified File. If the file
+         * points to a local directory then the method returns null.
+         *
+         * @param file the file out of which to make an input stream factory
+         * @return a new input stream factory, or null if the url points to a local directory.
+         */
+        fun createInputStreamFactory(file: File): IInputStreamFactory? {
+            return if (FileProvider.isLocalDirectory(file)) null else FileInputStreamFactory(file)
+        }
+
+        /**
+         * Creates an input stream factory out of the specified URL. If the url
+         * points to a local directory then the method returns null.
+         *
+         * @param url the url out of which to make an input stream factory
+         * @return a new input stream factory, or null if the url points to a local directory.
+         */
+        fun createInputStreamFactory(url: URL): IInputStreamFactory? {
+            return if (FileProvider.isLocalDirectory(url)) null else URLInputStreamFactory(url)
+        }
+    }
+}
+
+/**
+ * Dictionary that can be completely loaded into memory.
+
+ * Designed to wrap an arbitrary dictionary object.
+ * **Note:** If you receive an [OutOfMemoryError] while using this object, try increasing your heap size, by using the `-Xmx` switch.
+ *
+ * @param config config bundle
+ */
+abstract class BaseRAMDictionary protected constructor(
+    config: Config? = null,
+) : IDictionary, ILoadable {
+
+    internal val lifecycleLock: Lock = ReentrantLock()
+
+    private val loadLock: Lock = ReentrantLock()
+
+    @Volatile
+    internal var state: LifecycleState = LifecycleState.CLOSED
+
+    @Transient
+    internal var loader: Thread? = null
+
+    internal var data: DictionaryData? = null
+
+    /**
+     * Unifies the constructor decision matrix.
+     * Exactly one of the backing dictionary or the input factory must be non-null, otherwise an exception is thrown.
+     * If the factory is non-null, the dictionary will ignore the specified load policy and set the load policy to "immediate load".
+     */
+    init {
+        configure(config)
+    }
+
+    // LOAD
+
+    override val isLoaded: Boolean
+        get() = data != null
+
+    override fun load() {
+        try {
+            load(false)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+        }
+    }
+
+    abstract fun makeThread(): Thread
+
+    @Throws(InterruptedException::class)
+    override fun load(block: Boolean) {
+        if (loader != null) {
+            return
+        }
+        try {
+            loadLock.lock()
+
+            // if we are closed or in the process of closing, do nothing
+            if (state == LifecycleState.CLOSED || state == LifecycleState.CLOSING) {
+                return
+            }
+
+            if (loader != null) {
+                return
+            }
+            loader = makeThread()
+            loader!!.setDaemon(true)
+            loader!!.start()
+            if (block) {
+                loader!!.join()
+            }
+        } finally {
+            loadLock.unlock()
+        }
+    }
+
+    // OPEN
+
+    override val isOpen: Boolean
+        get() {
+            try {
+                lifecycleLock.lock()
+                return state == LifecycleState.OPEN
+            } finally {
+                lifecycleLock.unlock()
+            }
+        }
+
+    abstract fun startLoad(): Boolean
+
+    @Throws(IOException::class)
+    override fun open(): Boolean {
+        try {
+            lifecycleLock.lock()
+
+            // if the dictionary is already open, return true
+            if (state == LifecycleState.OPEN) {
+                return true
+            }
+
+            // if the dictionary is not closed, return false;
+            if (state != LifecycleState.CLOSED) {
+                return false
+            }
+
+            // indicate the start of opening
+            state = LifecycleState.OPENING
+
+            return startLoad()
+
+        } finally {
+            // make sure to clear the opening state
+            state = assertLifecycleState()
+            lifecycleLock.unlock()
+        }
+    }
+
+    override fun close() {
+        try {
+            lifecycleLock.lock()
+
+            // if we are already closed, do nothing
+            if (state == LifecycleState.CLOSED) {
+                return
+            }
+
+            // if we are already closing, do nothing
+            if (state != LifecycleState.CLOSING) {
+                return
+            }
+
+            state = LifecycleState.CLOSING
+
+            // stop loading first
+            if (loader != null) {
+                loader!!.interrupt()
+                try {
+                    loader!!.join()
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+                loader = null
+            }
+
+            // null out backing data
+            data = null
+        } finally {
+            state = assertLifecycleState()
+            lifecycleLock.unlock()
+        }
+    }
+
+    /**
+     * This is an internal utility method that determines whether this
+     * dictionary should be considered open or closed.
+     *
+     * @return the lifecycle state object representing open if the object is
+     * open; otherwise the lifecycle state object representing closed
+     */
+    private fun assertLifecycleState(): LifecycleState {
+        try {
+            lifecycleLock.lock()
+
+            // if the data object is present, then we are open
+            if (data != null) {
+                return LifecycleState.OPEN
+            }
+
+            // otherwise we are closed
+            return LifecycleState.CLOSED
+        } finally {
+            lifecycleLock.unlock()
+        }
+    }
+
+    // EXPORT
+
+    /**
+     * Exports the in-memory contents of the data to the specified output stream.
+     * This method flushes and closes the output stream when it is done writing
+     * the data.
+     *
+     * @param out the output stream to which the in-memory data will be written
+     * @throws IOException           if there is a problem writing the in-memory data to the output stream.
+     * @throws IllegalStateException if the dictionary has not been loaded into memory
+     */
+    @Throws(IOException::class)
+    fun export(out: OutputStream) {
+        try {
+            loadLock.lock()
+            check(isLoaded) { "RAMDictionary not loaded into memory" }
+
+            GZIPOutputStream(out).use {
+                BufferedOutputStream(it).use {
+                    ObjectOutputStream(it).use {
+                        it.writeObject(data)
+                        it.flush()
+                    }
+                }
+            }
+        } finally {
+            loadLock.unlock()
+        }
+    }
+
+    // F I N D
+
+    // INDEXWORD
+
+    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
+        return getIndexWord(IndexWordID(lemma, pos))
+    }
+
+    override fun getIndexWord(id: IndexWordID): IndexWord? {
+        return if (data != null) data!!.idxWords[id.pOS]!![id] else null
+    }
+
+    // WORD
+
+    override fun getWord(id: IWordID): Word? {
+        if (data != null) {
+            val resolver = data!!.synsets[id.pOS]!!
+            val synset = resolver[id.synsetID]
+            if (synset == null) {
+                return null
+            }
+            return when (id) {
+                is WordNumID   -> synset.words[id.wordNumber - 1]
+                is WordLemmaID -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
+                else           -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
+            }
+        } else return null
+    }
+
+    override fun getWord(key: SenseKey): Word? {
+        return if (data != null) data!!.words[key] else null
+    }
+
+    override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
+        return if (data != null) {
+            var count = 0
+            data!!.words.values
+                .filter { it.lemma.startsWith(start) && if (pos != null) it.pOS == pos else true }
+                .also { count++ }
+                .map { it.lemma }
+                .takeUnless { count > limit }
+                ?.toSet() ?: emptySet()
+        } else emptySet()
+    }
+
+    // SYNSET
+
+    override fun getSynset(id: SynsetID): Synset? {
+        return if (data != null) data!!.synsets[id.pOS]!![id] else null
+    }
+
+    // SENSE ENTRY
+
+    override fun getSenseEntry(key: SenseKey): SenseEntry? {
+        return if (data != null) data!!.senses[key] else null
+    }
+
+    // EXCEPTION ENTRY
+
+    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
+        return getExceptionEntry(ExceptionEntryID(surfaceForm, pos))
+    }
+
+    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
+        return if (data != null) data!!.exceptions[id.pOS]!![id] else null
+    }
+
+    // ITERATORS
+
+    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
+        check(data == null) { "Data not loaded into memory" }
+        return data!!.idxWords[pos]!!.values.iterator()
+    }
+
+    override fun getSynsetIterator(pos: POS): Iterator<Synset> {
+        check(data == null) { "Data not loaded into memory" }
+        return data!!.synsets[pos]!!.values.iterator()
+    }
+
+    override fun getSenseEntryIterator(): Iterator<SenseEntry> {
+        check(data == null) { "Data not loaded into memory" }
+        return data!!.senses.values.iterator()
+    }
+
+    override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
+        check(data == null) { "Data not loaded into memory" }
+        return data!!.exceptions[pos]!!.values.iterator()
     }
 
     /**
@@ -936,60 +1118,12 @@ class RAMDictionary private constructor(
         }
     }
 
-    override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
-        return backingDictionary!!.getWords(start, pos, limit)
-    }
-
     companion object {
 
         /**
          * The default load policy of a [RAMDictionary] is to load data in the background when opened.
          */
         const val DEFAULT_LOAD_POLICY: Int = BACKGROUND_LOAD
-
-        /**
-         * Creates an input stream factory out of the specified File. If the file
-         * points to a local directory then the method returns null.
-         *
-         * @param file the file out of which to make an input stream factory
-         * @return a new input stream factory, or null if the url points to a local directory.
-         */
-        fun createInputStreamFactory(file: File): IInputStreamFactory? {
-            return if (FileProvider.isLocalDirectory(file)) null else FileInputStreamFactory(file)
-        }
-
-        /**
-         * Creates an input stream factory out of the specified URL. If the url
-         * points to a local directory then the method returns null.
-         *
-         * @param url the url out of which to make an input stream factory
-         * @return a new input stream factory, or null if the url points to a local directory.
-         */
-        fun createInputStreamFactory(url: URL): IInputStreamFactory? {
-            return if (FileProvider.isLocalDirectory(url)) null else URLInputStreamFactory(url)
-        }
-
-        /**
-         * Creates a [DataSourceDictionary] out of the specified file, as long
-         * as the file points to an existing local directory.
-         *
-         * @param file the local directory for which to create a data source dictionary
-         * @return a dictionary object that uses the specified local directory as its data source; otherwise, null
-         */
-        fun createBackingDictionary(file: File): IDictionary? {
-            return if (FileProvider.isLocalDirectory(file)) DataSourceDictionary(FileProvider(file)) else null
-        }
-
-        /**
-         * Creates a [DataSourceDictionary] out of the specified url, as long
-         * as the url points to an existing local directory.
-         *
-         * @param url the local directory for which to create a data source dictionary
-         * @return a dictionary object that uses the specified local directory as its data source; otherwise, null
-         */
-        fun createBackingDictionary(url: URL): IDictionary? {
-            return if (FileProvider.isLocalDirectory(url)) DataSourceDictionary(FileProvider(url)) else null
-        }
 
         /**
          * This is a convenience method that transforms a Wordnet dictionary at the
@@ -1035,7 +1169,7 @@ class RAMDictionary private constructor(
          */
         @Throws(IOException::class)
         fun export(`in`: IInputStreamFactory, out: OutputStream): Boolean {
-            return export(RAMDictionary(`in`), out)
+            return export(RAMSerDictionary(`in`), out)
         }
 
         /**
@@ -1048,7 +1182,7 @@ class RAMDictionary private constructor(
          * @throws IOException if there was a IO problem during export
          */
         @Throws(IOException::class)
-        private fun export(dict: RAMDictionary, out: OutputStream): Boolean {
+        private fun export(dict: BaseRAMDictionary, out: OutputStream): Boolean {
             // load initial data into memory
             var dict = dict
             print("Performing load...")

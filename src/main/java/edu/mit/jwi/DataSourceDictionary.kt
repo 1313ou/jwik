@@ -212,7 +212,7 @@ class DataSourceDictionary(
         return result
     }
 
-    private fun getWords(start: String, pos: POS, limit: Int, result: MutableSet<String>): MutableCollection<String> {
+    private fun getWords(start: String, pos: POS, limit: Int, result: MutableSet<String>): Collection<String> {
         checkOpen()
         val content = dataProvider.resolveContentType<IndexWord>(DataType.WORD, pos)!!
         val dataType = content.dataType
