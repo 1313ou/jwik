@@ -9,18 +9,15 @@
  *******************************************************************************/
 package edu.mit.jwi
 
-import edu.mit.jwi.data.ContentTypeKey
 import edu.mit.jwi.data.FileProvider
 import edu.mit.jwi.data.IHasLifecycle.LifecycleState
 import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
 import edu.mit.jwi.data.ILoadPolicy
 import edu.mit.jwi.data.ILoadable
-import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.*
 import edu.mit.jwi.item.Synset.IWordBuilder
 import java.io.*
 import java.net.URL
-import java.nio.charset.Charset
 import java.util.concurrent.Callable
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock

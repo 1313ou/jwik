@@ -53,7 +53,7 @@ import kotlin.Throws
  * machines, the time to interpret a line of data (i.e., parse it into a Java
  * object) is much larger than the time it takes to load the line from disk.
  * Those wishing to achieve speed increases from loading Wordnet into memory
- * should rely on the implementation in [RAMDictionary], or something
+ * should rely on the implementation in RAMDictionary, or something
  * similar, which pre-processes the Wordnet data into objects before caching
  * them.
  */
@@ -73,7 +73,6 @@ class FileProvider @JvmOverloads constructor(
         get() {
             checkOpen()
             if (field == null) {
-                checkNotNull(fileMap)
                 field = determineVersion(fileMap!!.values)
             }
             if (field === NO_VERSION) {
@@ -119,13 +118,12 @@ class FileProvider @JvmOverloads constructor(
         checkOpen()
 
         // assume at first this the prototype
-        var actualType = prototypeMap[contentType!!.key]
+        var actualType = prototypeMap[contentType.key]
 
         // if this does not map to an adjusted type, we will check under it directly
         if (actualType == null) {
             actualType = contentType
         }
-        checkNotNull(fileMap)
         return fileMap!![actualType] as ILoadableDataSource<T>
     }
 
@@ -168,7 +166,7 @@ class FileProvider @JvmOverloads constructor(
                     val value = e.value
                     if (charset == null) {
                         // if we get a null charset, reset to the prototype value but preserve line comparator
-                        val defaultContentType: ContentType<*> = checkNotNull(getDefault(key))
+                        val defaultContentType: ContentType<*> = getDefault(key)!!
                         e.setValue(ContentType<Any?>(key, value.lineComparator, defaultContentType.charset))
                     } else {
                         // if we get a non-null charset, generate new  type using the new charset but preserve line comparator
@@ -202,7 +200,7 @@ class FileProvider @JvmOverloads constructor(
      * @throws NullPointerException if the specified file is null
      * @since JWI 2.2.0
      */
-    constructor(file: File, loadPolicy: Int) : this(toURL(file)!!, loadPolicy, values())
+    constructor(file: File, loadPolicy: Int) : this(toURL(file), loadPolicy, values())
 
     /**
      * Constructs the file provider pointing to the resource indicated by the
@@ -219,7 +217,7 @@ class FileProvider @JvmOverloads constructor(
      * @throws IllegalArgumentException if the set of types is empty
      * @since JWI 2.2.0
      */
-    constructor(file: File, loadPolicy: Int, types: MutableCollection<out ContentType<*>>) : this(toURL(file)!!, loadPolicy, types)
+    constructor(file: File, loadPolicy: Int, types: MutableCollection<out ContentType<*>>) : this(toURL(file), loadPolicy, types)
 
     /**
      * Constructs the file provider pointing to the resource indicated by the
@@ -289,8 +287,7 @@ class FileProvider @JvmOverloads constructor(
      */
     fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
         if (verbose) {
-            checkNotNull(comparator)
-            System.out.printf("Comparator for %s %s%n", contentTypeKey, comparator.javaClass.getName())
+            System.out.printf("Comparator for %s %s%n", contentTypeKey, comparator?.javaClass?.getName())
         }
         try {
             lifecycleLock.lock()
@@ -298,12 +295,10 @@ class FileProvider @JvmOverloads constructor(
             val value: ContentType<*> = prototypeMap[contentTypeKey]!!
             if (comparator == null) {
                 // if we get a null comparator, reset to the prototype but preserve charset
-                val defaultContentType: ContentType<*>? = checkNotNull(getDefault(contentTypeKey))
-                checkNotNull(value)
+                val defaultContentType: ContentType<*>? = getDefault(contentTypeKey)
                 prototypeMap.put(contentTypeKey, ContentType<Any?>(contentTypeKey, defaultContentType!!.lineComparator, value.charset))
             } else {
                 // if we get a non-null comparator, generate a new type using the new comparator but preserve charset
-                checkNotNull(value)
                 prototypeMap.put(contentTypeKey, ContentType<Any?>(contentTypeKey, comparator, value.charset))
             }
         } finally {
@@ -366,7 +361,6 @@ class FileProvider @JvmOverloads constructor(
             val policy = loadPolicy
 
             // make sure directory exists
-            checkNotNull(source)
             val directory: File = toFile(source)
             if (!directory.exists()) {
                 throw IOException("Dictionary directory does not exist: $directory")
@@ -459,7 +453,6 @@ class FileProvider @JvmOverloads constructor(
             check(isOpen) { "provider not open" }
             try {
                 loadingLock.lock()
-                checkNotNull(fileMap)
                 for (source in fileMap!!.values) {
                     if (!source.isLoaded) {
                         return false
@@ -494,7 +487,7 @@ class FileProvider @JvmOverloads constructor(
 
             // give first chance to matcher
             if (sourceMatcher.containsKey(contentType.key)) {
-                val regex = checkNotNull(sourceMatcher[contentType.key])
+                val regex = sourceMatcher[contentType.key]!!
                 file = match(regex, files)
             }
 
@@ -572,8 +565,8 @@ class FileProvider @JvmOverloads constructor(
             }
 
             // extract key
-            val parser = checkNotNull(contentType.dataType.parser)
-            val s = checkNotNull(parser.parseLine(firstLine) as Synset)
+            val parser = contentType.dataType.parser
+            val s = parser.parseLine(firstLine) as Synset
             val key = zeroFillOffset(s.offset)
 
             // try to find line by direct access
@@ -582,8 +575,8 @@ class FileProvider @JvmOverloads constructor(
                 return src
             }
 
-            val pos: POS? = checkNotNull(contentType.pOS)
-            System.err.println(System.currentTimeMillis().toString() + " - Error on direct access in " + pos + " data file: check CR/LF endings")
+            val pos: POS? = contentType.pOS
+            System.err.println("${System.currentTimeMillis()} - Error on direct access in $pos data file: check CR/LF endings")
         }
 
         src = createBinarySearch<T>(file, contentType)
@@ -653,7 +646,6 @@ class FileProvider @JvmOverloads constructor(
             if (loader != null) {
                 loader!!.cancel()
             }
-            checkNotNull(fileMap)
             for (source in fileMap!!.values) {
                 source.close()
             }
@@ -700,7 +692,6 @@ class FileProvider @JvmOverloads constructor(
 
         override fun run() {
             try {
-                checkNotNull(fileMap)
                 for (source in fileMap!!.values) {
                     if (!cancel && !source.isLoaded) {
                         try {
