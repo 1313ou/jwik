@@ -12,8 +12,9 @@ package edu.mit.jwi
 import edu.mit.jwi.data.FileProvider
 import edu.mit.jwi.data.IHasLifecycle.LifecycleState
 import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
-import edu.mit.jwi.data.ILoadPolicy
 import edu.mit.jwi.data.ILoadable
+import edu.mit.jwi.data.LoadPolicy.BACKGROUND_LOAD
+import edu.mit.jwi.data.LoadPolicy.IMMEDIATE_LOAD
 import edu.mit.jwi.item.*
 import edu.mit.jwi.item.Synset.IWordBuilder
 import java.io.*
@@ -36,7 +37,7 @@ import java.util.zip.GZIPOutputStream
  *
  * @property backingDictionary the backing dictionary; may be null if factory is not null
  * @property streamFactory the input stream factory; may be null if backing is not null
- * @param loadPolicy the load policy of the dictionary; see constants in [ILoadPolicy].
+ * @param loadPolicy the load policy of the dictionary; see constants in [LoadPolicy].
  * @param config config bundle
  */
 class RAMDictionary private constructor(
@@ -44,6 +45,7 @@ class RAMDictionary private constructor(
      * The dictionary that backs this instance; may be null. if factory is not null
      */
     val backingDictionary: IDictionary?,
+
     /**
      * The stream factory that backs this instance; may be null if backing is not null
      */
@@ -51,7 +53,7 @@ class RAMDictionary private constructor(
 
     loadPolicy: Int,
     config: Config? = null,
-) : IDictionary, ILoadPolicy, ILoadable {
+) : IDictionary, ILoadable {
 
     private val lifecycleLock: Lock = ReentrantLock()
 
@@ -65,12 +67,12 @@ class RAMDictionary private constructor(
 
     private var data: DictionaryData? = null
 
-    override var loadPolicy: Int = if (streamFactory == null) loadPolicy else ILoadPolicy.IMMEDIATE_LOAD
+    var loadPolicy: Int = if (streamFactory == null) loadPolicy else IMMEDIATE_LOAD
         set(policy) {
             if (isOpen)
                 throw ObjectOpenException()
             // if the dictionary uses an input stream factory the load policy is effectively IMMEDIATE_LOAD so the load policy is set to this for information purposes
-            loadPolicy = if (streamFactory == null) policy else ILoadPolicy.IMMEDIATE_LOAD
+            loadPolicy = if (streamFactory == null) policy else IMMEDIATE_LOAD
         }
 
     /**
@@ -82,11 +84,11 @@ class RAMDictionary private constructor(
      * Note that if the file points to an exported image of an in-memory dictionary, the required load policy is to load immediately.
      *
      * @param file       a file pointing to a local copy of wordnet
-     * @param loadPolicy the load policy of the dictionary; see constants in [ILoadPolicy].
+     * @param loadPolicy the load policy of the dictionary; see constants in [LoadPolicy].
      * @param config config bundle
      * Note that if the file points to a resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
      * the dictionary is loaded into memory immediately.
-     * @see ILoadPolicy
+     * @see LoadPolicy
      */
     @JvmOverloads
     constructor(
@@ -104,9 +106,8 @@ class RAMDictionary private constructor(
      * Note that if the url points to a resource that is the exported image of an in-memory dictionary, the required load policy is to load immediately.
      *
      * @param url        an url pointing to a local copy of wordnet; may not be null
-     * @param loadPolicy the load policy of the dictionary; see constants in [ILoadPolicy].
-     * @see ILoadPolicy
-     * Note that if the url points to a  resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
+     * @param loadPolicy the load policy of the dictionary; see constants in [LoadPolicy].
+      * Note that if the url points to a  resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
      * the dictionary is loaded into memory immediately.
      * @param config config bundle
      */
@@ -121,9 +122,7 @@ class RAMDictionary private constructor(
      * Constructs a new RAMDictionary that will load the contents of the wrapped dictionary into memory, with the specified load policy.
      *
      * @param dict       the dictionary to be wrapped, may not be null
-     * @param loadPolicy the load policy of the dictionary; see constants in
-     * [ILoadPolicy].
-     * @see ILoadPolicy
+     * @param loadPolicy the load policy of the dictionary; see constants in [LoadPolicy].
      * @param config config bundle
      */
     constructor(
@@ -143,7 +142,7 @@ class RAMDictionary private constructor(
         factory: IInputStreamFactory,
         config: Config? = null,
 
-        ) : this(null, factory, ILoadPolicy.IMMEDIATE_LOAD, config)
+        ) : this(null, factory, IMMEDIATE_LOAD, config)
 
     /**
      * Unifies the constructor decision matrix.
@@ -247,8 +246,8 @@ class RAMDictionary private constructor(
                 if (result) {
                     try {
                         when (loadPolicy) {
-                            ILoadPolicy.IMMEDIATE_LOAD  -> load(true)
-                            ILoadPolicy.BACKGROUND_LOAD -> load(false)
+                            IMMEDIATE_LOAD  -> load(true)
+                            BACKGROUND_LOAD -> load(false)
                         }
                     } catch (e: InterruptedException) {
                         e.printStackTrace()
@@ -437,10 +436,10 @@ class RAMDictionary private constructor(
     // SENSE ENTRY
 
     override fun getSenseEntry(key: SenseKey): SenseEntry? {
-        if (data != null) {
-            return data!!.senses[key]
+        return if (data != null) {
+            data!!.senses[key]
         } else {
-            return backingDictionary!!.getSenseEntry(key)
+            backingDictionary!!.getSenseEntry(key)
         }
     }
 
@@ -946,7 +945,7 @@ class RAMDictionary private constructor(
         /**
          * The default load policy of a [RAMDictionary] is to load data in the background when opened.
          */
-        const val DEFAULT_LOAD_POLICY: Int = ILoadPolicy.BACKGROUND_LOAD
+        const val DEFAULT_LOAD_POLICY: Int = BACKGROUND_LOAD
 
         /**
          * Creates an input stream factory out of the specified File. If the file
@@ -1005,7 +1004,7 @@ class RAMDictionary private constructor(
          */
         @Throws(IOException::class)
         fun export(`in`: File, out: OutputStream): Boolean {
-            return export(RAMDictionary(`in`, ILoadPolicy.IMMEDIATE_LOAD), out)
+            return export(RAMDictionary(`in`, IMMEDIATE_LOAD), out)
         }
 
         /**
@@ -1021,7 +1020,7 @@ class RAMDictionary private constructor(
          */
         @Throws(IOException::class)
         fun export(`in`: URL, out: OutputStream): Boolean {
-            return export(RAMDictionary(`in`, ILoadPolicy.IMMEDIATE_LOAD), out)
+            return export(RAMDictionary(`in`, IMMEDIATE_LOAD), out)
         }
 
         /**

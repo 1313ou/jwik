@@ -12,7 +12,9 @@ package edu.mit.jwi.data
 import edu.mit.jwi.data.ContentType.Companion.values
 import edu.mit.jwi.data.DataType.Companion.find
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
-import edu.mit.jwi.data.ILoadPolicy.Companion.IMMEDIATE_LOAD
+import edu.mit.jwi.data.LoadPolicy.BACKGROUND_LOAD
+import edu.mit.jwi.data.LoadPolicy.IMMEDIATE_LOAD
+import edu.mit.jwi.data.LoadPolicy.NO_LOAD
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.IHasVersion
 import edu.mit.jwi.item.POS
@@ -60,9 +62,9 @@ import kotlin.Throws
  */
 class FileProvider @JvmOverloads constructor(
     url: URL,
-    loadPolicy: Int = ILoadPolicy.Companion.NO_LOAD,
+    loadPolicy: Int = NO_LOAD,
     contentTypes: Collection<ContentType<*>> = values(),
-) : IHasVersion, IHasLifecycle, IHasCharset, ILoadable, ILoadPolicy {
+) : IHasVersion, IHasLifecycle, IHasCharset, ILoadable {
 
     private val lifecycleLock: Lock = ReentrantLock()
 
@@ -138,7 +140,7 @@ class FileProvider @JvmOverloads constructor(
             }
         }
 
-    override var loadPolicy: Int = 0
+    var loadPolicy: Int = 0
         set(policy) {
             try {
                 loadingLock.lock()
@@ -222,11 +224,9 @@ class FileProvider @JvmOverloads constructor(
 
     /**
      * Constructs the file provider pointing to the resource indicated by the
-     * path, with the specified load policy, looking for the specified content
-     * type.s
+     * path, with the specified load policy, looking for the specified content type
      *
-     * @param url          A file URL in UTF-8 decodable format, may not be
-     * null
+     * @param url          A file URL in UTF-8 decodable format, may not be null
      * @param loadPolicy   the load policy for this provider; this provider supports the
      * three values defined in `ILoadPolicy`.
      * @param contentTypes the content types this provider will look for when it loads
@@ -396,9 +396,9 @@ class FileProvider @JvmOverloads constructor(
             // do load
             try {
                 when (loadPolicy) {
-                    ILoadPolicy.Companion.BACKGROUND_LOAD -> load(false)
-                    ILoadPolicy.Companion.IMMEDIATE_LOAD  -> load(true)
-                    else                                  -> {}
+                    BACKGROUND_LOAD -> load(false)
+                    IMMEDIATE_LOAD  -> load(true)
+                    else            -> {}
                 }
             } catch (e: InterruptedException) {
                 e.printStackTrace()
@@ -546,7 +546,7 @@ class FileProvider @JvmOverloads constructor(
         if (contentType.dataType === DataType.DATA) {
             src = createDirectAccess<T>(file, contentType)
             src.open()
-            if (policy == ILoadPolicy.Companion.IMMEDIATE_LOAD) {
+            if (policy == IMMEDIATE_LOAD) {
                 try {
                     src.load(true)
                 } catch (e: InterruptedException) {
