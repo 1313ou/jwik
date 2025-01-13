@@ -31,8 +31,7 @@ class Dictionary : CachingDictionary {
      * Constructs a new dictionary that uses the Wordnet files located in a
      * directory pointed to by the specified url
      *
-     * @param wordnetDir an url pointing to a directory containing the wordnet data
-     * files on the filesystem
+     * @param wordnetDir an url pointing to a directory containing the wordnet data files on the filesystem
      * @param config     config parameters
      * @since JWI 1.0
      */
@@ -53,46 +52,5 @@ class Dictionary : CachingDictionary {
     @JvmOverloads
     constructor(wordnetDir: File, config: Config? = null) : super(DataSourceDictionary(FileProvider(wordnetDir))) {
         configure(config)
-    }
-
-    private fun configure(config: Config?) {
-        // default
-        charset = Charset.defaultCharset()
-
-        // enforce config
-        if (config == null) {
-            return
-        }
-
-        // global params
-        if (config.checkLexicalId != null) {
-            checkLexicalId = config.checkLexicalId == true
-        }
-
-        // dictionary params
-        if (config.indexNounComparator != null) {
-            setComparator(ContentTypeKey.INDEX_NOUN, config.indexNounComparator)
-        }
-        if (config.indexVerbComparator != null) {
-            setComparator(ContentTypeKey.INDEX_VERB, config.indexVerbComparator)
-        }
-        if (config.indexAdjectiveComparator != null) {
-            setComparator(ContentTypeKey.INDEX_ADJECTIVE, config.indexAdjectiveComparator)
-        }
-        if (config.indexAdverbComparator != null) {
-            setComparator(ContentTypeKey.INDEX_ADVERB, config.indexAdverbComparator)
-        }
-
-        if (config.indexSensePattern != null) {
-            setSourceMatcher(ContentTypeKey.SENSE, config.indexSensePattern)
-            setSourceMatcher(ContentTypeKey.SENSES, config.indexSensePattern)
-        }
-        if (config.indexSenseKeyComparator != null) {
-            setComparator(ContentTypeKey.SENSE, config.indexSenseKeyComparator)
-            setComparator(ContentTypeKey.SENSES, config.indexSenseKeyComparator)
-        }
-        if (config.charSet != null) {
-            charset = config.charSet
-        }
     }
 }

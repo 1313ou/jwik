@@ -39,14 +39,16 @@ import kotlin.Throws
  * **Note:** If you receive an [OutOfMemoryError] while using this object, try increasing your heap size,
  * by using the `-Xmx` switch.
  *
- * @param backing    the backing dictionary; may be null
- * @param factory    the input stream factory; may be null
+ * @param backing the backing dictionary; may be null
+ * @param factory the input stream factory; may be null
  * @param loadPolicy the load policy of the dictionary; see constants in [ILoadPolicy].
+ * @param config config bundle
  */
 class RAMDictionary private constructor(
     backing: IDictionary?,
     factory: IInputStreamFactory?,
     loadPolicy: Int,
+    config: Config? = null,
 ) : IDictionary, ILoadPolicy, ILoadable {
 
     /**
@@ -99,6 +101,7 @@ class RAMDictionary private constructor(
      *
      * @param file       a file pointing to a local copy of wordnet
      * @param loadPolicy the load policy of the dictionary; see constants in [ILoadPolicy].
+     * @param config config bundle
      * Note that if the file points to a resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
      * the dictionary is loaded into memory immediately.
      * @see ILoadPolicy
@@ -107,7 +110,8 @@ class RAMDictionary private constructor(
     constructor(
         file: File,
         loadPolicy: Int = DEFAULT_LOAD_POLICY,
-    ) : this(createBackingDictionary(file)!!, createInputStreamFactory(file)!!, loadPolicy)
+        config: Config? = null,
+    ) : this(createBackingDictionary(file)!!, createInputStreamFactory(file)!!, loadPolicy, config)
 
     /**
      * Loads data from the specified URL using the specified load policy.
@@ -122,12 +126,14 @@ class RAMDictionary private constructor(
      * @see ILoadPolicy
      * Note that if the url points to a  resource that is the exported image of an in-memory dictionary, the specified load policy is ignored:
      * the dictionary is loaded into memory immediately.
+     * @param config config bundle
      */
     @JvmOverloads
     constructor(
         url: URL,
         loadPolicy: Int = DEFAULT_LOAD_POLICY,
-    ) : this(createBackingDictionary(url)!!, createInputStreamFactory(url)!!, loadPolicy)
+        config: Config? = null,
+    ) : this(createBackingDictionary(url)!!, createInputStreamFactory(url)!!, loadPolicy, config)
 
     /**
      * Constructs a new RAMDictionary that will load the contents of the wrapped dictionary into memory, with the specified load policy.
@@ -136,17 +142,26 @@ class RAMDictionary private constructor(
      * @param loadPolicy the load policy of the dictionary; see constants in
      * [ILoadPolicy].
      * @see ILoadPolicy
+     * @param config config bundle
      */
-    constructor(dict: IDictionary, loadPolicy: Int) : this(dict, null, loadPolicy)
+    constructor(
+        dict: IDictionary,
+        loadPolicy: Int,
+        config: Config? = null,
+    ) : this(dict, null, loadPolicy, config)
 
     /**
      * Constructs a new RAMDictionary that will load an in-memory image from the
      * specified stream factory.
      *
      * @param factory the stream factory that provides the stream; may not be null
-     * @throws NullPointerException if the factory is null
+     * @param config config bundle
      */
-    constructor(factory: IInputStreamFactory) : this(null, factory, ILoadPolicy.IMMEDIATE_LOAD)
+    constructor(
+        factory: IInputStreamFactory,
+        config: Config? = null,
+
+        ) : this(null, factory, ILoadPolicy.IMMEDIATE_LOAD, config)
 
     /**
      * Unifies the constructor decision matrix.
@@ -161,6 +176,8 @@ class RAMDictionary private constructor(
 
         backingDictionary = backing
         streamFactory = factory
+
+        configure(config)
     }
 
     override fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
@@ -925,7 +942,7 @@ class RAMDictionary private constructor(
                 .toMap()
 
             // word
-            val word: Word = Word(newSynset, old.iD as WordLemmaID, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
+            val word = Word(newSynset, old.iD, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
             if (word.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey
                 word.senseKey.setHead(oldKey.headWord!!, oldKey.headID)

@@ -30,14 +30,16 @@ import kotlin.Throws
  * Constructs a dictionary with a caller-specified `IDataProvider`.
  *
  * @param dataProvider data provider
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.2.0
+ * @param config config bundle
  */
 class DataSourceDictionary(
     val dataProvider: FileProvider,
+    config: Config? = null,
 ) : IDictionary {
+
+    init {
+        configure(config)
+    }
 
     override val version: Version?
         get() {

@@ -14,6 +14,7 @@ import edu.mit.jwi.data.IHasCharset
 import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.item.*
+import edu.mit.jwi.item.Word.Companion.checkLexicalId
 import java.nio.charset.Charset
 
 /**
@@ -31,8 +32,7 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
     // C O N F I G
 
     /**
-     * Sets the character set associated with this dictionary. The character set
-     * may be null.
+     * Sets the character set associated with this dictionary. The character set may be null.
      *
      * @param charset the possibly null character set to use when
      * decoding files.
@@ -42,29 +42,66 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
 
     /**
      * Sets the comparator associated with this content type in this dictionary.
-     * The comparator may be null in which case it is reset.
+     * The comparator may be null in which case it is reset to defaults.
      *
-     * @param contentTypeKey the `non-null` content type for which
-     * the comparator is to be set.
-     * @param comparator     the possibly null comparator set to use when
-     * decoding files.
+     * @param contentTypeKey the content type for which the comparator is to be set.
+     * @param comparator the possibly null comparator set to use when decoding files.
      * @throws IllegalStateException if the provider is currently open
-     * @since JWI 2.4.1
      */
     fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?)
 
     /**
-     * Sets pattern attached to content type key, that source files have to
-     * match to be selected.
-     * This gives selection a first opportunity before falling back on standard data
-     * type selection.
+     * Sets pattern attached to content type key, that source files have to match to be selected.
+     * This gives selection a first opportunity before falling back on standard data type selection.
      *
-     * @param contentTypeKey the `non-null` content type key for which
-     * the matcher is to be set.
-     * @param pattern        regexp pattern
-     * @since JWI 2.4.1
+     * @param contentTypeKey the content type key for which the matcher is to be set.
+     * @param pattern regexp pattern
      */
     fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?)
+
+    /**
+     * Configure from config bundle
+     */
+    fun configure(config: Config?) {
+        // default
+        charset = Charset.defaultCharset()
+
+        // enforce config
+        if (config == null) {
+            return
+        }
+
+        // global params
+        if (config.checkLexicalId != null) {
+            checkLexicalId = config.checkLexicalId == true
+        }
+
+        // dictionary params
+        if (config.indexNounComparator != null) {
+            setComparator(ContentTypeKey.INDEX_NOUN, config.indexNounComparator)
+        }
+        if (config.indexVerbComparator != null) {
+            setComparator(ContentTypeKey.INDEX_VERB, config.indexVerbComparator)
+        }
+        if (config.indexAdjectiveComparator != null) {
+            setComparator(ContentTypeKey.INDEX_ADJECTIVE, config.indexAdjectiveComparator)
+        }
+        if (config.indexAdverbComparator != null) {
+            setComparator(ContentTypeKey.INDEX_ADVERB, config.indexAdverbComparator)
+        }
+
+        if (config.indexSensePattern != null) {
+            setSourceMatcher(ContentTypeKey.SENSE, config.indexSensePattern)
+            setSourceMatcher(ContentTypeKey.SENSES, config.indexSensePattern)
+        }
+        if (config.indexSenseKeyComparator != null) {
+            setComparator(ContentTypeKey.SENSE, config.indexSenseKeyComparator)
+            setComparator(ContentTypeKey.SENSES, config.indexSenseKeyComparator)
+        }
+        if (config.charSet != null) {
+            charset = config.charSet
+        }
+    }
 
     // F I N D
 
@@ -240,4 +277,4 @@ interface IDictionary : IHasVersion, IHasLifecycle, IHasCharset {
      * @since JWIX 2.4.0.4
      */
     fun getWords(start: String, pos: POS?, limit: Int): Set<String>
-}
+ }
