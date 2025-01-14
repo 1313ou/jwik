@@ -9,13 +9,11 @@
  *******************************************************************************/
 package edu.mit.jwi.data.compare
 
-import java.util.*
 import kotlin.math.min
 
 /**
- * A comparator that captures the ordering of lines in Wordnet index files
- * (e.g., `index.adv` or `adv.idx` files). These files are
- * ordered alphabetically.
+ * A comparator that captures the ordering of lines in Wordnet index files (e.g., `index.adv` or `adv.idx` files).
+ * These files are ordered alphabetically.
  */
 object SearchIndexLineComparator : IndexLineComparator(CommentProcessor) {
 
@@ -27,11 +25,9 @@ object SearchIndexLineComparator : IndexLineComparator(CommentProcessor) {
      * @return compare code
      */
     override fun compareLemmas(lemma1: String, lemma2: String): Int {
-        var lemma1 = lemma1
-        var lemma2 = lemma2
-        lemma1 = lemma1.lowercase()
-        lemma2 = lemma2.lowercase()
-        val l = min(lemma1.length.toDouble(), lemma2.length.toDouble()).toInt()
-        return lemma1.substring(0, l).compareTo(lemma2.substring(0, l))
+        val lemma1 = lemma1.lowercase()
+        val lemma2 = lemma2.lowercase()
+        val s = min(lemma1.length.toInt(), lemma2.length.toInt())
+        return lemma1.substring(0, s).compareTo(lemma2.substring(0, s))
     }
 }

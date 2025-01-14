@@ -10,6 +10,9 @@ object CaseSensitiveIndexLineComparator : IndexLineComparator(CommentProcessor) 
     }
 }
 
+/**
+ * Case-sensitive sense key comparator
+ */
 object CaseSensitiveSenseKeyLineComparator : SenseKeyLineComparator() {
 
     override fun compareSenseKeys(senseKey1: String, senseKey2: String): Int {
@@ -18,8 +21,7 @@ object CaseSensitiveSenseKeyLineComparator : SenseKeyLineComparator() {
 }
 
 /**
- * Like ignore case, but in case of ignore-case equals, further case-sensitive processing
- * comparison is attempted.
+ * Like ignore case, but in case of ignore-case equals, further case-sensitive processing comparison is attempted.
  */
 object LexicographicOrderSenseKeyLineComparator : SenseKeyLineComparator() {
 

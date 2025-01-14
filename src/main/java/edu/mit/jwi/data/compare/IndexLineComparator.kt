@@ -9,27 +9,8 @@
  *******************************************************************************/
 package edu.mit.jwi.data.compare
 
-import java.util.*
-
 /**
- * A comparator that captures the ordering of lines in Wordnet index files
- * (e.g., `index.adv` or `adv.idx` files). These files are
- * ordered alphabetically.
- *
- * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the [.getInstance] method to get
- * the singleton instance.
- *
- * This constructor is marked protected so that the class may be
- * sub-classed, but not directly instantiated. Obtain instances of this
- * class via the static [.getInstance] method.
- *
- * @param detector the comment detector for this line comparator, or
- * null if there is none
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * A comparator that captures the ordering of lines in Wordnet index files (e.g., `index.adv` or `adv.idx` files). These files are ordered alphabetically.
  */
 open class IndexLineComparator(override val commentProcessor: CommentProcessor) : ILineComparator {
 
@@ -49,18 +30,17 @@ open class IndexLineComparator(override val commentProcessor: CommentProcessor) 
             return 1
         }
 
-        // Neither strings are comments, so extract the lemma from the
-        // beginnings of both and compare them as two strings.
+        // Neither strings are comments, so extract the lemma from the beginnings of both and compare them as two strings.
         var i1 = s1.indexOf(' ')
-        var i2 = s2.indexOf(' ')
         if (i1 == -1) {
             i1 = s1.length
         }
+        val sub1 = s1.substring(0, i1)
+
+        var i2 = s2.indexOf(' ')
         if (i2 == -1) {
             i2 = s2.length
         }
-
-        val sub1 = s1.substring(0, i1)
         val sub2 = s2.substring(0, i2)
         return compareLemmas(sub1, sub2)
     }
@@ -73,12 +53,8 @@ open class IndexLineComparator(override val commentProcessor: CommentProcessor) 
      * @return compare code
      */
     protected open fun compareLemmas(lemma1: String, lemma2: String): Int {
-        var lemma1 = lemma1
-        var lemma2 = lemma2
-        lemma1 = lemma1.lowercase()
-        lemma2 = lemma2.lowercase()
+        val lemma1 = lemma1.lowercase()
+        val lemma2 = lemma2.lowercase()
         return lemma1.compareTo(lemma2)
     }
-
-    object INSTANCE : IndexLineComparator(CommentProcessor)
 }
