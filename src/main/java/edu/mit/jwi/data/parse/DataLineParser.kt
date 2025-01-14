@@ -19,7 +19,7 @@ import java.util.*
 
 /**
  * Parser for Wordnet data files (e.g., `data.adv` or `adv.dat`).
- * This parser produces an `Synset` object.
+ * This parser produces a Synset object.
  */
 object DataLineParser : ILineParser<Synset> {
 

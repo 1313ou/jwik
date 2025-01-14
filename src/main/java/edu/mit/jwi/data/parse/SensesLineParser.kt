@@ -15,22 +15,11 @@ import edu.mit.jwi.item.SenseKey
 import java.util.*
 
 /**
- * Parser for Wordnet sense index files (e.g., `index.sense` or
- * `sense.index`). It produces an `SenseEntry` object.
- *
- * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the [.getInstance] method to get
- * the singleton instance.
- *
- * This constructor is marked protected so that the class may be
- * sub-classed, but not directly instantiated. Obtain instances of this
- * class via the static [.getInstance] method.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.0
+ * Parser for Wordnet sense index files (e.g., `index.sense` or`sense.index`). It produces an `SenseEntry` object.
  */
-class SensesLineParser private constructor(private val keyParser: ILineParser<SenseKey> = SenseKeyParser) : ILineParser<Array<SenseEntry>> {
+object SensesLineParser : ILineParser<Array<SenseEntry>> {
+
+    private val keyParser: ILineParser<SenseKey> = SenseKeyParser
 
     override fun parseLine(line: String): Array<SenseEntry> {
 
@@ -53,25 +42,5 @@ class SensesLineParser private constructor(private val keyParser: ILineParser<Se
         } catch (e: Exception) {
             throw MisformattedLineException(line, e)
         }
-    }
-
-    companion object {
-
-        /**
-         * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be null.
-         *
-         * @return the non-null singleton instance of this class,
-         * instantiating it if necessary.
-         * @since JWI 2.1.0
-         */
-        var instance: SensesLineParser? = null
-            get() {
-                if (field == null) {
-                    field = SensesLineParser()
-                }
-                return field
-            }
-            private set
     }
 }

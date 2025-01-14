@@ -16,7 +16,7 @@ import java.util.*
 
 /**
  * Parser for Wordnet index files (e.g., `idx.adv` or `adv.idx`).
- * It produces an `IndexWord` object.
+ * It produces an IndexWord object.
  */
 object IndexLineParser : ILineParser<IndexWord> {
 

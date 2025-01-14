@@ -23,9 +23,9 @@ object SenseKeyParser : ILineParser<SenseKey> {
     override fun parseLine(key: String): SenseKey {
         try {
             var begin = 0
+            var end: Int = key.indexOf('%')
 
             // get lemma
-            var end: Int = key.indexOf('%')
             val lemma = key.substring(begin, end)
 
             // get ss_type
@@ -67,8 +67,6 @@ object SenseKeyParser : ILineParser<SenseKey> {
     }
 
     /**
-     *
-     *
      * Retrieves the lexical file objects for the [.parseLine] method.
      * If the lexical file number does correspond to a known lexical file, the method returns a singleton placeholder 'unknown' lexical file object.
      * This is implemented in its own method for ease of subclassing.

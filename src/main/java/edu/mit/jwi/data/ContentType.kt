@@ -54,7 +54,7 @@ class ContentType<T>
      */
     override val charset: Charset? = null,
 
-) : IHasPOS, IHasCharset {
+    ) : IHasPOS, IHasCharset {
 
     val dataType: DataType<T>
         get() {
@@ -126,9 +126,7 @@ class ContentType<T>
         /**
          * Emulates the Enum.values() function.
          *
-         * @return all the static ContentType instances listed in the class, in the
-         * order they are declared.
-         * @since JWI 2.0.0
+         * @return all the ContentType instances listed in the class, in the order they are declared.
          */
         @JvmStatic
         fun values(): Collection<ContentType<*>> {
@@ -136,13 +134,10 @@ class ContentType<T>
         }
 
         /**
-         * Use this convenience method to retrieve the appropriate
-         * `IndexWord` content type for the specified POS.
+         * Use this convenience method to retrieve the appropriate IndexWord content type for the specified POS.
          *
-         * @param pos the part of speech for the content type, may not be null
+         * @param pos the part of speech for the content type
          * @return the index content type for the specified part of speech
-         * @throws NullPointerException if the specified part of speech is null
-         * @since JWI 2.0.0
          */
         fun getIndexContentType(pos: POS): ContentType<IndexWord> {
             return when (pos) {
@@ -151,7 +146,6 @@ class ContentType<T>
                 POS.ADVERB    -> INDEX_ADVERB
                 POS.ADJECTIVE -> INDEX_ADJECTIVE
             }
-            throw IllegalStateException("This should not happen.")
         }
 
         fun getWordContentType(pos: POS): ContentType<IndexWord> {
@@ -161,18 +155,13 @@ class ContentType<T>
                 POS.ADVERB    -> WORD_ADVERB
                 POS.ADJECTIVE -> WORD_ADJECTIVE
             }
-            throw IllegalStateException("This should not happen.")
         }
 
         /**
-         * Use this convenience method to retrieve the appropriate
-         * `Synset` content type for the specified POS.
+         * Use this convenience method to retrieve the appropriate Synset content type for the specified POS.
          *
-         * @param pos the part of speech for the content type, may not be
-         * null
+         * @param pos the part of speech for the content type
          * @return the index content type for the specified part of speech
-         * @throws NullPointerException if the specified part of speech is null
-         * @since JWI 2.0.0
          */
         fun getDataContentType(pos: POS): ContentType<Synset> {
             return when (pos) {
@@ -181,18 +170,13 @@ class ContentType<T>
                 POS.ADVERB    -> DATA_ADVERB
                 POS.ADJECTIVE -> DATA_ADJECTIVE
             }
-            throw IllegalStateException("How in the world did we get here?")
         }
 
         /**
-         * Use this convenience method to retrieve the appropriate
-         * `ExceptionEntryProxy` content type for the specified POS.
+         * Use this convenience method to retrieve the appropriate ExceptionEntryProxy content type for the specified POS.
          *
-         * @param pos the part of speech for the content type, may not be
-         * null
+         * @param pos the part of speech for the content type
          * @return the index content type for the specified part of speech
-         * @throws NullPointerException if the specified part of speech is null
-         * @since JWI 2.0.0
          */
         fun getExceptionContentType(pos: POS): ContentType<ExceptionEntryProxy> {
             return when (pos) {
@@ -201,7 +185,6 @@ class ContentType<T>
                 POS.ADVERB    -> EXCEPTION_ADVERB
                 POS.ADJECTIVE -> EXCEPTION_ADJECTIVE
             }
-            throw IllegalStateException("Great Scott, there's been a rupture in the space-time continuum!")
         }
     }
 }
