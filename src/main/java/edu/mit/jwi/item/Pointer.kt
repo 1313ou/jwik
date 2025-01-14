@@ -9,6 +9,7 @@
  *******************************************************************************/
 package edu.mit.jwi.item
 
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -22,7 +23,10 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class Pointer(symbol: String, name: String) {
+class Pointer(
+    symbol: String,
+    name: String
+) : Serializable {
 
     val symbol: String = checkString(symbol)
 
