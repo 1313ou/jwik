@@ -789,15 +789,11 @@ class FileProvider @JvmOverloads constructor(
         }
 
         /**
-         * A utility method for checking whether a file represents an existing local
-         * directory.
+         * A utility method for checking whether a file represents an existing local directory.
          *
-         * @param url the url object to check, may not be null
-         * @return true if the url object represents a local directory
-         * which exists; false otherwise.
-         * @throws NullPointerException if the specified url object is null
-         * @since JWI 2.4.0
-         */
+         * @param url the url object to check
+         * @return whether url object represents a local directory which exists
+          */
         fun isLocalDirectory(url: URL): Boolean {
             if (url.protocol != "file") {
                 return false
@@ -807,17 +803,37 @@ class FileProvider @JvmOverloads constructor(
         }
 
         /**
-         * A utility method for checking whether a file represents an existing local
-         * directory.
+         * A utility method for checking whether a file represents an existing local directory.
          *
-         * @param dir the file object to check, may not be null
-         * @return true if the file object represents a local directory
-         * which exist; false otherwise.
-         * @throws NullPointerException if the specified file object is null
-         * @since JWI 2.4.0
+         * @param dir the file object to check
+         * @return whether the file object represents a local directory which exist
          */
         fun isLocalDirectory(dir: File): Boolean {
             return dir.exists() && dir.isDirectory()
+        }
+
+        /**
+         * A utility method for checking whether a file represents an existing local file.
+         *
+         * @param url the url object to check
+         * @return whether the url object represents a local file which exists
+         */
+        fun isLocalFile(url: URL): Boolean {
+            if (url.protocol != "file") {
+                return false
+            }
+            val file: File = toFile(url)
+            return isLocalFile(file)
+        }
+
+        /**
+         * A utility method for checking whether a file represents an existing local file
+         *
+         * @param file the file object to check, may not be null
+         * @return whether the file object represents a local file which exist
+         */
+        fun isLocalFile(file: File): Boolean {
+            return file.exists() && file.isFile()
         }
     }
 }

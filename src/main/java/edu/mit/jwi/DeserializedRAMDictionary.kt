@@ -1,12 +1,13 @@
 package edu.mit.jwi
 
-import edu.mit.jwi.data.FileProvider
+import edu.mit.jwi.data.FileProvider.Companion.isLocalFile
 import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.data.LoadPolicy
 import edu.mit.jwi.item.Version
 import java.io.*
 import java.net.URL
 import java.util.zip.GZIPInputStream
+import kotlin.Throws
 
 /**
  * Dictionary that deserializes dictionary object.
@@ -161,7 +162,7 @@ constructor(
 
     companion object {
 
-        const val NOT_LOCAL = "Not a local directory"
+        const val NOT_LOCAL = "Not a local file"
 
         /**
          * Creates an input stream factory out of the specified File. If the file
@@ -171,7 +172,7 @@ constructor(
          * @return a new input stream factory, or null if the url points to a local directory.
          */
         fun createInputStreamFactory(file: File): IInputStreamFactory {
-            if (!FileProvider.Companion.isLocalDirectory(file)) throw RuntimeException(NOT_LOCAL)
+            if (!isLocalFile(file)) throw RuntimeException(NOT_LOCAL)
             return FileInputStreamFactory(file)
         }
 
@@ -183,7 +184,7 @@ constructor(
          * @return a new input stream factory, or null if the url points to a local directory.
          */
         fun createInputStreamFactory(url: URL): IInputStreamFactory {
-            if (!FileProvider.Companion.isLocalDirectory(url)) throw RuntimeException(NOT_LOCAL)
+            if (!isLocalFile(url)) throw RuntimeException(NOT_LOCAL)
             return URLInputStreamFactory(url)
         }
     }
