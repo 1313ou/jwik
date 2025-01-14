@@ -15,7 +15,7 @@ package edu.mit.jwi.data.compare
  */
 object DataLineComparator : ILineComparator {
 
-    override var commentDetector: CommentDetector? = CommentProcessor
+    override var commentDetector: ICommentDetector? = CommentProcessor
 
     override fun compare(s1: String, s2: String): Int {
         val c1 = CommentProcessor.isCommentLine(s1)

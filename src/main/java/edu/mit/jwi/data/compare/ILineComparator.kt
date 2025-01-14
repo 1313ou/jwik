@@ -15,5 +15,5 @@ package edu.mit.jwi.data.compare
  */
 interface ILineComparator : Comparator<String> {
 
-    var commentDetector: CommentDetector?
+    var commentDetector: ICommentDetector?
 }

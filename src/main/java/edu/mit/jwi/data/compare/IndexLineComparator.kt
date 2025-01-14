@@ -14,7 +14,7 @@ package edu.mit.jwi.data.compare
  */
 open class BaseIndexLineComparator() : ILineComparator {
 
-    override var commentDetector: CommentDetector? = null
+    override var commentDetector: ICommentDetector? = null
 
     override fun compare(s1: String, s2: String): Int {
         // check for comments

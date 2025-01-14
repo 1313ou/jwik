@@ -9,7 +9,7 @@
  *******************************************************************************/
 package edu.mit.jwi.data.compare
 
-interface CommentDetector {
+interface ICommentDetector {
 
     fun isCommentLine(line: String): Boolean
 }
@@ -21,7 +21,7 @@ interface CommentDetector {
  * Default comment detector that is designed for comments found at the head of Wordnet dictionary files.
  * It assumes that each comment line starts with two spaces, followed by a number that indicates the position of the comment line relative to the rest of the comment lines in the file.
  */
-object CommentProcessor : CommentDetector, Comparator<String> {
+object CommentProcessor : ICommentDetector, Comparator<String> {
 
     /**
      * Whether the specified string is a comment line

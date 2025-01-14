@@ -14,7 +14,7 @@ package edu.mit.jwi.data.compare
  */
 open class BaseSenseKeyLineComparator : ILineComparator {
 
-    override var commentDetector: CommentDetector? = null
+    override var commentDetector: ICommentDetector? = null
 
     override fun compare(line1: String, line2: String): Int {
         // get sense keys
