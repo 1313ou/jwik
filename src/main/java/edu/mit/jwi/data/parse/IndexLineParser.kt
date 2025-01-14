@@ -15,26 +15,10 @@ import edu.mit.jwi.item.Pointer.Companion.getPointerType
 import java.util.*
 
 /**
- * Parser for Wordnet index files (e.g., `idx.adv` or
- * `adv.idx`). It produces an `IndexWord` object.
- *
- * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the [.getInstance] method to get
- * the singleton instance.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * Parser for Wordnet index files (e.g., `idx.adv` or `adv.idx`).
+ * It produces an `IndexWord` object.
  */
-class IndexLineParser
-/**
- * This constructor is marked protected so that the class may be
- * sub-classed, but not directly instantiated. Obtain instances of this
- * class via the static [.getInstance] method.
- *
- * @since JWI 2.0.0
- */
-private constructor() : ILineParser<IndexWord> {
+object IndexLineParser : ILineParser<IndexWord> {
 
     override fun parseLine(line: String): IndexWord {
 
@@ -77,40 +61,14 @@ private constructor() : ILineParser<IndexWord> {
 
     /**
      * Retrieves the pointer objects for the [.parseLine] method.
-     *
      * This is implemented in its own method for ease of subclassing.
      *
      * @param symbol the symbol of the pointer to return
-     * @param pos    the part of speech of the pointer to return, can be
-     * null unless the pointer symbol is ambiguous
-     * @return the pointer corresponding to the specified symbol and part of
-     * speech combination
-     * @throws NullPointerException     if the symbol is null
-     * @throws IllegalArgumentException if the symbol and part of speech combination does not
-     * correspond to a known pointer
-     * @since JWI 2.3.0
+     * @param pos    the part of speech of the pointer to return, can be null unless the pointer symbol is ambiguous
+     * @return the pointer corresponding to the specified symbol and part of speech combination
+     * @throws IllegalArgumentException if the symbol and part of speech combination does not correspond to a known pointer
      */
     private fun resolvePointer(symbol: String, pos: POS?): Pointer {
         return getPointerType(symbol, pos)
-    }
-
-    companion object {
-
-        /**
-         * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be null.
-         *
-         * @return the non-null singleton instance of this class,
-         * instantiating it if necessary.
-         * @since JWI 2.0.0
-         */
-        var instance: IndexLineParser? = null
-            get() {
-                if (field == null) {
-                    field = IndexLineParser()
-                }
-                return field
-            }
-            private set
     }
 }

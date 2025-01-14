@@ -11,7 +11,7 @@ object TestLib {
 
     @JvmStatic
     fun sensekeyFromStringIsLive(jwi: JWI, skStr: String): Boolean {
-        val sk = checkNotNull(SenseKeyParser.instance!!.parseLine(skStr))
+        val sk = SenseKeyParser.parseLine(skStr)
         Assertions.assertEquals(sk.toString(), skStr)
         return sensekeyIsLive(jwi, sk)
     }
@@ -23,7 +23,7 @@ object TestLib {
             return false
         }
         val offset = senseEntry.offset
-        val sid = SynsetID(offset, sk.pOS!!)
+        val sid = SynsetID(offset, sk.pOS)
         return jwi.dict.getSynset(sid) != null
     }
 
@@ -49,7 +49,7 @@ object TestLib {
             val senseEntry = jwi.dict.getSenseEntry(sk!!)
             Assertions.assertNotNull(senseEntry)
             val offset = senseEntry!!.offset
-            val sid = SynsetID(offset, sk.pOS!!)
+            val sid = SynsetID(offset, sk.pOS)
             Assertions.assertNotNull(sid)
             val synset = jwi.dict.getSynset(sid)
             Assertions.assertNotNull(synset)
@@ -62,7 +62,7 @@ object TestLib {
             Assertions.assertNotNull(se)
             val offset = se!!.offset
             val pos = se.pOS
-            val sid = SynsetID(offset, pos!!)
+            val sid = SynsetID(offset, pos)
             Assertions.assertNotNull(sid)
             val synset = jwi.dict.getSynset(sid)
             Assertions.assertNotNull(synset)
@@ -73,8 +73,7 @@ object TestLib {
 
     fun parseDataLineIntoMembers(line: String): MutableList<String?> {
         val result: MutableList<String?> = ArrayList<String?>()
-        val parser = DataLineParser.instance
-        val synset = parser!!.parseLine(line)
+        val synset = DataLineParser.parseLine(line)
         for (sense in synset.words) {
             result.add(String.format("%s %s %d", sense, sense.lemma, sense.lexicalID))
         }

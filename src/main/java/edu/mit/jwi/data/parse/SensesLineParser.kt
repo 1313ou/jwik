@@ -9,7 +9,7 @@
  *******************************************************************************/
 package edu.mit.jwi.data.parse
 
-import edu.mit.jwi.data.parse.SenseLineParser.Companion.parseSenseEntry
+import edu.mit.jwi.data.parse.SenseLineParser.parseSenseEntry
 import edu.mit.jwi.item.SenseEntry
 import edu.mit.jwi.item.SenseKey
 import java.util.*
@@ -30,7 +30,7 @@ import java.util.*
  * @version 2.4.0
  * @since JWI 2.1.0
  */
-class SensesLineParser private constructor(private val keyParser: ILineParser<SenseKey> = SenseKeyParser.instance!!) : ILineParser<Array<SenseEntry>> {
+class SensesLineParser private constructor(private val keyParser: ILineParser<SenseKey> = SenseKeyParser) : ILineParser<Array<SenseEntry>> {
 
     override fun parseLine(line: String): Array<SenseEntry> {
 

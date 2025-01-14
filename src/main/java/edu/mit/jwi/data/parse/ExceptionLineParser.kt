@@ -13,71 +13,26 @@ import edu.mit.jwi.item.ExceptionEntryProxy
 import java.util.regex.Pattern
 
 /**
- *
- *
- * Parser for Wordnet exception files (e.g., `exc.adv` or
- * `adv.exc`). This parser produces `ExceptionEntryProxy`
- * objects instead of `IExceptionEntry` objects directly because the
- * exception files do not contain information about part of speech. This needs
- * to be added by the governing object to create a full-fledged
- * `IExceptionEntry` object.
- *
- *
- *
- * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the [.getInstance] method to get
- * the singleton instance.
- *
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * Parser for Wordnet exception files (e.g., `exc.adv` or `adv.exc`).
+ * This parser produces `ExceptionEntryProxy` objects instead of `IExceptionEntry` objects directly because the exception files do not contain information about part of speech.
+ * This needs to be added by the governing object to create a full-fledged `IExceptionEntry` object.
  */
-class ExceptionLineParser
-/**
- * This constructor is marked protected so that the class may be
- * sub-classed, but not directly instantiated. Obtain instances of this
- * class via the static [.getInstance] method.
- *
- * @since JWI 2.0.0
- */
-private constructor() : ILineParser<ExceptionEntryProxy> {
+object ExceptionLineParser : ILineParser<ExceptionEntryProxy> {
 
     override fun parseLine(line: String): ExceptionEntryProxy {
 
-        val forms: Array<String?> = spacePattern.split(line)
+        val forms: Array<String> = spacePattern.split(line)
         if (forms.size < 2) {
             throw MisformattedLineException(line)
         }
 
-        val surface = forms[0]!!.trim { it <= ' ' }
+        val surface = forms[0].trim { it <= ' ' }
 
         val trimmed = Array<String>(forms.size - 1) {
-            forms[it + 1]!!.trim { it <= ' ' }
+            forms[it + 1].trim { it <= ' ' }
         }
         return ExceptionEntryProxy(surface, trimmed)
     }
 
-    companion object {
-
-        /**
-         * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be null.
-         *
-         * @return the non-null singleton instance of this class,
-         * instantiating it if necessary.
-         * @since JWI 2.0.0
-         */
-        var instance: ExceptionLineParser? = null
-            get() {
-                if (field == null) {
-                    field = ExceptionLineParser()
-                }
-                return field
-            }
-            private set
-
-        // static fields
-        private val spacePattern: Pattern = Pattern.compile(" ")
-    }
+    private val spacePattern: Pattern = Pattern.compile(" ")
 }

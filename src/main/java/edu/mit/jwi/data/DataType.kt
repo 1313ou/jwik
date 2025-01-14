@@ -96,19 +96,19 @@ class DataType<T>(
     companion object {
 
         @JvmField
-        val INDEX: DataType<IndexWord> = DataType<IndexWord>("Index", true, IndexLineParser.Companion.instance!!, "index", "idx")
+        val INDEX: DataType<IndexWord> = DataType<IndexWord>("Index", true, IndexLineParser, "index", "idx")
 
         @JvmField
-        val WORD: DataType<IndexWord> = DataType<IndexWord>("Word", true, IndexLineParser.Companion.instance!!, "index", "idx")
+        val WORD: DataType<IndexWord> = DataType<IndexWord>("Word", true, IndexLineParser, "index", "idx")
 
         @JvmField
-        val DATA: DataType<Synset> = DataType<Synset>("Data", true, DataLineParser.Companion.instance!!, "data", "dat")
+        val DATA: DataType<Synset> = DataType<Synset>("Data", true, DataLineParser, "data", "dat")
 
         @JvmField
-        val EXCEPTION: DataType<ExceptionEntryProxy> = DataType<ExceptionEntryProxy>("Exception", false, ExceptionLineParser.Companion.instance!!, "exception", "exc")
+        val EXCEPTION: DataType<ExceptionEntryProxy> = DataType<ExceptionEntryProxy>("Exception", false, ExceptionLineParser, "exception", "exc")
 
         @JvmField
-        val SENSE: DataType<SenseEntry> = DataType<SenseEntry>("Sense", false, SenseLineParser.instance!!, "sense")
+        val SENSE: DataType<SenseEntry> = DataType<SenseEntry>("Sense", false, SenseLineParser, "sense")
 
         @JvmField
         val SENSES: DataType<Array<SenseEntry>> = DataType<Array<SenseEntry>>("Senses", false, SensesLineParser.instance!!, "sense")

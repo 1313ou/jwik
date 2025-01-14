@@ -16,27 +16,9 @@ import edu.mit.jwi.item.POS.Companion.isAdjectiveSatellite
 import edu.mit.jwi.item.SenseKey
 
 /**
- * A parser that takes a sense key string and produces an `SenseKey`
- * object.
- *
- * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the [.getInstance] method to get
- * the singleton instance.
- *
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.4
+ * A parser that takes a sense key string and produces an `SenseKey` object.
  */
-class SenseKeyParser
-/**
- * This constructor is marked protected so that the class may be
- * sub-classed, but not directly instantiated. Obtain instances of this
- * class via the static [.getInstance] method.
- *
- * @since JWI 2.1.4
- */
-private constructor() : ILineParser<SenseKey> {
+object SenseKeyParser : ILineParser<SenseKey> {
 
     override fun parseLine(key: String): SenseKey {
         try {
@@ -49,35 +31,36 @@ private constructor() : ILineParser<SenseKey> {
             // get ss_type
             begin = end + 1
             end = key.indexOf(':', begin)
-            val ss_type = key.substring(begin, end).toInt()
-            val pos = getPartOfSpeech(ss_type)
-            val isAdjSat = isAdjectiveSatellite(ss_type)
+            val ssType = key.substring(begin, end).toInt()
+            val pos = getPartOfSpeech(ssType)!!
+            val isAdjSat = isAdjectiveSatellite(ssType)
 
             // get lex_filenum
             begin = end + 1
             end = key.indexOf(':', begin)
-            val lex_filenum = key.substring(begin, end).toInt()
-            val lexFile = resolveLexicalFile(lex_filenum)
+            val lexFilenum = key.substring(begin, end).toInt()
+            val lexFile = resolveLexicalFile(lexFilenum)
 
             // get lex_id
             begin = end + 1
             end = key.indexOf(':', begin)
-            val lex_id = key.substring(begin, end).toInt()
+            val lexId = key.substring(begin, end).toInt()
 
             // if it's not an adjective satellite, we're done
             if (!isAdjSat) {
-                return SenseKey(lemma, lex_id, pos!!, lexFile, null, -1, key)
+                return SenseKey(lemma, lexId, pos!!, lexFile, null, -1, key)
             }
 
             // get head_word
             begin = end + 1
             end = key.indexOf(':', begin)
-            val head_word = key.substring(begin, end)
+            val headWord = key.substring(begin, end)
 
             // get head_id
             begin = end + 1
-            val head_id = key.substring(begin).toInt()
-            return SenseKey(lemma, lex_id, pos!!, lexFile, head_word, head_id, key)
+            val headId = key.substring(begin).toInt()
+            return SenseKey(lemma, lexId, pos, lexFile, headWord, headId, key)
+
         } catch (e: Exception) {
             throw MisformattedLineException(e)
         }
@@ -86,42 +69,14 @@ private constructor() : ILineParser<SenseKey> {
     /**
      *
      *
-     * Retrieves the lexical file objects for the [.parseLine]
-     * method. If the lexical file number does correspond to a known lexical
-     * file, the method returns a singleton placeholder 'unknown' lexical file
-     * object.
-     *
-     *
-     *
+     * Retrieves the lexical file objects for the [.parseLine] method.
+     * If the lexical file number does correspond to a known lexical file, the method returns a singleton placeholder 'unknown' lexical file object.
      * This is implemented in its own method for ease of subclassing.
-     *
      *
      * @param lexFileNum the number of the lexical file to return
      * @return the lexical file corresponding to the specified frame number
-     * @since JWI 2.1.0
      */
     private fun resolveLexicalFile(lexFileNum: Int): LexFile {
         return getLexicalFile(lexFileNum)
-    }
-
-    companion object {
-
-        /**
-         * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be null.
-         *
-         * @return the non-null singleton instance of this class,
-         * instantiating it if necessary.
-         * @since JWI 2.1.4
-         */
-        @JvmStatic
-        var instance: SenseKeyParser? = null
-            get() {
-                if (field == null) {
-                    field = SenseKeyParser()
-                }
-                return field
-            }
-            private set
     }
 }

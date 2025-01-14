@@ -9,29 +9,19 @@
  *******************************************************************************/
 package edu.mit.jwi.data.parse
 
+import edu.mit.jwi.data.parse.SenseLineParser.keyParser
 import edu.mit.jwi.item.SenseEntry
 import edu.mit.jwi.item.SenseKey
 import java.util.*
 
 /**
- * Parser for Wordnet sense index files (e.g., `index.sense` or
- * `sense.index`). It produces an `SenseEntry` object.
- *
- *
- * This class follows a singleton design pattern, and is not intended to be
- * instantiated directly; rather, call the [.getInstance] method to get
- * the singleton instance.
- *
- * This constructor is marked protected so that the class may be
- * sub-classed, but not directly instantiated. Obtain instances of this
- * class via the static [.getInstance] method.
+ * Parser for Wordnet sense index files (e.g., `index.sense` or `sense.index`). It produces an `SenseEntry` object.
  *
  * @param keyParser the sense key parser this sense line parser should use
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.0
  */
-class SenseLineParser private constructor(private val keyParser: ILineParser<SenseKey> = SenseKeyParser.instance!!) : ILineParser<SenseEntry> {
+object SenseLineParser : ILineParser<SenseEntry> {
+
+    private val keyParser: ILineParser<SenseKey> = SenseKeyParser
 
     override fun parseLine(line: String): SenseEntry {
 
@@ -51,37 +41,17 @@ class SenseLineParser private constructor(private val keyParser: ILineParser<Sen
         }
     }
 
-    companion object {
+    @JvmStatic
+    fun parseSenseEntry(tokenizer: StringTokenizer, senseKey: SenseKey): SenseEntry {
+        // get offset
+        val synsetOffset = tokenizer.nextToken().toInt()
 
-        /**
-         * Returns the singleton instance of this class, instantiating it if
-         * necessary. The singleton instance will not be null.
-         *
-         * @return the non-null singleton instance of this class,
-         * instantiating it if necessary.
-         * @since JWI 2.1.0
-         */
-        var instance: SenseLineParser? = null
-            get() {
-                if (field == null) {
-                    field = SenseLineParser()
-                }
-                return field
-            }
-            private set
+        // get sense number
+        val senseNumber = tokenizer.nextToken().toInt()
 
-        @JvmStatic
-        fun parseSenseEntry(tokenizer: StringTokenizer, senseKey: SenseKey): SenseEntry {
-            // get offset
-            val synsetOffset = tokenizer.nextToken().toInt()
+        // get tag cnt
+        val tagCnt = tokenizer.nextToken().toInt()
 
-            // get sense number
-            val senseNumber = tokenizer.nextToken().toInt()
-
-            // get tag cnt
-            val tagCnt = tokenizer.nextToken().toInt()
-
-            return SenseEntry(senseKey, synsetOffset, senseNumber, tagCnt)
-        }
+        return SenseEntry(senseKey, synsetOffset, senseNumber, tagCnt)
     }
 }
