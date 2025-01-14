@@ -18,7 +18,7 @@ import java.util.regex.Pattern
  */
 object ExceptionLineComparator : ILineComparator {
 
-    override val commentProcessor: CommentProcessor? = null
+    override var commentDetector: CommentDetector? = null
 
     override fun compare(line1: String, line2: String): Int {
         val words1 = SEPARATOR.split(line1)

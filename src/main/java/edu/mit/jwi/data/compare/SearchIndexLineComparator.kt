@@ -15,7 +15,7 @@ import kotlin.math.min
  * A comparator that captures the ordering of lines in Wordnet index files (e.g., `index.adv` or `adv.idx` files).
  * These files are ordered alphabetically.
  */
-object SearchIndexLineComparator : BaseIndexLineComparator(CommentProcessor) {
+object SearchIndexLineComparator : BaseIndexLineComparator() {
 
     /**
      * Compare lemmas (overridable if non-standard compare is needed)

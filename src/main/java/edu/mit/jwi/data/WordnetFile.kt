@@ -10,7 +10,7 @@
 package edu.mit.jwi.data
 
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
-import edu.mit.jwi.data.compare.CommentProcessor
+import edu.mit.jwi.data.compare.CommentDetector
 import edu.mit.jwi.item.Version
 import java.io.File
 import java.io.IOException
@@ -60,7 +60,8 @@ abstract class WordnetFile<T>(
 
     override val name: String = file.getName()
 
-    private val detector: CommentProcessor? = contentType.lineComparator!!.commentProcessor
+    private val commentDetector: CommentDetector?
+        get() = contentType.lineComparator!!.commentDetector
 
     // loading locks and status flag
     // the flag is marked transient to avoid different values in different threads
@@ -338,19 +339,13 @@ abstract class WordnetFile<T>(
         }
 
         /**
-         * Returns true if the specified line is a comment;
-         * false otherwise
+         * Whether the specified line is a comment
          *
          * @param line the line to be tested
-         * @return true if the specified line is a comment;
-         * false otherwise
-         * @since JWI 1.0
+         * @return whether if the specified line is a comment
          */
         protected fun isComment(line: String): Boolean {
-            if (detector == null) {
-                return false
-            }
-            return detector.isCommentLine(line)
+             return commentDetector?.isCommentLine(line) == true
         }
 
         override fun next(): String {

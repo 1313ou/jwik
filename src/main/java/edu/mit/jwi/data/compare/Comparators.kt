@@ -3,7 +3,7 @@ package edu.mit.jwi.data.compare
 /**
  * Case-sensitive index processing.
  */
-object CaseSensitiveIndexLineComparator : BaseIndexLineComparator(CommentProcessor) {
+object CaseSensitiveIndexLineComparator : BaseIndexLineComparator() {
 
     override fun compareLemmas(lemma1: String, lemma2: String): Int {
         return lemma1.compareTo(lemma2)

@@ -15,15 +15,15 @@ package edu.mit.jwi.data.compare
  */
 object DataLineComparator : ILineComparator {
 
-    override val commentProcessor = CommentProcessor
+    override var commentDetector: CommentDetector? = CommentProcessor
 
     override fun compare(s1: String, s2: String): Int {
-        val c1 = commentProcessor.isCommentLine(s1)
-        val c2 = commentProcessor.isCommentLine(s2)
+        val c1 = CommentProcessor.isCommentLine(s1)
+        val c2 = CommentProcessor.isCommentLine(s2)
 
         if (c1 and c2) {
             // both lines are comments, defer to comment comparator
-            return commentProcessor.compare(s1, s2)
+            return CommentProcessor.compare(s1, s2)
         } else if (c1 and !c2) {
             // first line is a comment, should come before the other
             return -1
