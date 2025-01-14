@@ -16,8 +16,9 @@ import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
 import edu.mit.jwi.data.LoadPolicy.BACKGROUND_LOAD
 import edu.mit.jwi.data.LoadPolicy.IMMEDIATE_LOAD
 import edu.mit.jwi.item.*
-import java.io.*
+import java.io.File
 import java.net.URL
+import java.util.concurrent.Callable
 
 /**
  * Dictionary that wraps an arbitrary dictionary object.
@@ -369,6 +370,105 @@ constructor(
 
         override fun makeIterator(): Iterator<SenseEntry> {
             return data!!.senses.values.iterator()
+        }
+    }
+
+    /**
+     * A `Callable` that creates a dictionary data from a specified dictionary.
+     * The data loader does not change the open state of the dictionary;
+     * The dictionary for the loader must be open for the loader to function without throwing an exception.
+     * The loader may be called multiple times (in a thread-safe manner) as long as the dictionary is open.
+     *
+     * Constructs a new data loader object, that uses the specified dictionary to load its data.
+     *
+     * @param source source dictionary
+     */
+    class DataLoader(private val source: IDictionary) : Callable<DictionaryData?> {
+
+        override fun call(): DictionaryData? {
+            val result = DictionaryData()
+            result.version = source.version
+
+            val t = Thread.currentThread()
+
+            // pos-indexed
+            for (pos in POS.entries) {
+                // index words
+                var idxWords = result.idxWords[pos]!!
+                run {
+                    val i: Iterator<IndexWord> = source.getIndexWordIterator(pos)
+                    while (i.hasNext()) {
+                        val idxWord = i.next()
+                        idxWords.put(idxWord.iD, idxWord)
+                    }
+                }
+                if (t.isInterrupted) {
+                    return null
+                }
+
+                // synsets and words
+                var synsets = result.synsets[pos]!!
+                run {
+                    val i: Iterator<Synset> = source.getSynsetIterator(pos)
+                    while (i.hasNext()) {
+                        val synset = i.next()
+                        synsets.put(synset.iD, synset)
+                        for (word in synset.words) {
+                            result.words.put(word.senseKey, word)
+                        }
+                    }
+                }
+                if (t.isInterrupted) {
+                    return null
+                }
+
+                // exceptions
+                var exceptions = result.exceptions[pos]!!
+                val i: Iterator<ExceptionEntry> = source.getExceptionEntryIterator(pos)
+                while (i.hasNext()) {
+                    val exception = i.next()
+                    exceptions.put(exception.iD, exception)
+                }
+                if (t.isInterrupted) {
+                    return null
+                }
+            }
+
+            // sense entries
+            val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
+            while (i.hasNext()) {
+                val entry = i.next()
+                val word: Word = result.words[entry.senseKey]!!
+                result.senses.put(word.senseKey, makeSenseEntry(word.senseKey, entry))
+            }
+            if (t.isInterrupted) {
+                return null
+            }
+
+            // compact
+            result.compactSize()
+            if (t.isInterrupted) {
+                return null
+            }
+
+            result.compactObjects()
+            if (t.isInterrupted) {
+                return null
+            }
+            return result
+        }
+
+        /**
+         * Creates a new sense entry that replicates the specified sense entry.
+         * The new sense entry replaces its internal sense key with the
+         * specified sense key thus removing a redundant object.
+         *
+         * @param key the sense key to be used
+         * @param old the sense entry to be replicated
+         * @return the new sense entry object
+         */
+        private fun makeSenseEntry(key: SenseKey, old: SenseEntry): SenseEntry {
+            return SenseEntry(key, old.offset, old.senseNumber, old.tagCount)
         }
     }
 

@@ -30,9 +30,12 @@ abstract class BaseRAMDictionary protected constructor(
     @Transient
     internal var loader: Thread? = null
 
+    /**
+     * Dictionary data
+     */
     internal var data: DictionaryData? = null
 
-    // LOAD
+    // L O A D
 
     override val isLoaded: Boolean
         get() = data != null
@@ -44,8 +47,6 @@ abstract class BaseRAMDictionary protected constructor(
             e.printStackTrace()
         }
     }
-
-    abstract fun makeThread(): Thread
 
     @Throws(InterruptedException::class)
     override fun load(block: Boolean) {
@@ -74,6 +75,10 @@ abstract class BaseRAMDictionary protected constructor(
         }
     }
 
+    abstract fun startLoad(): Boolean
+
+    abstract fun makeThread(): Thread
+
     // OPEN
 
     override val isOpen: Boolean
@@ -85,8 +90,6 @@ abstract class BaseRAMDictionary protected constructor(
                 lifecycleLock.unlock()
             }
         }
-
-    abstract fun startLoad(): Boolean
 
     @Throws(IOException::class)
     override fun open(): Boolean {
@@ -151,11 +154,9 @@ abstract class BaseRAMDictionary protected constructor(
     }
 
     /**
-     * This is an internal utility method that determines whether this
-     * dictionary should be considered open or closed.
+     * This is an internal utility method that determines whether this dictionary should be considered open or closed.
      *
-     * @return the lifecycle state object representing open if the object is
-     * open; otherwise the lifecycle state object representing closed
+     * @return the lifecycle state object representing open if the object is open; otherwise the lifecycle state object representing closed
      */
     private fun assertLifecycleState(): IHasLifecycle.LifecycleState {
         try {
@@ -173,7 +174,99 @@ abstract class BaseRAMDictionary protected constructor(
         }
     }
 
-    // EXPORT
+    // L O O K U P
+
+    // INDEXWORD
+
+    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
+        return getIndexWord(IndexWordID(lemma, pos))
+    }
+
+    override fun getIndexWord(id: IndexWordID): IndexWord? {
+        check(data != null) { NO_DATA }
+        return data!!.idxWords[id.pOS]!![id]
+    }
+
+    // WORD
+
+    override fun getWord(id: IWordID): Word? {
+        check(data != null) { NO_DATA }
+        val resolver = data!!.synsets[id.pOS]!!
+        val synset = resolver[id.synsetID]
+        if (synset == null) {
+            return null
+        }
+        return when (id) {
+            is WordNumID   -> synset.words[id.wordNumber - 1]
+            is WordLemmaID -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
+            else           -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
+        }
+    }
+
+    override fun getWord(key: SenseKey): Word? {
+        check(data != null) { NO_DATA }
+        return data!!.words[key]
+    }
+
+    override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
+        check(data != null) { NO_DATA }
+        var count = 0
+        return data!!.words.values
+            .filter { it.lemma.startsWith(start) && if (pos != null) it.pOS == pos else true }
+            .also { count++ }
+            .map { it.lemma }
+            .takeUnless { count > limit }
+            ?.toSet() ?: emptySet()
+    }
+
+    // SYNSET
+
+    override fun getSynset(id: SynsetID): Synset? {
+        check(data != null) { NO_DATA }
+        return data!!.synsets[id.pOS]!![id]
+    }
+
+    // SENSE ENTRY
+
+    override fun getSenseEntry(key: SenseKey): SenseEntry? {
+        check(data != null) { NO_DATA }
+        return data!!.senses[key]
+    }
+
+    // EXCEPTION ENTRY
+
+    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
+        return getExceptionEntry(ExceptionEntryID(surfaceForm, pos))
+    }
+
+    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
+        check(data != null) { NO_DATA }
+        return  data!!.exceptions[id.pOS]!![id]
+    }
+
+    // I T E R A T O R S
+
+    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
+        check(data != null) { NO_DATA }
+        return data!!.idxWords[pos]!!.values.iterator()
+    }
+
+    override fun getSynsetIterator(pos: POS): Iterator<Synset> {
+        check(data != null) { NO_DATA }
+        return data!!.synsets[pos]!!.values.iterator()
+    }
+
+    override fun getSenseEntryIterator(): Iterator<SenseEntry> {
+        check(data != null) { NO_DATA }
+        return data!!.senses.values.iterator()
+    }
+
+    override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
+        check(data != null) { NO_DATA }
+        return data!!.exceptions[pos]!!.values.iterator()
+    }
+
+    // E X P O R T
 
     /**
      * Exports the in-memory contents of the data to the specified output stream.
@@ -200,194 +293,6 @@ abstract class BaseRAMDictionary protected constructor(
             }
         } finally {
             loadLock.unlock()
-        }
-    }
-
-    // F I N D
-
-    // INDEXWORD
-
-    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
-        return getIndexWord(IndexWordID(lemma, pos))
-    }
-
-    override fun getIndexWord(id: IndexWordID): IndexWord? {
-        return if (data != null) data!!.idxWords[id.pOS]!![id] else null
-    }
-
-    // WORD
-
-    override fun getWord(id: IWordID): Word? {
-        if (data != null) {
-            val resolver = data!!.synsets[id.pOS]!!
-            val synset = resolver[id.synsetID]
-            if (synset == null) {
-                return null
-            }
-            return when (id) {
-                is WordNumID   -> synset.words[id.wordNumber - 1]
-                is WordLemmaID -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
-                else           -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
-            }
-        } else return null
-    }
-
-    override fun getWord(key: SenseKey): Word? {
-        return if (data != null) data!!.words[key] else null
-    }
-
-    override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
-        return if (data != null) {
-            var count = 0
-            data!!.words.values
-                .filter { it.lemma.startsWith(start) && if (pos != null) it.pOS == pos else true }
-                .also { count++ }
-                .map { it.lemma }
-                .takeUnless { count > limit }
-                ?.toSet() ?: emptySet()
-        } else emptySet()
-    }
-
-    // SYNSET
-
-    override fun getSynset(id: SynsetID): Synset? {
-        return if (data != null) data!!.synsets[id.pOS]!![id] else null
-    }
-
-    // SENSE ENTRY
-
-    override fun getSenseEntry(key: SenseKey): SenseEntry? {
-        return if (data != null) data!!.senses[key] else null
-    }
-
-    // EXCEPTION ENTRY
-
-    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
-        return getExceptionEntry(ExceptionEntryID(surfaceForm, pos))
-    }
-
-    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
-        return if (data != null) data!!.exceptions[id.pOS]!![id] else null
-    }
-
-    // ITERATORS
-
-    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
-        check(data != null) { "Data not loaded into memory" }
-        return data!!.idxWords[pos]!!.values.iterator()
-    }
-
-    override fun getSynsetIterator(pos: POS): Iterator<Synset> {
-        check(data != null) { "Data not loaded into memory" }
-        return data!!.synsets[pos]!!.values.iterator()
-    }
-
-    override fun getSenseEntryIterator(): Iterator<SenseEntry> {
-        check(data != null) { "Data not loaded into memory" }
-        return data!!.senses.values.iterator()
-    }
-
-    override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
-        check(data != null) { "Data not loaded into memory" }
-        return data!!.exceptions[pos]!!.values.iterator()
-    }
-
-    /**
-     * A `Callable` that creates a dictionary data from a specified
-     * dictionary. The data loader does not change the open state of the
-     * dictionary; the dictionary for the loader must be open for the loader to
-     * function without throwing an exception. The loader may be called multiple
-     * times (in a thread-safe manner) as long as the dictionary is open.
-     *
-     * Constructs a new data loader object, that uses the specified
-     * dictionary to load its data.
-     *
-     * @param source source dictionary
-     */
-    class DataLoader(private val source: IDictionary) : Callable<DictionaryData?> {
-
-        override fun call(): DictionaryData? {
-            val result = DictionaryData()
-            result.version = source.version
-
-            val t = Thread.currentThread()
-
-            for (pos in POS.entries) {
-                // index words
-                var idxWords = result.idxWords[pos]!!
-                run {
-                    val i: Iterator<IndexWord> = source.getIndexWordIterator(pos)
-                    while (i.hasNext()) {
-                        val idxWord = i.next()
-                        idxWords.put(idxWord.iD, idxWord)
-                    }
-                }
-                if (t.isInterrupted) {
-                    return null
-                }
-
-                // synsets and words
-                var synsets = result.synsets[pos]!!
-                run {
-                    val i: Iterator<Synset> = source.getSynsetIterator(pos)
-                    while (i.hasNext()) {
-                        val synset = i.next()
-                        synsets.put(synset.iD, synset)
-                        for (word in synset.words) {
-                            result.words.put(word.senseKey, word)
-                        }
-                    }
-                }
-                if (t.isInterrupted) {
-                    return null
-                }
-
-                // exceptions
-                var exceptions = result.exceptions[pos]!!
-                val i: Iterator<ExceptionEntry> = source.getExceptionEntryIterator(pos)
-                while (i.hasNext()) {
-                    val exception = i.next()
-                    exceptions.put(exception.iD, exception)
-                }
-                if (t.isInterrupted) {
-                    return null
-                }
-            }
-
-            // sense entries
-            val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
-            while (i.hasNext()) {
-                val entry = i.next()
-                val word: Word = result.words[entry.senseKey]!!
-                result.senses.put(word.senseKey, makeSenseEntry(word.senseKey, entry))
-            }
-            if (t.isInterrupted) {
-                return null
-            }
-
-            result.compactSize()
-            if (t.isInterrupted) {
-                return null
-            }
-
-            result.compactObjects()
-            if (t.isInterrupted) {
-                return null
-            }
-            return result
-        }
-
-        /**
-         * Creates a new sense entry that replicates the specified sense entry.
-         * The new sense entry replaces its internal sense key with the
-         * specified sense key thus removing a redundant object.
-         *
-         * @param key the sense key to be used
-         * @param old the sense entry to be replicated
-         * @return the new sense entry object
-         */
-        private fun makeSenseEntry(key: SenseKey, old: SenseEntry): SenseEntry {
-            return SenseEntry(key, old.offset, old.senseNumber, old.tagCount)
         }
     }
 
@@ -607,6 +512,8 @@ abstract class BaseRAMDictionary protected constructor(
          * The default load policy of a [RAMDictionary] is to load data in the background when opened.
          */
         const val DEFAULT_LOAD_POLICY: Int = LoadPolicy.BACKGROUND_LOAD
+
+        const val NO_DATA = "Data not loaded into memory"
 
         /**
          * This is a convenience method that transforms a Wordnet dictionary at the
