@@ -52,9 +52,8 @@ constructor(
             loadPolicy = policy
         }
 
-    override fun configure(config: Config?) {
-        backingDictionary.configure(config)
-    }
+    override val version: Version?
+        get() = backingDictionary.version
 
     /**
      * Loads data from the specified File using the specified load policy.
@@ -91,6 +90,12 @@ constructor(
     init {
         configure(config)
     }
+
+    override fun configure(config: Config?) {
+        backingDictionary.configure(config)
+    }
+
+    // L O A D
 
     override fun startLoad(): Boolean {
 
@@ -197,6 +202,8 @@ constructor(
         }
     }
 
+    // L O O K   U P
+
     override fun getIndexWord(id: IndexWordID): IndexWord? {
         return if (data != null) super.getIndexWord(id) else return backingDictionary.getIndexWord(id)
     }
@@ -225,10 +232,7 @@ constructor(
         return if (data != null) super.getExceptionEntry(id) else backingDictionary.getExceptionEntry(id)
     }
 
-    override val version: Version?
-        get() {
-            return backingDictionary.version
-        }
+    // I T E R A T E
 
     override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
         return HotSwappableIndexWordIterator(pos)
@@ -385,90 +389,76 @@ constructor(
      */
     class DataLoader(private val source: IDictionary) : Callable<DictionaryData?> {
 
-        override fun call(): DictionaryData? {
-            val result = DictionaryData()
-            result.version = source.version
-
-            val t = Thread.currentThread()
-
-            // pos-indexed
-            for (pos in POS.entries) {
-                // index words
-                var idxWords = result.idxWords[pos]!!
-                run {
-                    val i: Iterator<IndexWord> = source.getIndexWordIterator(pos)
-                    while (i.hasNext()) {
-                        val idxWord = i.next()
-                        idxWords.put(idxWord.iD, idxWord)
-                    }
-                }
-                if (t.isInterrupted) {
-                    return null
-                }
-
-                // synsets and words
-                var synsets = result.synsets[pos]!!
-                run {
-                    val i: Iterator<Synset> = source.getSynsetIterator(pos)
-                    while (i.hasNext()) {
-                        val synset = i.next()
-                        synsets.put(synset.iD, synset)
-                        for (word in synset.words) {
-                            result.words.put(word.senseKey, word)
-                        }
-                    }
-                }
-                if (t.isInterrupted) {
-                    return null
-                }
-
-                // exceptions
-                var exceptions = result.exceptions[pos]!!
-                val i: Iterator<ExceptionEntry> = source.getExceptionEntryIterator(pos)
-                while (i.hasNext()) {
-                    val exception = i.next()
-                    exceptions.put(exception.iD, exception)
-                }
-                if (t.isInterrupted) {
-                    return null
-                }
-            }
-
-            // sense entries
-            val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
-            while (i.hasNext()) {
-                val entry = i.next()
-                val word: Word = result.words[entry.senseKey]!!
-                result.senses.put(word.senseKey, makeSenseEntry(word.senseKey, entry))
-            }
-            if (t.isInterrupted) {
-                return null
-            }
-
-            // compact
-            result.compactSize()
-            if (t.isInterrupted) {
-                return null
-            }
-
-            result.compactObjects()
-            if (t.isInterrupted) {
-                return null
-            }
-            return result
+        inline fun cooperate(t: Thread) {
+            if (t.isInterrupted)
+                throw InterruptedException()
         }
 
-        /**
-         * Creates a new sense entry that replicates the specified sense entry.
-         * The new sense entry replaces its internal sense key with the
-         * specified sense key thus removing a redundant object.
-         *
-         * @param key the sense key to be used
-         * @param old the sense entry to be replicated
-         * @return the new sense entry object
-         */
-        private fun makeSenseEntry(key: SenseKey, old: SenseEntry): SenseEntry {
-            return SenseEntry(key, old.offset, old.senseNumber, old.tagCount)
+        override fun call(): DictionaryData? {
+            val thread = Thread.currentThread()
+            try {
+                val result = DictionaryData()
+                result.version = source.version
+
+                // pos-indexed
+                for (pos in POS.entries) {
+                    // index words
+                    var idxWords = result.idxWords[pos]!!
+                    run {
+                        val i: Iterator<IndexWord> = source.getIndexWordIterator(pos)
+                        while (i.hasNext()) {
+                            val idxWord = i.next()
+                            idxWords.put(idxWord.iD, idxWord)
+                        }
+                    }
+                    cooperate(thread)
+
+                    // synsets and words
+                    var synsets = result.synsets[pos]!!
+                    run {
+                        val i: Iterator<Synset> = source.getSynsetIterator(pos)
+                        while (i.hasNext()) {
+                            val synset = i.next()
+                            synsets.put(synset.iD, synset)
+                            for (word in synset.words) {
+                                result.words.put(word.senseKey, word)
+                            }
+                        }
+                    }
+                    cooperate(thread)
+
+                    // exceptions
+                    var exceptions = result.exceptions[pos]!!
+                    val i: Iterator<ExceptionEntry> = source.getExceptionEntryIterator(pos)
+                    while (i.hasNext()) {
+                        val exception = i.next()
+                        exceptions.put(exception.iD, exception)
+                    }
+                    cooperate(thread)
+                }
+
+                // sense entries
+                val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
+                while (i.hasNext()) {
+                    val entry = i.next()
+                    val word: Word = result.words[entry.senseKey]!!
+                    // Creates a new sense entry that replicates the specified sense entry.
+                    // The new sense entry replaces its internal sense key with the specified sense key thus removing a redundant object.
+                    result.senses.put(word.senseKey, SenseEntry(word.senseKey, entry.offset, entry.senseNumber, entry.tagCount))
+                }
+                cooperate(thread)
+
+                // compact
+                result.compactSize()
+                cooperate(thread)
+                result.compactObjects()
+                cooperate(thread)
+
+                return result
+
+            } catch (_: InterruptedException) {
+                return null
+            }
         }
     }
 

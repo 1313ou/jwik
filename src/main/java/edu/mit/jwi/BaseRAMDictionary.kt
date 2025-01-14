@@ -174,7 +174,7 @@ abstract class BaseRAMDictionary protected constructor(
         }
     }
 
-    // L O O K U P
+    // L O O K   U P
 
     // INDEXWORD
 
@@ -244,7 +244,7 @@ abstract class BaseRAMDictionary protected constructor(
         return  data!!.exceptions[id.pOS]!![id]
     }
 
-    // I T E R A T O R S
+    // I T E R A T E
 
     override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
         check(data != null) { NO_DATA }
