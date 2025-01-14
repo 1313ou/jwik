@@ -12,7 +12,7 @@ package edu.mit.jwi.data.compare
 /**
  * A comparator that captures the ordering of lines in sense index files (e.g., the `sense.index` file). These files are ordered alphabetically by sense key.
  */
-open class SenseKeyLineComparator : ILineComparator {
+open class BaseSenseKeyLineComparator : ILineComparator {
 
     override val commentProcessor: CommentProcessor? = null
 
@@ -38,3 +38,5 @@ open class SenseKeyLineComparator : ILineComparator {
         return senseKey1.compareTo(senseKey2, ignoreCase = true)
     }
 }
+
+object SenseKeyLineComparator : BaseSenseKeyLineComparator()

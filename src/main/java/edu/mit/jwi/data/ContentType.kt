@@ -76,15 +76,15 @@ class ContentType<T>
 
     companion object {
 
-        val INDEX_NOUN = ContentType<IndexWord>(ContentTypeKey.INDEX_NOUN, IndexLineComparator.INSTANCE)
-        val INDEX_VERB = ContentType<IndexWord>(ContentTypeKey.INDEX_VERB, IndexLineComparator.INSTANCE)
-        val INDEX_ADVERB = ContentType<IndexWord>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator.INSTANCE)
-        val INDEX_ADJECTIVE = ContentType<IndexWord>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator.INSTANCE)
+        val INDEX_NOUN = ContentType<IndexWord>(ContentTypeKey.INDEX_NOUN, IndexLineComparator)
+        val INDEX_VERB = ContentType<IndexWord>(ContentTypeKey.INDEX_VERB, IndexLineComparator)
+        val INDEX_ADVERB = ContentType<IndexWord>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator)
+        val INDEX_ADJECTIVE = ContentType<IndexWord>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator)
 
-        val WORD_NOUN = ContentType<IndexWord>(ContentTypeKey.WORD_NOUN, IndexLineComparator.INSTANCE)
-        val WORD_VERB = ContentType<IndexWord>(ContentTypeKey.WORD_VERB, IndexLineComparator.INSTANCE)
-        val WORD_ADVERB = ContentType<IndexWord>(ContentTypeKey.WORD_ADVERB, IndexLineComparator.INSTANCE)
-        val WORD_ADJECTIVE = ContentType<IndexWord>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator.INSTANCE)
+        val WORD_NOUN = ContentType<IndexWord>(ContentTypeKey.WORD_NOUN, IndexLineComparator)
+        val WORD_VERB = ContentType<IndexWord>(ContentTypeKey.WORD_VERB, IndexLineComparator)
+        val WORD_ADVERB = ContentType<IndexWord>(ContentTypeKey.WORD_ADVERB, IndexLineComparator)
+        val WORD_ADJECTIVE = ContentType<IndexWord>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator)
 
         val DATA_NOUN = ContentType<Synset>(ContentTypeKey.DATA_NOUN, DataLineComparator)
         val DATA_VERB = ContentType<Synset>(ContentTypeKey.DATA_VERB, DataLineComparator)
@@ -96,8 +96,8 @@ class ContentType<T>
         val EXCEPTION_ADVERB = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADVERB, ExceptionLineComparator)
         val EXCEPTION_ADJECTIVE = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADJECTIVE, ExceptionLineComparator)
 
-        val SENSE = ContentType<SenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator.INSTANCE)
-        val SENSES = ContentType<Array<SenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator.INSTANCE)
+        val SENSE = ContentType<SenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator)
+        val SENSES = ContentType<Array<SenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator)
 
         // set of all content types implemented in this class
         private val contentTypes: Set<ContentType<*>> = Collections.unmodifiableSet<ContentType<*>>(

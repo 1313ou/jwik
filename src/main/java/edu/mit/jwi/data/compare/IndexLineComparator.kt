@@ -12,7 +12,7 @@ package edu.mit.jwi.data.compare
 /**
  * A comparator that captures the ordering of lines in Wordnet index files (e.g., `index.adv` or `adv.idx` files). These files are ordered alphabetically.
  */
-open class IndexLineComparator(override val commentProcessor: CommentProcessor) : ILineComparator {
+open class BaseIndexLineComparator(override val commentProcessor: CommentProcessor) : ILineComparator {
 
     override fun compare(s1: String, s2: String): Int {
         // check for comments
@@ -58,3 +58,6 @@ open class IndexLineComparator(override val commentProcessor: CommentProcessor) 
         return lemma1.compareTo(lemma2)
     }
 }
+
+object IndexLineComparator: BaseIndexLineComparator(CommentProcessor)
+
