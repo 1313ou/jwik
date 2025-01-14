@@ -12,6 +12,8 @@ package edu.mit.jwi.data
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ICommentDetector
 import edu.mit.jwi.item.Version
+import edu.mit.jwi.item.Version.Companion.NO_VERSION
+import edu.mit.jwi.item.Version.Companion.extractVersion
 import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
@@ -21,49 +23,41 @@ import java.nio.charset.Charset
 import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.Throws
 
 /**
- * Abstract superclass of wordnet data file objects. Provides all the
- * infrastructure required to access the files, except for the construction of
- * iterators and the actual implementation of the [.getLine]
- * method.
+ * Abstract superclass of wordnet data file objects.
+ * Provides all the infrastructure required to access the files, except for the construction of iterators and the actual implementation of the getLine method.
  *
- * While this object is implemented to provider load/unload capabilities (i.e.,
- * it allows the whole wordnet file to be loaded into memory, rather than read
- * from disk), this does not provide much of a performance boost. In tests, the
- * time to parsing a line of data into a data object dominates the time required
- * to read the data from disk (for a reasonable modern hard drive).
+ * While this object is implemented to provide load/unload capabilities (i.e., it allows the whole wordnet file to be loaded into memory, rather than read from disk), this does not provide much of a performance boost.
+ * In tests, the time for parsing a line of data into a data object dominates the time required to read the data from disk (for a reasonable modern hard drive).
  *
- * Constructs an instance of this class backed by the specified java
- * `File` object, with the specified content type. No effort is made
- * to ensure that the data in the specified file is actually formatted in
- * the proper manner for the line parser associated with the content type's
- * data type. If these are mismatched, this will result in
- * `MisformattedLineExceptions` in later calls.
+ * Constructs an instance of this class backed by the specified java File object, with the specified content type.
+ * No effort is made to ensure that the data in the specified file is actually formatted in the proper manner for the line parser associated with the content type's data type.
+ * If these are mismatched, this will result in MisformattedLineExceptions in later calls.
  *
  * @param file        the file which backs this wordnet file; may not be 'null'
  * @param contentType the content type for this file; may not be null
-
  * @param <T> the type of the objects represented in this file
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
  */
 abstract class WordnetFile<T>(
     /**
      * The file which backs this object.
      */
     val file: File,
+    /**
+     * The content type
+     */
     override val contentType: ContentType<T>,
 ) : ILoadableDataSource<T> {
 
-    override val name: String = file.getName()
+    override val name: String
+        get() = file.getName()
 
     private val commentDetector: ICommentDetector?
         get() = contentType.lineComparator!!.commentDetector
 
-    // loading locks and status flag
-    // the flag is marked transient to avoid different values in different threads
+    // loading locks and status flag the flag is marked transient to avoid different values in different threads
     @Transient
     final override var isLoaded: Boolean = false
 
@@ -88,6 +82,51 @@ abstract class WordnetFile<T>(
         }
         return buffer!!
     }
+
+    /**
+     * Returns the wordnet version associated with this object, or null if the version cannot be determined.
+     *
+     * @return the wordnet version associated with this object, or null if the version cannot be determined
+     * @throws ObjectClosedException if the object is closed when this method is called
+     */
+    override var version: Version? = null
+        get() {
+            if (!isOpen) {
+                throw ObjectClosedException()
+            }
+            if (field == null) {
+                val v = extractVersion(contentType, buffer!!.asReadOnlyBuffer())
+                if (v == null) {
+                    field = NO_VERSION
+                }
+            }
+            return if (field === NO_VERSION) null else field
+        }
+
+    // H A S H   +   E Q U A L S
+
+    override fun hashCode(): Int {
+        return Objects.hash(contentType, file)
+    }
+
+    override fun equals(obj: Any?): Boolean {
+        if (this === obj) {
+            return true
+        }
+        if (obj == null) {
+            return false
+        }
+        if (javaClass != obj.javaClass) {
+            return false
+        }
+        val other = obj as WordnetFile<*>
+        if (contentType != other.contentType) {
+            return false
+        }
+        return file == other.file
+    }
+
+    // O P E N
 
     @Throws(IOException::class)
     override fun open(): Boolean {
@@ -134,6 +173,8 @@ abstract class WordnetFile<T>(
         }
     }
 
+    // L O A D
+
     override fun load() {
         load(false)
     }
@@ -142,11 +183,12 @@ abstract class WordnetFile<T>(
         try {
             loadingLock.lock()
             val len = file.length().toInt()
-            checkNotNull(buffer)
-            val buf = buffer!!.asReadOnlyBuffer()
-            buf.clear()
+
+            val roBuffer = buffer!!.asReadOnlyBuffer()
+            roBuffer.clear()
+
             val data = ByteArray(len)
-            buf.get(data, 0, len)
+            roBuffer.get(data, 0, len)
 
             try {
                 lifecycleLock.lock()
@@ -170,28 +212,7 @@ abstract class WordnetFile<T>(
         }
     }
 
-    /**
-     * Returns the wordnet version associated with this object, or null if the
-     * version cannot be determined.
-     *
-     * @return the wordnet version associated with this object, or null if the
-     * version cannot be determined
-     * @throws ObjectClosedException if the object is closed when this method is called
-     * @see edu.mit.jwi.item.IHasVersion.version
-     */
-    override var version: Version? = null
-        get() {
-            if (!isOpen) {
-                throw ObjectClosedException()
-            }
-            if (field == null) {
-                val v = Version.extractVersion(contentType, buffer!!.asReadOnlyBuffer())
-                if (v == null) {
-                    field = Version.NO_VERSION
-                }
-            }
-            return if (field === Version.NO_VERSION) null else field
-        }
+    // I T E R A T E
 
     override fun iterator(): LineIterator {
         if (!isOpen) {
@@ -208,48 +229,21 @@ abstract class WordnetFile<T>(
     }
 
     /**
-     * Constructs an iterator that can be used to iterate over the specified
-     * [ByteBuffer], starting from the specified key.
+     * Constructs an iterator that can be used to iterate over the specified ByteBuffer, starting from the specified key.
      *
-     * @param buffer the buffer over which the iterator will iterate, should not be
-     * null
-     * @param key    the key at which the iterator should begin, should not be
-     * null
-     * @return an iterator that can be used to iterate over the lines of the
-     * [ByteBuffer]
-     * @since JWI 2.2.0
+     * @param buffer the buffer over which the iterator will iterate
+     * @param key the key at which the iterator should begin
+     * @return an iterator that can be used to iterate over the lines of the ByteBuffer
      */
     abstract fun makeIterator(buffer: ByteBuffer, key: String?): LineIterator
 
-    override fun hashCode(): Int {
-        return Objects.hash(contentType, file)
-    }
-
-    override fun equals(obj: Any?): Boolean {
-        if (this === obj) {
-            return true
-        }
-        if (obj == null) {
-            return false
-        }
-        if (javaClass != obj.javaClass) {
-            return false
-        }
-        val other = obj as WordnetFile<*>
-        if (contentType != other.contentType) {
-            return false
-        }
-        return file == other.file
-    }
-
     /**
-     * Used to iterate over lines in a file. It is a look-ahead iterator. This
-     * iterator does not support the remove method; if that method is called, it
-     * throws an [UnsupportedOperationException].
+     * Used to iterate over lines in a file.
+     * It is a look-ahead iterator.
      *
-     * @author Mark A. Finlayson
-     * @version 2.4.0
-     * @since JWI 1.0
+     * Constructs a new line iterator over this buffer, starting at the specified key.
+     *
+     * @param buffer the buffer over which the iterator should iterate
      */
     abstract inner class LineIterator(buffer: ByteBuffer) : Iterator<String> {
 
@@ -257,29 +251,31 @@ abstract class WordnetFile<T>(
 
         @JvmField
         protected var itrBuffer: ByteBuffer
+
+        init {
+            itrBuffer = buffer.asReadOnlyBuffer()
+            itrBuffer.clear()
+        }
+
         /**
-         * Returns the line currently stored as the 'next' line, if any. Is a
-         * pure getter; does not increment the iterator.
-         *
-         * @return the next line that will be parsed and returned by this
-         * iterator, or null if none
-         * @since JWI 2.2.0
+         * The line currently stored as the 'next' line, if any.
+         * The next line that will be parsed and returned by this iterator, or null if none
+         * Is a pure getter; does not increment the iterator.
          */
         var nextLine: String? = null
             protected set
 
-        /**
-         * Constructs a new line iterator over this buffer, starting at the
-         * specified key.
-         *
-         * @param buffer the buffer over which the iterator should iterator; may
-         * not be null
-         * @throws NullPointerException if the specified buffer is null
-         * @since JWI 1.0
-         */
-        init {
-            itrBuffer = buffer.asReadOnlyBuffer()
-            itrBuffer.clear()
+        override fun hasNext(): Boolean {
+            return nextLine != null
+        }
+
+        override fun next(): String {
+            if (nextLine == null) {
+                throw NoSuchElementException()
+            }
+            val result = nextLine
+            advance()
+            return result!!
         }
 
         /**
@@ -287,7 +283,7 @@ abstract class WordnetFile<T>(
          *
          * @param key0 the key of the line to start at; may be null
          */
-        fun init(key0: String?) {
+        fun startAt(key0: String?) {
             var key = key0?.trim { it <= ' ' }
             if (key == null || key.isEmpty()) {
                 advance()
@@ -297,44 +293,33 @@ abstract class WordnetFile<T>(
         }
 
         /**
-         * Advances the iterator the first line the iterator should return,
-         * based on the specified key. If the key is not found in the file, it
-         * will advance the iterator past all lines.
+         * Advances the iterator the first line the iterator should return, based on the specified key.
+         * If the key is not found in the file, it will advance the iterator past all lines.
          *
-         * @param key the key indexed the first line to be returned by the
-         * iterator
-         * @since JWI 1.0
+         * @param key the key indexed the first line to be returned by the iterator
          */
         protected abstract fun findFirstLine(key: String)
 
-        override fun hasNext(): Boolean {
-            return this.nextLine != null
-        }
-
         /**
-         * Skips over comment lines to find the next line that would be returned
-         * by the iterator in a call to [.next].
-         *
-         * @since JWI 1.0
+         * Skips over comment lines to find the next line that would be returned by the iterator in a call to next.
          */
         protected fun advance() {
-            this.nextLine = null
+            nextLine = null
 
             // check for buffer swap
             if (parentBuffer !== buffer) {
                 val pos = itrBuffer.position()
-                checkNotNull(buffer)
-                val newBuf = buffer!!.asReadOnlyBuffer()
-                newBuf.clear()
-                newBuf.position(pos)
-                itrBuffer = newBuf
+                val newBuffer = buffer!!.asReadOnlyBuffer()
+                newBuffer.clear()
+                newBuffer.position(pos)
+                itrBuffer = newBuffer
             }
 
             var line: String?
             do {
                 line = getLine(itrBuffer, contentType.charset)
             } while (line != null && isComment(line))
-            this.nextLine = line
+            nextLine = line
         }
 
         /**
@@ -344,34 +329,20 @@ abstract class WordnetFile<T>(
          * @return whether if the specified line is a comment
          */
         protected fun isComment(line: String): Boolean {
-             return commentDetector?.isCommentLine(line) == true
-        }
-
-        override fun next(): String {
-            if (this.nextLine == null) {
-                throw NoSuchElementException()
-            }
-            val result = this.nextLine
-            advance()
-            return result!!
+            return commentDetector?.isCommentLine(line) == true
         }
     }
 
     companion object {
 
         /**
-         * Returns the String from the current position up to, but not including,
-         * the next newline. The buffer's position is set to either directly after
-         * the next newline, or the end of the buffer. If the buffer is at its
-         * limit, the method returns null. If the buffer's position is directly
-         * before a valid newline marker (either \n, \r, or \r\n), then the method
-         * returns an empty string.
+         * The String from the current position up to, but not including, the next newline.
+         * The buffer's position is set to either directly after the next newline, or the end of the buffer.
+         * If the buffer is at its limit, the method returns null.
+         * If the buffer's position is directly before a valid newline marker (either \n, \r, or \r\n), then the method returns an empty string.
          *
          * @param buf the buffer from which the line should be extracted
-         * @return the remainder of line in the specified buffer, starting from the
-         * buffer's current position
-         * @throws NullPointerException if the specified buffer is null
-         * @since JWI 2.1.0
+         * @return the remainder of line in the specified buffer, starting from the buffer's current position
          */
         @JvmStatic
         fun getLine(buf: ByteBuffer): String? {
@@ -382,11 +353,10 @@ abstract class WordnetFile<T>(
             }
 
             val input = StringBuilder()
-            var c: Char
-            var eol = false
 
+            var eol = false
             while (!eol && buf.position() < limit) {
-                c = Char(buf.get().toUShort())
+                var c = Char(buf.get().toUShort())
                 when (c) {
                     '\n' -> eol = true
                     '\r' -> {
@@ -405,18 +375,12 @@ abstract class WordnetFile<T>(
         }
 
         /**
-         * A different version of the getLine method that uses a specified character
-         * set to decode the byte stream. If the provided character set is
-         * null, the method defaults to the previous method
-         * [.getLine].
+         * A different version of the getLine method that uses a specified character set to decode the byte stream.
+         * If the provided character set is null, the method defaults to the previous method getLine.
          *
          * @param buf the buffer from which the line should be extracted
-         * @param cs  the character set to use for decoding; may be
-         * null
-         * @return the remainder of line in the specified buffer, starting from the
-         * buffer's current position
-         * @throws NullPointerException if the specified buffer is null
-         * @since JWI 2.3.4
+         * @param cs  the character set to use for decoding; may be null
+         * @return the remainder of line in the specified buffer, starting from the buffer's current position
          */
         @JvmStatic
         fun getLine(buf: ByteBuffer, cs: Charset?): String? {
@@ -432,17 +396,14 @@ abstract class WordnetFile<T>(
                 return null
             }
 
-            // here we assume that in the character set of the buffer
-            // new lines are encoded using the standard ASCII encoding scheme
-            // e.g., the single bytes 0x0A or 0x0D, or the two-byte sequence
-            // 0x0D0A.  If the byte buffer doesn't follow these conventions,
-            // this method will fail.
-            var b: Byte
+            // here we assume that in the character set of the buffer new lines are encoded using the standard ASCII encoding scheme
+            // e.g., the single bytes 0x0A or 0x0D, or the two-byte sequence 0x0D0A.
+            // If the byte buffer doesn't follow these conventions, this method will fail.
             var eol = false
             val start = buf.position()
             var end = start
             while (!eol && buf.position() < limit) {
-                b = buf.get()
+                var b = buf.get()
                 when (b.toInt()) {
                     0x0A -> eol = true
                     0x0D -> {
@@ -459,9 +420,7 @@ abstract class WordnetFile<T>(
                 }
             }
 
-            // get sub view containing only the bytes of interest
-            // pb with covariant returns if compiled with JSK >=9
-            // unless release option is used
+            // get sub view containing only the bytes of interest pb with covariant returns if compiled with JDK >=9 unless release option is used
             var buf2 = buf.duplicate()
             buf2 = buf2.position(start) as ByteBuffer
             buf2 = buf2.limit(end) as ByteBuffer
@@ -475,29 +434,23 @@ abstract class WordnetFile<T>(
          * Rewinds the specified buffer to the beginning of the current line.
          *
          * @param buf the buffer to be rewound; may not be null
-         * @throws NullPointerException if the specified buffer is null
-         * @since JWI 2.2.0
          */
         @JvmStatic
         fun rewindToLineStart(buf: ByteBuffer) {
             var i = buf.position()
 
-            // check if the buffer is set in the middle of two-char
-            // newline marker; if so, back up before it begins
+            // check if the buffer is set in the middle of two-char newline marker; if so, back up before it begins
             if (buf.get(i - 1) == '\r'.code.toByte() && buf.get(i) == '\n'.code.toByte()) {
                 i--
             }
 
-            // start looking at the character just before
-            // the one at which the buffer is set
+            // start looking at the character just before the one at which the buffer is set
             if (i > 0) {
                 i--
             }
 
             // walk backwards until we find a newline;
-            // if we find a carriage return (CR) or a
-            // linefeed (LF), this must be the end of the
-            // previous line (either \n, \r, or \r\n)
+            // if we find a carriage return (CR) or a linefeed (LF), this must be the end of the previous line (either \n, \r, or \r\n)
             var c: Char
             while (i > 0) {
                 c = Char(buf.get(i).toUShort())

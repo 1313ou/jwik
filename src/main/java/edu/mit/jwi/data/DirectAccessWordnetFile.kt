@@ -78,7 +78,7 @@ class DirectAccessWordnetFile<T>(file: File, contentType: ContentType<T>) : Word
          * @since JWI 2.0.0
          */
         init {
-            init(key)
+            startAt(key)
         }
 
         override fun findFirstLine(key: String) {

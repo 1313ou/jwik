@@ -111,7 +111,7 @@ class DataType<T>(
         val SENSE: DataType<SenseEntry> = DataType<SenseEntry>("Sense", false, SenseLineParser, "sense")
 
         @JvmField
-        val SENSES: DataType<Array<SenseEntry>> = DataType<Array<SenseEntry>>("Senses", false, SensesLineParser.instance!!, "sense")
+        val SENSES: DataType<Array<SenseEntry>> = DataType<Array<SenseEntry>>("Senses", false, SensesLineParser, "sense")
 
         /**
          * Set of all data types implemented in this class

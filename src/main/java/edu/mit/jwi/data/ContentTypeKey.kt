@@ -13,12 +13,11 @@ import edu.mit.jwi.item.POS
 
 /**
  * Content type keys.
- *
- * @author Bernard Bou
- * @version 2.4.1
- * @since JWI 2.4.1
  */
-enum class ContentTypeKey(private val fType: DataType<*>, val pOS: POS?) {
+enum class ContentTypeKey(
+    private val dataType: DataType<*>,
+    val pOS: POS?
+) {
 
     INDEX_NOUN(DataType.INDEX, POS.NOUN),  //
     INDEX_VERB(DataType.INDEX, POS.VERB),  //
@@ -39,6 +38,7 @@ enum class ContentTypeKey(private val fType: DataType<*>, val pOS: POS?) {
     SENSE(DataType.SENSE, null), SENSES(DataType.SENSES, null);
 
     fun <T> getDataType(): DataType<T> {
-        return fType as DataType<T>
+        @Suppress("UNCHECKED_CAST")
+        return dataType as DataType<T>
     }
 }

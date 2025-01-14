@@ -98,7 +98,7 @@ class BinaryStartSearchWordnetFile<T>(file: File, contentType: ContentType<T>) :
         private val bufferLock: Any = Any()
 
         init {
-            init(key)
+            startAt(key)
         }
 
         override fun findFirstLine(key: String) {
