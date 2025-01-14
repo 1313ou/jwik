@@ -13,6 +13,7 @@ import edu.mit.jwi.data.FileProvider
 import edu.mit.jwi.data.FileProvider.Companion.isLocalDirectory
 import edu.mit.jwi.data.IHasLifecycle.LifecycleState
 import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
+import edu.mit.jwi.data.LoadPolicy
 import edu.mit.jwi.data.LoadPolicy.BACKGROUND_LOAD
 import edu.mit.jwi.data.LoadPolicy.IMMEDIATE_LOAD
 import edu.mit.jwi.item.*
@@ -121,7 +122,6 @@ constructor(
     override fun makeThread(): Thread {
         val t = Thread {
             try {
-                // we have a backing dictionary from which we should load our data
                 val loader = DataLoader(backingDictionary)
                 data = loader.call()
                 backingDictionary.close()
@@ -378,7 +378,7 @@ constructor(
     }
 
     /**
-     * A `Callable` that creates a dictionary data from a specified dictionary.
+     * A Callable that creates a dictionary data from a specified dictionary.
      * The data loader does not change the open state of the dictionary;
      * The dictionary for the loader must be open for the loader to function without throwing an exception.
      * The loader may be called multiple times (in a thread-safe manner) as long as the dictionary is open.
@@ -387,82 +387,83 @@ constructor(
      *
      * @param source source dictionary
      */
-    class DataLoader(private val source: IDictionary) : Callable<DictionaryData?> {
+    class DataLoader(private val source: IDictionary) : Callable<DictionaryData> {
 
-        inline fun cooperate(t: Thread) {
+        fun cooperate(t: Thread) {
             if (t.isInterrupted)
                 throw InterruptedException()
         }
 
-        override fun call(): DictionaryData? {
+        @Throws(InterruptedException::class)
+        override fun call(): DictionaryData {
             val thread = Thread.currentThread()
-            try {
-                val result = DictionaryData()
-                result.version = source.version
 
-                // pos-indexed
-                for (pos in POS.entries) {
-                    // index words
-                    var idxWords = result.idxWords[pos]!!
-                    run {
-                        val i: Iterator<IndexWord> = source.getIndexWordIterator(pos)
-                        while (i.hasNext()) {
-                            val idxWord = i.next()
-                            idxWords.put(idxWord.iD, idxWord)
-                        }
-                    }
-                    cooperate(thread)
+            val result = DictionaryData()
+            result.version = source.version
 
-                    // synsets and words
-                    var synsets = result.synsets[pos]!!
-                    run {
-                        val i: Iterator<Synset> = source.getSynsetIterator(pos)
-                        while (i.hasNext()) {
-                            val synset = i.next()
-                            synsets.put(synset.iD, synset)
-                            for (word in synset.words) {
-                                result.words.put(word.senseKey, word)
-                            }
-                        }
-                    }
-                    cooperate(thread)
-
-                    // exceptions
-                    var exceptions = result.exceptions[pos]!!
-                    val i: Iterator<ExceptionEntry> = source.getExceptionEntryIterator(pos)
+            // pos-indexed
+            for (pos in POS.entries) {
+                // index words
+                var idxWords = result.idxWords[pos]!!
+                run {
+                    val i: Iterator<IndexWord> = source.getIndexWordIterator(pos)
                     while (i.hasNext()) {
-                        val exception = i.next()
-                        exceptions.put(exception.iD, exception)
+                        val idxWord = i.next()
+                        idxWords.put(idxWord.iD, idxWord)
                     }
-                    cooperate(thread)
                 }
+                cooperate(thread)
 
-                // sense entries
-                val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
+                // synsets and words
+                var synsets = result.synsets[pos]!!
+                run {
+                    val i: Iterator<Synset> = source.getSynsetIterator(pos)
+                    while (i.hasNext()) {
+                        val synset = i.next()
+                        synsets.put(synset.iD, synset)
+                        for (word in synset.words) {
+                            result.words.put(word.senseKey, word)
+                        }
+                    }
+                }
+                cooperate(thread)
+
+                // exceptions
+                var exceptions = result.exceptions[pos]!!
+                val i: Iterator<ExceptionEntry> = source.getExceptionEntryIterator(pos)
                 while (i.hasNext()) {
-                    val entry = i.next()
-                    val word: Word = result.words[entry.senseKey]!!
-                    // Creates a new sense entry that replicates the specified sense entry.
-                    // The new sense entry replaces its internal sense key with the specified sense key thus removing a redundant object.
-                    result.senses.put(word.senseKey, SenseEntry(word.senseKey, entry.offset, entry.senseNumber, entry.tagCount))
+                    val exception = i.next()
+                    exceptions.put(exception.iD, exception)
                 }
                 cooperate(thread)
-
-                // compact
-                result.compactSize()
-                cooperate(thread)
-                result.compactObjects()
-                cooperate(thread)
-
-                return result
-
-            } catch (_: InterruptedException) {
-                return null
             }
+
+            // sense entries
+            val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
+            while (i.hasNext()) {
+                val entry = i.next()
+                val word: Word = result.words[entry.senseKey]!!
+                // Creates a new sense entry that replicates the specified sense entry.
+                // The new sense entry replaces its internal sense key with the specified sense key thus removing a redundant object.
+                result.senses.put(word.senseKey, SenseEntry(word.senseKey, entry.offset, entry.senseNumber, entry.tagCount))
+            }
+            cooperate(thread)
+
+            // compact
+            result.compactSize()
+            cooperate(thread)
+            result.compactObjects()
+            cooperate(thread)
+
+            return result
         }
     }
 
     companion object {
+        /**
+         * The default load policy of a RAMDictionary is to load data in the background when opened.
+         */
+        const val DEFAULT_LOAD_POLICY: Int = LoadPolicy.BACKGROUND_LOAD
 
         /**
          * Creates a [DataSourceDictionary] out of the specified file, as long as the file points to an existing local directory.
@@ -489,4 +490,3 @@ constructor(
         }
     }
 }
-

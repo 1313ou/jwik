@@ -508,11 +508,6 @@ abstract class BaseRAMDictionary protected constructor(
 
     companion object {
 
-        /**
-         * The default load policy of a [RAMDictionary] is to load data in the background when opened.
-         */
-        const val DEFAULT_LOAD_POLICY: Int = LoadPolicy.BACKGROUND_LOAD
-
         const val NO_DATA = "Data not loaded into memory"
 
         /**

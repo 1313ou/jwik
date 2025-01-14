@@ -4,12 +4,7 @@ import edu.mit.jwi.data.FileProvider
 import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.data.LoadPolicy
 import edu.mit.jwi.item.Version
-import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.ObjectInputStream
+import java.io.*
 import java.net.URL
 import java.util.zip.GZIPInputStream
 
@@ -39,6 +34,14 @@ constructor(
                 throw IHasLifecycle.ObjectOpenException()
             // if the dictionary uses an input stream factory the load policy is effectively IMMEDIATE_LOAD so the load policy is set to this for information purposes
             loadPolicy = LoadPolicy.IMMEDIATE_LOAD
+        }
+
+    override val version: Version?
+        get() {
+            if (data != null) {
+                return data!!.version
+            }
+            return null
         }
 
     /**
@@ -74,7 +77,6 @@ constructor(
     }
 
     override fun configure(config: Config?) {
-        streamFactory.configure(config)
     }
 
     override fun startLoad(): Boolean {
@@ -95,7 +97,6 @@ constructor(
     override fun makeThread(): Thread {
         val t = Thread {
             try {
-                // read the dictionary data from the stream factory
                 streamFactory.makeInputStream().use {
                     GZIPInputStream(it).use {
                         BufferedInputStream(it).use {
@@ -116,15 +117,6 @@ constructor(
         return t
     }
 
-    override val version: Version?
-        get() {
-            if (data != null) {
-                return data!!.version
-            }
-            return null
-        }
-
-
     interface IInputStreamFactory {
 
         /**
@@ -135,8 +127,6 @@ constructor(
          */
         @Throws(IOException::class)
         fun makeInputStream(): InputStream
-
-        fun configure(config: Config?)
     }
 
     /**
@@ -147,10 +137,6 @@ constructor(
      * @param file the file from which the input streams should be created;
      */
     class FileInputStreamFactory(private val file: File) : IInputStreamFactory {
-
-        override fun configure(config: Config?) {
-            TODO("Not yet implemented")
-        }
 
         @Throws(IOException::class)
         override fun makeInputStream(): InputStream {
@@ -167,10 +153,6 @@ constructor(
      */
     class URLInputStreamFactory(val url: URL) : IInputStreamFactory {
 
-        override fun configure(config: Config?) {
-            TODO("Not yet implemented")
-        }
-
         @Throws(IOException::class)
         override fun makeInputStream(): InputStream {
             return url.openStream()
@@ -178,6 +160,8 @@ constructor(
     }
 
     companion object {
+
+        const val NOT_LOCAL = "Not a local directory"
 
         /**
          * Creates an input stream factory out of the specified File. If the file
@@ -187,7 +171,7 @@ constructor(
          * @return a new input stream factory, or null if the url points to a local directory.
          */
         fun createInputStreamFactory(file: File): IInputStreamFactory {
-            if (!FileProvider.Companion.isLocalDirectory(file)) throw RuntimeException("Not a local directory")
+            if (!FileProvider.Companion.isLocalDirectory(file)) throw RuntimeException(NOT_LOCAL)
             return FileInputStreamFactory(file)
         }
 
@@ -199,7 +183,7 @@ constructor(
          * @return a new input stream factory, or null if the url points to a local directory.
          */
         fun createInputStreamFactory(url: URL): IInputStreamFactory {
-            if (!FileProvider.Companion.isLocalDirectory(url)) throw RuntimeException("Not a local directory")
+            if (!FileProvider.Companion.isLocalDirectory(url)) throw RuntimeException(NOT_LOCAL)
             return URLInputStreamFactory(url)
         }
     }
