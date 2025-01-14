@@ -1,0 +1,150 @@
+package edu.mit.jwi
+
+import edu.mit.jwi.data.FileProvider
+import edu.mit.jwi.data.IHasLifecycle
+import edu.mit.jwi.data.LoadPolicy
+import edu.mit.jwi.item.Version
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.ObjectInputStream
+import java.net.URL
+import java.util.zip.GZIPInputStream
+
+/**
+ * Dictionary that deserializes dictionary object.
+ * @property streamFactory dictionary that backs this dictionary
+ * @property loadPolicy immutable IMMEDIATE_LOAD load policy
+ * @param config configuration bundle
+ */
+class DeserializedRAMDictionary
+@JvmOverloads
+constructor(
+    /**
+     * The stream factory that backs this instance
+     */
+    val streamFactory: IInputStreamFactory,
+    /**
+     * Config bundle
+     */
+    config: Config? = null,
+
+    ) : BaseRAMDictionary() {
+
+    var loadPolicy: Int = LoadPolicy.IMMEDIATE_LOAD
+        set(_) {
+            if (isOpen)
+                throw IHasLifecycle.ObjectOpenException()
+            // if the dictionary uses an input stream factory the load policy is effectively IMMEDIATE_LOAD so the load policy is set to this for information purposes
+            loadPolicy = LoadPolicy.IMMEDIATE_LOAD
+        }
+
+    /**
+     * Loads data from the specified File using the specified load policy.
+     *
+     * Constructs a new wrapper RAM dictionary that will load the contents the specified local Wordnet data, with the specified load policy.
+     *
+     * @param file a file pointing to a local copy of wordnet
+     * @param config config bundle
+     */
+    @JvmOverloads
+    constructor(
+        file: File,
+        config: Config? = null,
+    ) : this(createInputStreamFactory(file), config)
+
+    /**
+     * Loads data from the specified URL using the specified load policy.
+     *
+     * Constructs a new RAMDictionary that will load the contents the specified Wordnet data using the default load policy.
+     *
+     * @param url an url pointing to a local copy of wordnet; may not be null
+     * @param config config bundle
+     */
+    @JvmOverloads
+    constructor(
+        url: URL,
+        config: Config? = null,
+    ) : this(createInputStreamFactory(url), config)
+
+    init {
+        configure(config)
+    }
+
+    override fun configure(config: Config?) {
+        streamFactory.configure(config)
+    }
+
+    override fun startLoad(): Boolean {
+
+        // behavior when loading from an input stream is immediate load
+        try {
+            load(true)
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
+            return false
+        }
+        return true
+    }
+
+    /**
+     * This thread loads the dictionary data into memory and sets the appropriate variable in the parent dictionary.
+     */
+    override fun makeThread(): Thread {
+        val t = Thread {
+            try {
+                // read the dictionary data from the stream factory
+                streamFactory.makeInputStream().use {
+                    GZIPInputStream(it).use {
+                        BufferedInputStream(it).use {
+                            ObjectInputStream(it).use {
+                                data = it.readObject() as DictionaryData
+                            }
+                        }
+                    }
+                }
+            } catch (t: Throwable) {
+                if (!Thread.currentThread().isInterrupted) {
+                    t.printStackTrace()
+                    System.err.println("Unable to load dictionary data into memory")
+                }
+            }
+        }
+        t.setName("Serialized Data Loader")
+        return t
+    }
+
+    override val version: Version?
+        get() {
+            if (data != null) {
+                return data!!.version
+            }
+            return null
+        }
+
+    companion object {
+
+        /**
+         * Creates an input stream factory out of the specified File. If the file
+         * points to a local directory then the method returns null.
+         *
+         * @param file the file out of which to make an input stream factory
+         * @return a new input stream factory, or null if the url points to a local directory.
+         */
+        fun createInputStreamFactory(file: File): IInputStreamFactory {
+            if (!FileProvider.Companion.isLocalDirectory(file)) throw RuntimeException("Not a local directory")
+            return FileInputStreamFactory(file)
+        }
+
+        /**
+         * Creates an input stream factory out of the specified URL. If the url
+         * points to a local directory then the method returns null.
+         *
+         * @param url the url out of which to make an input stream factory
+         * @return a new input stream factory, or null if the url points to a local directory.
+         */
+        fun createInputStreamFactory(url: URL): IInputStreamFactory {
+            if (!FileProvider.Companion.isLocalDirectory(url)) throw RuntimeException("Not a local directory")
+            return URLInputStreamFactory(url)
+        }
+    }
+}
