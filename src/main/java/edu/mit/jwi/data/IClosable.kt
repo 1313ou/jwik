@@ -19,8 +19,6 @@ interface IClosable {
      * connections. If the object is already closed, or in the process of
      * closing, this method does nothing (although, if the object is in the
      * process of closing, it may block until closing is complete).
-     *
-     * @since JWI 2.2.0
      */
     fun close()
 }

@@ -11,10 +11,6 @@ package edu.mit.jwi.data
 
 /**
  * A data source that is also loadable.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.2.0
  */
 interface ILoadableDataSource<T> : IDataSource<T>, ILoadable
 

@@ -13,10 +13,6 @@ import java.nio.charset.Charset
 
 /**
  * Classes implementing this interface have an associated Charset.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.3.4
  */
 interface IHasCharset {
 
