@@ -78,6 +78,10 @@ class RAMDictionary(
         config: Config? = null,
     ) : this(createBackingDictionary(url)!!, loadPolicy, config)
 
+    init {
+        configure(config)
+    }
+
     override fun startLoad(): Boolean {
 
         // behavior when loading from a backing dictionary depends on the load policy
@@ -417,7 +421,7 @@ class RAMSerDictionary(
     constructor(
         file: File,
         config: Config? = null,
-        ) : this(createInputStreamFactory(file)!!, config)
+    ) : this(createInputStreamFactory(file)!!, config)
 
     /**
      * Loads data from the specified URL using the specified load policy.
@@ -430,7 +434,7 @@ class RAMSerDictionary(
     constructor(
         url: URL,
         config: Config? = null,
-        ) : this(createInputStreamFactory(url)!!, config)
+    ) : this(createInputStreamFactory(url)!!, config)
 
     override fun configure(config: Config?) {
         streamFactory.configure(config)
@@ -537,15 +541,6 @@ abstract class BaseRAMDictionary protected constructor(
     internal var loader: Thread? = null
 
     internal var data: DictionaryData? = null
-
-    /**
-     * Unifies the constructor decision matrix.
-     * Exactly one of the backing dictionary or the input factory must be non-null, otherwise an exception is thrown.
-     * If the factory is non-null, the dictionary will ignore the specified load policy and set the load policy to "immediate load".
-     */
-    init {
-        configure(config)
-    }
 
     // LOAD
 
