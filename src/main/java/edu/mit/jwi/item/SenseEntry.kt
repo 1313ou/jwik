@@ -81,4 +81,8 @@ class SenseEntry(
         }
         return this.tagCount == other.tagCount
     }
+
+    override fun toString(): String {
+        return "$senseKey -> $offset-$pOS, #$senseNumber, tagCount=$tagCount"
+    }
 }

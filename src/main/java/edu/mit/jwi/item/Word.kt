@@ -67,7 +67,7 @@ class Word(
 
     val related: Map<Pointer, List<IWordID>> = normalizeRelated(related)
 
-    val relatedWords: List<IWordID>
+    val allRelated: List<IWordID>
         get() = related.values
             .flatMap { it.toList() }
             .distinct()

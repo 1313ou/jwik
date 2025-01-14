@@ -207,7 +207,7 @@ class JWI
                         // val sense2: Word = dict.getWord(senseid)
                         continue
                     }
-                    val relatedIds: List<IWordID>? = sense.relatedWords
+                    val relatedIds: List<IWordID>? = sense.allRelated
                     for (relatedId in relatedIds!!) {
                         val related = dict.getWord(relatedId)!!
                         f?.accept(related)
