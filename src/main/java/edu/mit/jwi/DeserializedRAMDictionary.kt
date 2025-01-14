@@ -6,6 +6,9 @@ import edu.mit.jwi.data.LoadPolicy
 import edu.mit.jwi.item.Version
 import java.io.BufferedInputStream
 import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
 import java.io.ObjectInputStream
 import java.net.URL
 import java.util.zip.GZIPInputStream
@@ -120,6 +123,59 @@ constructor(
             }
             return null
         }
+
+
+    interface IInputStreamFactory {
+
+        /**
+         * Returns a new input stream from this factory.
+         *
+         * @return a new, unused input stream from this factory.
+         * @throws IOException io exception
+         */
+        @Throws(IOException::class)
+        fun makeInputStream(): InputStream
+
+        fun configure(config: Config?)
+    }
+
+    /**
+     * Default implementation of the [IInputStreamFactory] interface which creates an input stream from a specified File object.
+     *
+     * Creates a FileInputStreamFactory that uses the specified file.
+     *
+     * @param file the file from which the input streams should be created;
+     */
+    class FileInputStreamFactory(private val file: File) : IInputStreamFactory {
+
+        override fun configure(config: Config?) {
+            TODO("Not yet implemented")
+        }
+
+        @Throws(IOException::class)
+        override fun makeInputStream(): InputStream {
+            return FileInputStream(file)
+        }
+    }
+
+    /**
+     * Default implementation of the [IInputStreamFactory] interface which creates an input stream from a specified URL.
+     *
+     * Creates a URLInputStreamFactory that uses the specified url.
+     *
+     * @param url the url from which the input streams should be created;
+     */
+    class URLInputStreamFactory(val url: URL) : IInputStreamFactory {
+
+        override fun configure(config: Config?) {
+            TODO("Not yet implemented")
+        }
+
+        @Throws(IOException::class)
+        override fun makeInputStream(): InputStream {
+            return url.openStream()
+        }
+    }
 
     companion object {
 

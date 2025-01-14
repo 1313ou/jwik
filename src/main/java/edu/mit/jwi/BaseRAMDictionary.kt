@@ -1,36 +1,17 @@
 package edu.mit.jwi
 
+import edu.mit.jwi.DeserializedRAMDictionary.IInputStreamFactory
 import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.data.ILoadable
 import edu.mit.jwi.data.LoadPolicy
-import edu.mit.jwi.item.ExceptionEntry
-import edu.mit.jwi.item.ExceptionEntryID
-import edu.mit.jwi.item.IWordID
-import edu.mit.jwi.item.IndexWord
-import edu.mit.jwi.item.IndexWordID
-import edu.mit.jwi.item.POS
-import edu.mit.jwi.item.SenseEntry
-import edu.mit.jwi.item.SenseKey
-import edu.mit.jwi.item.Synset
-import edu.mit.jwi.item.SynsetID
-import edu.mit.jwi.item.Version
-import edu.mit.jwi.item.Word
-import edu.mit.jwi.item.WordLemmaID
-import edu.mit.jwi.item.WordNumID
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.ObjectOutputStream
-import java.io.OutputStream
-import java.io.Serializable
+import edu.mit.jwi.item.*
+import java.io.*
 import java.net.URL
 import java.util.concurrent.Callable
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPOutputStream
-import kotlin.collections.get
+import kotlin.Throws
 
 /**
  * Dictionary that can be completely loaded into memory.
@@ -699,58 +680,6 @@ abstract class BaseRAMDictionary protected constructor(
             System.gc()
             println("(done)")
             return true
-        }
-    }
-
-    interface IInputStreamFactory {
-
-        /**
-         * Returns a new input stream from this factory.
-         *
-         * @return a new, unused input stream from this factory.
-         * @throws IOException io exception
-         */
-        @Throws(IOException::class)
-        fun makeInputStream(): InputStream
-
-        fun configure(config: Config?)
-    }
-
-    /**
-     * Default implementation of the [IInputStreamFactory] interface which creates an input stream from a specified File object.
-     *
-     * Creates a FileInputStreamFactory that uses the specified file.
-     *
-     * @param file the file from which the input streams should be created;
-     */
-    class FileInputStreamFactory(private val file: File) : IInputStreamFactory {
-
-        @Throws(IOException::class)
-        override fun makeInputStream(): InputStream {
-            return FileInputStream(file)
-        }
-
-        override fun configure(config: Config?) {
-            TODO("Not yet implemented")
-        }
-    }
-
-    /**
-     * Default implementation of the [IInputStreamFactory] interface which creates an input stream from a specified URL.
-     *
-     * Creates a URLInputStreamFactory that uses the specified url.
-     *
-     * @param url the url from which the input streams should be created;
-     */
-    class URLInputStreamFactory(val url: URL) : IInputStreamFactory {
-
-        @Throws(IOException::class)
-        override fun makeInputStream(): InputStream {
-            return url.openStream()
-        }
-
-        override fun configure(config: Config?) {
-            TODO("Not yet implemented")
         }
     }
 }
