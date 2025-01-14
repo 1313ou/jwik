@@ -417,7 +417,6 @@ class RAMSerDictionary(
     constructor(
         file: File,
         config: Config? = null,
-
         ) : this(createInputStreamFactory(file)!!, config)
 
     /**
@@ -431,7 +430,6 @@ class RAMSerDictionary(
     constructor(
         url: URL,
         config: Config? = null,
-
         ) : this(createInputStreamFactory(url)!!, config)
 
     override fun configure(config: Config?) {
@@ -790,22 +788,22 @@ abstract class BaseRAMDictionary protected constructor(
     // ITERATORS
 
     override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
-        check(data == null) { "Data not loaded into memory" }
+        check(data != null) { "Data not loaded into memory" }
         return data!!.idxWords[pos]!!.values.iterator()
     }
 
     override fun getSynsetIterator(pos: POS): Iterator<Synset> {
-        check(data == null) { "Data not loaded into memory" }
+        check(data != null) { "Data not loaded into memory" }
         return data!!.synsets[pos]!!.values.iterator()
     }
 
     override fun getSenseEntryIterator(): Iterator<SenseEntry> {
-        check(data == null) { "Data not loaded into memory" }
+        check(data != null) { "Data not loaded into memory" }
         return data!!.senses.values.iterator()
     }
 
     override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
-        check(data == null) { "Data not loaded into memory" }
+        check(data != null) { "Data not loaded into memory" }
         return data!!.exceptions[pos]!!.values.iterator()
     }
 
