@@ -10,6 +10,7 @@
 package edu.mit.jwi
 
 import edu.mit.jwi.data.FileProvider
+import edu.mit.jwi.data.FileProvider.Companion.isLocalDirectory
 import edu.mit.jwi.data.IHasLifecycle.LifecycleState
 import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
 import edu.mit.jwi.data.ILoadable
@@ -24,16 +25,31 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
-import kotlin.Throws
 
-class RAMDictionary(
+/**
+ * Dictionary that wraps an arbitrary dictionary object.
+ * @property backingDictionary dictionary that backs this dictionary
+ * @property loadPolicy load policy
+ * @param loadPolicy load policy
+ * @param config configuration bundle
+ */
+class RAMDictionary
+@JvmOverloads
+constructor(
     /**
-     * The dictionary that backs this instance; may be null. if factory is not null
+     * The dictionary that backs this instance
      */
     val backingDictionary: IDictionary,
+    /**
+     * Load policy
+     */
     loadPolicy: Int,
+    /**
+     * Configuration bundle
+     */
     config: Config? = null,
-) : BaseRAMDictionary(config) {
+
+    ) : BaseRAMDictionary() {
 
     var loadPolicy: Int = loadPolicy
         set(policy) {
@@ -101,11 +117,10 @@ class RAMDictionary(
     }
 
     /**
-     * This runnable loads the dictionary data into memory and sets the appropriate variable in the parent dictionary.
+     * This thread loads the dictionary data into memory and sets the appropriate variable in the parent dictionary.
      */
-    private inner class JWIBackgroundDataLoader : Runnable {
-
-        override fun run() {
+    override fun makeThread(): Thread {
+        val t = Thread {
             try {
                 // we have a backing dictionary from which we should load our data
                 val loader = DataLoader(backingDictionary)
@@ -118,11 +133,7 @@ class RAMDictionary(
                 }
             }
         }
-    }
-
-    override fun makeThread(): Thread {
-        val t = Thread(JWIBackgroundDataLoader())
-        t.setName(JWIBackgroundDataLoader::class.java.getSimpleName())
+        t.setName("Dictionary Loader")
         return t
     }
 
@@ -371,36 +382,50 @@ class RAMDictionary(
     companion object {
 
         /**
-         * Creates a [DataSourceDictionary] out of the specified file, as long
-         * as the file points to an existing local directory.
+         * Creates a [DataSourceDictionary] out of the specified file, as long as the file points to an existing local directory.
          *
          * @param file the local directory for which to create a data source dictionary
-         * @return a dictionary object that uses the specified local directory as its data source; otherwise, null
+         * @return a dictionary object that uses the specified local directory as its data source
          */
-        fun createBackingDictionary(file: File): IDictionary? {
-            return if (FileProvider.isLocalDirectory(file)) DataSourceDictionary(FileProvider(file)) else null
+        fun createBackingDictionary(file: File): IDictionary {
+            if (!isLocalDirectory(file))
+                throw RuntimeException("Not a local directory")
+            return DataSourceDictionary(FileProvider(file))
         }
 
         /**
-         * Creates a [DataSourceDictionary] out of the specified url, as long
-         * as the url points to an existing local directory.
+         * Creates a [DataSourceDictionary] out of the specified url, as long as the url points to an existing local directory.
          *
          * @param url the local directory for which to create a data source dictionary
-         * @return a dictionary object that uses the specified local directory as its data source; otherwise, null
+         * @return a dictionary object that uses the specified local directory as its data source
          */
-        fun createBackingDictionary(url: URL): IDictionary? {
-            return if (FileProvider.isLocalDirectory(url)) DataSourceDictionary(FileProvider(url)) else null
+        fun createBackingDictionary(url: URL): IDictionary {
+            if (!isLocalDirectory(url))
+                throw RuntimeException("Not a local directory")
+            return DataSourceDictionary(FileProvider(url))
         }
     }
 }
 
-class RAMSerDictionary(
+/**
+ * Dictionary that wraps an arbitrary dictionary object.
+ * @property streamFactory dictionary that backs this dictionary
+ * @property loadPolicy immutable IMMEDIATE_LOAD load policy
+ * @param config configuration bundle
+ */
+class RAMSerDictionary
+@JvmOverloads
+constructor(
     /**
      * The stream factory that backs this instance
      */
     val streamFactory: IInputStreamFactory,
+    /**
+     * Config bundde
+     */
     config: Config? = null,
-) : BaseRAMDictionary(config) {
+
+    ) : BaseRAMDictionary() {
 
     var loadPolicy: Int = IMMEDIATE_LOAD
         set(_) {
@@ -418,10 +443,11 @@ class RAMSerDictionary(
      * @param file a file pointing to a local copy of wordnet
      * @param config config bundle
      */
+    @JvmOverloads
     constructor(
         file: File,
         config: Config? = null,
-    ) : this(createInputStreamFactory(file)!!, config)
+    ) : this(createInputStreamFactory(file), config)
 
     /**
      * Loads data from the specified URL using the specified load policy.
@@ -431,10 +457,15 @@ class RAMSerDictionary(
      * @param url an url pointing to a local copy of wordnet; may not be null
      * @param config config bundle
      */
+    @JvmOverloads
     constructor(
         url: URL,
         config: Config? = null,
-    ) : this(createInputStreamFactory(url)!!, config)
+    ) : this(createInputStreamFactory(url), config)
+
+    init {
+        configure(config)
+    }
 
     override fun configure(config: Config?) {
         streamFactory.configure(config)
@@ -452,25 +483,18 @@ class RAMSerDictionary(
         return true
     }
 
-    override fun makeThread(): Thread {
-        val t = Thread(JWIBackgroundDataLoader())
-        t.setName(JWIBackgroundDataLoader::class.java.getSimpleName())
-        return t
-    }
-
     /**
-     * This runnable loads the dictionary data into memory and sets the appropriate variable in the parent dictionary.
+     * This thread loads the dictionary data into memory and sets the appropriate variable in the parent dictionary.
      */
-    private inner class JWIBackgroundDataLoader : Runnable {
-
-        override fun run() {
+    override fun makeThread(): Thread {
+        val t = Thread {
             try {
                 // read the dictionary data from the stream factory
                 streamFactory.makeInputStream().use {
                     GZIPInputStream(it).use {
                         BufferedInputStream(it).use {
                             ObjectInputStream(it).use {
-                                data = it.readObject() as DictionaryData?
+                                data = it.readObject() as DictionaryData
                             }
                         }
                     }
@@ -482,6 +506,8 @@ class RAMSerDictionary(
                 }
             }
         }
+        t.setName("Serialized Data Loader")
+        return t
     }
 
     override val version: Version?
@@ -501,8 +527,9 @@ class RAMSerDictionary(
          * @param file the file out of which to make an input stream factory
          * @return a new input stream factory, or null if the url points to a local directory.
          */
-        fun createInputStreamFactory(file: File): IInputStreamFactory? {
-            return if (FileProvider.isLocalDirectory(file)) null else FileInputStreamFactory(file)
+        fun createInputStreamFactory(file: File): IInputStreamFactory {
+            if (!isLocalDirectory(file)) throw RuntimeException("Not a local directory")
+            return FileInputStreamFactory(file)
         }
 
         /**
@@ -512,22 +539,18 @@ class RAMSerDictionary(
          * @param url the url out of which to make an input stream factory
          * @return a new input stream factory, or null if the url points to a local directory.
          */
-        fun createInputStreamFactory(url: URL): IInputStreamFactory? {
-            return if (FileProvider.isLocalDirectory(url)) null else URLInputStreamFactory(url)
+        fun createInputStreamFactory(url: URL): IInputStreamFactory {
+            if (!isLocalDirectory(url)) throw RuntimeException("Not a local directory")
+            return URLInputStreamFactory(url)
         }
     }
 }
 
 /**
  * Dictionary that can be completely loaded into memory.
-
- * Designed to wrap an arbitrary dictionary object.
  * **Note:** If you receive an [OutOfMemoryError] while using this object, try increasing your heap size, by using the `-Xmx` switch.
- *
- * @param config config bundle
  */
 abstract class BaseRAMDictionary protected constructor(
-    config: Config? = null,
 ) : IDictionary, ILoadable {
 
     internal val lifecycleLock: Lock = ReentrantLock()
