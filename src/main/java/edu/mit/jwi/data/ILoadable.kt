@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.data
 
 /**
@@ -34,7 +25,8 @@ interface ILoadable {
 
     /**
      * Returns whether this object is loaded or not.
-     * This method should return true only if the loading process has completed and the object is actually loaded; if the object is still in the process of loading, or failed to load, the method should return false.
+     * This method should return true only if the loading process has completed and the object is actually loaded
+     * If the object is still in the process of loading, or failed to load, the method should return false.
      *
      * @return true if the method has completed loading; false otherwise
      */

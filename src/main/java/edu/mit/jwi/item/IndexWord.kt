@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.item
 
 import java.util.*
@@ -14,9 +5,13 @@ import java.util.*
 /**
  * A Wordnet index word object, represented in the Wordnet files as a line in an index file.
  *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * Constructs a new index word.
+ *
+ * @param id          the index word id for this index word
+ * @param tagSenseCnt the tag sense count
+ * @param ptrs        an array of pointers for all the synsets of this lemma
+ * @param words       the words for this index word
+ * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
  */
 class IndexWord(
     id: IndexWordID,
@@ -73,7 +68,7 @@ class IndexWord(
      * @param lemma       the lemma of this index word
      * @param pos         the part of speech of this index word
      * @param tagSenseCnt the tag sense count
-     * @param ptrs        an array of pointers that the synsets with lemma have; may be null
+     * @param ptrs        an array of pointers that the synsets with lemma have
      * @param words       the words for this index word
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
@@ -89,15 +84,6 @@ class IndexWord(
      */
     constructor(id: IndexWordID, tagSenseCnt: Int, words: Array<IWordID>) : this(id, tagSenseCnt, null, words)
 
-    /**
-     * Constructs a new index word.
-     *
-     * @param id          the index word id for this index word
-     * @param tagSenseCnt the tag sense count
-     * @param ptrs        an array of pointers for all the synsets of this lemma; may be null; must not contain null
-     * @param words       the words for this index word
-     * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
-     */
     init {
         require(tagSenseCnt >= 0)
         require(words.isNotEmpty())

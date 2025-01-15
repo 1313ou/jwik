@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.item
 
 // standard WordNet numbering scheme for parts of speech
@@ -25,10 +16,6 @@ const val TAG_ADJECTIVE_SATELLITE: Char = 's'
 
 /**
  * Represents part of speech objects.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.0.0
  */
 enum class POS
     (
@@ -39,7 +26,6 @@ enum class POS
      * files
      *
      * @return the character representing this part of speech
-     * @since JWI 2.0.0
      */
     val tag: Char,
 
@@ -47,7 +33,6 @@ enum class POS
      * Returns the standard WordNet number of this part of speech
      *
      * @return the standard WordNet number of this part of speech
-     * @since JWI 2.0.0
      */
     val number: Int,
 
@@ -75,11 +60,8 @@ enum class POS
     ADVERB("adverb", TAG_ADVERB, NUM_ADVERB, "adv", "adverb");
 
     /**
-     * Returns a set of strings that can be used to identify resource
-     * corresponding to objects with this part of speech.
-
-     * @since JWI 2.2
-     */
+     * Returns a set of strings that can be used to identify resource corresponding to objects with this part of speech.
+    */
     val resourceNameHints: Set<String> = setOf(*names)
 
     override fun toString(): String {
@@ -89,13 +71,10 @@ enum class POS
     companion object {
 
         /**
-         * Returns true if the specified number represents an adjective
-         * satellite, namely, if the number is 5; false otherwise
+         * Returns true if the specified number represents an adjective satellite, namely, if the number is 5; false otherwise
          *
          * @param num the number to be checked
-         * @return true if the specified number represents an adjective
-         * satellite, namely, if the number is 5; false otherwise
-         * @since JWI 2.0.0
+         * @return true if the specified number represents an adjective satellite, namely, if the number is 5; false otherwise
          */
         @JvmStatic
         fun isAdjectiveSatellite(num: Int): Boolean {
@@ -103,15 +82,10 @@ enum class POS
         }
 
         /**
-         * Returns true if the specified character represents an
-         * adjective satellite, namely, if the number is 's' or 'S';
-         * false otherwise
+         * Returns true if the specified character represents an adjective satellite, namely, if the number is 's' or 'S'; false otherwise
          *
          * @param tag the character to be checked
-         * @return true if the specified number represents an adjective
-         * satellite, namely, if the number is 's' or 'S';
-         * false otherwise
-         * @since JWI 2.0.0
+         * @return true if the specified number represents an adjective satellite, namely, if the number is 's' or 'S'; false otherwise
          */
         fun isAdjectiveSatellite(tag: Char): Boolean {
             return tag.lowercase()[0] == TAG_ADJECTIVE_SATELLITE
@@ -121,12 +95,9 @@ enum class POS
          * Retrieves the part of speech object given the number.
          *
          * @param num the number for the part of speech
-         * @return POS the part of speech object corresponding to the specified tag,
-         * or null if none is found
-         * @since JWI 2.0.0
+         * @return POS the part of speech object corresponding to the specified tag, or null if none is found
          */
         @JvmStatic
-
         fun getPartOfSpeech(num: Int): POS? {
             when (num) {
                 NUM_NOUN                               -> return NOUN
@@ -138,13 +109,10 @@ enum class POS
         }
 
         /**
-         * Retrieves of the part of speech object given the tag. Accepts both lower
-         * and upper case characters.
+         * Retrieves of the part of speech object given the tag. Accepts both lower and upper case characters.
          *
          * @param tag part of speech tag
-         * @return POS the part of speech object corresponding to the specified tag,
-         * or null if none is found
-         * @since JWI 2.0.0
+         * @return POS the part of speech object corresponding to the specified tag, or null if none is found
          */
         @JvmStatic
         fun getPartOfSpeech(tag: Char): POS {

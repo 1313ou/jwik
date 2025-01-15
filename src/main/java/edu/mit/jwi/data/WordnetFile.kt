@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.data
 
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
@@ -36,8 +27,8 @@ import kotlin.Throws
  * No effort is made to ensure that the data in the specified file is actually formatted in the proper manner for the line parser associated with the content type's data type.
  * If these are mismatched, this will result in MisformattedLineExceptions in later calls.
  *
- * @param file        the file which backs this wordnet file; may not be 'null'
- * @param contentType the content type for this file; may not be null
+ * @param file the file which backs this wordnet file
+ * @param contentType the content type for this file
  * @param <T> the type of the objects represented in this file
  */
 abstract class WordnetFile<T>(
@@ -45,14 +36,16 @@ abstract class WordnetFile<T>(
      * The file which backs this object.
      */
     val file: File,
+
     /**
      * The content type
      */
     override val contentType: ContentType<T>,
+
 ) : ILoadableDataSource<T> {
 
     override val name: String
-        get() = file.getName()
+        get() = file.name
 
     private val commentDetector: ICommentDetector?
         get() = contentType.lineComparator!!.commentDetector
@@ -74,7 +67,6 @@ abstract class WordnetFile<T>(
      *
      * @return the buffer which backs this object
      * @throws ObjectClosedException if the object is closed
-     * @since JWI 2.2.0
      */
     fun getBuffer(): ByteBuffer {
         if (!isOpen) {
@@ -281,7 +273,7 @@ abstract class WordnetFile<T>(
         /**
          * Start at the specified key.
          *
-         * @param key0 the key of the line to start at; may be null
+         * @param key0 the key of the line to start at
          */
         fun startAt(key0: String?) {
             var key = key0?.trim { it <= ' ' }
@@ -379,7 +371,7 @@ abstract class WordnetFile<T>(
          * If the provided character set is null, the method defaults to the previous method getLine.
          *
          * @param buf the buffer from which the line should be extracted
-         * @param cs  the character set to use for decoding; may be null
+         * @param cs  the character set to use for decoding
          * @return the remainder of line in the specified buffer, starting from the buffer's current position
          */
         @JvmStatic
@@ -433,7 +425,7 @@ abstract class WordnetFile<T>(
         /**
          * Rewinds the specified buffer to the beginning of the current line.
          *
-         * @param buf the buffer to be rewound; may not be null
+         * @param buf the buffer to be rewound
          */
         @JvmStatic
         fun rewindToLineStart(buf: ByteBuffer) {

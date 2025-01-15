@@ -7,7 +7,6 @@ import edu.mit.jwi.data.LoadPolicy
 import edu.mit.jwi.item.*
 import java.io.*
 import java.net.URL
-import java.util.concurrent.Callable
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPOutputStream
@@ -65,7 +64,7 @@ abstract class BaseRAMDictionary protected constructor(
                 return
             }
             loader = makeThread()
-            loader!!.setDaemon(true)
+            loader!!.isDaemon = true
             loader!!.start()
             if (block) {
                 loader!!.join()
@@ -101,7 +100,7 @@ abstract class BaseRAMDictionary protected constructor(
                 return true
             }
 
-            // if the dictionary is not closed, return false;
+            // if the dictionary is not closed, return false
             if (state != IHasLifecycle.LifecycleState.CLOSED) {
                 return false
             }
@@ -176,7 +175,7 @@ abstract class BaseRAMDictionary protected constructor(
 
     // L O O K   U P
 
-    // INDEXWORD
+    // INDEX WORD
 
     override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
         return getIndexWord(IndexWordID(lemma, pos))
@@ -339,7 +338,7 @@ abstract class BaseRAMDictionary protected constructor(
          * @param <K>         the type of the keys for the sub-maps
          * @param <V>         the type of the values for the sub-maps
          * @param initialSize the initial size of the map; this parameter is ignored if the `contents` parameter is non-null.
-         * @param contents    the items to be inserted in the map, may be null. If non-null, the `initialSize` parameter is ignored
+         * @param contents    the items to be inserted in the map, may be null. If non-null, the initialSize parameter is ignored
          * @return an empty map with either the specified initial size, or contained the specified contents
          * @throws IllegalArgumentException if the initial size is invalid (less than 1) and the specified contents are null
          */

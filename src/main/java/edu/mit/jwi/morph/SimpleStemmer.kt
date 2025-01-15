@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.morph
 
 import edu.mit.jwi.item.POS
@@ -54,27 +45,19 @@ import java.util.regex.Pattern
  *
  * <h3>Special Processing for nouns ending with 'ful'</h3>
  *
- *
- * Morphy contains code that searches for nouns ending with ful and performs a
- * transformation on the substring preceding it. It then appends 'ful' back
- * onto the resulting string and returns it. For example, if passed the nouns
- * "boxesful", it will return "boxful".
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * Morphy contains code that searches for nouns ending with ful and performs a transformation on the substring preceding it.
+ * It then appends 'ful' back onto the resulting string and returns it. For example, if passed the nouns "boxesful", it will return "boxful".
  */
 open class SimpleStemmer : IStemmer {
 
     val whitespace: Pattern = Pattern.compile("\\s+")
 
     /**
-     * Returns a set of stemming rules used by this stemmer. Will not return a
-     * null map, but it may be empty. The lists in the map will also not be
-     * null, but may be empty.
+     * Returns a set of stemming rules used by this stemmer.
+     * Will not return a null map, but it may be empty.
+     * The lists in the map may be empty.
      *
      * @return the rule map for this stemmer
-     * @since JWI 3.5.1
      */
     val ruleMap: MutableMap<POS?, List<StemmingRule>>
         get() = Companion.ruleMap
@@ -109,13 +92,11 @@ open class SimpleStemmer : IStemmer {
     }
 
     /**
-     * Converts all whitespace runs to single underscores. Tests first to see if
-     * there is any whitespace before converting.
+     * Converts all whitespace runs to single underscores. Tests first to see if there is any whitespace before converting.
      *
      * @param word the string to be normalized
      * @return a normalized string
      * @throws IllegalArgumentException if the specified string is empty or all whitespace
-     * @since JWI 2.1.1
      */
     protected fun normalize(word: String): String {
         // make lowercase

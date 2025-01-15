@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.data
 
 import java.io.File
@@ -50,17 +41,16 @@ class DirectAccessWordnetFile<T>(file: File, contentType: ContentType<T>) : Word
 
     /**
      * Used to iterate over lines in a file. It is a look-ahead iterator.
+     *
+     * Constructs a new line iterator over this buffer, starting at the specified key.
+     *
+     * @param buffer the buffer over which the iterator should iterator
+     * @param key the key of the line to start at
      */
     private inner class DirectLineIterator(buffer: ByteBuffer, key: String?) : LineIterator(buffer) {
 
         private val bufferLock = Any()
 
-        /**
-         * Constructs a new line iterator over this buffer, starting at the specified key.
-         *
-         * @param buffer the buffer over which the iterator should iterator
-         * @param key the key of the line to start at; may be null
-         */
         init {
             startAt(key)
         }

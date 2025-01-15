@@ -64,7 +64,7 @@ constructor(
      *
      * Constructs a new RAMDictionary that will load the contents the specified Wordnet data using the default load policy.
      *
-     * @param url an url pointing to a local copy of wordnet; may not be null
+     * @param url an url pointing to a local copy of wordnet
      * @param config config bundle
      */
     @JvmOverloads
@@ -114,7 +114,7 @@ constructor(
                 }
             }
         }
-        t.setName("Serialized Data Loader")
+        t.name = "Serialized Data Loader"
         return t
     }
 
@@ -135,7 +135,7 @@ constructor(
      *
      * Creates a FileInputStreamFactory that uses the specified file.
      *
-     * @param file the file from which the input streams should be created;
+     * @param file the file from which the input streams should be created
      */
     class FileInputStreamFactory(private val file: File) : IInputStreamFactory {
 
@@ -150,7 +150,7 @@ constructor(
      *
      * Creates a URLInputStreamFactory that uses the specified url.
      *
-     * @param url the url from which the input streams should be created;
+     * @param url the url from which the input streams should be created
      */
     class URLInputStreamFactory(val url: URL) : IInputStreamFactory {
 

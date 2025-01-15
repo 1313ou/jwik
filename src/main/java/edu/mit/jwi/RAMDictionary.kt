@@ -1,19 +1,9 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi
 
 import edu.mit.jwi.data.FileProvider
 import edu.mit.jwi.data.FileProvider.Companion.isLocalDirectory
 import edu.mit.jwi.data.IHasLifecycle.LifecycleState
 import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
-import edu.mit.jwi.data.LoadPolicy
 import edu.mit.jwi.data.LoadPolicy.BACKGROUND_LOAD
 import edu.mit.jwi.data.LoadPolicy.IMMEDIATE_LOAD
 import edu.mit.jwi.item.*
@@ -77,7 +67,7 @@ constructor(
      *
      * Constructs a new RAMDictionary that will load the contents the specified Wordnet data using the default load policy.
      *
-     * @param url an url pointing to a local copy of wordnet; may not be null
+     * @param url an url pointing to a local copy of wordnet
      * @param loadPolicy the load policy of the dictionary
      * @param config config bundle
      */
@@ -132,7 +122,7 @@ constructor(
                 }
             }
         }
-        t.setName("Dictionary Loader")
+        t.name = "Dictionary Loader"
         return t
     }
 
@@ -140,8 +130,7 @@ constructor(
      * This is an internal utility method that determines whether this
      * dictionary should be considered open or closed.
      *
-     * @return the lifecycle state object representing open if the object is
-     * open; otherwise the lifecycle state object representing closed
+     * @return the lifecycle state object representing open if the object is open; otherwise the lifecycle state object representing closed
      */
     private fun assertLifecycleState(): LifecycleState {
         try {
@@ -284,9 +273,8 @@ constructor(
         }
 
         /**
-         * Checks to see if the data has been loaded into memory; is so,
-         * replaces the original iterator with one that iterates over the
-         * in-memory data structures.
+         * Checks to see if the data has been loaded into memory
+         * If so, replaces the original iterator with one that iterates over the in-memory data structures.
          */
         fun checkForLoad() {
             if (data == null) {
@@ -350,7 +338,7 @@ constructor(
     /**
      * A hot swappable iterator that iterates over exceptions entries for a particular part of speech.
      *
-     * @param pos the part of speech for this iterator, may not be null
+     * @param pos the part of speech for this iterator
      */
     private inner class HotSwappableExceptionEntryIterator(private val pos: POS) :
         HotSwappableIterator<ExceptionEntry>(
@@ -379,7 +367,7 @@ constructor(
 
     /**
      * A Callable that creates a dictionary data from a specified dictionary.
-     * The data loader does not change the open state of the dictionary;
+     * The data loader does not change the open state of the dictionary.
      * The dictionary for the loader must be open for the loader to function without throwing an exception.
      * The loader may be called multiple times (in a thread-safe manner) as long as the dictionary is open.
      *
@@ -463,7 +451,7 @@ constructor(
         /**
          * The default load policy of a RAMDictionary is to load data in the background when opened.
          */
-        const val DEFAULT_LOAD_POLICY: Int = LoadPolicy.BACKGROUND_LOAD
+        const val DEFAULT_LOAD_POLICY: Int = BACKGROUND_LOAD
 
         /**
          * Creates a [DataSourceDictionary] out of the specified file, as long as the file points to an existing local directory.

@@ -1,34 +1,18 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.morph
 
 import edu.mit.jwi.IDictionary
 import edu.mit.jwi.item.POS
 
 /**
- * This stemmer adds functionality to the simple pattern-based stemmer
- * `SimpleStemmer` by checking to see if possible stems are actually
- * contained in Wordnet. If any stems are found, only these stems are returned.
- * If no prospective stems are found, the word is considered unknown, and the
- * result returned is the same as that of the `SimpleStemmer` class.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * This stemmer adds functionality to the simple pattern-based stemmer SimpleStemmer by checking to see if possible stems are actually contained in Wordnet.
+ * If any stems are found, only these stems are returned.
+ * If no prospective stems are found, the word is considered unknown, and the result returned is the same as that of the `SimpleStemmer` class.
  */
 class WordnetStemmer(
     /**
      * The dictionary in use by the stemmer; will not return null
      *
      * @return the dictionary in use by this stemmer
-     * @since JWI 2.2.0
      */
     val dictionary: IDictionary,
 ) : SimpleStemmer() {

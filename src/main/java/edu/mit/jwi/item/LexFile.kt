@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.item
 
 import java.io.Serializable
@@ -20,14 +11,10 @@ import java.util.*
  * Constructs a new lexical file description object.
  *
  * @param number the lexical file number, in the closed range [0,99]
- * @param name the name of the lexical file, may not be null, empty, or all whitespace
- * @property description the description of the lexical file, may not be null, empty, or all whitespace
- * @property pOS  the part of speech for the lexical file, may be null
+ * @param name the name of the lexical file, may not be  empty, or all whitespace
+ * @property description the description of the lexical file, may not be empty or all whitespace
+ * @property pOS the part of speech for the lexical file
  * @throws IllegalArgumentException if either the name or description are empty or all whitespace
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.0
  */
 open class LexFile(
 
@@ -100,7 +87,6 @@ open class LexFile(
      * object.
      *
      * @return the appropriate deserialized object.
-     * @since JWI 2.4.0
      */
     protected fun readResolve(): Any {
         val lexFile: LexFile = getLexicalFile(this.number)

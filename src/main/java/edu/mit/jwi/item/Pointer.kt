@@ -1,27 +1,12 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.item
 
 import java.io.Serializable
 import java.util.*
 
 /**
- * This class includes, as public fields, all pointers, lexical and semantic, defined in
- * the standard WordNet distribution.
- *
+ * This class includes, as public fields, all pointers, lexical and semantic, defined in the standard WordNet distribution.
  *
  * This class in not implemented as an `Enum` so that clients may instantiate their own pointers using this implementation.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.0
  */
 class Pointer(
     symbol: String,
@@ -39,11 +24,9 @@ class Pointer(
     }
 
     /**
-     * This utility method implements the appropriate deserialization for this
-     * object.
+     * This utility method implements the appropriate deserialization for this object.
      *
      * @return the appropriate deserialized object.
-     * @since JWI 2.4.0
      */
     private fun readResolve(): Any {
         // check and see if this symbol matches DERIVED_FROM_ADJ (which is
@@ -160,13 +143,9 @@ class Pointer(
         }
 
         /**
-         * Emulates the `Enum#values()` function. Returns an unmodifiable collection
-         * of all the pointers declared in this class, in the order they are
-         * declared.
+         * Emulates the `Enum#values()` function. Returns an unmodifiable collection of all the pointers declared in this class, in the order they are declared.
          *
-         * @return returns an unmodifiable collection of the pointers declared in
-         * this class
-         * @since JWI 2.1.0
+         * @return returns an unmodifiable collection of the pointers declared in this class
          */
         fun values(): Collection<Pointer> {
             return pointerSet
@@ -179,11 +158,9 @@ class Pointer(
          * specified pointer symbol.
          *
          * @param symbol the symbol to look up
-         * @param pos    the part of speech for the symbol; may be null
-         * except for ambiguous symbols
-         * @return pointer
+         * @param pos the part of speech for the symbol
+         * except for ambiguous symbols @return pointer
          * @throws IllegalArgumentException if the symbol does not correspond to a known pointer.
-         * @since JWI 2.1.0
          */
         @JvmStatic
         fun getPointerType(symbol: String, pos: POS?): Pointer {

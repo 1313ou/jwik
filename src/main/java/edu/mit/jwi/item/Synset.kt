@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.LexFile.Companion.ADJ_ALL
@@ -23,10 +14,8 @@ import java.util.*
  * @property gloss the gloss for this synset
  * @property words the list of words in this synset
  * @property related a map of related synset lists, indexed by pointer
-
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * @throws IllegalArgumentException if the word list is empty, or both the adjective satellite and adjective head flags are set
+ * @throws IllegalArgumentException if either the adjective satellite and adjective head flags are set, and the lexical file number is not zero
  */
 class Synset private constructor(
     /**
@@ -65,7 +54,7 @@ class Synset private constructor(
      */
     override val pOS: POS
         get() {
-            return iD.pOS!!
+            return iD.pOS
         }
 
     /**
@@ -122,11 +111,6 @@ class Synset private constructor(
         words = buildWords(wordBuilders, this)
     }
 
-    /**
-     * @throws IllegalArgumentException if the word list is empty, or both the adjective satellite and adjective head flags are set
-     * @throws IllegalArgumentException if either the adjective satellite and adjective head flags are set, and the lexical file number is not zero
-     * @since JWI 1.0
-     */
     init {
         require(!(isAdjectiveSatellite && isAdjectiveHead))
         require(!((isAdjectiveSatellite || isAdjectiveHead) && lexicalFile.number != ADJ_ALL.number))
@@ -174,7 +158,6 @@ class Synset private constructor(
      *
      * @param ptr the pointer for which related synsets are to be retrieved.
      * @return the list of synsets related by the specified pointer; if there are no such synsets, returns the empty list
-     * @since JWI 2.0.0
      */
     fun getRelatedFor(ptr: Pointer): List<SynsetID> {
         return related[ptr] ?: emptyList()
@@ -191,23 +174,16 @@ class Synset private constructor(
 
     /**
      * A word builder used to construct word objects inside the synset object constructor.
-     *
-     * @author Mark A. Finlayson
-     * @version 2.4.0
-     * @since JWI 2.2.0
      */
     interface IWordBuilder {
 
         /**
-         * Creates the word represented by this builder. If the builder
-         * represents invalid values for a word, this method may throw an
-         * exception.
+         * Creates the word represented by this builder.
+         * If the builder represents invalid values for a word, this method may throw an exception.
          *
          * @param synset the synset to which this word should be attached
          * @return the created word
-         * @since JWI 2.2.0
          */
-
         fun toWord(synset: Synset): Word
     }
 
@@ -221,9 +197,6 @@ class Synset private constructor(
      * @property lemma the lemma
      * @property lexID the id of the lexical file in which the word is listed
      * @property marker the adjective marker for the word
-     * @author Mark A. Finlayson
-     * @version 2.4.0
-     * @since JWI 1.0
      */
     data class WordBuilder(
         private val number: Int,
@@ -264,7 +237,6 @@ class Synset private constructor(
          * @param offset the offset to be converted
          * @return the zero-filled string representation of the offset
          * @throws IllegalArgumentException if the specified offset is not in the valid range of [0,99999999]
-         * @since JWI 2.1.0
          */
         @JvmStatic
         fun zeroFillOffset(offset: Int): String {
@@ -279,7 +251,6 @@ class Synset private constructor(
          * @return the checked offset
          * @throws IllegalArgumentException if the specified offset is not in the valid range of
          * [0,99999999]
-         * @since JWI 2.1.0
          */
         @JvmStatic
         fun checkOffset(offset: Int): Int {
@@ -288,12 +259,10 @@ class Synset private constructor(
         }
 
         /**
-         * Returns true an exception if the specified offset is not in the valid
-         * range of [0,99999999].
+         * Returns true an exception if the specified offset is not in the valid range of [0,99999999].
          *
          * @param offset the offset to be checked
          * @return true if the specified offset is in the closed range [0, 99999999]; false otherwise.
-         * @since JWI 2.2.0
          */
         fun isLegalOffset(offset: Int): Boolean {
             if (offset < 0)

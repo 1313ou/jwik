@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi
 
 import edu.mit.jwi.data.IHasLifecycle
@@ -19,14 +10,10 @@ import kotlin.Throws
 
 /**
  * A dictionary that caches the results of another dictionary
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.2.0
  */
 open class CachingDictionary(
     /**
-     * The dictionary that is wrapped by this dictionary; will never
+     * The dictionary that is wrapped by this dictionary
      */
     val backingDictionary: IDictionary,
 
@@ -50,7 +37,6 @@ open class CachingDictionary(
      * the dictionary has not yet been opened.
      *
      * @throws ObjectClosedException if the dictionary is closed.
-     * @since JWI 2.2.0
      */
     protected fun checkOpen() {
         if (isOpen) {
@@ -163,7 +149,7 @@ open class CachingDictionary(
     /**
      * Caches the specified synset and its words.
      *
-     * @param synset the synset to be cached; may not be null
+     * @param synset the synset to be cached
      */
     protected fun cacheSynset(synset: Synset) {
         cache.cacheItem(synset)
@@ -233,10 +219,6 @@ open class CachingDictionary(
      * @param initialCapacity0  the initial capacity of the cache
      * @param maximumCapacity0  the maximum capacity of the cache
      * @param isEnabled0        whether the cache starts out enabled
-     *
-     * @author Mark A. Finlayson
-     * @version 2.4.0
-     * @since JWI 2.2.0
      */
     class ItemCache @JvmOverloads constructor(
         initialCapacity0: Int = DEFAULT_INITIAL_CAPACITY,
@@ -284,7 +266,6 @@ open class CachingDictionary(
          * this cache.
          *
          * @param cache the map to be trimmed
-         * @since JWI 2.2.0
          */
         private fun reduceCacheSize(cache: MutableMap<*, *>) {
             if (!isOpen || maximumCapacity < 1 || cache.size < maximumCapacity) {
@@ -332,7 +313,6 @@ open class CachingDictionary(
          * @param <V>             the value type
          * @param initialCapacity the initial capacity
          * @return the new map
-         * @since JWI 2.2.0
          */
         private fun <K, V> makeCache(initialCapacity: Int): MutableMap<K, V> {
             return LinkedHashMap<K, V>(initialCapacity, DEFAULT_LOAD_FACTOR, true)
@@ -348,7 +328,6 @@ open class CachingDictionary(
          * opened.
          *
          * @throws ObjectClosedException if the dictionary is closed.
-         * @since JWI 2.2.0
          */
         private fun checkOpen() {
             if (!isOpen) {
@@ -373,8 +352,6 @@ open class CachingDictionary(
 
         /**
          * Removes all entries from the cache.
-         *
-         * @since JWI 2.2.0
          */
         fun clear() {
             itemCache?.clear()
@@ -411,7 +388,7 @@ open class CachingDictionary(
         /**
          * Caches the specified word, indexed by its sense key.
          *
-         * @param word the word to be cached; may not be null
+         * @param word the word to be cached
          */
         fun cacheWordByKey(word: Word) {
             checkOpen()
@@ -426,8 +403,7 @@ open class CachingDictionary(
         /**
          * Caches the specified entry.
          *
-         * @param entry the entry to be cached; may not be null
-         * @since JWI 2.2.0
+         * @param entry the entry to be cached
          */
         fun cacheSenseEntry(entry: SenseEntry) {
             checkOpen()

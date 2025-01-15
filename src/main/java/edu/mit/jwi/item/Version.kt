@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.item
 
 import edu.mit.jwi.data.ContentType
@@ -19,27 +10,21 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /**
- * Default, concrete implementation of the [IVersion] interface. This
- * class, much like the [Integer] class, caches instances, which should be
- * created via the `createVersion` methods.
+ * Default, concrete implementation of the IVersion interface.
+ * This class, much like the Integer class, caches instances, which should be created via the createVersion methods.
  *
  * This version object takes an optional bugfix version number and string qualifier.
  * The qualifier may only contain characters are that are valid Java
  *
  * Creates a new version object with the specified version numbers.
  *
- * Clients should normally obtain instances of this class via the static
- * `getVersion` methods.
+ * Clients should normally obtain instances of this class via the getVersion methods.
  *
  * @param majorVersion     the major version number, i.e., the '1' in 1.2.3.q
  * @param minorVersion     the minor version number, i.e., the '2' in 1.2.3.q
  * @param bugfixVersion    the bugfix version number, i.e., the '3' in 1.2.3.q
  * @param qualifier        the version qualifier, i.e., the 'q' in 1.2.3.q
- * @throws IllegalArgumentException if any of the version numbers are negative, or the qualifier
- * is not a legal qualifier
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.0
+ * @throws IllegalArgumentException if any of the version numbers are negative, or the qualifier is not a legal qualifier
  */
 open class Version(
 
@@ -111,7 +96,6 @@ open class Version(
      * This utility method implements the appropriate deserialization for this object.
      *
      * @return the appropriate deserialized object.
-     * @since JWI 2.4.0
      */
     private fun readResolve(): Any {
         return getVersion(majorVersion, minorVersion, bugfixVersion, qualifier)
@@ -142,7 +126,7 @@ open class Version(
         /**
          * The byte offset of the version indicator in the standard Wordnet file headers.
          */
-        const val versionOffset: Int = 803
+        const val VERSION_OFFSET: Int = 803
 
         /**
          * Checks the supplied version numbers.
@@ -246,14 +230,12 @@ open class Version(
         }
 
         /**
-         * Creates and caches, or retrieves from the cache, a version object
-         * corresponding to the specified numbers.
+         * Creates and caches, or retrieves from the cache, a version object corresponding to the specified numbers.
          *
          * @param major  the major version number
          * @param minor  the minor version number
          * @param bugfix the bugfix version number
          * @return the cached version object corresponding to these numbers
-         * @since JWI 2.1.0
          */
 
         fun getVersion(major: Int, minor: Int, bugfix: Int): Version {
@@ -261,8 +243,7 @@ open class Version(
         }
 
         /**
-         * Creates and caches, or retrieves from the cache, a version object
-         * corresponding to the specified numbers.
+         * Creates and caches, or retrieves from the cache, a version object corresponding to the specified numbers.
          *
          * @param major     the major version number
          * @param minor     the minor version number
@@ -270,7 +251,6 @@ open class Version(
          * @param qualifier the version qualifier
          * @return the cached version object corresponding to these numbers
          * @throws IllegalArgumentException if the version numbers and qualifier are not legal
-         * @since JWI 2.2.0
          */
 
         fun getVersion(major: Int, minor: Int, bugfix: Int, qualifier: String?): Version {
@@ -293,8 +273,8 @@ open class Version(
         private val versionPattern: Pattern = Pattern.compile("WordNet\\s+\\d+\\Q.\\E\\d+(\\Q.\\E\\d+)?\\s+Copyright")
 
         /**
-         * Creates a version string for the specified version numbers.  If a version's
-         * bugfix number is 0, and if the qualifier is null or empty, the string produced is of the form "x.y".  I
+         * Creates a version string for the specified version numbers.
+         * If a version's bugfix number is 0, and if the qualifier is null or empty, the string produced is of the form "x.y".
          *
          * @param major     the major version number, i.e., the '1' in 1.2.3.q
          * @param minor     the minor version number, i.e., the '2' in 1.2.3.q
@@ -302,7 +282,6 @@ open class Version(
          * @param qualifier the version qualifier, i.e., the 'q' in 1.2.3.q
          * @return a string representing the specified version
          * @throws IllegalArgumentException if illegal argument
-         * @since JWI 2.2.0
          */
 
         fun makeVersionString(major: Int, minor: Int, bugfix: Int, qualifier: String?): String {
@@ -348,14 +327,12 @@ open class Version(
         }
 
         /**
-         * Extracts a version object from a byte buffer that contains data with the
-         * specified content type. If no version can be extracted, returns
-         * null.
+         * Extracts a version object from a byte buffer that contains data with the specified content type.
+         * If no version can be extracted, returns null.
          *
          * @param contentType the content type of the data in the buffer
          * @param buffer      the buffer containing the data
          * @return the Version that was extracted, or null if none
-         * @since JWI 2.1.0
          */
 
         fun extractVersion(contentType: ContentType<*>, buffer: ByteBuffer): Version? {
@@ -367,7 +344,7 @@ open class Version(
             // first try direct access
             var c: Char
             val sb = StringBuilder()
-            for (i in versionOffset..<buffer.limit()) {
+            for (i in VERSION_OFFSET..<buffer.limit()) {
                 c = Char(buffer.get(i).toUShort())
                 if (Character.isWhitespace(c)) {
                     break
@@ -410,13 +387,11 @@ open class Version(
         }
 
         /**
-         * Tries to transform the specified character sequence into a version
-         * object. If it cannot, returns null
+         * Tries to transform the specified character sequence into a version object.
+         * If it cannot, returns null
          *
          * @param verStr the sequence of characters to be transformed
-         * @return the version, or null if the character sequence is
-         * not a valid version
-         * @since JWI 2.1.0
+         * @return the version, or null if the character sequence is not a valid version
          */
 
         fun parseVersionProtected(verStr: CharSequence?): Version? {
@@ -511,9 +486,7 @@ open class Version(
         /**
          * Emulates the Enum.values() function.
          *
-         * @return all the static data type instances listed in the class, in the
-         * order they are declared.
-         * @since JWI 2.0.0
+         * @return all the static data type instances listed in the class, in the order they are declared.
          */
         fun values(): List<Version?> {
             return versions

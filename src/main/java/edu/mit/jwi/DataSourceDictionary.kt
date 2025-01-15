@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi
 
 import edu.mit.jwi.data.*
@@ -473,9 +464,6 @@ class DataSourceDictionary(
     /**
      * A file iterator where the data type returned by the iterator is the same
      * as that returned by the backing data source.
-     *
-     * @author Mark A. Finlayson
-     * @since JWI 2.1.5
      */
     abstract inner class FileIterator2<T> : FileIterator<T, T> {
 
@@ -483,7 +471,6 @@ class DataSourceDictionary(
          * Constructs a new file iterator with the specified content type.
          *
          * @param content content type
-         * @since JWI 2.1.5
          */
         constructor(content: ContentType<T>) : super(content)
 
@@ -492,7 +479,6 @@ class DataSourceDictionary(
          *
          * @param content  content type
          * @param startKey start key
-         * @since JWI 2.1.5
          */
         constructor(content: ContentType<T>, startKey: String) : super(content, startKey)
     }

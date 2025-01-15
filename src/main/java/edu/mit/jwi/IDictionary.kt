@@ -1,26 +1,11 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi
 
 import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.item.*
 
 /**
- * Objects that implement this interface are intended as the main entry point to
- * accessing Wordnet data. The dictionary must be opened by calling
- * `open()` before it is used, otherwise its methods throw an
- * [IllegalStateException].
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
+ * Objects that implement this interface are intended as the main entry point to accessing Wordnet data.
+ * The dictionary must be opened by calling open() before it is used, otherwise its methods throw an IllegalStateException.
  */
 interface IDictionary : IHasVersion, IHasLifecycle {
 
@@ -36,7 +21,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     /**
      * This method is identical to `getIndexWord(IndexWordID)` and is provided as a convenience.
      *
-     * @param lemma the lemma for the index word requested; may not be empty, or all whitespace
+     * @param lemma the lemma for the index word requested; may not be empty or all whitespace
      * @param pos   the part of speech
      * @return the index word corresponding to the specified lemma and part of speech, or null if none is found
      * @throws IllegalArgumentException if the specified lemma is empty or all whitespace
@@ -48,7 +33,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * If the specified lemma/part of speech combination is not found, returns null.
      *
      * *Note:* This call does no stemming on the specified lemma, it is taken as specified.
-     * That is, if you submit the word "dogs", it will search for "dogs", not "dog"; in the standard Wordnet distribution, there is no entry for "dogs" and therefore the call will return null.
+     * That is, if you submit the word "dogs", it will search for "dogs", not "dog" in the standard Wordnet distribution, there is no entry for "dogs" and therefore the call will return null.
      * This is in contrast to the Wordnet API provided by Princeton.
      * If you want your searches to capture morphological variation, use the descendants of the Stemmer class.
      *
@@ -68,7 +53,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     /**
      * Retrieves the word with the specified id from the database. If the specified word is not found, returns null
      *
-     * @param id the id of the word to search for; may not be null
+     * @param id the id of the word to search for
      * @return the word, if found; null otherwise
      */
     fun getWord(id: IWordID): Word?
@@ -117,7 +102,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * Retrieves the exception entry for the specified surface form and part of speech from the database.
      * If the specified surface form / part of speech pair has no associated exception entry, returns null
      *
-     * @param surfaceForm the surface form to be looked up; may not be empty, or all whitespace
+     * @param surfaceForm the surface form to be looked up; may not be empty or all whitespace
      * @param pos the part of speech
      * @return the entry, if found; null otherwise
      */

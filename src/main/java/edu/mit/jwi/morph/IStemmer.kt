@@ -1,42 +1,24 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.morph
 
 import edu.mit.jwi.item.POS
 
 /**
- * A stemmer is an object that can transform surface forms of words into a stem,
- * also known as a root form, base form, or headword.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.2
+ * A stemmer is an object that can transform surface forms of words into a stem, also known as a root form, base form, or headword.
  */
 interface IStemmer {
 
     /**
-     * Takes the surface form of a word, as it appears in the text, and the
-     * assigned Wordnet part of speech. The surface form may or may not contain
-     * whitespace or underscores, and may be in mixed case. The part of speech
-     * may be null, which means that all parts of speech should be
-     * considered. Returns a list of stems, in preferred order. No stem should
-     * be repeated in the list. If no stems are found, this call returns an
-     * empty list. It will never return null.
+     * Takes the surface form of a word, as it appears in the text, and the assigned Wordnet part of speech.
+     * The surface form may or may not contain whitespace or underscores, and may be in mixed case.
+     * The part of speech may be null, which means that all parts of speech should be considered.
+     * Returns a list of stems, in preferred order.
+     * No stem should be repeated in the list.
+     * If no stems are found, this call returns an empty list.
      *
      * @param surfaceForm the surface form of which to find the stem
-     * @param pos         the part of speech to find stems for; if null,
-     * find stems for all parts of speech
-     * @return the list of stems found for the surface form and part of speech
-     * combination
+     * @param pos the part of speech to find stems for; if null, find stems for all parts of speech
+     * @return the list of stems found for the surface form and part of speech combination
      * @throws IllegalArgumentException if the specified surface form is empty or all whitespace
-     * @since JWI 2.1.2
      */
-    fun findStems(surfaceForm: String, pos: POS?): List<String>?
+    fun findStems(surfaceForm: String, pos: POS?): List<String>
 }

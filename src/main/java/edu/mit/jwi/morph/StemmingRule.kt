@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.morph
 
 import edu.mit.jwi.item.POS
@@ -18,15 +9,10 @@ import java.util.*
  * Creates a new stemming rule with the specified suffix, ending, and
  * avoid set
  *
- * @param suffix the suffix that should be stripped from a word; should not
- * be null, empty, or all whitespace.
- * @param ending the ending that should be stripped from a word; should not
- * be null, but may be empty or all whitespace.
- * @param pos    the part of speech to which this rule applies, may not be
- * null
- * @param ignore the set of suffixes that, when present, indicate this rule
- * should not be applied. May be null or empty, but not
- * contain nulls or empties.
+ * @param suffix the suffix that should be stripped from a word; should not be empty, or all whitespace.
+ * @param ending the ending that should be stripped from a word; may be empty or all whitespace.
+ * @param pos    the part of speech to which this rule applies
+ * @param ignore the set of suffixes that, when present, indicate this rule should not be applied. May not contain nulls or empties.
  */
 class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: String) : IStemmingRule {
 
@@ -44,14 +30,10 @@ class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: Stri
 
         // allocate avoid set
         var ignoreSet: MutableSet<String>
-        if (ignore != null && ignore.isNotEmpty()) {
+        if (ignore.isNotEmpty()) {
             ignoreSet = HashSet<String>(ignore.size)
             for (avoidStr in ignore) {
-                var avoidStr = avoidStr
-                if (avoidStr == null) {
-                    throw NullPointerException()
-                }
-                avoidStr = avoidStr.trim { it <= ' ' }
+                val avoidStr = avoidStr.trim { it <= ' ' }
                 require(avoidStr.isNotEmpty())
                 ignoreSet.add(avoidStr)
             }
@@ -100,9 +82,7 @@ class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: Stri
         sb.append(ending)
 
         // append optional suffix
-        if (suffix != null) {
-            sb.append(suffix.trim { it <= ' ' })
-        }
+        sb.append(suffix.trim { it <= ' ' })
         return sb.toString()
     }
 }

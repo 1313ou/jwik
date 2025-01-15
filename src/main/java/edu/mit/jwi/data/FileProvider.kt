@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.data
 
 import edu.mit.jwi.data.ContentType.Companion.values
@@ -72,7 +63,6 @@ class FileProvider @JvmOverloads constructor(
             }
             return field
         }
-        private set
 
     private var fileMap: Map<ContentType<*>, ILoadableDataSource<*>>? = null
 
@@ -96,8 +86,7 @@ class FileProvider @JvmOverloads constructor(
         }
 
     /**
-     * Returns a data source object for the specified content type, if one is
-     * available; otherwise returns null.
+     * Returns a data source object for the specified content type, if one is available; otherwise returns null.
      *
      * @param <T> the content type of the data source
      * @param contentType the content type of the data source to be retrieved
@@ -139,7 +128,7 @@ class FileProvider @JvmOverloads constructor(
         }
 
     /**
-     * Sets the character set associated with this dictionary. The character set may be null.
+     * Sets the character set associated with this dictionary.
      *
      * @param charset the possibly null character set to use when decoding files.
      * @throws IllegalStateException if the provider is currently open
@@ -226,7 +215,7 @@ class FileProvider @JvmOverloads constructor(
      */
     fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
         if (verbose) {
-            System.out.printf("Comparator for %s %s%n", contentTypeKey, comparator?.javaClass?.getName())
+            System.out.printf("Comparator for %s %s%n", contentTypeKey, comparator?.javaClass?.name)
         }
         try {
             lifecycleLock.lock()
@@ -270,15 +259,14 @@ class FileProvider @JvmOverloads constructor(
     }
 
     /**
-     * Returns the first content type, if any, that matches the specified data
-     * type and pos object. Either parameter may be null.
+     * Returns the first content type, if any, that matches the specified data type and pos object.
      *
      * @param <T> type
      * @param dt the data type, possibly null, of the desired content type
      * @param pos the part of speech, possibly null, of the desired content type
      * @return the first content type that matches the specified data type and part of speech.
      */
-    fun <T> resolveContentType(dt: DataType<T>, pos: POS?): ContentType<T>? {
+    fun <T> resolveContentType(dt: DataType<T>?, pos: POS?): ContentType<T>? {
         for (e in prototypeMap.entries) {
             if (e.key.getDataType<Any?>() == dt && e.key.pOS == pos) {
                 @Suppress("UNCHECKED_CAST")
@@ -303,7 +291,7 @@ class FileProvider @JvmOverloads constructor(
             }
 
             // get files in directory
-            val fileArray = directory.listFiles(FileFilter { obj: File? -> obj!!.isFile() })
+            val fileArray = directory.listFiles(FileFilter { obj: File? -> obj!!.isFile })
             if (fileArray == null || fileArray.size == 0) {
                 throw IOException("No files found in $directory")
             }
@@ -313,7 +301,7 @@ class FileProvider @JvmOverloads constructor(
             }
 
             // sort them
-            files.sortWith(Comparator.comparing<File?, String?>(Function { obj: File? -> obj!!.getName() }))
+            files.sortWith(Comparator.comparing<File?, String?>(Function { obj: File? -> obj!!.name }))
 
             // make the source map
             var hiddenMap = createSourceMap(files, policy)
@@ -437,7 +425,7 @@ class FileProvider @JvmOverloads constructor(
 
             result.put(contentType, createDataSource(file, contentType, policy))
             if (verbose) {
-                System.out.printf("%s %s%n", contentType, file.getName())
+                System.out.printf("%s %s%n", contentType, file.name)
             }
         }
         return result
@@ -445,7 +433,7 @@ class FileProvider @JvmOverloads constructor(
 
     private fun match(pattern: String, files: MutableList<File>): File? {
         for (file in files) {
-            val name = file.getName()
+            val name = file.name
             if (name.matches(pattern.toRegex())) {
                 return file
             }
@@ -589,8 +577,8 @@ class FileProvider @JvmOverloads constructor(
          * Constructs a new background loader that operates on the internal data structures of this provider.
          */
         init {
-            setName(JWIBackgroundLoader::class.java.getSimpleName())
-            setDaemon(true)
+            name = JWIBackgroundLoader::class.java.simpleName
+            isDaemon = true
         }
 
         override fun run() {
@@ -623,12 +611,10 @@ class FileProvider @JvmOverloads constructor(
     }
 
     /**
-     * Determines a version from the set of data sources, if possible, otherwise returns [NO_VERSION]
+     * Determines a version from the set of data sources, if possible, otherwise returns NO_VERSION
      *
      * @param srcs the data sources to be used to determine the version
-     * @return the single version that describes these data sources, or
-     * [NO_VERSION] if there is none
-     * @since JWI 2.1.0
+     * @return the single version that describes these data sources, or NO_VERSION if there is none
      */
     private fun determineVersion(srcs: Collection<IDataSource<*>>): Version? {
         var ver: Version? = NO_VERSION
@@ -704,7 +690,7 @@ class FileProvider @JvmOverloads constructor(
          * @return whether the file object represents a local directory which exist
          */
         fun isLocalDirectory(dir: File): Boolean {
-            return dir.exists() && dir.isDirectory()
+            return dir.exists() && dir.isDirectory
         }
 
         /**
@@ -724,11 +710,11 @@ class FileProvider @JvmOverloads constructor(
         /**
          * A utility method for checking whether a file represents an existing local file
          *
-         * @param file the file object to check, may not be null
+         * @param file the file object to check
          * @return whether the file object represents a local file which exist
          */
         fun isLocalFile(file: File): Boolean {
-            return file.exists() && file.isFile()
+            return file.exists() && file.isFile
         }
     }
 }

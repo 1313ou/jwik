@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.data
 
 import edu.mit.jwi.data.parse.*
@@ -30,7 +21,7 @@ import java.util.*
  *
  * @param userFriendlyName a user-friendly name, for easy identification of this data type
  * @param hasVersion true if the comment header for this data type usually contains a version number
- * @param parser the line parser for transforming lines from this data type into objects; may not be null
+ * @param parser the line parser for transforming lines from this data type into objects
  * @param hints a varargs array of resource name hints for identifying the resource that contains the data
  * @param <T> the type of object for the content type, the type of the object returned by the parser for this data type
  */
@@ -56,7 +47,7 @@ class DataType<T>(
      *
      * @param userFriendlyName a user-friendly name, for easy identification of this data type
      * @param hasVersion true if the comment header for this data type usually contains a version number
-     * @param parser the line parser for transforming lines from this data type into objects; may not be null
+     * @param parser the line parser for transforming lines from this data type into objects
      * @param hints a varargs array of resource name hints for identifying the resource that contains the data
      */
     constructor(
@@ -118,7 +109,7 @@ class DataType<T>(
          * Finds the first file that satisfies the naming constraints of both the data type and part of speech.
          *
          * @param dataType the data type whose resource name hints should be used
-         * @param pos  the part of speech whose resource name hints should be used, may be null
+         * @param pos  the part of speech whose resource name hints should be used
          * @param files the files to be searched
          * @return the file that matches both the pos and type naming conventions, or null if none is found.
          */
@@ -127,7 +118,7 @@ class DataType<T>(
             val posPatterns: Set<String> = pos?.resourceNameHints ?: emptySet()
             if (typePatterns.isEmpty()) {
                 for (file in files) {
-                    val name = file.getName().lowercase()
+                    val name = file.name.lowercase()
                     if (containsOneOf(name, posPatterns)) {
                         return file
                     }
@@ -135,7 +126,7 @@ class DataType<T>(
             } else {
                 for (typePattern in typePatterns) {
                     for (file in files) {
-                        val name = file.getName().lowercase()
+                        val name = file.name.lowercase()
                         if (name.contains(typePattern) && containsOneOf(name, posPatterns)) {
                             return file
                         }

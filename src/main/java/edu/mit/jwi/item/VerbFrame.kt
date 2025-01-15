@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.item
 
 import java.io.Serializable
@@ -30,7 +21,6 @@ class VerbFrame(
      * Will never return null
      *
      * @return the non-null, non-empty template of the verb frame
-     * @since JWI 1.0
      */
     val template: String,
 ) : Serializable {
@@ -55,12 +45,10 @@ class VerbFrame(
     }
 
     /**
-     * This utility method implements the appropriate deserialization for this
-     * object.
+     * This utility method implements the appropriate deserialization for this object.
      *
      * @return the appropriate deserialized object.
-     * @since JWI 2.4.0
-     */
+     * */
     private fun readResolve(): Any {
         val staticFrame: VerbFrame? = getFrame(number)
         return staticFrame ?: this
@@ -162,25 +150,19 @@ class VerbFrame(
         }
 
         /**
-         * This emulates the Enum.values() method, in that it returns an
-         * unmodifiable collection of all the static instances declared in this
-         * class, in the order they were declared.
+         * This emulates the Enum.values() method, in that it returns an unmodifiable collection of all the static instances declared in this class, in the order they were declared.
          *
          * @return an unmodifiable collection of verb frames defined in this class
-         * @since JWI 2.1.0
          */
         fun values(): Collection<VerbFrame> {
             return verbFrameMap.values
         }
 
         /**
-         * Returns the frame indexed by the specified number defined in this class,
-         * or null if there is
+         * Returns the frame indexed by the specified number defined in this class, or null if there is
          *
          * @param number the verb frame number
-         * @return the verb frame with the specified number, or null if
-         * none
-         * @since JWI 2.1.0
+         * @return the verb frame with the specified number, or null if none
          */
         @JvmStatic
         fun getFrame(number: Int): VerbFrame? {

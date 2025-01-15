@@ -1,12 +1,3 @@
-/* ******************************************************************************
- * Java Wordnet Interface Library (JWI) v2.4.0
- * Copyright (c) 2007-2015 Mark A. Finlayson
- *
- * JWI is distributed under the terms of the Creative Commons Attribution 4.0
- * International Public License, which means it may be freely used for all
- * purposes, as long as proper acknowledgment is made.  See the license file
- * included with this distribution for more details.
- *******************************************************************************/
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.Word.Companion.checkLexicalID
@@ -16,10 +7,6 @@ import java.util.*
 
 /**
  * Concrete, default implementation of the `SenseKey` interface.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.1.0
  */
 class SenseKey(
 
@@ -101,11 +88,11 @@ class SenseKey(
     /**
      * Constructs a new sense key.
      *
-     * @param lemma       the lemma; may not be null
+     * @param lemma       the lemma
      * @param lexID       the lexical id
-     * @param pos         the part of speech; may not be null
+     * @param pos         the part of speech
      * @param isAdjSat    true if this represents an adjective satellite; false otherwise
-     * @param lexFile     the lexical file; may not be null
+     * @param lexFile     the lexical file
      * @param originalKey the original key string
      */
     constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: LexFile, originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
@@ -115,10 +102,10 @@ class SenseKey(
     /**
      * Constructs a new sense key.
      *
-     * @param lemma       the lemma; may not be null
+     * @param lemma       the lemma
      * @param lexID       the lexical id
-     * @param pos         the part of speech; may not be null
-     * @param lexFile     the lexical file; may not be null
+     * @param pos         the part of speech
+     * @param lexFile     the lexical file
      * @param originalKey the original key string
      * @param headLemma   the head lemma
      * @param headLexID   the head lexical id; ignored if head lemma is null
@@ -220,9 +207,7 @@ class SenseKey(
     /**
      * Throws an exception if the head is not yet set.
      *
-     * @throws IllegalArgumentException if the [.needsHeadSet] method returns
-     * true.
-     * @since JWI 2.2.0
+     * @throws IllegalArgumentException if the [.needsHeadSet] method returns true.
      */
     private fun checkHeadSet() {
         check(!needsHeadSet()) { "Head word and id not yet set" }
