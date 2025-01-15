@@ -209,13 +209,11 @@ abstract class BaseRAMDictionary protected constructor(
 
     override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
         check(data != null) { NO_DATA }
-        var count = 0
         return data!!.words.values
             .filter { it.lemma.startsWith(start) && if (pos != null) it.pOS == pos else true }
-            .also { count++ }
             .map { it.lemma }
-            .takeUnless { count > limit }
-            ?.toSet() ?: emptySet()
+            .take(limit)
+            .toSet()
     }
 
     // SYNSET
