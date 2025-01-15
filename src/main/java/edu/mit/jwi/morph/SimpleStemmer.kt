@@ -85,14 +85,14 @@ open class SimpleStemmer : IStemmer {
 
         // if pos is null, do all
         if (pos == null) {
-            val result: MutableSet<String?> = LinkedHashSet<String?>()
+            val result = LinkedHashSet<String>()
             for (p in POS.entries) {
                 result.addAll(findStems(word, p))
             }
             if (result.isEmpty()) {
-                return listOf<String>()
+                return emptyList()
             }
-            return ArrayList<String>(result)
+            return result.toList()
         }
 
         val isCollocation: Boolean = word.contains(underscore)
@@ -257,7 +257,7 @@ open class SimpleStemmer : IStemmer {
         }
 
         // we will return this to the caller
-        val result: MutableSet<String?> = LinkedHashSet<String?>()
+        val result = LinkedHashSet<String>()
 
         // apply the rules
         var root: String?
@@ -268,7 +268,7 @@ open class SimpleStemmer : IStemmer {
                 result.add(root)
             }
         }
-        return if (result.isEmpty()) emptyList<String>() else ArrayList<String>(result)
+        return result.toList()
     }
 
     /**
@@ -281,23 +281,19 @@ open class SimpleStemmer : IStemmer {
         // split into parts
         val parts: Array<String> = composite.split(underscore.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         if (parts.size < 2) {
-            return listOf<String>()
+            return emptyList()
         }
 
         // find the stems of each parts
-        val rootSets: MutableList<List<String>> = ArrayList<List<String>>(parts.size)
-        for (part in parts) {
-            rootSets.add(findStems(part, POS.VERB))
-        }
+        val rootSets = parts
+            .map { findStems(it, POS.VERB) }
+            .toList()
 
-        val result: MutableSet<String?> = LinkedHashSet<String?>()
+        val result = LinkedHashSet<String>()
 
         // form all combinations
         val rootBuffer = StringBuilder()
         for (i in parts.indices) {
-            if (rootSets[i] == null) {
-                continue
-            }
             for (partRoot in rootSets[i]) {
                 rootBuffer.replace(0, rootBuffer.length, "")
 
@@ -316,8 +312,8 @@ open class SimpleStemmer : IStemmer {
         }
 
         // remove any empties
-        result.removeIf { s: String? -> s!!.isEmpty() }
-        return if (result.isEmpty()) listOf<String>() else ArrayList<String>(result)
+        result.removeIf { it.isEmpty() }
+        return result.toList()
     }
 
     /**

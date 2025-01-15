@@ -13,15 +13,10 @@ import java.io.IOException
 import kotlin.Throws
 
 /**
- * Object that has a lifecycle. Objects implementing this interface can be
- * opened, closed, and have their open state queried. In general, the open state
- * of the object should be reversible, that is, an object may be closed and
- * re-opened. What happens when the object is used when closed is implementation
- * dependent.
- *
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.2.0
+ * Object that has a lifecycle.
+ * Objects implementing this interface can be opened, closed, and have their open state queried.
+ * In general, the open state of the object should be reversible, that is, an object may be closed and re-opened.
+ * What happens when the object is used when closed is implementation dependent.
  */
 interface IHasLifecycle : IClosable {
 
@@ -47,7 +42,6 @@ interface IHasLifecycle : IClosable {
      * It may be closed, open, in the processing of opening, or in the process of closing.
      */
     enum class LifecycleState {
-
         CLOSED, OPENING, OPEN, CLOSING
     }
 

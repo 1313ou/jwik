@@ -99,7 +99,7 @@ class FileProvider @JvmOverloads constructor(
      * Returns a data source object for the specified content type, if one is
      * available; otherwise returns null.
      *
-     * @param <T>         the content type of the data source
+     * @param <T> the content type of the data source
      * @param contentType the content type of the data source to be retrieved
      * @return the data source for the specified content type, or null if this provider has no such data source
      * @throws ObjectClosedException if the provider is not open when this call is made
@@ -630,7 +630,6 @@ class FileProvider @JvmOverloads constructor(
      * [NO_VERSION] if there is none
      * @since JWI 2.1.0
      */
-
     private fun determineVersion(srcs: Collection<IDataSource<*>>): Version? {
         var ver: Version? = NO_VERSION
         for (dataSrc in srcs) {
@@ -658,9 +657,7 @@ class FileProvider @JvmOverloads constructor(
         var verbose: Boolean = false
 
         /**
-         * Transforms a URL into a File. The URL must use the 'file' protocol and
-         * must be in a UTF-8 compatible format as specified in
-         * [URLDecoder].
+         * Transforms a URL into a File. The URL must use the 'file' protocol and must be in a UTF-8 compatible format as specified in URLDecoder.
          *
          * @param url url
          * @return a file pointing to the same place as the url

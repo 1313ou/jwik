@@ -38,21 +38,9 @@ class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: Stri
 
     override val suffixIgnoreSet: MutableSet<String>
 
-    /**
-     * @since JWI 2.3.1
-     */
-    init {
+     init {
         var suffix = suffix
         var ending = ending
-        if (suffix == null) {
-            throw NullPointerException()
-        }
-        if (ending == null) {
-            throw NullPointerException()
-        }
-        if (pos == null) {
-            throw NullPointerException()
-        }
 
         // allocate avoid set
         var ignoreSet: MutableSet<String>
