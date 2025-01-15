@@ -1,19 +1,26 @@
 package edu.mit.jwi.item
 
+import edu.mit.jwi.item.LexFile.Companion.getLexicalFileNumberString
 import edu.mit.jwi.item.Word.Companion.checkLexicalID
 import edu.mit.jwi.item.Word.Companion.getLexicalIDForSenseKey
 import java.io.Serializable
 import java.util.*
 
 /**
- * Concrete, default implementation of the `SenseKey` interface.
+ * Sense Key
+ *
+ * @param lemma unprocessed lemma
+ * @property lemma processed lemma
+ * @property lexicalID lexical id for this sense key
+ * @property pOS part of speech
+ * @property isAdjectiveSatellite whether this sense key points to an adjective satellite
+ * @property lexicalFile lexical File
  */
 class SenseKey(
-
     /**
      * Lemma
      */
-    val lemma: String,
+    lemma: String,
 
     /**
      * The lexical id for this sense key, which is a non-negative integer.
@@ -34,7 +41,13 @@ class SenseKey(
      * Lexical File
      */
     val lexicalFile: LexFile,
-) : IHasPOS, Comparable<SenseKey>, Serializable {
+
+    ) : IHasPOS, Comparable<SenseKey>, Serializable {
+
+    /**
+     * Lemma
+     */
+    val lemma: String = lemma.lowercase()
 
     /**
      * The synset type for the key.
@@ -74,16 +87,23 @@ class SenseKey(
 
     private var headLexID = -1
 
-    private var key: String? = null
+    private var sensekey: String? = null
+        get() {
+            checkHeadSet()
+            if (field == null) {
+                field = toString(this)
+            }
+            return field
+        }
 
     /**
      * Constructs a new sense key.
      *
      * @param lemma  the lemma for the sense key
-     * @param lexID  the lexical id of the sense key
+     * @param lexicalID the lexical id of the sense key
      * @param synset the synset for the sense key
      */
-    constructor(lemma: String, lexID: Int, synset: Synset) : this(lemma, lexID, synset.pOS, synset.isAdjectiveSatellite, synset.lexicalFile)
+    constructor(lemma: String, lexicalID: Int, synset: Synset) : this(lemma, lexicalID, synset.pOS, synset.isAdjectiveSatellite, synset.lexicalFile)
 
     /**
      * Constructs a new sense key.
@@ -93,10 +113,10 @@ class SenseKey(
      * @param pos         the part of speech
      * @param isAdjSat    true if this represents an adjective satellite; false otherwise
      * @param lexFile     the lexical file
-     * @param originalKey the original key string
+     * @param sensekey    the original key string
      */
-    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: LexFile, originalKey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
-        key = originalKey
+    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: LexFile, sensekey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
+        this.sensekey = sensekey
     }
 
     /**
@@ -106,17 +126,17 @@ class SenseKey(
      * @param lexID       the lexical id
      * @param pos         the part of speech
      * @param lexFile     the lexical file
-     * @param originalKey the original key string
+     * @param sensekey    the original key string
      * @param headLemma   the head lemma
      * @param headLexID   the head lexical id; ignored if head lemma is null
      */
-    constructor(lemma: String, lexID: Int, pos: POS, lexFile: LexFile, headLemma: String?, headLexID: Int, originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
+    constructor(lemma: String, lexID: Int, pos: POS, lexFile: LexFile, headLemma: String?, headLexID: Int, sensekey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
         if (headLemma == null) {
             isHeadSet = true
         } else {
             setHead(headLemma, headLexID)
         }
-        key = originalKey
+        this.sensekey = sensekey
     }
 
     /**
@@ -137,71 +157,12 @@ class SenseKey(
     }
 
     /**
-     * Whether the head lemma and lexical id need to be  set
+     * Whether the head lemma and lexical id need to be set
      * This method will always return false if the isAdjectiveSatellite returns false.
      * If that method returns true, this method will only return true if setHead has not yet been called.
-     *
      */
     fun needsHeadSet(): Boolean {
         return !isHeadSet
-    }
-
-    override fun compareTo(key: SenseKey): Int {
-
-        // first sort alphabetically by lemma
-        var cmp: Int = lemma.compareTo(key.lemma) //, ignoreCase = true)
-        if (cmp != 0) {
-            return cmp
-        }
-
-        // then sort by synset type
-        cmp = synsetType.toFloat().compareTo(key.synsetType.toFloat())
-        if (cmp != 0) {
-            return cmp
-        }
-
-        // then sort by lex_filenum
-        val lf = checkNotNull(lexicalFile)
-        val lf2: LexFile? = checkNotNull(key.lexicalFile)
-        cmp = lf.number.toFloat().compareTo(lf2!!.number.toFloat())
-        if (cmp != 0) {
-            return cmp
-        }
-
-        // then sort by lex_id
-        cmp = lexicalID.toFloat().compareTo(key.lexicalID.toFloat())
-        if (cmp != 0) {
-            return cmp
-        }
-
-        if (!isAdjectiveSatellite && !key.isAdjectiveSatellite) {
-            return 0
-        }
-        if (!isAdjectiveSatellite and key.isAdjectiveSatellite) {
-            return -1
-        }
-        if (isAdjectiveSatellite and !key.isAdjectiveSatellite) {
-            return 1
-        }
-
-        // then sort by head_word
-        val hw: String? = checkNotNull(headWord)
-        val hw2: String? = checkNotNull(key.headWord)
-        cmp = hw!!.compareTo(hw2!!)
-        if (cmp != 0) {
-            return cmp
-        }
-
-        // finally by head_id
-        return this.headID.toFloat().compareTo(key.headID.toFloat())
-    }
-
-    override fun toString(): String {
-        checkHeadSet()
-        if (key == null) {
-            key = toString(this)
-        }
-        return key!!
     }
 
     /**
@@ -211,6 +172,55 @@ class SenseKey(
      */
     private fun checkHeadSet() {
         check(!needsHeadSet()) { "Head word and id not yet set" }
+    }
+
+    override fun compareTo(other: SenseKey): Int {
+
+        // first sort alphabetically by lemma
+        var cmp: Int = lemma.compareTo(other.lemma) //, ignoreCase = true) not needed if lemma is lowercase
+        if (cmp != 0) {
+            return cmp
+        }
+
+        // then sort by synset type
+        cmp = synsetType.toInt().compareTo(other.synsetType.toInt())
+        if (cmp != 0) {
+            return cmp
+        }
+
+        // then sort by lex_filenum
+        val lf = lexicalFile
+        val lf2: LexFile? = other.lexicalFile
+        cmp = lf.number.toInt().compareTo(lf2!!.number.toInt())
+        if (cmp != 0) {
+            return cmp
+        }
+
+        // then sort by lex_id
+        cmp = lexicalID.toInt().compareTo(other.lexicalID.toInt())
+        if (cmp != 0) {
+            return cmp
+        }
+
+        // then by adjective satellite property
+        when {
+            !isAdjectiveSatellite && !other.isAdjectiveSatellite -> return 0
+            !isAdjectiveSatellite and other.isAdjectiveSatellite -> return -1
+            isAdjectiveSatellite and !other.isAdjectiveSatellite -> return 1
+        }
+
+        // then sort by head_word
+        cmp = headWord!!.compareTo(other.headWord!!)
+        if (cmp != 0) {
+            return cmp
+        }
+
+        // finally by head_id
+        return headID.toInt().compareTo(other.headID.toInt())
+    }
+
+    override fun toString(): String {
+        return sensekey!!
     }
 
     override fun hashCode(): Int {
@@ -260,44 +270,12 @@ class SenseKey(
          * @param key the sense key to be encoded as a string
          * @return the string representation of the sense key
          */
-
         fun toString(key: SenseKey): String {
-            val lf: LexFile? = checkNotNull(key.lexicalFile)
-            // figure out appropriate size
-            var size = key.lemma.length + 10
-            if (key.isAdjectiveSatellite) {
-                val hw: String? = checkNotNull(key.headWord)
-                size += hw!!.length + 2
-            }
-
-            // allocate builder
-            val sb = StringBuilder(size)
-
-            // make string
-            sb.append(key.lemma) //.lowercase())
-            sb.append('%')
-            sb.append(key.synsetType)
-            sb.append(':')
-            sb.append(LexFile.getLexicalFileNumberString(lf!!.number))
-            sb.append(':')
-            sb.append(getLexicalIDForSenseKey(key.lexicalID))
-            sb.append(':')
-            if (key.isAdjectiveSatellite) {
-                if (key.needsHeadSet()) {
-                    sb.append("??")
-                } else {
-                    sb.append(key.headWord)
-                }
-            }
-            sb.append(':')
-            if (key.isAdjectiveSatellite) {
-                if (key.needsHeadSet()) {
-                    sb.append("??")
-                } else {
-                    sb.append(getLexicalIDForSenseKey(key.headID))
-                }
-            }
-            return sb.toString()
+            val lexFileNum = getLexicalFileNumberString(key.lexicalFile.number)
+            val lexID = getLexicalIDForSenseKey(key.lexicalID)
+            val head = if (key.isAdjectiveSatellite) (if (key.needsHeadSet()) "??" else key.headWord) else ""
+            val headID = if (key.isAdjectiveSatellite) (if (key.needsHeadSet()) "??" else getLexicalIDForSenseKey(key.headID)) else ""
+            return "${key.lemma}%${key.synsetType}:$lexFileNum:$lexID$:$head:$headID"
         }
     }
 }

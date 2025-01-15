@@ -259,14 +259,11 @@ class DataSourceDictionary(
             }
         }
 
-        var word: Word? = null
-
         // sometimes the sense.index file doesn't have the sense key entry
         // so try an alternate method of retrieving words by sense keys
-        // We have to search the synonyms of the words returned from the
-        // index word search because some synsets have lemmas that differ only in case
-        // e.g., {earth, Earth} or {south, South}, and so separate entries
-        // are not found in the index file
+        // We have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South},
+        // and so separate entries are not found in the index file
+        var word: Word? = null
         val indexWord = getIndexWord(key.lemma, key.pOS)
         if (indexWord != null) {
             var possibleWord: Word?

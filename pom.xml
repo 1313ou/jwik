@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.github.x-englishwordnet</groupId>
-  <artifactId>jwik</artifactId>
+  <groupId>io.github.oewntk</groupId>
+  <artifactId>kwi</artifactId>
   <packaging>jar</packaging>
   <version>2.4.1.1</version>
 
   <name>Java WordNet Extended Interface in Kotlin</name>
   <description>Java library for interfacing with WordNet and English WordNet in Kotlin</description>
-  <url>https://github.com/x-englishwordnet/jwi</url>
+  <url>https://github.com/oewntk/jwi</url>
 
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -185,7 +185,7 @@
         <version>1.6.7</version>
         <extensions>true</extensions>
         <configuration>
-          <serverId>ossrh_jwi</serverId>
+          <serverId>ossrh_kwi</serverId>
           <nexusUrl>https://oss.sonatype.org/</nexusUrl>
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
@@ -357,40 +357,40 @@
 
   <distributionManagement>
     <repository>
-      <id>ossrh_jwi</id>
+      <id>ossrh_kwi</id>
       <name>Maven Central Staging Repository</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
     <snapshotRepository>
-      <id>ossrh_jwi</id>
+      <id>ossrh_kwi</id>
       <name>Maven Central Snapshot Repository</name>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 
   <scm>
-    <url>https://github.com/x-englishwordnet/jwi</url>
-    <connection>scm:git:git://github.com/x-englishwordnet/jwi.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:x-englishwordnet/jwi.git</developerConnection>
+    <url>https://github.com/oewntk/kwi</url>
+    <connection>scm:git:git://github.com/oewntk/jwi.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:oewntk/kwi.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/x-englishwordnet/jwi/issues</url>
+    <url>https://github.com/oewntk/kwi/issues</url>
   </issueManagement>
 
   <licenses>
     <license>
       <name>Creative Commons Attribution 4.0 International Public License</name>
-      <url>https://projects.csail.mit.edu/jwi/license.html</url>
+      <url>https://projects.csail.mit.edu/kwi/license.html</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
 
   <organization>
-    <name>com.github.x-englishwordnet</name>
-    <url>https://github.com/x-englishwordnet</url>
+    <name>com.github.oewntk</name>
+    <url>https://github.com/oewntk</url>
   </organization>
 
   <developers>
