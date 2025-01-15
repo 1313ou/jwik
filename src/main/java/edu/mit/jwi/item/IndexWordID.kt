@@ -13,7 +13,7 @@ import java.util.regex.Pattern
  * converted to underscores, this constructor applies this conversion.
  *
  * @param lemma the lemma for the id
- * @param pOS   the part of speech for the id
+ * @param pOS the part of speech for the id
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
 class IndexWordID(
@@ -25,7 +25,7 @@ class IndexWordID(
      * The lemma (root form) of the index word that this ID indicates.
      * The lemma will never be empty, or all whitespace.
      */
-    val lemma: String = whitespace.matcher(lemma.lowercase()).replaceAll("_").trim { it <= ' ' }
+    val lemma: String = lemma.asIndexWordLemma()
 
     init {
         require(lemma.isNotEmpty())
@@ -57,11 +57,6 @@ class IndexWordID(
     }
 
     companion object {
-
-        /**
-         * Whitespace pattern for use in replacing whitespace with underscores
-         */
-        private val whitespace: Pattern = Pattern.compile("\\s+")
 
         /**
          * Convenience method for transforming the result of the toString method into an `IndexWordID`

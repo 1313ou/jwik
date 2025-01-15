@@ -47,7 +47,7 @@ class SenseKey(
     /**
      * Lemma
      */
-    val lemma: String = lemma.lowercase()
+    val lemma: String = lemma.asSensekeyLemma()
 
     /**
      * The synset type for the key.

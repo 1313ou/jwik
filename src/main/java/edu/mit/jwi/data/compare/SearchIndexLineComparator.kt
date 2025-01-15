@@ -16,6 +16,7 @@ object SearchIndexLineComparator : BaseIndexLineComparator() {
      * @return compare code
      */
     override fun compareLemmas(lemma1: String, lemma2: String): Int {
+        // TODO
         val lemma1 = lemma1.lowercase()
         val lemma2 = lemma2.lowercase()
         val s = min(lemma1.length.toInt(), lemma2.length.toInt())

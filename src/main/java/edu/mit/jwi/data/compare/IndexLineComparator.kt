@@ -46,6 +46,7 @@ open class BaseIndexLineComparator() : ILineComparator {
      * @return compare code
      */
     protected open fun compareLemmas(lemma1: String, lemma2: String): Int {
+        // TODO
         val lemma1 = lemma1.lowercase()
         val lemma2 = lemma2.lowercase()
         return lemma1.compareTo(lemma2)
