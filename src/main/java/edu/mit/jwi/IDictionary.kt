@@ -65,7 +65,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * is no entry for "dogs" and therefore the call will return
      * null. This is in contrast to the Wordnet API provided by
      * Princeton. If you want your searches to capture morphological variation,
-     * use the descendants of the [IStemmer] class.
+     * use the descendants of the IStemmer class.
      *
      * @param id the id of the index word to search for; may not be
      * null

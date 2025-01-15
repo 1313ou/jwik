@@ -304,8 +304,8 @@ open class Version(
         // fields for version parsing
         private val periodPattern: Pattern = Pattern.compile("\\Q.\\E")
         private val digitPattern: Pattern = Pattern.compile("\\d+")
-        private const val wordnetStr = "WordNet"
-        private const val copyrightStr = "Copyright"
+        private const val WORDNET_STR = "WordNet"
+        private const val COPYRIGHT_STR = "Copyright"
         private val versionPattern: Pattern = Pattern.compile("WordNet\\s+\\d+\\Q.\\E\\d+(\\Q.\\E\\d+)?\\s+Copyright")
 
         /**
@@ -415,8 +415,8 @@ open class Version(
                 m = versionPattern.matcher(line)
                 if (m.find()) {
                     line = m.group()
-                    val start: Int = wordnetStr.length
-                    val end: Int = line.length - copyrightStr.length
+                    val start: Int = WORDNET_STR.length
+                    val end: Int = line.length - COPYRIGHT_STR.length
                     line = line.substring(start, end)
                     break
                 }

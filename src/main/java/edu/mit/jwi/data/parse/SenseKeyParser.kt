@@ -16,7 +16,8 @@ import edu.mit.jwi.item.POS.Companion.isAdjectiveSatellite
 import edu.mit.jwi.item.SenseKey
 
 /**
- * A parser that takes a sense key string and produces an `SenseKey` object.
+ * A parser that takes a string and parses it into a SenseKey object.
+ * It produces a SenseKey object.
  */
 object SenseKeyParser : ILineParser<SenseKey> {
 

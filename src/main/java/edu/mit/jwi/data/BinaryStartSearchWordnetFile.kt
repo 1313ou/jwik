@@ -13,26 +13,19 @@ import java.io.File
 import java.nio.ByteBuffer
 
 /**
- * Concrete implementation of a wordnet file data source. This particular
- * implementation is for files on disk, and uses a binary search algorithm to
- * find requested lines. It is appropriate for alphabetically-ordered Wordnet
- * files.
+ * A wordnet file data source.
+ * This particular implementation is for files on disk, and uses a binary search algorithm to find requested lines.
+ * It is appropriate for alphabetically-ordered Wordnet files.
  *
- * Constructs a new binary search wordnet file, on the specified file with
- * the specified content type.
+ * Constructs a new binary search wordnet file, on the specified file with the specified content type.
  *
- * @param file        the file which backs this wordnet file; may not be
- * null
- * @param contentType the content type for this file; may not be null
+ * @param file the file which backs this wordnet file
+ * @param contentType the content type for this file
  * @param <T> the type of object represented in this data resource
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.0.0
  */
 class BinaryStartSearchWordnetFile<T>(file: File, contentType: ContentType<T>) : WordnetFile<T>(file, contentType) {
 
-    // the comparator
-    private val fComparator: Comparator<String>? = contentType.lineComparator
+    private val comparator: Comparator<String>? = contentType.lineComparator
 
     private val bufferLock = Any()
 
@@ -55,7 +48,7 @@ class BinaryStartSearchWordnetFile<T>(file: File, contentType: ContentType<T>) :
                 var line: String? = getLine(buffer, contentType.charset)
 
                 // if we get a null, we've reached the end of the file
-                var cmp: Int = if (line == null) 1 else fComparator!!.compare(line, key)
+                var cmp: Int = if (line == null) 1 else comparator!!.compare(line, key)
 
                 // found our line
                 if (cmp == 0) {
@@ -79,19 +72,13 @@ class BinaryStartSearchWordnetFile<T>(file: File, contentType: ContentType<T>) :
     }
 
     /**
-     * Used to iterate over lines in a file. It is a look-ahead iterator. Does
-     * not support the [.remove] method; if that method is called, it
-     * will throw an [UnsupportedOperationException].
+     * Used to iterate over lines in a file.
+     * It is a look-ahead iterator.
      *
-     * Constructs a new line iterator over this buffer, starting at the
-     * specified key.
+     * Constructs a new line iterator over this buffer, starting at the specified key.
      *
-     * @param buffer the buffer over which the iterator should iterator; may
-     * not be null
-     * @param key    the key of the line to start at; may be null
-     * @author Mark A. Finlayson
-     * @version 2.4.0
-     * @since JWI 2.0.0
+     * @param buffer the buffer over which the iterator should iterator
+     * @param key the key of the line to start at; may be null
      */
     inner class BinarySearchLineIterator(buffer: ByteBuffer, key: String?) : LineIterator(buffer) {
 
@@ -113,16 +100,14 @@ class BinaryStartSearchWordnetFile<T>(file: File, contentType: ContentType<T>) :
                     var offset: Int = itrBuffer.position()
                     var line = getLine(itrBuffer, contentType.charset)
 
-                    // Fix for Bug009: If the line is null, we've reached
-                    // the end of the file, so just advance to the first line
                     if (line == null) {
+                        // if the line is null, we've reached the end of the file, so just advance to the first line
                         itrBuffer.position(itrBuffer.limit())
                         return
                     }
-                    var compare: Int = fComparator!!.compare(line, key)
-                    // if the key matches exactly, we know we have found
-                    // the start of this pattern in the file
+                    var compare: Int = comparator!!.compare(line, key)
                     if (compare == 0) {
+                        // if the key matches exactly, we know we have found the start of this pattern in the file
                         nextLine = line
                         return
                     } else if (compare > 0) {
@@ -134,17 +119,14 @@ class BinaryStartSearchWordnetFile<T>(file: File, contentType: ContentType<T>) :
                     }
                 }
 
-                // Getting here means that we didn't find an exact match
-                // to the key, so we take the last line that started
-                // with the pattern
+                // getting here means that we didn't find an exact match to the key, so we take the last line that started with the pattern
                 if (lastOffset > -1) {
                     itrBuffer.position(lastOffset)
                     nextLine = getLine(itrBuffer, contentType.charset)
                     return
                 }
 
-                // If we didn't have any lines that matched the pattern
-                // then just advance to the first non-comment
+                // if we didn't have any lines that matched the pattern then just advance to the first non-comment
                 itrBuffer.position(itrBuffer.limit())
             }
         }

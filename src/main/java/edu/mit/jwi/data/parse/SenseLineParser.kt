@@ -15,7 +15,8 @@ import edu.mit.jwi.item.SenseKey
 import java.util.*
 
 /**
- * Parser for Wordnet sense index files (e.g., `index.sense` or `sense.index`). It produces an `SenseEntry` object.
+ * Parser for Wordnet sense index files (e.g., `index.sense` or `sense.index`).
+ * It produces a SenseEntry object.
  *
  * @param keyParser the sense key parser this sense line parser should use
  */
