@@ -1,5 +1,6 @@
 package edu.mit.jwi.data.compare
 
+import edu.mit.jwi.item.asIndexWordLemma
 import kotlin.math.min
 
 /**
@@ -16,10 +17,9 @@ object SearchIndexLineComparator : BaseIndexLineComparator() {
      * @return compare code
      */
     override fun compareLemmas(lemma1: String, lemma2: String): Int {
-        // TODO
-        val lemma1 = lemma1.lowercase()
-        val lemma2 = lemma2.lowercase()
-        val s = min(lemma1.length.toInt(), lemma2.length.toInt())
-        return lemma1.substring(0, s).compareTo(lemma2.substring(0, s))
+        val lemma1 = lemma1.asIndexWordLemma()
+        val lemma2 = lemma2.asIndexWordLemma()
+        val cut = min(lemma1.length.toInt(), lemma2.length.toInt())
+        return lemma1.substring(0, cut).compareTo(lemma2.substring(0, cut))
     }
 }

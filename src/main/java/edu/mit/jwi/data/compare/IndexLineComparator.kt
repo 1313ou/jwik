@@ -1,7 +1,10 @@
 package edu.mit.jwi.data.compare
 
+import edu.mit.jwi.item.asIndexWordLemma
+
 /**
- * A comparator that captures the ordering of lines in Wordnet index files (e.g., `index.adv` or `adv.idx` files). These files are ordered alphabetically.
+ * A comparator that captures the ordering of lines in Wordnet index files (e.g., `index.adv` or `adv.idx` files).
+ * These files are ordered alphabetically.
  */
 open class BaseIndexLineComparator() : ILineComparator {
 
@@ -46,9 +49,8 @@ open class BaseIndexLineComparator() : ILineComparator {
      * @return compare code
      */
     protected open fun compareLemmas(lemma1: String, lemma2: String): Int {
-        // TODO
-        val lemma1 = lemma1.lowercase()
-        val lemma2 = lemma2.lowercase()
+        val lemma1 = lemma1.asIndexWordLemma()
+        val lemma2 = lemma2.asIndexWordLemma()
         return lemma1.compareTo(lemma2)
     }
 }

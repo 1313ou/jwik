@@ -17,7 +17,7 @@ class ExceptionEntryID(
     override val pOS: POS,
 ) : IHasPOS, IItemID {
 
-    val surfaceForm: String = surfaceForm.trim { it <= ' ' }.lowercase()
+    val surfaceForm: String = surfaceForm.asSurfaceForm()
 
     init {
         require(surfaceForm.isNotEmpty())

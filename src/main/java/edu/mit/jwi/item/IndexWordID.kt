@@ -4,13 +4,11 @@ import java.util.*
 import java.util.regex.Pattern
 
 /**
- * A unique identifier for an index word. An index word ID is sufficient to
- * retrieve a specific index word from the Wordnet database. It consists of both
- * a lemma (root form) and part of speech.
+ * A unique identifier for an index word. An index word ID is sufficient to retrieve a specific index word from the Wordnet database.
+ * It consists of both a lemma (root form) and part of speech.
  *
- * Constructs an index word id object with the specified lemma and part of
- * speech. Since all index entries are in lower case, with whitespace
- * converted to underscores, this constructor applies this conversion.
+ * Constructs an index word id object with the specified lemma and part of speech.
+ * Since all index entries are in lower case, with whitespace converted to underscores, this constructor applies this conversion.
  *
  * @param lemma the lemma for the id
  * @param pOS the part of speech for the id
@@ -25,7 +23,7 @@ class IndexWordID(
      * The lemma (root form) of the index word that this ID indicates.
      * The lemma will never be empty, or all whitespace.
      */
-    val lemma: String = lemma.asIndexWordLemma()
+    val lemma: String = lemma.asEscapedIndexWordLemma()
 
     init {
         require(lemma.isNotEmpty())

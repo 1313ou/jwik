@@ -78,9 +78,9 @@ class SynsetID(
             val offset = value.substring(4, 12).toInt()
 
             // get pos
-            val tag = value[13].lowercaseChar()
-            val pos = POS.getPartOfSpeech(tag)
-            requireNotNull(pos) { "unknown part of speech tag: $tag" }
+            val posTag = value[13].lowercaseChar()
+            val pos = POS.getPartOfSpeech(posTag)
+            requireNotNull(pos) { "unknown part of speech tag: $posTag" }
             return SynsetID(offset, pos)
         }
     }
