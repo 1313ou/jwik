@@ -55,6 +55,20 @@ constructor(
      */
     @JvmOverloads
     constructor(
+        file: String,
+        config: Config? = null,
+    ) : this(createInputStreamFactory(File(file)), config)
+
+    /**
+     * Loads data from the specified File using the specified load policy.
+     *
+     * Constructs a new wrapper RAM dictionary that will load the contents the specified local Wordnet data, with the specified load policy.
+     *
+     * @param file a file pointing to a local copy of wordnet
+     * @param config config bundle
+     */
+    @JvmOverloads
+    constructor(
         file: File,
         config: Config? = null,
     ) : this(createInputStreamFactory(file), config)
