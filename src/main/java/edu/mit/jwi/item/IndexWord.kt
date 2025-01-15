@@ -35,7 +35,7 @@ class IndexWord(
     /**
      * The number of senses of lemma that are ranked according to their frequency of occurrence in semantic concordance texts.
      * This will be a non-negative number.
-      */
+     */
     val tagSenseCount: Int = tagSenseCnt
 
     /**
@@ -63,11 +63,7 @@ class IndexWord(
      * @param pos         the part of speech of this index word
      * @param tagSenseCnt the tag sense count
      * @param words       the words for this index word
-     * @throws NullPointerException     if lemma, pos, or word array is null, or the
-     * word array contains null
-     * @throws IllegalArgumentException if the tag sense count is negative, or the word array is
-     * empty
-     * @since JWI 1.0
+     * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
     constructor(lemma: String, pos: POS, tagSenseCnt: Int, words: Array<IWordID>) : this(IndexWordID(lemma, pos), tagSenseCnt, null, words)
 
@@ -77,14 +73,9 @@ class IndexWord(
      * @param lemma       the lemma of this index word
      * @param pos         the part of speech of this index word
      * @param tagSenseCnt the tag sense count
-     * @param ptrs        an array of pointers that the synsets with lemma have; may be
-     * null
+     * @param ptrs        an array of pointers that the synsets with lemma have; may be null
      * @param words       the words for this index word
-     * @throws NullPointerException     if lemma, pos, or word array is null, or the
-     * word array or pointer array contains null
-     * @throws IllegalArgumentException if the tag sense count is negative, or the word array is
-     * empty
-     * @since JWI 2.3.0
+     * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
     constructor(lemma: String, pos: POS, tagSenseCnt: Int, ptrs: Array<Pointer>, words: Array<IWordID>) : this(IndexWordID(lemma, pos), tagSenseCnt, ptrs, words)
 
@@ -94,11 +85,7 @@ class IndexWord(
      * @param id          the index word id for this index word
      * @param tagSenseCnt the tag sense count
      * @param words       the words for this index word
-     * @throws NullPointerException     if lemma, pos, or word array is null, or the
-     * word array contains null
-     * @throws IllegalArgumentException if the tag sense count is negative, or the word array is
-     * empty
-     * @since JWI 1.0
+     * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
     constructor(id: IndexWordID, tagSenseCnt: Int, words: Array<IWordID>) : this(id, tagSenseCnt, null, words)
 
@@ -107,14 +94,9 @@ class IndexWord(
      *
      * @param id          the index word id for this index word
      * @param tagSenseCnt the tag sense count
-     * @param ptrs        an array of pointers for all the synsets of this lemma; may be
-     * null; must not contain null
+     * @param ptrs        an array of pointers for all the synsets of this lemma; may be null; must not contain null
      * @param words       the words for this index word
-     * @throws NullPointerException     if lemma, pos, or word array is null, or the
-     * word array or pointer array contains null
-     * @throws IllegalArgumentException if the tag sense count is negative, or the word array is
-     * empty
-     * @since JWI 2.3.0
+     * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
     init {
         require(tagSenseCnt >= 0)

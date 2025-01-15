@@ -141,14 +141,12 @@ open class Version(
 
         /**
          * The byte offset of the version indicator in the standard Wordnet file headers.
-         *
-         * @since JWI 2.1.0
          */
         const val versionOffset: Int = 803
 
         /**
-         * Checks the supplied version numbers. Throws an
-         * [IllegalArgumentException] if they do not define a legal version.,
+         * Checks the supplied version numbers.
+         * Throws an IllegalArgumentException if they do not define a legal version.,
          *
          * @param major     the major version number
          * @param minor     the minor version number
@@ -156,7 +154,6 @@ open class Version(
          * @param qualifier the qualifier to check
          * @return the null-masked qualifier
          * @throws IllegalArgumentException if the supplied arguments do not identify a legal version
-         * @since JWI 2.2.0
          */
 
         fun checkVersion(major: Int, minor: Int, bugfix: Int, qualifier: String?): String {
@@ -165,28 +162,24 @@ open class Version(
         }
 
         /**
-         * Checks the supplied version numbers. Throws an
-         * [IllegalArgumentException] if the version numbers are not valid
-         * (that is, any are below zero).
+         * Checks the supplied version numbers.
+         * Throws an IllegalArgumentException if the version numbers are not valid (that is, any are below zero).
          *
          * @param major  the major version number
          * @param minor  the minor version number
          * @param bugfix the bugfix version number
          * @throws IllegalArgumentException if any of the supplied numbers are negative
-         * @since JWI 2.1.0
          */
         fun checkVersionNumber(major: Int, minor: Int, bugfix: Int) {
             require(!isIllegalVersionNumber(major, minor, bugfix)) { "Illegal version number: " + makeVersionString(major, minor, bugfix, null) }
         }
 
         /**
-         * Checks the specified qualifier for legality. Throws an
-         * [IllegalArgumentException] if it is not a legal qualifier.
+         * Checks the specified qualifier for legality.
+         * Throws an IllegalArgumentException if it is not a legal qualifier.
          *
          * @param qualifier the qualifier to check
          * @return the null-masked qualifier
-         * @see .isIllegalQualifier
-         * @since JWI 2.1.0
          */
 
         fun checkQualifier(qualifier: String?): String {
@@ -204,9 +197,7 @@ open class Version(
          * @param minor     the minor version number
          * @param bugfix    the bugfix version number
          * @param qualifier the version qualifier
-         * @return true if the arguments identify a legal version;
-         * false otherwise.
-         * @since JWI 2.1.0
+         * @return true if the arguments identify a legal version; false otherwise.
          */
         fun isIllegalVersion(major: Int, minor: Int, bugfix: Int, qualifier: String): Boolean {
             if (isIllegalVersionNumber(major, minor, bugfix)) {
@@ -221,9 +212,7 @@ open class Version(
          * @param major  the major version number
          * @param minor  the minor version number
          * @param bugfix the bugfix version number
-         * @return true if all the numbers are non-negative;
-         * false otherwise
-         * @since JWI 2.1.0
+         * @return true if all the numbers are non-negative; false otherwise
          */
         fun isIllegalVersionNumber(major: Int, minor: Int, bugfix: Int): Boolean {
             if (major == -1 && minor == -1 && bugfix == -1) return false
@@ -235,16 +224,11 @@ open class Version(
         }
 
         /**
-         * Returns false if the specified qualifier is legal, namely, if
-         * the string is either the empty string, or contains only characters that
-         * are found in valid java identifiers.
+         * Returns false if the specified qualifier is legal, namely, if the string is either the empty string, or contains only characters that are found in valid java identifiers.
          *
          * @param qualifier the qualifier to check
-         * @return true if not a legal qualifier; false
-         * otherwise
-         * @throws NullPointerException if the specified string is null
+         * @return true if not a legal qualifier; false otherwise
          * @see Character.isJavaIdentifierPart
-         * @since JWI 2.2.0
          */
         fun isIllegalQualifier(qualifier: String): Boolean {
             var c: Char
@@ -481,16 +465,12 @@ open class Version(
         }
 
         /**
-         * Tries to transform the specified character sequence into a version
-         * object.
+         * Tries to transform the specified character sequence into a version object.
          *
          * @param verStr the sequence of characters to be transformed
          * @return the version
-         * @throws NullPointerException     if the character sequence is null
-         * @throws IllegalArgumentException if the character sequence does not correspond to a legal
-         * version
-         * @since JWI 2.1.0
-         */
+         * @throws IllegalArgumentException if the character sequence does not correspond to a legal version
+          */
         fun parseVersion(verStr: CharSequence): Version {
 
             val parts: Array<String?> = periodPattern.split(verStr)

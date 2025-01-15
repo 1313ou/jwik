@@ -122,8 +122,6 @@ class SenseKey(
      * @param originalKey the original key string
      * @param headLemma   the head lemma
      * @param headLexID   the head lexical id; ignored if head lemma is null
-     * @throws NullPointerException if the lemma, lexical file, or original key is null
-     * @since JWI 2.1.0
      */
     constructor(lemma: String, lexID: Int, pos: POS, lexFile: LexFile, headLemma: String?, headLexID: Int, originalKey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
         if (headLemma == null) {
@@ -135,16 +133,12 @@ class SenseKey(
     }
 
     /**
-     * This method is used to set the head for sense keys for adjective
-     * satellites, and it can only be called once, directly after the relevant
-     * word is created. If this method is called on a sense key that has had its
-     * head set already, or is not an adjective satellite, it will throw an
-     * exception.
+     * This method is used to set the head for sense keys for adjective satellites, and it can only be called once, directly after the relevant word is created.
+     * If this method is called on a sense key that has had its head set already, or is not an adjective satellite, it will throw an exception.
      *
      * @param headLemma the head lemma to be set
      * @param headLexID the head lexid to be set
      * @throws IllegalStateException if this method has already been called, if the headLemma is empty or all whitespace or if the headLexID is illegal.
-     * @since JWI 2.1.0
      */
     fun setHead(headLemma: String, headLexID: Int) {
         check(needsHeadSet())
@@ -280,8 +274,6 @@ class SenseKey(
          *
          * @param key the sense key to be encoded as a string
          * @return the string representation of the sense key
-         * @throws NullPointerException if the specified key is null
-         * @since JWI 2.1.0
          */
 
         fun toString(key: SenseKey): String {

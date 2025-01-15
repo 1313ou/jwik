@@ -161,9 +161,7 @@ open class LexFile(
          *
          * @param str the string to be checked
          * @return a trimmed form of the string
-         * @throws NullPointerException     if the specified string is null
          * @throws IllegalArgumentException if the specified string is empty or all whitespace
-         * @since JWI 2.2.0
          */
         protected fun checkString(str: String): String {
             var str = str
@@ -173,13 +171,10 @@ open class LexFile(
         }
 
         /**
-         * Throws an exception if the specified lexical file number is not a valid
-         * lexical file number
+         * Throws an exception if the specified lexical file number is not a valid lexical file number
          *
          * @param num the number to be checked
-         * @throws IllegalArgumentException if the specified lexical file number is not a legal lexical
-         * file number
-         * @since JWI 2.1.0
+         * @throws IllegalArgumentException if the specified lexical file number is not a legal lexical file number
          */
         @JvmStatic
         fun checkLexicalFileNumber(num: Int): Int {
@@ -188,15 +183,10 @@ open class LexFile(
         }
 
         /**
-         * Returns true if the number represents a valid lexical file
-         * number, namely, a number in the closed range [0, 99]; returns
-         * false otherwise.
+         * Returns true if the number represents a valid lexical file* number, namely, a number in the closed range [0, 99]; returns false otherwise.
          *
          * @param num the number to be checked
-         * @return true if the number represents a valid lexical file
-         * number, namely, a number in the closed range [0, 99]; returns
-         * false otherwise.
-         * @since JWI 2.1.0
+         * @return true if the number represents a valid lexical file number, namely, a number in the closed range [0, 99]; returns false otherwise.
          */
         fun isIllegalLexicalFileNumber(num: Int): Boolean {
             return num < 0 || 99 < num
@@ -205,14 +195,12 @@ open class LexFile(
         private val lexFileNumStrs = arrayOf<String>("00", "01", "02", "03", "04", "05", "06", "07", "08", "09")
 
         /**
-         * Returns a two-character string representation of a lexical file number,
-         * zero-filled if necessary. This string is suitable for inclusion in
-         * Wordnet-formatted files.
+         * Returns a two-character string representation of a lexical file number, zero-filled if necessary.
+         * This string is suitable for inclusion in Wordnet-formatted files.
          *
          * @param num the number to be represented
          * @return a two-character string representing the number
          * @throws IllegalArgumentException if the specified integer is not a legal lexical file number
-         * @since JWI 2.1.0
          */
         fun getLexicalFileNumberString(num: Int): String {
             checkLexicalFileNumber(num)
@@ -280,27 +268,20 @@ open class LexFile(
         }
 
         /**
-         * Emulates the `Enum#values()` function. Returns an unmodifiable
-         * collection of all the lexical file descriptions declared in this class,
-         * in the order they are declared.
+         * Emulates the `Enum#values()` function. Returns an unmodifiable collection of all the lexical file descriptions declared in this class, in the order they are declared.
          *
-         * @return returns an unmodifiable collection of the lexical file
-         * description declared in this class
-         * @since JWI 2.1.0
+         * @return returns an unmodifiable collection of the lexical file description declared in this class
          */
         fun values(): Collection<LexFile> {
             return lexFileMap.values
         }
 
         /**
-         * A convenience method that allows retrieval of one of the built-in lexical
-         * file descriptions given the number. If no such description exists, then
-         * the method returns null.
+         * A convenience method that allows retrieval of one of the built-in lexical file descriptions given the number.
+         * If no such description exists, then the method returns null.
          *
          * @param num the number for the lexical file object
-         * @return LexFile the lexical file corresponding to the specified tag, or
-         * null if none is found
-         * @since JWI 2.1.0
+         * @return LexFile the lexical file corresponding to the specified tag, or null if none is found
          */
         @JvmStatic
         fun getLexicalFile(num: Int): LexFile {

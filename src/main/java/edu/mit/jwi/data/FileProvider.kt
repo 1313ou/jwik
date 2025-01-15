@@ -37,28 +37,17 @@ import java.util.function.Function
 import kotlin.Throws
 
 /**
- *
- **
  * Manage access to data source objects.
- * Before the provider can be used, a client must call [.setSource] (or call the appropriate constructor) followed by [.open].
+ * Before the provider can be used, a client must call setSource (or call the appropriate constructor) followed by open.
  * Otherwise, the provider will throw an exception.
  *
- * Implementation of a data provider for Wordnet that uses files in the file
- * system to back instances of its data sources. This implementation takes a
- * `URL` to a file system directory as its path argument, and uses
- * the resource hints from the data types and parts of speech for its content
- * types to examine the filenames in the that directory to determine which files
- * contain which data.
+ * Implementation of a data provider for Wordnet that uses files in the file system to back instances of its data sources.
+ * This implementation takes a URL to a file system directory as its path argument,
+ * and uses the resource hints from the data types and parts of speech for its content types to examine the filenames in the that directory to determine which files contain which data.
  *
- * This implementation supports loading the wordnet files into memory,
- * but this is actually not that beneficial for speed. This is because the
- * implementation loads the file data into memory uninterpreted, and on modern
- * machines, the time to interpret a line of data (i.e., parse it into a Java
- * object) is much larger than the time it takes to load the line from disk.
- * Those wishing to achieve speed increases from loading Wordnet into memory
- * should rely on the implementation in RAMDictionary, or something
- * similar, which pre-processes the Wordnet data into objects before caching
- * them.
+ * This implementation supports loading the wordnet files into memory, but this is actually not that beneficial for speed.
+ * This is because the implementation loads the file data into memory uninterpreted, and on modern machines, the time to interpret a line of data (i.e., parse it into a Java object) is much larger than the time it takes to load the line from disk.
+ * Those wishing to achieve speed increases from loading Wordnet into memory should rely on the implementation in RAMDictionary, or something similar, which pre-processes the Wordnet data into objects before caching them.
  */
 class FileProvider @JvmOverloads constructor(
     url: URL,
@@ -96,7 +85,7 @@ class FileProvider @JvmOverloads constructor(
 
     /**
      * The location of the data.
-     * The source URL from which the provider accesses the data from which it instantiates data sources
+     * The source URL from which the provider accesses the data from which it instantiates data sources.
      * The data at the specified location may be in an implementation-specific format.
      * If the provider is currently open, this method throws an `IllegalStateException`.
      */
@@ -112,9 +101,7 @@ class FileProvider @JvmOverloads constructor(
      *
      * @param <T>         the content type of the data source
      * @param contentType the content type of the data source to be retrieved
-     * @return the data source for the specified content type, or
-     * null if this provider has no such data source
-     * @throws NullPointerException  if the type is null
+     * @return the data source for the specified content type, or null if this provider has no such data source
      * @throws ObjectClosedException if the provider is not open when this call is made
      */
     fun <T> getSource(contentType: ContentType<T>): ILoadableDataSource<T>? {
@@ -127,6 +114,7 @@ class FileProvider @JvmOverloads constructor(
         if (actualType == null) {
             actualType = contentType
         }
+        @Suppress("UNCHECKED_CAST")
         return fileMap!![actualType] as ILoadableDataSource<T>
     }
 
@@ -183,78 +171,31 @@ class FileProvider @JvmOverloads constructor(
         }
 
     /**
-     * Constructs the file provider pointing to the resource indicated by the
-     * path.  This file provider has an initial [ILoadPolicy.NO_LOAD] load policy.
+     * Constructs the file provider pointing to the resource indicated by the path.
+     * This file provider has an initial NO_LOAD load policy.
      *
-     * @param file A file pointing to the wordnet directory, may not be null
-     * @throws NullPointerException if the specified file is null
-     * @since JWI 1.0
+     * @param file A file pointing to the wordnet directory
      */
     constructor(file: File) : this(toURL(file))
 
     /**
-     * Constructs the file provider pointing to the resource indicated by the
-     * path, with the specified load policy.
+     * Constructs the file provider pointing to the resource indicated by the path, with the specified load policy.
      *
-     * @param file       A file pointing to the wordnet directory, may not be
-     * null
-     * @param loadPolicy the load policy for this provider; this provider supports the
-     * three values defined in `ILoadPolicy`.
-     * @throws NullPointerException if the specified file is null
-     * @since JWI 2.2.0
+     * @param file A file pointing to the wordnet directory
+     * @param loadPolicy the load policy for this provider; this provider supports the three values defined in ILoadPolicy.
      */
     constructor(file: File, loadPolicy: Int) : this(toURL(file), loadPolicy, values())
 
     /**
-     * Constructs the file provider pointing to the resource indicated by the
-     * path, with the specified load policy, looking for the specified content
-     * type.s
+     * Constructs the file provider pointing to the resource indicated by the path, with the specified load policy, looking for the specified content type.
      *
-     * @param file       A file pointing to the wordnet directory, may not be
-     * null
-     * @param loadPolicy the load policy for this provider; this provider supports the
-     * three values defined in `ILoadPolicy`.
-     * @param types      the content types this provider will look for when it loads
-     * its data; may not be null or empty
-     * @throws NullPointerException     if the file or content type collection is null
+     * @param file A file pointing to the wordnet directory
+     * @param loadPolicy the load policy for this provider; this provider supports the three values defined in ILoadPolicy.
+     * @param types the content types this provider will look for when it loads its data; may not be empty
      * @throws IllegalArgumentException if the set of types is empty
-     * @since JWI 2.2.0
      */
     constructor(file: File, loadPolicy: Int, types: MutableCollection<out ContentType<*>>) : this(toURL(file), loadPolicy, types)
 
-    /**
-     * Constructs the file provider pointing to the resource indicated by the
-     * path, with the specified load policy, looking for the specified content type
-     *
-     * @param url          A file URL in UTF-8 decodable format, may not be null
-     * @param loadPolicy   the load policy for this provider; this provider supports the
-     * three values defined in `ILoadPolicy`.
-     * @param contentTypes the content types this provider will look for when it loads
-     * its data; may not be null or empty
-     * @throws NullPointerException     if the url or content type collection is null
-     * @throws IllegalArgumentException if the set of types is empty
-     * @since JWI 2.2.0
-     */
-    /**
-     * Constructs the file provider pointing to the resource indicated by the
-     * path, with the specified load policy.
-     *
-     * @param url        A file URL in UTF-8 decodable format, may not be
-     * null
-     * @param loadPolicy the load policy for this provider; this provider supports the
-     * three values defined in `ILoadPolicy`.
-     * @throws NullPointerException if the specified URL is null
-     * @since JWI 2.2.0
-     */
-    /**
-     * Constructs the file provider pointing to the resource indicated by the
-     * path.  This file provider has an initial [ILoadPolicy.NO_LOAD] load policy.
-     *
-     * @param url A file URL in UTF-8 decodable format, may not be
-     * null
-     * @throws NullPointerException if the specified URL is null
-     * @since JWI 1.0
-     */
     init {
         require(!contentTypes.isEmpty())
         this.defaultContentTypes = contentTypes
@@ -279,12 +220,9 @@ class FileProvider @JvmOverloads constructor(
      * Sets the comparator associated with this content type in this dictionary.
      * The comparator may be null in which case it is reset.
      *
-     * @param contentTypeKey the `non-null` content type key for which
-     * the comparator is to be set.
-     * @param comparator     the possibly null comparator to use when
-     * decoding files.
+     * @param contentTypeKey the content type key for which the comparator is to be set.
+     * @param comparator the possibly null comparator to use when decoding files.
      * @throws IllegalStateException if the provider is currently open
-     * @since JWI 2.4.1
      */
     fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
         if (verbose) {
@@ -292,7 +230,7 @@ class FileProvider @JvmOverloads constructor(
         }
         try {
             lifecycleLock.lock()
-            check(!isOpen) { "provider currently open" }
+            check(!isOpen) { "Provider currently open" }
             val value: ContentType<*> = prototypeMap[contentTypeKey]!!
             if (comparator == null) {
                 // if we get a null comparator, reset to the prototype but preserve charset
@@ -308,15 +246,11 @@ class FileProvider @JvmOverloads constructor(
     }
 
     /**
-     * Sets pattern attached to content type key, that source files have to
-     * match to be selected.
-     * This gives selection a first opportunity before falling back on standard data
-     * type selection.
+     * Sets pattern attached to content type key, that source files have to match to be selected.
+     * This gives selection a first opportunity before falling back on standard data type selection.
      *
-     * @param contentTypeKey the `non-null` content type key for which
-     * the matcher is to be set.
-     * @param pattern        regexp pattern
-     * @since JWI 2.4.1
+     * @param contentTypeKey the content type key for which the matcher is to be set.
+     * @param pattern regexp pattern
      */
     fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
         if (verbose) {
@@ -340,13 +274,14 @@ class FileProvider @JvmOverloads constructor(
      * type and pos object. Either parameter may be null.
      *
      * @param <T> type
-     * @param dt  the data type, possibly null, of the desired content type
+     * @param dt the data type, possibly null, of the desired content type
      * @param pos the part of speech, possibly null, of the desired content type
      * @return the first content type that matches the specified data type and part of speech.
      */
     fun <T> resolveContentType(dt: DataType<T>, pos: POS?): ContentType<T>? {
         for (e in prototypeMap.entries) {
             if (e.key.getDataType<Any?>() == dt && e.key.pOS == pos) {
+                @Suppress("UNCHECKED_CAST")
                 return e.value as ContentType<*>? as ContentType<T>?
             }
         }
@@ -391,7 +326,8 @@ class FileProvider @JvmOverloads constructor(
             if (hiddenMap.javaClass != map.javaClass) {
                 hiddenMap = Collections.unmodifiableMap<ContentType<*>, ILoadableDataSource<*>>(hiddenMap)
             }
-            this.fileMap = hiddenMap as Map<ContentType<*>, ILoadableDataSource<*>>?
+            @Suppress("UNCHECKED_CAST")
+            fileMap = hiddenMap as Map<ContentType<*>, ILoadableDataSource<*>>?
 
             // do load
             try {
@@ -410,11 +346,6 @@ class FileProvider @JvmOverloads constructor(
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.ILoadable#load()
-     */
     override fun load() {
         try {
             load(false)
@@ -423,11 +354,6 @@ class FileProvider @JvmOverloads constructor(
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see edu.edu.mit.jwi.data.ILoadable#load(boolean)
-     */
     @Throws(InterruptedException::class)
     override fun load(block: Boolean) {
         try {
@@ -466,20 +392,15 @@ class FileProvider @JvmOverloads constructor(
         }
 
     /**
-     * Creates the map that contains the content types mapped to the data
-     * sources. The method should return a non-null result, but it may be empty
-     * if no data sources can be created. Subclasses may override this method.
+     * Creates the map that contains the content types mapped to the data sources.
+     * The method should return a non-null result, but it may be empty if no data sources can be created.
+     * Subclasses may override this method.
      *
-     * @param files  the files from which the data sources should be created, may
-     * not be null
+     * @param files  the files from which the data sources should be created
      * @param policy the load policy of the provider
-     * @return a map, possibly empty, but not null, of content
-     * types mapped to data sources
-     * @throws NullPointerException if the file list is null
-     * @throws IOException          if there is a problem creating the data source
-     * @since JWI 2.2.0
+     * @return a map, possibly empty, of content types mapped to data sources
+     * @throws IOException if there is a problem creating the data source
      */
-
     @Throws(IOException::class)
     private fun createSourceMap(files: MutableList<File>, policy: Int): MutableMap<ContentType<*>?, ILoadableDataSource<*>> {
         val result: MutableMap<ContentType<*>?, ILoadableDataSource<*>> = HashMap<ContentType<*>?, ILoadableDataSource<*>>()
@@ -504,7 +425,12 @@ class FileProvider @JvmOverloads constructor(
             }
 
             // do not remove file from possible choices as both content types may use the same file
-            if ((contentType.key != ContentTypeKey.SENSE) && (contentType.key != ContentTypeKey.SENSES) && (contentType.key != ContentTypeKey.INDEX_ADJECTIVE) && (contentType.key != ContentTypeKey.INDEX_ADVERB) && (contentType.key != ContentTypeKey.INDEX_NOUN) && (contentType.key != ContentTypeKey.INDEX_VERB)
+            if ((contentType.key != ContentTypeKey.SENSE) &&
+                (contentType.key != ContentTypeKey.SENSES) &&
+                (contentType.key != ContentTypeKey.INDEX_ADJECTIVE) &&
+                (contentType.key != ContentTypeKey.INDEX_ADVERB) &&
+                (contentType.key != ContentTypeKey.INDEX_NOUN) &&
+                (contentType.key != ContentTypeKey.INDEX_VERB)
             ) {
                 files.remove(file)
             }
@@ -530,15 +456,12 @@ class FileProvider @JvmOverloads constructor(
     /**
      * Creates the actual data source implementations.
      *
-     * @param <T>         the content type of the data source
-     * @param file        the file from which the data source should be created, may not
-     * be null
+     * @param <T> the content type of the data source
+     * @param file the file from which the data source should be created
      * @param contentType the content type of the data source
-     * @param policy      the load policy to follow when creating the data source
+     * @param policy the load policy to follow when creating the data source
      * @return the created data source
-     * @throws NullPointerException if any argument is null
-     * @throws IOException          if there is an IO problem when creating the data source
-     * @since JWI 2.2.0
+     * @throws IOException if there is an IO problem when creating the data source
      */
     @Throws(IOException::class)
     private fun <T> createDataSource(file: File, contentType: ContentType<T>, policy: Int): ILoadableDataSource<T> {
@@ -555,8 +478,7 @@ class FileProvider @JvmOverloads constructor(
             }
 
             // check to see if direct access works with the file
-            // often people will extract the files incorrectly on Windows machines
-            // and the binary files will be corrupted with extra CRs
+            // often people will extract the files incorrectly on Windows machines and the binary files will be corrupted with extra CRs
 
             // get first line
             val itr: Iterator<String?> = src.iterator()
@@ -593,37 +515,25 @@ class FileProvider @JvmOverloads constructor(
     }
 
     /**
-     * Creates a direct access data source for the specified type, using the
-     * specified file.
+     * Creates a direct access data source for the specified type, using the specified file.
      *
-     * @param <T>         the parameter of the content type
-     * @param file        the file on which the data source is based; may not be
-     * null
-     * @param contentType the data type for the data source; may not be
-     * null
+     * @param <T> the parameter of the content type
+     * @param file the file on which the data source is based
+     * @param contentType the data type for the data source
      * @return the data source
-     * @throws NullPointerException if either argument is null
-     * @since JWI 2.2.0
-    </T> */
-
+     */
     private fun <T> createDirectAccess(file: File, contentType: ContentType<T>): ILoadableDataSource<T> {
         return DirectAccessWordnetFile<T>(file, contentType)
     }
 
     /**
-     * Creates a binary search data source for the specified type, using the
-     * specified file.
+     * Creates a binary search data source for the specified type, using the specified file.
      *
-     * @param <T>         the parameter of the content type
-     * @param file        the file on which the data source is based; may not be
-     * null
-     * @param contentType the data type for the data source; may not be
-     * null
+     * @param <T> the parameter of the content type
+     * @param file the file on which the data source is based
+     * @param contentType the data type for the data source
      * @return the data source
-     * @throws NullPointerException if either argument is null
-     * @since JWI 2.2.0
-    </T> */
-
+     */
     private fun <T> createBinarySearch(file: File, contentType: ContentType<T>): ILoadableDataSource<T> {
         return if ("Word" == contentType.dataType.toString()) BinaryStartSearchWordnetFile<T>(file, contentType) else BinarySearchWordnetFile<T>(file, contentType)
     }
@@ -660,7 +570,6 @@ class FileProvider @JvmOverloads constructor(
      * Convenience method that throws an exception if the provider is closed.
      *
      * @throws ObjectClosedException if the provider is closed
-     * @since JWI 1.1
      */
     private fun checkOpen() {
         if (!isOpen) {
@@ -670,10 +579,6 @@ class FileProvider @JvmOverloads constructor(
 
     /**
      * A thread class which tries to load each data source in this provider.
-     *
-     * @author Mark A. Finlayson
-     * @version 2.4.0
-     * @since JWI 2.2.0
      */
     private inner class JWIBackgroundLoader : Thread() {
 
@@ -681,10 +586,7 @@ class FileProvider @JvmOverloads constructor(
         private var cancel = false
 
         /**
-         * Constructs a new background loader that operates
-         * on the internal data structures of this provider.
-         *
-         * @since JWI 2.2.0
+         * Constructs a new background loader that operates on the internal data structures of this provider.
          */
         init {
             setName(JWIBackgroundLoader::class.java.getSimpleName())
@@ -762,9 +664,7 @@ class FileProvider @JvmOverloads constructor(
          *
          * @param url url
          * @return a file pointing to the same place as the url
-         * @throws NullPointerException     if the url is null
          * @throws IllegalArgumentException if the url does not use the 'file' protocol
-         * @since JWI 1.0
          */
         fun toFile(url: URL): File {
             require(url.protocol == "file") { "URL source must use 'file' protocol" }
@@ -780,8 +680,6 @@ class FileProvider @JvmOverloads constructor(
          *
          * @param file the file to be transformed
          * @return a URL representing the file
-         * @throws NullPointerException if the specified file is null
-         * @since JWI 2.2.0
          */
         fun toURL(file: File): URL {
             val uri = URI("file", "//", file.toURI().toURL().path, null)
@@ -793,7 +691,7 @@ class FileProvider @JvmOverloads constructor(
          *
          * @param url the url object to check
          * @return whether url object represents a local directory which exists
-          */
+         */
         fun isLocalDirectory(url: URL): Boolean {
             if (url.protocol != "file") {
                 return false

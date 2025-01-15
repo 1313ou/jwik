@@ -10,7 +10,6 @@
 package edu.mit.jwi.morph
 
 import edu.mit.jwi.item.POS
-import java.util.*
 import java.util.Collections.unmodifiableList
 import java.util.Collections.unmodifiableMap
 import java.util.regex.Pattern
@@ -115,7 +114,6 @@ open class SimpleStemmer : IStemmer {
      *
      * @param word the string to be normalized
      * @return a normalized string
-     * @throws NullPointerException     if the specified string is null
      * @throws IllegalArgumentException if the specified string is empty or all whitespace
      * @since JWI 2.1.1
      */
@@ -142,15 +140,11 @@ open class SimpleStemmer : IStemmer {
      * Strips suffixes from the specified word according to the noun rules.
      *
      * @param noun the word to be modified
-     * @return a list of modified forms that were constructed, or the empty list
-     * if none
-     * @throws NullPointerException if the specified word is null
-     * @since JWI 1.0
+     * @return a list of modified forms that were constructed, or the empty list if none
      */
-
     protected fun stripNounSuffix(noun: String): List<String> {
         if (noun.length <= 2) {
-            return listOf<String>()
+            return emptyList()
         }
 
         // strip off "ful"
@@ -180,10 +174,7 @@ open class SimpleStemmer : IStemmer {
      * Handles stemming noun collocations.
      *
      * @param composite the word to be modified
-     * @return a list of modified forms that were constructed, or the empty list
-     * if none
-     * @throws NullPointerException if the specified word is null
-     * @since JWI 1.1.1
+     * @return a list of modified forms that were constructed, or the empty list if none
      */
 
     protected fun getNounCollocationRoots(composite: String): List<String> {
@@ -257,10 +248,7 @@ open class SimpleStemmer : IStemmer {
      * Strips suffixes from the specified word according to the verb rules.
      *
      * @param verb the word to be modified
-     * @return a list of modified forms that were constructed, or the empty list
-     * if none
-     * @throws NullPointerException if the specified word is null
-     * @since JWI 1.0
+     * @return a list of modified forms that were constructed, or the empty list if none
      */
 
     protected fun stripVerbSuffix(verb: String): List<String> {
@@ -287,10 +275,7 @@ open class SimpleStemmer : IStemmer {
      * Handles stemming verb collocations.
      *
      * @param composite the word to be modified
-     * @return a list of modified forms that were constructed, or an empty list
-     * if none
-     * @throws NullPointerException if the specified word is null
-     * @since JWI 1.1.1
+     * @return a list of modified forms that were constructed, or an empty list if none
      */
     protected fun getVerbCollocationRoots(composite: String): List<String> {
         // split into parts
@@ -339,10 +324,7 @@ open class SimpleStemmer : IStemmer {
      * Strips suffixes from the specified word according to the adjective rules.
      *
      * @param adj the word to be modified
-     * @return a list of modified forms that were constructed, or an empty list
-     * if none
-     * @throws NullPointerException if the specified word is null
-     * @since JWI 1.0
+     * @return a list of modified forms that were constructed, or an empty list if none
      */
     protected fun stripAdjectiveSuffix(adj: String): List<String> {
         // we will return this to the caller

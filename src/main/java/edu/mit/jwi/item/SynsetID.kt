@@ -12,16 +12,12 @@ package edu.mit.jwi.item
 import java.util.*
 
 /**
- * A unique identifier for a synset,
- * sufficient to retrieve it from the Wordnet database. It consists of a
- * part of speech and an offset.
+ * A unique identifier for a synset, sufficient to retrieve it from the Wordnet database.
+ * It consists of a part of speech and an offset.
  *
  * @param offset the offset
  * @param pOS the part of speech; may not be null
  * @throws IllegalArgumentException if the specified offset is not a legal offset
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
  */
 class SynsetID(
     /**
@@ -68,27 +64,20 @@ class SynsetID(
 
         /**
          * String prefix for the [.toString] method.
-         *
-         * @since JWI 2.0.0
          */
         const val SYNSETID_PREFIX: String = "SID-"
 
         /**
-         * Convenience method for transforming the result of the [.toString]
-         * method back into an `ISynsetID`. Synset IDs are always 14
-         * characters long and have the following format: SID-########-C, where
+         * Convenience method for transforming the result of the toString method back into an ISynsetID.
+         * Synset IDs are always 14 characters long and have the following format:
+         * SID-########-C, where
          * ######## is the zero-filled eight decimal digit offset of the synset, and
          * C is the upper-case character code indicating the part of speech.
          *
-         * @param value the string representation of the id; may include leading or
-         * trailing whitespace
-         * @return a synset id object corresponding to the specified string
-         * representation
-         * @throws NullPointerException     if the specified string is null
+         * @param value the string representation of the id; may include leading or trailing whitespace
+         * @return a synset id object corresponding to the specified string representation
          * @throws IllegalArgumentException if the specified string is not a properly formatted synset id
-         * @since JWI 1.0
          */
-
         fun parseSynsetID(value: String): SynsetID {
             var value = value.trim { it <= ' ' }
             require(value.length == 14)

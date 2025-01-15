@@ -27,14 +27,6 @@ import java.util.*
  * @param ignore the set of suffixes that, when present, indicate this rule
  * should not be applied. May be null or empty, but not
  * contain nulls or empties.
- * @throws NullPointerException if the suffix, ending, or pos are null, or the ignore set
- * contains null
- * @throws NullPointerException if the suffix is empty or all whitespace, or the ignore
- * set contains a string which is empty or all whitespace
-
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 2.3.1
  */
 class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: String) : IStemmingRule {
 

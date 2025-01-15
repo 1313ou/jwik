@@ -35,7 +35,6 @@ interface IStemmer {
      * find stems for all parts of speech
      * @return the list of stems found for the surface form and part of speech
      * combination
-     * @throws NullPointerException     if the specified surface form is null
      * @throws IllegalArgumentException if the specified surface form is empty or all whitespace
      * @since JWI 2.1.2
      */

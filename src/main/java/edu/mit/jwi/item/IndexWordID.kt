@@ -72,21 +72,15 @@ class IndexWordID(
 
         /**
          * Whitespace pattern for use in replacing whitespace with underscores
-         *
-         * @since JWI 2.1.2
          */
         private val whitespace: Pattern = Pattern.compile("\\s+")
 
         /**
-         * Convenience method for transforming the result of the [.toString]
-         * method into an `IndexWordID`
+         * Convenience method for transforming the result of the toString method into an `IndexWordID`
          *
          * @param value the string to be parsed
          * @return the index word id
-         * @throws NullPointerException     if the specified string is null
-         * @throws IllegalArgumentException if the specified string does not conform to an index word id
-         * string
-         * @since JWI 1.0
+         * @throws IllegalArgumentException if the specified string does not conform to an index word id string
          */
         fun parseIndexWordID(value: String): IndexWordID {
             require(value.startsWith("XID-"))

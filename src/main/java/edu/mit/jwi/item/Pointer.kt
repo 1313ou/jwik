@@ -25,7 +25,7 @@ import java.util.*
  */
 class Pointer(
     symbol: String,
-    name: String
+    name: String,
 ) : Serializable {
 
     val symbol: String = checkString(symbol)
@@ -98,14 +98,11 @@ class Pointer(
         val COLLOCATION: Pointer = Pointer("`", "Collocation")
 
         /**
-         * Throws an exception if the specified string is null, empty,
-         * or all whitespace. Returns a trimmed form of the string.
+         * Throws an exception if the specified string empty, or all whitespace. Returns a trimmed form of the string.
          *
          * @param str the string to be checked
          * @return a trimmed form of the string
-         * @throws NullPointerException     if the specified string is null
          * @throws IllegalArgumentException if the specified string is empty or all whitespace
-         * @since JWI 2.2.0
          */
         private fun checkString(str: String): String {
             var str = str.trim { it <= ' ' }

@@ -19,11 +19,7 @@ import java.util.*
  * @param surfaceForm the raw surface form for the entry
  * @property surfaceForm the surface form for the entry
  * @property pOS the part of speech for the entry
- * @throws NullPointerException     if either argument is null
  * @throws IllegalArgumentException if the surface form is empty or all whitespace
- * @author Mark A. Finlayson
- * @version 2.4.0
- * @since JWI 1.0
  */
 class ExceptionEntryID(
     surfaceForm: String,
@@ -64,16 +60,12 @@ class ExceptionEntryID(
     companion object {
 
         /**
-         * Convenience method for transforming the result of the [.toString]
-         * method back into an `IExceptionEntryID`.
+         * Convenience method for transforming the result of the toString method back into an IExceptionEntryID.
          *
          * @param value the string to parse
          * @return the derived exception entry id
-         * @throws NullPointerException     if the specified string is null
-         * @throws IllegalArgumentException if the specified string does not conform to an exception
-         * entry id
-         * @since JWI 2.2.0
-         */
+         * @throws IllegalArgumentException if the specified string does not conform to an exception entry id
+          */
         fun parseExceptionEntryID(value: String): ExceptionEntryID {
             require(value.startsWith("EID-"))
             require(value[value.length - 2] == '-')

@@ -164,8 +164,6 @@ open class CachingDictionary(
      * Caches the specified synset and its words.
      *
      * @param synset the synset to be cached; may not be null
-     * @throws NullPointerException if the specified synset is null
-     * @since JWI 2.2.0
      */
     protected fun cacheSynset(synset: Synset) {
         cache.cacheItem(synset)
