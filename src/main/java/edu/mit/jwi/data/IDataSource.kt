@@ -5,7 +5,7 @@ import edu.mit.jwi.item.IHasVersion
 /**
  * An object that mediate between an DataSourceDictionary and the data that is contained in the dictionary data resources.
  * Data resources are assigned a name (e.g., *verb.data*, for the data resource pertaining to verbs) and a content type.
- * Data resources are assumed to be indexed by keys that can be passed into the [.getLine] method to find a particular piece of data in the resource.
+ * Data resources are assumed to be indexed by keys that can be passed into the getLine method to find a particular piece of data in the resource.
  * The `String` return can be parsed by the parser associated with the content type to produce a data object (e.g., an `Synset` or `IndexWord` object).
  *
  * @param <T> the type of object represented in this data resource
@@ -28,7 +28,7 @@ interface IDataSource<T> : IHasVersion, Iterable<String>, IHasLifecycle {
 
     /**
      * Returns an iterator that will iterator over lines in the data resource, starting at the line specified by the given key.
-     * If the key is null, this is the same as calling the plain * [.iterator] method.
+     * If the key is null, this is the same as calling the plain * iterator method.
      * If no line starts with the pattern, the iterator's hasNext will return false.
      *
      * @param key the key at which the iterator should begin

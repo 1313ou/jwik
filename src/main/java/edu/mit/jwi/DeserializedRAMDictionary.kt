@@ -131,7 +131,7 @@ constructor(
     }
 
     /**
-     * Default implementation of the [IInputStreamFactory] interface which creates an input stream from a specified File object.
+     * Default implementation of the IInputStreamFactory interface which creates an input stream from a specified File object.
      *
      * Creates a FileInputStreamFactory that uses the specified file.
      *
@@ -146,7 +146,7 @@ constructor(
     }
 
     /**
-     * Default implementation of the [IInputStreamFactory] interface which creates an input stream from a specified URL.
+     * Default implementation of the IInputStreamFactory interface which creates an input stream from a specified URL.
      *
      * Creates a URLInputStreamFactory that uses the specified url.
      *

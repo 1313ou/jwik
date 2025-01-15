@@ -51,7 +51,7 @@ object IndexLineParser : ILineParser<IndexWord> {
     }
 
     /**
-     * Retrieves the pointer objects for the [.parseLine] method.
+     * Retrieves the pointer objects for the parseLine method.
      * This is implemented in its own method for ease of subclassing.
      *
      * @param symbol the symbol of the pointer to return

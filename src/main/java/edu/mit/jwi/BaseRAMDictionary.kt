@@ -14,7 +14,7 @@ import kotlin.Throws
 
 /**
  * Dictionary that can be completely loaded into memory.
- * **Note:** If you receive an [OutOfMemoryError] while using this object, try increasing your heap size, by using the `-Xmx` switch.
+ * **Note:** If you receive an OutOfMemoryError while using this object, try increasing your heap size, by using the `-Xmx` switch.
  */
 abstract class BaseRAMDictionary protected constructor(
 ) : IDictionary, ILoadable {

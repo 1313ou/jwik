@@ -138,8 +138,8 @@ class SenseKey(
 
     /**
      * Whether the head lemma and lexical id need to be  set
-     * This method will always return false if the [.isAdjectiveSatellite] returns false.
-     * If that method returns true, this method will only return true if [.setHead] has not yet been called.
+     * This method will always return false if the isAdjectiveSatellite returns false.
+     * If that method returns true, this method will only return true if setHead has not yet been called.
      *
      */
     fun needsHeadSet(): Boolean {
@@ -207,7 +207,7 @@ class SenseKey(
     /**
      * Throws an exception if the head is not yet set.
      *
-     * @throws IllegalArgumentException if the [.needsHeadSet] method returns true.
+     * @throws IllegalArgumentException if the needsHeadSet method returns true.
      */
     private fun checkHeadSet() {
         check(!needsHeadSet()) { "Head word and id not yet set" }

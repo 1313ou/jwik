@@ -47,6 +47,7 @@ class Synset private constructor(
      * Semantic relations
      */
     val related: Map<Pointer, List<SynsetID>>,
+
 ) : IHasPOS, IItem<SynsetID> {
 
     /**
@@ -147,13 +148,13 @@ class Synset private constructor(
     }
 
     override fun toString(): String {
-        return "SYNSET{${iD} : Words[${words.joinToString(separator = ", ")}]}"
+        return "S-{${iD} [${words.joinToString(separator = ", ")}]}"
     }
 
     /**
      * List of the ids of all synsets that are related to this synset by the specified pointer type.
      * Note that this only returns a non-empty result for semantic pointers (i.e., non-lexical pointers).
-     * To obtain lexical pointers, call [Word.getRelatedFor] on the appropriate object.
+     * To obtain lexical pointers, call getRelatedFor on the appropriate object.
      * If there are no such synsets, this method returns the empty list.
      *
      * @param ptr the pointer for which related synsets are to be retrieved.
@@ -249,8 +250,7 @@ class Synset private constructor(
          *
          * @param offset the offset to be checked
          * @return the checked offset
-         * @throws IllegalArgumentException if the specified offset is not in the valid range of
-         * [0,99999999]
+         * @throws IllegalArgumentException if the specified offset is not in the valid range of [0,99999999]
          */
         @JvmStatic
         fun checkOffset(offset: Int): Int {

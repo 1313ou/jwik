@@ -157,7 +157,7 @@ object DataLineParser : ILineParser<Synset> {
     }
 
     /**
-     * Retrieves the verb frames for the [.parseLine] method.
+     * Retrieves the verb frames for the parseLine method.
      * This is implemented in its own method for ease of subclassing.
      * @param frameNum the number of the frame to return
      * @return the verb frame corresponding to the specified frame number, or null if there is none
@@ -167,7 +167,7 @@ object DataLineParser : ILineParser<Synset> {
     }
 
     /**
-     * Retrieves the lexical file objects for the [.parseLine] method.
+     * Retrieves the lexical file objects for the parseLine method.
      * If the lexical file number does correspond to a known lexical file, the method returns a singleton placeholder 'unknown' lexical file object.
      * This is implemented in its own method for ease of subclassing.
      * @param lexFileNum the number of the lexical file to return
@@ -178,7 +178,7 @@ object DataLineParser : ILineParser<Synset> {
     }
 
     /**
-     * Retrieves the pointer objects for the [.parseLine] method.
+     * Retrieves the pointer objects for the parseLine method.
      * This is implemented in its own method for ease of subclassing.
      *
      * @param symbol the symbol of the pointer to return

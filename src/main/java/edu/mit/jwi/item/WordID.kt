@@ -24,7 +24,7 @@ abstract class BaseWordID(override val synsetID: SynsetID) : IWordID {
         private const val WORDID_PREFIX = "WID-"
 
         /**
-         * Parses the result of the [.toString] method back into an `WordID`.
+         * Parses the result of the toString method back into an `WordID`.
          * Word ids are always of the following format: WID-########-P-##-lemma where
          * ######## is the eight decimal digit zero-filled offset of the associated synset,
          * P is the upper case character representing the part of speech,

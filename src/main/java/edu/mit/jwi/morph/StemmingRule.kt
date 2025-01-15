@@ -4,7 +4,7 @@ import edu.mit.jwi.item.POS
 import java.util.*
 
 /**
- * Default implementation of the [IStemmingRule] interface.
+ * Default implementation of the IStemmingRule interface.
  *
  * Creates a new stemming rule with the specified suffix, ending, and
  * avoid set

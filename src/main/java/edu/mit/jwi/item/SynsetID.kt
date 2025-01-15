@@ -54,7 +54,7 @@ class SynsetID(
     companion object {
 
         /**
-         * String prefix for the [.toString] method.
+         * String prefix for the toString method.
          */
         const val SYNSETID_PREFIX: String = "SID-"
 

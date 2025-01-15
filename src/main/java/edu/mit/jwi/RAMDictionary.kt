@@ -454,7 +454,7 @@ constructor(
         const val DEFAULT_LOAD_POLICY: Int = BACKGROUND_LOAD
 
         /**
-         * Creates a [DataSourceDictionary] out of the specified file, as long as the file points to an existing local directory.
+         * Creates a DataSourceDictionary out of the specified file, as long as the file points to an existing local directory.
          *
          * @param file the local directory for which to create a data source dictionary
          * @return a dictionary object that uses the specified local directory as its data source
@@ -466,7 +466,7 @@ constructor(
         }
 
         /**
-         * Creates a [DataSourceDictionary] out of the specified url, as long as the url points to an existing local directory.
+         * Creates a DataSourceDictionary out of the specified url, as long as the url points to an existing local directory.
          *
          * @param url the local directory for which to create a data source dictionary
          * @return a dictionary object that uses the specified local directory as its data source
