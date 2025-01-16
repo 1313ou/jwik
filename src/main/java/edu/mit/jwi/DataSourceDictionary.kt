@@ -12,9 +12,7 @@ import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
-import java.util.*
 import java.util.Collections.emptyIterator
-import kotlin.Throws
 
 /**
  * A type of `IDictionary` which uses an instance of a `DataProvider` to obtain its data.
@@ -181,52 +179,18 @@ class DataSourceDictionary(
 
     override fun getIndexWord(id: IndexWordID): IndexWord? {
         checkOpen()
-        val content = dataProvider.resolveContentType(DataType.INDEX, id.pOS)
-        val file = dataProvider.getSource(content!!)!!
-        val line = file.getLine(id.lemma)
-        if (line == null) {
-            return null
-        }
+        val content = dataProvider.resolveContentType(DataType.INDEX, id.pOS)!!
+        val file = dataProvider.getSource(content)!!
+        val line = file.getLine(id.lemma) ?: return null
         return content.dataType.parser.parseLine(line)
     }
 
-    override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
+    override fun getLemmas(start: String, pos: POS?, limit: Int): Set<String> {
         checkOpen()
-        val result: MutableSet<String> = TreeSet<String>()
-        if (pos != null) {
-            getWords(start, pos, limit, result)
-        } else {
-            POS.entries.forEach {
-                getWords(start, it, limit, result)
-            }
-        }
-        return result
-    }
-
-    private fun getWords(start: String, pos: POS, limit: Int, result: MutableSet<String>): Collection<String> {
-        checkOpen()
-        val content = dataProvider.resolveContentType(DataType.WORD, pos)!!
-        val dataType = content.dataType
-        val parser: ILineParser<IndexWord> = dataType.parser
-        val file: IDataSource<*> = dataProvider.getSource<IndexWord>(content)!!
-        var found = false
-        val lines = file.iterator(start)
-        while (lines.hasNext()) {
-            val line = lines.next()
-            val match = line.startsWith(start)
-            if (match) {
-                val index = parser.parseLine(line)
-                val lemma = index.lemma
-                result.add(lemma)
-                found = true
-            } else if (found) {
-                break
-            }
-            if (limit > 0 && result.size >= limit) {
-                break
-            }
-        }
-        return result
+        val seq: Sequence<String> = if (pos != null) getLemmas(start, pos) else POS.entries.asSequence().flatMap { getLemmas(start, it) }
+        return seq
+            .take(limit)
+            .toSortedSet()
     }
 
     override fun getWord(id: IWordID): Word? {
@@ -242,89 +206,79 @@ class DataSourceDictionary(
         }
     }
 
-    override fun getWord(key: SenseKey): Word? {
+    override fun getWord(sensekey: SenseKey): Word? {
         checkOpen()
 
         // no need to cache result from the following calls as this will have been done in the call to getSynset()
-        val entry = getSenseEntry(key)
+        val entry = getSenseEntry(sensekey)
         if (entry != null) {
             val synset = getSynset(SynsetID(entry.offset, entry.pOS))
-            return synset?.words?.first { it.senseKey == key }
+            return synset?.words?.first { it.senseKey == sensekey }
         }
 
         // sometimes the sense.index file doesn't have the sense key entry so try an alternate method of retrieving words by sense keys
-        // We have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
-        var word: Word? = null
-        val indexWord = getIndexWord(key.lemma, key.pOS)
-        if (indexWord != null) {
-            var possibleWord: Word?
-            for (wordID in indexWord.wordIDs) {
-                possibleWord = getWord(wordID)
-                if (possibleWord != null) {
-                    val synset = possibleWord.synset
-                    val words: List<Word> = synset.words
-                    for (synonym in words) {
-                        if (synonym.senseKey == key) {
-                            word = synonym
-                            val lemma = synonym.lemma
-                            if (lemma == key.lemma) {
-                                return synonym
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return word
+        // we have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
+        return getIndexWord(sensekey.lemma, sensekey.pOS)?.wordIDs
+            ?.mapNotNull { getWord(it) }
+            ?.flatMap { it.synset.words }
+            ?.first { it.senseKey == sensekey }
     }
 
     override fun getSenseEntry(key: SenseKey): SenseEntry? {
         checkOpen()
-        val content = dataProvider.resolveContentType<SenseEntry>(DataType.SENSE, null)
-        val file = dataProvider.getSource<SenseEntry>(content!!)!!
-        val line = file.getLine(key.toString())
-        if (line == null) {
-            return null
-        }
-        val dataType = content.dataType
-        val parser = dataType.parser
-        return parser.parseLine(line)
-    }
-
-    fun getSenseEntries(key: SenseKey): Array<SenseEntry>? {
-        checkOpen()
-        val content = dataProvider.resolveContentType<Array<SenseEntry>>(DataType.SENSES, null)
-        val file = dataProvider.getSource<Array<SenseEntry>>(content!!)!!
-        val line = file.getLine(key.toString())
-        if (line == null) {
-            return null
-        }
-        val dataType = content.dataType
-        val parser = dataType.parser
-        return parser.parseLine(line)
+        val content = dataProvider.resolveContentType(DataType.SENSE, null)!!
+        val file = dataProvider.getSource(content)!!
+        val line = file.getLine(key.toString()) ?: return null
+        return content.dataType.parser.parseLine(line)
     }
 
     override fun getSynset(id: SynsetID): Synset? {
         checkOpen()
-        val content = dataProvider.resolveContentType<Synset>(DataType.DATA, id.pOS)
-        val file = dataProvider.getSource<Synset>(content!!)!!
+        val content = dataProvider.resolveContentType(DataType.DATA, id.pOS)!!
+        val file = dataProvider.getSource(content)!!
         val zeroFilledOffset = zeroFillOffset(id.offset)
-        val line = file.getLine(zeroFilledOffset)
-        if (line == null) {
-            return null
-        }
-        val dataType = content.dataType
-        val parser = dataType.parser
-        val result = parser.parseLine(line)
+        val line = file.getLine(zeroFilledOffset) ?: return null
+        val result = content.dataType.parser.parseLine(line)
         setHeadWord(result)
         return result
     }
 
+    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
+        return getExceptionEntry(ExceptionEntryID(surfaceForm, pos))
+    }
+
+    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
+        checkOpen()
+        val content = dataProvider.resolveContentType<ExceptionEntryProxy>(DataType.EXCEPTION, id.pOS)!!
+        val file = dataProvider.getSource(content)!!
+        val line = file.getLine(id.surfaceForm) ?: return null
+        val parser = content.dataType.parser
+        val proxy = parser.parseLine(line)
+        return ExceptionEntry(proxy, id.pOS)
+    }
+
+    private fun getLemmas(start: String, pos: POS): Sequence<String> {
+        checkOpen()
+        val content = dataProvider.resolveContentType(DataType.WORD, pos)!!
+        val parser = content.dataType.parser
+        val file = dataProvider.getSource<IndexWord>(content)!!
+        val lines = file.iterator(start)
+        return lines.asSequence()
+            .filter { it.startsWith(start) }
+            .map { parser.parseLine(it).lemma }
+    }
+
+    fun getSenseEntries(sensekey: SenseKey): Array<SenseEntry>? {
+        checkOpen()
+        val content = dataProvider.resolveContentType<Array<SenseEntry>>(DataType.SENSES, null)!!
+        val file = dataProvider.getSource(content)!!
+        val line = file.getLine(sensekey.toString()) ?: return null
+        return content.dataType.parser.parseLine(line)
+    }
+
     /**
-     * This method sets the head word on the specified synset by searching in
-     * the dictionary to find the head of its cluster. We will assume the head
-     * is the first adjective head synset related by an '&amp;' pointer (SIMILAR_TO)
-     * to this synset.
+     * This method sets the head word on the specified synset by searching in the dictionary to find the head of its cluster.
+     * We will assume the head is the first adjective head synset related by an '&amp;' pointer (SIMILAR_TO) to this synset.
      *
      * @param synset synset
      */
@@ -369,27 +323,7 @@ class DataSourceDictionary(
         }
     }
 
-    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
-        return getExceptionEntry(ExceptionEntryID(surfaceForm, pos))
-    }
-
-    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
-        checkOpen()
-        val content = dataProvider.resolveContentType<ExceptionEntryProxy>(DataType.EXCEPTION, id.pOS)
-        val file = dataProvider.getSource<ExceptionEntryProxy>(content!!)
-        // fix for bug 010
-        if (file == null) {
-            return null
-        }
-        val line = file.getLine(id.surfaceForm)
-        if (line == null) {
-            return null
-        }
-        val dataType = content.dataType
-        val parser = dataType.parser
-        val proxy = parser.parseLine(line)
-        return ExceptionEntry(proxy, id.pOS)
-    }
+    // I T E R A T E
 
     override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
         checkOpen()
@@ -410,6 +344,8 @@ class DataSourceDictionary(
         checkOpen()
         return SenseEntryFileIterator()
     }
+
+    // F I L E   I T E R A T O R S
 
     /**
      * Abstract class used for iterating over line-based files.

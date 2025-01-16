@@ -11,14 +11,14 @@ class JWIWordStartTests {
 
     @Test
     fun searchStart() {
-        val result: Set<String> = jwi!!.dict.getWords(start!!, pos, 0)
+        val result: Set<String> = jwi!!.dict.getLemmas(start!!, pos, 0)
         PS.println(start)
         PS.println(result)
     }
 
     @Test
     fun searchStartLimited() {
-        val result: Set<String> = jwi!!.dict.getWords(start!!, pos, 3)
+        val result: Set<String> = jwi!!.dict.getLemmas(start!!, pos, 3)
         PS.println(start)
         PS.println(result)
     }

@@ -207,7 +207,7 @@ abstract class BaseRAMDictionary protected constructor(
         return data!!.words[key]
     }
 
-    override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
+    override fun getLemmas(start: String, pos: POS?, limit: Int): Set<String> {
         check(data != null) { NO_DATA }
         return data!!.words.values
             .filter { it.lemma.startsWith(start) && if (pos != null) it.pOS == pos else true }

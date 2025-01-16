@@ -6,7 +6,6 @@ import edu.mit.jwi.item.*
 import java.io.IOException
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.Throws
 
 /**
  * A dictionary that caches the results of another dictionary
@@ -465,8 +464,8 @@ open class CachingDictionary(
         }
     }
 
-    override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
+    override fun getLemmas(start: String, pos: POS?, limit: Int): Set<String> {
         checkOpen()
-        return backingDictionary.getWords(start, pos, limit)
+        return backingDictionary.getLemmas(start, pos, limit)
     }
 }
