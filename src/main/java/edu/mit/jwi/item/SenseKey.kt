@@ -275,7 +275,7 @@ class SenseKey(
             val lexID = getLexicalIDForSenseKey(key.lexicalID)
             val head = if (key.isAdjectiveSatellite) (if (key.needsHeadSet()) "??" else key.headWord) else ""
             val headID = if (key.isAdjectiveSatellite) (if (key.needsHeadSet()) "??" else getLexicalIDForSenseKey(key.headID)) else ""
-            return "${key.lemma}%${key.synsetType}:$lexFileNum:$lexID$:$head:$headID"
+            return "${key.lemma}%${key.synsetType}:$lexFileNum:$lexID:$head:$headID"
         }
     }
 }

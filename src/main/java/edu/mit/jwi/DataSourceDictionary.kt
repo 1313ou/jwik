@@ -1,6 +1,7 @@
 package edu.mit.jwi
 
 import edu.mit.jwi.data.*
+import edu.mit.jwi.data.ContentTypeKey.*
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.data.parse.ILineParser
@@ -119,25 +120,25 @@ class DataSourceDictionary(
 
         // dictionary params
         if (config.indexNounComparator != null) {
-            setComparator(ContentTypeKey.INDEX_NOUN, config.indexNounComparator)
+            setComparator(INDEX_NOUN, config.indexNounComparator)
         }
         if (config.indexVerbComparator != null) {
-            setComparator(ContentTypeKey.INDEX_VERB, config.indexVerbComparator)
+            setComparator(INDEX_VERB, config.indexVerbComparator)
         }
         if (config.indexAdjectiveComparator != null) {
-            setComparator(ContentTypeKey.INDEX_ADJECTIVE, config.indexAdjectiveComparator)
+            setComparator(INDEX_ADJECTIVE, config.indexAdjectiveComparator)
         }
         if (config.indexAdverbComparator != null) {
-            setComparator(ContentTypeKey.INDEX_ADVERB, config.indexAdverbComparator)
+            setComparator(INDEX_ADVERB, config.indexAdverbComparator)
         }
 
         if (config.indexSensePattern != null) {
-            setSourceMatcher(ContentTypeKey.SENSE, config.indexSensePattern)
-            setSourceMatcher(ContentTypeKey.SENSES, config.indexSensePattern)
+            setSourceMatcher(SENSE, config.indexSensePattern)
+            setSourceMatcher(SENSES, config.indexSensePattern)
         }
         if (config.indexSenseKeyComparator != null) {
-            setComparator(ContentTypeKey.SENSE, config.indexSenseKeyComparator)
-            setComparator(ContentTypeKey.SENSES, config.indexSenseKeyComparator)
+            setComparator(SENSE, config.indexSenseKeyComparator)
+            setComparator(SENSES, config.indexSenseKeyComparator)
         }
         if (config.charSet != null) {
             charset = config.charSet
@@ -180,14 +181,13 @@ class DataSourceDictionary(
 
     override fun getIndexWord(id: IndexWordID): IndexWord? {
         checkOpen()
-        val content = dataProvider.resolveContentType<IndexWord>(DataType.INDEX, id.pOS)
-        val file: IDataSource<*> = dataProvider.getSource<IndexWord>(content!!)!!
+        val content = dataProvider.resolveContentType(DataType.INDEX, id.pOS)
+        val file = dataProvider.getSource(content!!)!!
         val line = file.getLine(id.lemma)
         if (line == null) {
             return null
         }
-        val dataType = content.dataType
-        return dataType.parser.parseLine(line)
+        return content.dataType.parser.parseLine(line)
     }
 
     override fun getWords(start: String, pos: POS?, limit: Int): Set<String> {
@@ -196,8 +196,8 @@ class DataSourceDictionary(
         if (pos != null) {
             getWords(start, pos, limit, result)
         } else {
-            for (pos2 in POS.entries) {
-                getWords(start, pos2, limit, result)
+            POS.entries.forEach {
+                getWords(start, it, limit, result)
             }
         }
         return result
@@ -205,7 +205,7 @@ class DataSourceDictionary(
 
     private fun getWords(start: String, pos: POS, limit: Int, result: MutableSet<String>): Collection<String> {
         checkOpen()
-        val content = dataProvider.resolveContentType<IndexWord>(DataType.WORD, pos)!!
+        val content = dataProvider.resolveContentType(DataType.WORD, pos)!!
         val dataType = content.dataType
         val parser: ILineParser<IndexWord> = dataType.parser
         val file: IDataSource<*> = dataProvider.getSource<IndexWord>(content)!!
@@ -245,24 +245,15 @@ class DataSourceDictionary(
     override fun getWord(key: SenseKey): Word? {
         checkOpen()
 
-        // no need to cache result from the following calls as this will have been
-        // done in the call to getSynset()
+        // no need to cache result from the following calls as this will have been done in the call to getSynset()
         val entry = getSenseEntry(key)
         if (entry != null) {
             val synset = getSynset(SynsetID(entry.offset, entry.pOS))
-            if (synset != null) {
-                for (synonym in synset.words) {
-                    if (synonym.senseKey == key) {
-                        return synonym
-                    }
-                }
-            }
+            return synset?.words?.first { it.senseKey == key }
         }
 
-        // sometimes the sense.index file doesn't have the sense key entry
-        // so try an alternate method of retrieving words by sense keys
-        // We have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South},
-        // and so separate entries are not found in the index file
+        // sometimes the sense.index file doesn't have the sense key entry so try an alternate method of retrieving words by sense keys
+        // We have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
         var word: Word? = null
         val indexWord = getIndexWord(key.lemma, key.pOS)
         if (indexWord != null) {
