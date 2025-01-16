@@ -1,5 +1,6 @@
 package edu.mit.jwi.test
 
+import edu.mit.jwi.data.parse.SenseKeyParser
 import edu.mit.jwi.item.LexFile.Companion.NOUN_LOCATION
 import edu.mit.jwi.item.LexFile.Companion.NOUN_TOPS
 import edu.mit.jwi.item.POS
@@ -12,7 +13,7 @@ import java.io.PrintStream
 class SensekeyTests {
 
     @Test
-    fun sensekey() {
+    fun sensekeyWithSameOrDifferentLemma() {
         val sk1 = SenseKey("entity", 0, POS.NOUN, false, NOUN_TOPS)
         val sk2 = SenseKey("entity", 0, POS.NOUN, false, NOUN_TOPS)
         val sk3 = SenseKey("'entity", 0, POS.NOUN, false, NOUN_TOPS)
@@ -25,7 +26,7 @@ class SensekeyTests {
     }
 
     @Test
-    fun sensekey2() {
+    fun sensekeyDifferingOnCase() {
         val sk1 = SenseKey("'s_Gravenhage", 0, POS.NOUN, false, NOUN_LOCATION)
         val sk2 = SenseKey("'s_gravenhage", 0, POS.NOUN, false, NOUN_LOCATION)
         println(sk1)
@@ -34,14 +35,27 @@ class SensekeyTests {
         Assertions.assertEquals(sk1.hashCode(), sk2.hashCode())
     }
 
+    @Test
+    fun sensekeyDifferingOnCaseFromLemma() {
+        val sk1 = SenseKey("Earth", 0, POS.NOUN, false, NOUN_LOCATION)
+        val sk2 = SenseKey("earth", 0, POS.NOUN, false, NOUN_LOCATION)
+        println(sk1)
+        println(sk2)
+        Assertions.assertEquals(sk1, sk2)
+        Assertions.assertEquals(sk1.hashCode(), sk2.hashCode())
+    }
+
+    @Test
+    fun sensekeyEquals() {
+        val sk1 = SenseKeyParser.parseLine("earth%1:15:00::")
+        val sk2 = SenseKeyParser.parseLine("earth%1:15:00::")
+        println(sk1)
+        println(sk2)
+        Assertions.assertEquals(sk1, sk2)
+        Assertions.assertEquals(sk1.hashCode(), sk2.hashCode())
+    }
+
     companion object {
 
-        private val VERBOSE = !System.getProperties().containsKey("SILENT")
-
-        private val PS: PrintStream? = if (VERBOSE) System.out else PrintStream(object : OutputStream() {
-            override fun write(b: Int) {
-                //DO NOTHING
-            }
-        })
     }
 }

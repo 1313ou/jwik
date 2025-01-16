@@ -464,8 +464,8 @@ open class CachingDictionary(
         }
     }
 
-    override fun getLemmas(start: String, pos: POS?, limit: Int): Set<String> {
+    override fun getLemmasStartingWith(start: String, pos: POS?, limit: Int): Set<String> {
         checkOpen()
-        return backingDictionary.getLemmas(start, pos, limit)
+        return backingDictionary.getLemmasStartingWith(start, pos, limit)
     }
 }

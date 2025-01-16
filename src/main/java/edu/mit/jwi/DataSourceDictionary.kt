@@ -13,6 +13,7 @@ import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.Collections.emptyIterator
+import kotlin.Throws
 
 /**
  * A type of `IDictionary` which uses an instance of a `DataProvider` to obtain its data.
@@ -185,14 +186,6 @@ class DataSourceDictionary(
         return content.dataType.parser.parseLine(line)
     }
 
-    override fun getLemmas(start: String, pos: POS?, limit: Int): Set<String> {
-        checkOpen()
-        val seq: Sequence<String> = if (pos != null) getLemmas(start, pos) else POS.entries.asSequence().flatMap { getLemmas(start, it) }
-        return seq
-            .take(limit)
-            .toSortedSet()
-    }
-
     override fun getWord(id: IWordID): Word? {
         checkOpen()
         val synset = getSynset(id.synsetID)
@@ -257,7 +250,23 @@ class DataSourceDictionary(
         return ExceptionEntry(proxy, id.pOS)
     }
 
-    private fun getLemmas(start: String, pos: POS): Sequence<String> {
+    fun getSenseEntries(sensekey: SenseKey): Array<SenseEntry>? {
+        checkOpen()
+        val content = dataProvider.resolveContentType<Array<SenseEntry>>(DataType.SENSES, null)!!
+        val file = dataProvider.getSource(content)!!
+        val line = file.getLine(sensekey.toString()) ?: return null
+        return content.dataType.parser.parseLine(line)
+    }
+
+    override fun getLemmasStartingWith(start: String, pos: POS?, limit: Int): Set<String> {
+        checkOpen()
+        val seq: Sequence<String> = if (pos != null) getSequenceStartingWith(start, pos) else POS.entries.asSequence().flatMap { getLemmasStartingWith(start, it) }
+        return seq
+            .run { if (limit > 0) take(limit) else this }
+            .toSortedSet()
+    }
+
+    private fun getSequenceStartingWith(start: String, pos: POS): Sequence<String> {
         checkOpen()
         val content = dataProvider.resolveContentType(DataType.WORD, pos)!!
         val parser = content.dataType.parser
@@ -266,14 +275,6 @@ class DataSourceDictionary(
         return lines.asSequence()
             .filter { it.startsWith(start) }
             .map { parser.parseLine(it).lemma }
-    }
-
-    fun getSenseEntries(sensekey: SenseKey): Array<SenseEntry>? {
-        checkOpen()
-        val content = dataProvider.resolveContentType<Array<SenseEntry>>(DataType.SENSES, null)!!
-        val file = dataProvider.getSource(content)!!
-        val line = file.getLine(sensekey.toString()) ?: return null
-        return content.dataType.parser.parseLine(line)
     }
 
     /**

@@ -205,8 +205,8 @@ constructor(
         return if (data != null) super.getWord(key) else backingDictionary.getWord(key)
     }
 
-    override fun getLemmas(start: String, pos: POS?, limit: Int): Set<String> {
-        return if (data != null) super.getLemmas(start, pos, limit) else backingDictionary.getLemmas(start, pos, limit)
+    override fun getLemmasStartingWith(start: String, pos: POS?, limit: Int): Set<String> {
+        return if (data != null) super.getLemmasStartingWith(start, pos, limit) else backingDictionary.getLemmasStartingWith(start, pos, limit)
     }
 
     override fun getSynset(id: SynsetID): Synset? {

@@ -132,5 +132,5 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @param limit maximum number of results, 0 for no limit
      * @return a set of lemmas in dictionary that have given start
      */
-    fun getLemmas(start: String, pos: POS?, limit: Int): Set<String>
+    fun getLemmasStartingWith(start: String, pos: POS? = null, limit: Int = 0): Set<String>
 }
