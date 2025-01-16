@@ -1,7 +1,7 @@
 package edu.mit.jwi.item
 
-import edu.mit.jwi.item.Word.Companion.checkWordNumber
-import edu.mit.jwi.item.Word.Companion.zeroFillWordNumber
+import edu.mit.jwi.item.Sense.Companion.checkWordNumber
+import edu.mit.jwi.item.Sense.Companion.zeroFillWordNumber
 import java.util.*
 
 /**
@@ -9,7 +9,7 @@ import java.util.*
  *
  * @property synsetID the synset id
  */
-abstract class BaseWordID(override val synsetID: SynsetID) : IWordID {
+abstract class BaseSenseID(override val synsetID: SynsetID) : ISenseID {
 
     override val pOS: POS
         get() = synsetID.pOS
@@ -25,17 +25,17 @@ abstract class BaseWordID(override val synsetID: SynsetID) : IWordID {
 
         /**
          * Parses the result of the toString method back into an `WordID`.
-         * Word ids are always of the following format: WID-########-P-##-lemma where
+         * Sense ids are always of the following format: WID-########-P-##-lemma where
          * ######## is the eight decimal digit zero-filled offset of the associated synset,
          * P is the upper case character representing the part of speech,
-         * ## is the two hexadecimal digit zero-filled word number (or ?? if unknown), and
+         * ## is the two hexadecimal digit zero-filled sense number (or ?? if unknown), and
          * lemma is the lemma.
          *
          * @param value the string to be parsed
          * @return WordID the parsed id
-         * @throws IllegalArgumentException if the specified string does not represent a word id
+         * @throws IllegalArgumentException if the specified string does not represent a sense id
          */
-        fun parseWordID(value: String): IWordID {
+        fun parseWordID(value: String): ISenseID {
             require(value.length >= 19)
             require(value.startsWith("WID-"))
 
@@ -44,39 +44,39 @@ abstract class BaseWordID(override val synsetID: SynsetID) : IWordID {
             val pos = POS.getPartOfSpeech(value[13])
             val id = SynsetID(offset, pos)
 
-            // get word number
+            // get sense number
             val numStr = value.substring(15, 17)
-            if (numStr != WordLemmaID.UNKNOWN_NUMBER) {
+            if (numStr != SenseIDWithLemma.UNKNOWN_NUMBER) {
                 val num = numStr.toInt(16)
-                return WordNumID(id, num)
+                return SenseIDWithNum(id, num)
             }
 
             // get lemma
             val lemma = value.substring(18)
-            require(lemma != WordNumID.UNKNOWN_LEMMA)
-            return WordLemmaID(id, lemma)
+            require(lemma != SenseIDWithNum.UNKNOWN_LEMMA)
+            return SenseIDWithLemma(id, lemma)
         }
     }
 }
 
 /**
- * Constructs a word id from synset id and word number
- * This constructor produces a word with a word number (but without a lemma)
- * The word number, which is a number from 1 to 255, indicates the order this word is listed in the Wordnet data files
+ * Constructs a sense id from synset id and sense number
+ * This constructor produces a sense with a sense number (but without a lemma)
+ * The sense number, which is a number from 1 to 255, indicates the order this sense is listed in the Wordnet data files
  *
  * @return an integer between 1 and 255, inclusive
  *
  * @param synsetID the synset id
- * @property wordNumber the word number
+ * @property senseNumber the sense number
  */
-class WordNumID(synsetID: SynsetID, val wordNumber: Int) : BaseWordID(synsetID), IWordID {
+class SenseIDWithNum(synsetID: SynsetID, val senseNumber: Int) : BaseSenseID(synsetID), ISenseID {
 
     init {
-        checkWordNumber(wordNumber)
+        checkWordNumber(senseNumber)
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(synsetID, wordNumber)
+        return Objects.hash(synsetID, senseNumber)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -86,19 +86,19 @@ class WordNumID(synsetID: SynsetID, val wordNumber: Int) : BaseWordID(synsetID),
         if (other == null) {
             return false
         }
-        if (other is BaseWordID && synsetID != other.synsetID)
+        if (other is BaseSenseID && synsetID != other.synsetID)
             return false
 
         return when (other) {
-            is WordLemmaNumID -> wordNumber == other.wordNumber
-            is WordNumID      -> wordNumber == other.wordNumber
-            is WordLemmaID    -> false
-            else              -> false
+            is SenseIDWithLemmaAndNum -> senseNumber == other.senseNumber
+            is SenseIDWithNum         -> senseNumber == other.senseNumber
+            is SenseIDWithLemma -> false
+            else                -> false
         }
     }
 
     override fun toString(): String {
-        return "${super.toString()}-${zeroFillWordNumber(wordNumber)}-$UNKNOWN_LEMMA"
+        return "${super.toString()}-${zeroFillWordNumber(senseNumber)}-$UNKNOWN_LEMMA"
     }
 
     companion object {
@@ -108,8 +108,8 @@ class WordNumID(synsetID: SynsetID, val wordNumber: Int) : BaseWordID(synsetID),
 }
 
 /**
- * Constructs a word id from synset id and lemma
- * This constructor produces a word id with a lemma
+ * Constructs a sense id from synset id and lemma
+ * This constructor produces a sense id with a lemma
  * The lemma is a non-empty string non-whitespace string
  *
  * @param synsetID  the synset id
@@ -117,7 +117,7 @@ class WordNumID(synsetID: SynsetID, val wordNumber: Int) : BaseWordID(synsetID),
  * @property lemma lemma
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
-open class WordLemmaID(synsetID: SynsetID, lemma: String) : BaseWordID(synsetID), IWordID {
+open class SenseIDWithLemma(synsetID: SynsetID, lemma: String) : BaseSenseID(synsetID), ISenseID {
 
     val lemma: String = lemma.trim { it <= ' ' }
 
@@ -136,14 +136,14 @@ open class WordLemmaID(synsetID: SynsetID, lemma: String) : BaseWordID(synsetID)
         if (other == null) {
             return false
         }
-        if (other is BaseWordID && synsetID != other.synsetID)
+        if (other is BaseSenseID && synsetID != other.synsetID)
             return false
 
         return when (other) {
-            is WordLemmaNumID -> lemma.equals(other.lemma, ignoreCase = true)
-            is WordLemmaID    -> lemma.equals(other.lemma, ignoreCase = true)
-            is WordNumID      -> false
-            else              -> false
+            is SenseIDWithLemmaAndNum -> lemma.equals(other.lemma, ignoreCase = true)
+            is SenseIDWithLemma       -> lemma.equals(other.lemma, ignoreCase = true)
+            is SenseIDWithNum         -> false
+            else                -> false
         }
     }
 
@@ -158,24 +158,24 @@ open class WordLemmaID(synsetID: SynsetID, lemma: String) : BaseWordID(synsetID)
 }
 
 /**
- * Constructs a word id from the specified arguments.
- * This constructor produces a word id with a word number and a lemma
- * The word number, which is a number from 1 to 255, indicates the order this word is listed in the Wordnet data files
+ * Constructs a sense id from the specified arguments.
+ * This constructor produces a sense id with a sense number and a lemma
+ * The sense number, which is a number from 1 to 255, indicates the order this sense is listed in the Wordnet data files
  * The lemma is a non-empty string non-whitespace string
  *
  * @param synsetID  the synset id
- * @property wordNumber the word number
+ * @property senseNumber the sense number
  * @param lemma the lemma; may not be empty or all whitespace
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
-class WordLemmaNumID(synsetID: SynsetID, val wordNumber: Int, lemma: String) : WordLemmaID(synsetID, lemma), IWordID {
+class SenseIDWithLemmaAndNum(synsetID: SynsetID, val senseNumber: Int, lemma: String) : SenseIDWithLemma(synsetID, lemma), ISenseID {
 
     init {
-        checkWordNumber(wordNumber)
+        checkWordNumber(senseNumber)
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(synsetID, wordNumber, lemma)
+        return Objects.hash(synsetID, senseNumber, lemma)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -185,18 +185,18 @@ class WordLemmaNumID(synsetID: SynsetID, val wordNumber: Int, lemma: String) : W
         if (other == null) {
             return false
         }
-        if (other is BaseWordID && synsetID != other.synsetID)
+        if (other is BaseSenseID && synsetID != other.synsetID)
             return false
 
         return when (other) {
-            is WordLemmaNumID -> lemma.equals(other.lemma, ignoreCase = true) && wordNumber == other.wordNumber
-            is WordLemmaID    -> lemma.equals(other.lemma, ignoreCase = true)
-            is WordNumID      -> wordNumber == other.wordNumber
-            else              -> false
+            is SenseIDWithLemmaAndNum -> lemma.equals(other.lemma, ignoreCase = true) && senseNumber == other.senseNumber
+            is SenseIDWithLemma       -> lemma.equals(other.lemma, ignoreCase = true)
+            is SenseIDWithNum         -> senseNumber == other.senseNumber
+            else                -> false
         }
     }
 
     override fun toString(): String {
-        return "${super.toString()}-${zeroFillWordNumber(wordNumber)}-$lemma"
+        return "${super.toString()}-${zeroFillWordNumber(senseNumber)}-$lemma"
     }
 }

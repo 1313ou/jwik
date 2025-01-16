@@ -10,7 +10,6 @@ import java.net.URL
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPOutputStream
-import kotlin.Throws
 
 /**
  * Dictionary that can be completely loaded into memory.
@@ -177,18 +176,18 @@ abstract class BaseRAMDictionary protected constructor(
 
     // INDEX WORD
 
-    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
-        return getIndexWord(IndexWordID(lemma, pos))
+    override fun getIndexWord(lemma: String, pos: POS): SenseIndex? {
+        return getIndexWord(SenseIndexID(lemma, pos))
     }
 
-    override fun getIndexWord(id: IndexWordID): IndexWord? {
+    override fun getIndexWord(id: SenseIndexID): SenseIndex? {
         check(data != null) { NO_DATA }
         return data!!.idxWords[id.pOS]!![id]
     }
 
     // WORD
 
-    override fun getWord(id: IWordID): Word? {
+    override fun getSense(id: ISenseID): Sense? {
         check(data != null) { NO_DATA }
         val resolver = data!!.synsets[id.pOS]!!
         val synset = resolver[id.synsetID]
@@ -196,13 +195,13 @@ abstract class BaseRAMDictionary protected constructor(
             return null
         }
         return when (id) {
-            is WordNumID   -> synset.words[id.wordNumber - 1]
-            is WordLemmaID -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
-            else           -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
+            is SenseIDWithNum   -> synset.words[id.senseNumber - 1]
+            is SenseIDWithLemma -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
+            else                -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
         }
     }
 
-    override fun getWord(key: SenseKey): Word? {
+    override fun getSense(key: SenseKey): Sense? {
         check(data != null) { NO_DATA }
         return data!!.words[key]
     }
@@ -243,7 +242,7 @@ abstract class BaseRAMDictionary protected constructor(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
+    override fun getIndexWordIterator(pos: POS): Iterator<SenseIndex> {
         check(data != null) { NO_DATA }
         return data!!.idxWords[pos]!!.values.iterator()
     }
@@ -302,13 +301,13 @@ abstract class BaseRAMDictionary protected constructor(
 
         var version: Version? = null
 
-        val idxWords: MutableMap<POS, MutableMap<IndexWordID, IndexWord>> = makePOSMap<IndexWordID, IndexWord>()
+        val idxWords: MutableMap<POS, MutableMap<SenseIndexID, SenseIndex>> = makePOSMap<SenseIndexID, SenseIndex>()
 
         val synsets: MutableMap<POS, MutableMap<SynsetID, Synset>> = makePOSMap<SynsetID, Synset>()
 
         val exceptions: MutableMap<POS, MutableMap<ExceptionEntryID, ExceptionEntry>> = makePOSMap<ExceptionEntryID, ExceptionEntry>()
 
-        var words: MutableMap<SenseKey, Word> = makeMap<SenseKey, Word>(212500, null)
+        var words: MutableMap<SenseKey, Sense> = makeMap<SenseKey, Sense>(212500, null)
 
         var senses: MutableMap<SenseKey, SenseEntry> = makeMap<SenseKey, SenseEntry>(212500, null)
 
@@ -356,10 +355,10 @@ abstract class BaseRAMDictionary protected constructor(
          * Resizes the internal data maps to be the exact size to contain their data.
          */
         fun compactSize() {
-            compactPOSMap<IndexWordID, IndexWord>(idxWords)
+            compactPOSMap<SenseIndexID, SenseIndex>(idxWords)
             compactPOSMap<SynsetID, Synset>(synsets)
             compactPOSMap<ExceptionEntryID, ExceptionEntry>(exceptions)
-            words = compactMap<SenseKey, Word>(words)
+            words = compactMap<SenseKey, Sense>(words)
             senses = compactMap<SenseKey, SenseEntry>(senses)
         }
 
@@ -442,17 +441,17 @@ abstract class BaseRAMDictionary protected constructor(
          * @param old       the word to be replicated
          * @return the new synset, a copy of the first
          */
-        private fun makeWord(newSynset: Synset, old: Word): Word {
+        private fun makeWord(newSynset: Synset, old: Sense): Sense {
 
             // related words
             val newRelated = old.related
                 .map { (ptr, oldTargets) ->
-                    val newTargets: List<IWordID> = oldTargets
-                        .map { it as WordNumID }
+                    val newTargets: List<ISenseID> = oldTargets
+                        .map { it as SenseIDWithNum }
                         .map {
                             val resolver: Map<SynsetID, Synset> = synsets[it.pOS]!!
                             val otherSynset: Synset = resolver[it.synsetID]!!
-                            otherSynset.words[it.wordNumber - 1].iD
+                            otherSynset.words[it.senseNumber - 1].iD
                         }
                         .toList()
                     ptr to newTargets
@@ -460,7 +459,7 @@ abstract class BaseRAMDictionary protected constructor(
                 .toMap()
 
             // word
-            val word = Word(newSynset, old.iD, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
+            val word = Sense(newSynset, old.iD, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
             if (word.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey
                 word.senseKey.setHead(oldKey.headWord!!, oldKey.headID)
@@ -476,15 +475,15 @@ abstract class BaseRAMDictionary protected constructor(
          * @param old the index word to be replicated
          * @return the new index word object
          */
-        private fun makeIndexWord(old: IndexWord): IndexWord {
-            val newIDs: Array<IWordID> = Array(old.wordIDs.size) { i ->
-                var oldID: IWordID = old.wordIDs[i]
+        private fun makeIndexWord(old: SenseIndex): SenseIndex {
+            val newIDs: Array<ISenseID> = Array(old.wordIDs.size) { i ->
+                var oldID: ISenseID = old.wordIDs[i]
                 val resolver = synsets[oldID.pOS]!!
                 var synset: Synset = resolver[oldID.synsetID]!!
                 val newWord = synset.words.first { it.iD == oldID }
                 newWord.iD
             }
-            return IndexWord(old.iD, old.tagSenseCount, newIDs)
+            return SenseIndex(old.iD, old.tagSenseCount, newIDs)
         }
 
         /**
@@ -495,9 +494,9 @@ abstract class BaseRAMDictionary protected constructor(
          *
          * @param oldWord   the old word that backs this builder
          */
-        inner class WordBuilder(private val oldWord: Word) : Synset.IWordBuilder {
+        inner class WordBuilder(private val oldWord: Sense) : Synset.IWordBuilder {
 
-            override fun toWord(synset: Synset): Word {
+            override fun toWord(synset: Synset): Sense {
                 return makeWord(synset, oldWord)
             }
         }

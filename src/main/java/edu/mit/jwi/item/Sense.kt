@@ -1,6 +1,6 @@
 package edu.mit.jwi.item
 
-import edu.mit.jwi.item.WordLemmaID.Companion.UNKNOWN_NUMBER
+import edu.mit.jwi.item.SenseIDWithLemma.Companion.UNKNOWN_NUMBER
 import java.util.*
 
 /**
@@ -16,10 +16,10 @@ import java.util.*
  * @param related lexical pointers
  * @throws IllegalArgumentException if the adjective marker is non-null and this is not an adjective
  */
-class Word(
+class Sense(
     val synset: Synset,
 
-    override val iD: WordLemmaID,
+    override val iD: SenseIDWithLemma,
 
     /**
      * An integer in the closed range [0,15] that, when appended onto lemma, uniquely identifies a sense within a lexicographer file.
@@ -35,8 +35,8 @@ class Word(
 
     verbFrames: List<VerbFrame>?,
 
-    related: Map<Pointer, List<IWordID>>,
-) : IHasPOS, IItem<IWordID> {
+    related: Map<Pointer, List<ISenseID>>,
+) : IHasPOS, IItem<ISenseID> {
 
     override val pOS: POS
         get() = iD.synsetID.pOS
@@ -45,9 +45,9 @@ class Word(
 
     val verbFrames: List<VerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
 
-    val related: Map<Pointer, List<IWordID>> = normalizeRelated(related)
+    val related: Map<Pointer, List<ISenseID>> = normalizeRelated(related)
 
-    val allRelated: List<IWordID>
+    val allRelated: List<ISenseID>
         get() = related.values
             .flatMap { it.toList() }
             .distinct()
@@ -67,8 +67,8 @@ class Word(
     override fun toString(): String {
         val sid = iD.synsetID.toString().substring(4)
         return when (iD) {
-            is WordLemmaNumID -> "W-$sid-${iD.wordNumber}-${iD.lemma}"
-            else              -> "W-$sid-$UNKNOWN_NUMBER-${iD.lemma}"
+            is SenseIDWithLemmaAndNum -> "W-$sid-${iD.senseNumber}-${iD.lemma}"
+            else                      -> "W-$sid-$UNKNOWN_NUMBER-${iD.lemma}"
         }
     }
 
@@ -86,7 +86,7 @@ class Word(
         }
 
         // check interface
-        if (obj !is Word) {
+        if (obj !is Sense) {
             return false
         }
         val that = obj
@@ -128,8 +128,8 @@ class Word(
      * @param ptr the pointer for which related words are requested
      * @return the list of words related by the specified pointer, or an empty list if none.
      */
-    fun getRelatedFor(ptr: Pointer): List<IWordID> {
-        return related[ptr] ?: emptyList<IWordID>()
+    fun getRelatedFor(ptr: Pointer): List<ISenseID> {
+        return related[ptr] ?: emptyList<ISenseID>()
     }
 
     companion object {
@@ -232,7 +232,7 @@ class Word(
             return "%02x".format(num)
         }
 
-        private fun normalizeRelated(related: Map<Pointer, List<IWordID>>?): Map<Pointer, List<IWordID>> {
+        private fun normalizeRelated(related: Map<Pointer, List<ISenseID>>?): Map<Pointer, List<ISenseID>> {
             return related?.entries
                 ?.filterNot { it.value.isEmpty() }
                 ?.associate { it.key to it.value }

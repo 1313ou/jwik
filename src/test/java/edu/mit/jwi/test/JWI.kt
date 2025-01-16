@@ -47,15 +47,15 @@ class JWI
 
     // M A I N   I T E R A T I O N S
 
-    fun forAllSenses(f: Consumer<Word>?) {
+    fun forAllSenses(f: Consumer<Sense>?) {
         for (pos in POS.entries) {
-            val it: Iterator<IndexWord> = dict.getIndexWordIterator(pos)
+            val it: Iterator<SenseIndex> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
-                val senseids: List<IWordID> = idx.wordIDs
+                val senseids: List<ISenseID> = idx.wordIDs
                 for (senseid in senseids)  // synset id, sense number, and lemma
                 {
-                    val sense = this.dict.getWord(senseid)
+                    val sense = this.dict.getSense(senseid)
                     if (sense == null) {
                         System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
                         //val sense2: Word = this.dict.getWord(senseid);
@@ -67,16 +67,16 @@ class JWI
         }
     }
 
-    fun tryForAllSenses(f: Consumer<Word>?) {
+    fun tryForAllSenses(f: Consumer<Sense>?) {
         for (pos in POS.entries) {
-            val it: Iterator<IndexWord> = dict.getIndexWordIterator(pos)
+            val it: Iterator<SenseIndex> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
                 try {
                     val idx = it.next()
-                    val senseids: List<IWordID> = idx.wordIDs
+                    val senseids: List<ISenseID> = idx.wordIDs
                     for (senseid in senseids)  // synset id, sense number, and lemma
                     {
-                        val sense = dict.getWord(senseid)
+                        val sense = dict.getSense(senseid)
                         if (sense == null) {
                             System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
                             // val sense2: Word = dict.getWord(senseid)
@@ -139,13 +139,13 @@ class JWI
 
     fun forAllLemmas(f: Consumer<String?>?) {
         for (pos in POS.entries) {
-            val it: Iterator<IndexWord> = dict.getIndexWordIterator(pos)
+            val it: Iterator<SenseIndex> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
-                val senseids: List<IWordID> = idx.wordIDs
+                val senseids: List<ISenseID> = idx.wordIDs
                 for (senseid in senseids)  // synset id, sense number, and lemma
                 {
-                    val sense = dict.getWord(senseid)
+                    val sense = dict.getSense(senseid)
                     if (sense == null) {
                         System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
                         // val sense2: Word = dict.getWord(senseid)
@@ -160,13 +160,13 @@ class JWI
 
     fun forAllSensekeys(f: Consumer<SenseKey>?) {
         for (pos in POS.entries) {
-            val it: Iterator<IndexWord> = dict.getIndexWordIterator(pos)
+            val it: Iterator<SenseIndex> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
-                val senseids: List<IWordID> = idx.wordIDs
+                val senseids: List<ISenseID> = idx.wordIDs
                 for (senseid in senseids)  // synset id, sense number, and lemma
                 {
-                    val sense = dict.getWord(senseid)
+                    val sense = dict.getSense(senseid)
                     if (sense == null) {
                         System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
                         // val sense2: Word  = dict.getWord(senseid)
@@ -193,23 +193,23 @@ class JWI
         }
     }
 
-    fun forAllSenseRelations(f: Consumer<Word>?) {
+    fun forAllSenseRelations(f: Consumer<Sense>?) {
         for (pos in POS.entries) {
-            val it: Iterator<IndexWord> = dict.getIndexWordIterator(pos)
+            val it: Iterator<SenseIndex> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
-                val senseids: List<IWordID> = idx.wordIDs
+                val senseids: List<ISenseID> = idx.wordIDs
                 for (senseid in senseids)  // synset id, sense number, and lemma
                 {
-                    val sense = dict.getWord(senseid)
+                    val sense = dict.getSense(senseid)
                     if (sense == null) {
                         System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
                         // val sense2: Word = dict.getWord(senseid)
                         continue
                     }
-                    val relatedIds: List<IWordID>? = sense.allRelated
+                    val relatedIds: List<ISenseID>? = sense.allRelated
                     for (relatedId in relatedIds!!) {
-                        val related = dict.getWord(relatedId)!!
+                        val related = dict.getSense(relatedId)!!
                         f?.accept(related)
                     }
                 }
@@ -238,27 +238,27 @@ class JWI
         }
     }
 
-    fun walk(idx: IndexWord, ps: PrintStream) {
+    fun walk(idx: SenseIndex, ps: PrintStream) {
         val pointers: Set<Pointer> = idx.pointers
         for (ptr in pointers) {
             ps.println("has relation = $ptr")
         }
 
         // senseid=(lemma, synsetid, sensenum)
-        val senseids: List<IWordID> = idx.wordIDs
+        val senseids: List<ISenseID> = idx.wordIDs
         for (senseid in senseids)  // synset id, sense number, and lemma
         {
             walk(senseid, ps)
         }
     }
 
-    fun walk(senseid: IWordID, ps: PrintStream) {
+    fun walk(senseid: ISenseID, ps: PrintStream) {
         ps.println("--------------------------------------------------------------------------------")
 
         //ps.println("senseid = " + senseid.toString())
 
         // sense=(senseid, lexid, sensekey, synset)
-        val sense: Word? = checkNotNull(dict.getWord(senseid))
+        val sense: Sense? = checkNotNull(dict.getSense(senseid))
         walk(sense!!, ps)
 
         // synset
@@ -269,7 +269,7 @@ class JWI
         walk(synset, 1, ps)
     }
 
-    fun walk(sense: Word, ps: PrintStream) {
+    fun walk(sense: Sense, ps: PrintStream) {
         ps.printf("● sense: %s lexid: %d sensekey: %s%n", sense.toString(), sense.lexicalID, sense.senseKey)
 
         // adj marker
@@ -289,7 +289,7 @@ class JWI
         }
 
         // lexical relations
-        val relatedMap: Map<Pointer, List<IWordID>> = sense.related
+        val relatedMap: Map<Pointer, List<ISenseID>> = sense.related
         walk(relatedMap, ps)
 
         // verb frames
@@ -299,11 +299,11 @@ class JWI
         ps.printf("  sensenum: %s tag cnt:%s%n", senseEntry?.senseNumber ?: "<missing>", senseEntry?.tagCount ?: "<missing>")
     }
 
-    fun walk(relatedMap: Map<Pointer, List<IWordID>>, ps: PrintStream) {
+    fun walk(relatedMap: Map<Pointer, List<ISenseID>>, ps: PrintStream) {
         for (entry in relatedMap.entries) {
             val pointer = entry.key
             for (relatedId in entry.value) {
-                val related: Word? = checkNotNull(dict.getWord(relatedId))
+                val related: Sense? = checkNotNull(dict.getSense(relatedId))
                 val relatedSynset = checkNotNull(related!!.synset)
                 ps.printf("  related %s lemma:%s synset:%s%n", pointer, related.lemma, relatedSynset)
             }

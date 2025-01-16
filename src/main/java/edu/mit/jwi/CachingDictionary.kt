@@ -81,9 +81,9 @@ open class CachingDictionary(
 
     // L O O K   U P
 
-    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
+    override fun getIndexWord(lemma: String, pos: POS): SenseIndex? {
         checkOpen()
-        val id = IndexWordID(lemma, pos)
+        val id = SenseIndexID(lemma, pos)
         var item = cache.retrieveItem(id)
         if (item == null) {
             item = backingDictionary.getIndexWord(id)
@@ -91,10 +91,10 @@ open class CachingDictionary(
                 cache.cacheItem(item)
             }
         }
-        return item as IndexWord?
+        return item as SenseIndex?
     }
 
-    override fun getIndexWord(id: IndexWordID): IndexWord? {
+    override fun getIndexWord(id: SenseIndexID): SenseIndex? {
         checkOpen()
         var item = cache.retrieveItem(id)
         if (item == null) {
@@ -103,27 +103,27 @@ open class CachingDictionary(
                 cache.cacheItem(item)
             }
         }
-        return item as IndexWord?
+        return item as SenseIndex?
     }
 
-    override fun getWord(id: IWordID): Word? {
+    override fun getSense(id: ISenseID): Sense? {
         checkOpen()
         var item = cache.retrieveItem(id)
         if (item == null) {
-            item = backingDictionary.getWord(id)
+            item = backingDictionary.getSense(id)
             if (item != null) {
                 val s = checkNotNull(item.synset)
                 cacheSynset(s)
             }
         }
-        return item as Word?
+        return item as Sense?
     }
 
-    override fun getWord(key: SenseKey): Word? {
+    override fun getSense(key: SenseKey): Sense? {
         checkOpen()
         var item = cache.retrieveWord(key)
         if (item == null) {
-            item = backingDictionary.getWord(key)
+            item = backingDictionary.getSense(key)
             if (item != null) {
                 cacheSynset(item.synset)
             }
@@ -195,7 +195,7 @@ open class CachingDictionary(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
+    override fun getIndexWordIterator(pos: POS): Iterator<SenseIndex> {
         return backingDictionary.getIndexWordIterator(pos)
     }
 
@@ -237,7 +237,7 @@ open class CachingDictionary(
 
         var itemCache: MutableMap<IItemID, IItem<*>>? = null
 
-        var keyCache: MutableMap<SenseKey, Word>? = null
+        var keyCache: MutableMap<SenseKey, Sense>? = null
 
         var senseCache: MutableMap<SenseKey, SenseEntry>? = null
 
@@ -300,7 +300,7 @@ open class CachingDictionary(
                 lifecycleLock.lock()
                 val capacity = if (initialCapacity < 1) DEFAULT_INITIAL_CAPACITY else initialCapacity
                 itemCache = makeCache<IItemID, IItem<*>>(capacity)
-                keyCache = makeCache<SenseKey, Word>(capacity)
+                keyCache = makeCache<SenseKey, Sense>(capacity)
                 senseCache = makeCache<SenseKey, SenseEntry>(capacity)
                 sensesCache = makeCache<SenseKey, Array<SenseEntry>>(capacity)
             } finally {
@@ -393,7 +393,7 @@ open class CachingDictionary(
          *
          * @param word the word to be cached
          */
-        fun cacheWordByKey(word: Word) {
+        fun cacheWordByKey(word: Sense) {
             checkOpen()
             if (!isEnabled) {
                 return
@@ -440,7 +440,7 @@ open class CachingDictionary(
          * @return the word for the specified key, or null if not
          * present in the cache
          */
-        fun retrieveWord(key: SenseKey): Word? {
+        fun retrieveWord(key: SenseKey): Sense? {
             checkOpen()
             return keyCache!![key]
         }

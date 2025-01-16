@@ -16,7 +16,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      */
     fun configure(config: Config?)
 
-    // F I N D
+    // L O O K   U P
 
     /**
      * This method is identical to `getIndexWord(IndexWordID)` and is provided as a convenience.
@@ -26,7 +26,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @return the index word corresponding to the specified lemma and part of speech, or null if none is found
      * @throws IllegalArgumentException if the specified lemma is empty or all whitespace
      */
-    fun getIndexWord(lemma: String, pos: POS): IndexWord?
+    fun getIndexWord(lemma: String, pos: POS): SenseIndex?
 
     /**
      * Retrieves the specified index word object from the database.
@@ -40,15 +40,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @param id the id of the index word to search for
      * @return the index word, if found; null otherwise
      */
-    fun getIndexWord(id: IndexWordID): IndexWord?
-
-    /**
-     * Returns an iterator that will iterate over all index words of the specified part of speech.
-     *
-     * @param pos the part of speech over which to iterate
-     * @return an iterator that will iterate over all index words of the specified part of speech
-     */
-    fun getIndexWordIterator(pos: POS): Iterator<IndexWord>
+    fun getIndexWord(id: SenseIndexID): SenseIndex?
 
     /**
      * Retrieves the word with the specified id from the database. If the specified word is not found, returns null
@@ -56,7 +48,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @param id the id of the word to search for
      * @return the word, if found; null otherwise
      */
-    fun getWord(id: IWordID): Word?
+    fun getSense(id: ISenseID): Sense?
 
     /**
      * Retrieves the word with the specified sense key from the database. If the specified word is not found, returns null
@@ -64,7 +56,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @param key the sense key of the word to search for
      * @return the word, if found; null otherwise
      */
-    fun getWord(key: SenseKey): Word?
+    fun getSense(key: SenseKey): Sense?
 
     /**
      * Retrieves the synset with the specified id from the database. If the specified synset is not found, returns null
@@ -75,14 +67,6 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     fun getSynset(id: SynsetID): Synset?
 
     /**
-     * Returns an iterator that will iterate over all synsets of the specified part of speech.
-     *
-     * @param pos the part of speech over which to iterate
-     * @return an iterator that will iterate over all synsets of the specified part of speech
-     */
-    fun getSynsetIterator(pos: POS): Iterator<Synset>
-
-    /**
      * Retrieves the sense entry for the specified sense key from the database.
      * If the specified sense key has no associated sense entry, returns null
      *
@@ -90,13 +74,6 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @return the entry, if found; null otherwise
      */
     fun getSenseEntry(key: SenseKey): SenseEntry?
-
-    /**
-     * Returns an iterator that will iterate over all sense entries in the dictionary.
-     *
-     * @return an iterator that will iterate over all sense entries
-     */
-    fun getSenseEntryIterator(): Iterator<SenseEntry>
 
     /**
      * Retrieves the exception entry for the specified surface form and part of speech from the database.
@@ -116,6 +93,31 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      */
     fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry?
 
+    // I T E R A T O R S
+
+    /**
+     * Returns an iterator that will iterate over all index words of the specified part of speech.
+     *
+     * @param pos the part of speech over which to iterate
+     * @return an iterator that will iterate over all index words of the specified part of speech
+     */
+    fun getIndexWordIterator(pos: POS): Iterator<SenseIndex>
+
+    /**
+     * Returns an iterator that will iterate over all sense entries in the dictionary.
+     *
+     * @return an iterator that will iterate over all sense entries
+     */
+    fun getSenseEntryIterator(): Iterator<SenseEntry>
+
+    /**
+     * Returns an iterator that will iterate over all synsets of the specified part of speech.
+     *
+     * @param pos the part of speech over which to iterate
+     * @return an iterator that will iterate over all synsets of the specified part of speech
+     */
+    fun getSynsetIterator(pos: POS): Iterator<Synset>
+
     /**
      * Returns an iterator that will iterate over all exception entries of the specified part of speech.
      *
@@ -123,6 +125,8 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @return an iterator that will iterate over all exception entries of the specified part of speech
      */
     fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry>
+
+    // S T A R T S
 
     /**
      * Returns list of lemmas that have the given start.

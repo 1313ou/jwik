@@ -1,7 +1,7 @@
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.LexFile.Companion.ADJ_ALL
-import edu.mit.jwi.item.Word.Companion.checkWordNumber
+import edu.mit.jwi.item.Sense.Companion.checkWordNumber
 import java.util.*
 
 /**
@@ -86,7 +86,7 @@ class Synset private constructor(
     /**
      * The words that are members of the synset
      */
-    lateinit var words: List<Word>
+    lateinit var words: List<Sense>
 
     /**
      * Default implementation of the `Synset` interface.
@@ -185,7 +185,7 @@ class Synset private constructor(
          * @param synset the synset to which this word should be attached
          * @return the created word
          */
-        fun toWord(synset: Synset): Word
+        fun toWord(synset: Synset): Sense
     }
 
     /**
@@ -210,16 +210,16 @@ class Synset private constructor(
             checkWordNumber(number)
         }
 
-        private val relatedWords: MutableMap<Pointer, MutableList<IWordID>> = HashMap<Pointer, MutableList<IWordID>>()
+        private val relatedWords: MutableMap<Pointer, MutableList<ISenseID>> = HashMap<Pointer, MutableList<ISenseID>>()
 
         private val verbFrames = ArrayList<VerbFrame>()
 
-        override fun toWord(synset: Synset): Word {
-            return Word(synset, WordLemmaNumID(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
+        override fun toWord(synset: Synset): Sense {
+            return Sense(synset, SenseIDWithLemmaAndNum(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
         }
 
-        fun addRelatedWord(ptrType: Pointer, id: IWordID) {
-            val words = relatedWords.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<IWordID>() }
+        fun addRelatedWord(ptrType: Pointer, id: ISenseID) {
+            val words = relatedWords.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<ISenseID>() }
             words.add(id)
         }
 
@@ -270,7 +270,7 @@ class Synset private constructor(
             return offset <= 99999999
         }
 
-        fun buildWords(wordBuilders: List<IWordBuilder>, synset: Synset): List<Word> {
+        fun buildWords(wordBuilders: List<IWordBuilder>, synset: Synset): List<Sense> {
             return wordBuilders
                 .map { it.toWord(synset) }
                 .toList()

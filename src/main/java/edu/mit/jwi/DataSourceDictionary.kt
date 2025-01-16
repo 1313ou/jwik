@@ -7,13 +7,12 @@ import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.data.parse.ILineParser
 import edu.mit.jwi.item.*
 import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
-import edu.mit.jwi.item.Word.Companion.checkLexicalId
+import edu.mit.jwi.item.Sense.Companion.checkLexicalId
 import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.Collections.emptyIterator
-import kotlin.Throws
 
 /**
  * A type of `IDictionary` which uses an instance of a `DataProvider` to obtain its data.
@@ -173,12 +172,12 @@ class DataSourceDictionary(
 
     // L O O K  U P
 
-    override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
+    override fun getIndexWord(lemma: String, pos: POS): SenseIndex? {
         checkOpen()
-        return getIndexWord(IndexWordID(lemma, pos))
+        return getIndexWord(SenseIndexID(lemma, pos))
     }
 
-    override fun getIndexWord(id: IndexWordID): IndexWord? {
+    override fun getIndexWord(id: SenseIndexID): SenseIndex? {
         checkOpen()
         val content = dataProvider.resolveContentType(DataType.INDEX, id.pOS)!!
         val file = dataProvider.getSource(content)!!
@@ -186,20 +185,20 @@ class DataSourceDictionary(
         return content.dataType.parser.parseLine(line)
     }
 
-    override fun getWord(id: IWordID): Word? {
+    override fun getSense(id: ISenseID): Sense? {
         checkOpen()
         val synset = getSynset(id.synsetID)
         if (synset == null) {
             return null
         }
         return when (id) {
-            is WordNumID   -> synset.words[id.wordNumber - 1]
-            is WordLemmaID -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
-            else           -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
+            is SenseIDWithNum   -> synset.words[id.senseNumber - 1]
+            is SenseIDWithLemma -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
+            else                -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
         }
     }
 
-    override fun getWord(sensekey: SenseKey): Word? {
+    override fun getSense(sensekey: SenseKey): Sense? {
         checkOpen()
 
         // no need to cache result from the following calls as this will have been done in the call to getSynset()
@@ -212,7 +211,7 @@ class DataSourceDictionary(
         // sometimes the sense.index file doesn't have the sense key entry so try an alternate method of retrieving words by sense keys
         // we have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
         return getIndexWord(sensekey.lemma, sensekey.pOS)?.wordIDs
-            ?.mapNotNull { getWord(it) }
+            ?.mapNotNull { getSense(it) }
             ?.flatMap { it.synset.words }
             ?.first { it.senseKey == sensekey }
     }
@@ -270,7 +269,7 @@ class DataSourceDictionary(
         checkOpen()
         val content = dataProvider.resolveContentType(DataType.WORD, pos)!!
         val parser = content.dataType.parser
-        val file = dataProvider.getSource<IndexWord>(content)!!
+        val file = dataProvider.getSource<SenseIndex>(content)!!
         val lines = file.iterator(start)
         return lines.asSequence()
             .filter { it.startsWith(start) }
@@ -291,7 +290,7 @@ class DataSourceDictionary(
 
         // go find the head word
         var headSynset: Synset?
-        var headWord: Word? = null
+        var headWord: Sense? = null
         val related: List<SynsetID> = synset.getRelatedFor(Pointer.SIMILAR_TO)
         for (simID in related) {
             headSynset = getSynset(simID)!!
@@ -326,7 +325,7 @@ class DataSourceDictionary(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
+    override fun getIndexWordIterator(pos: POS): Iterator<SenseIndex> {
         checkOpen()
         return IndexFileIterator(pos)
     }
@@ -411,12 +410,12 @@ class DataSourceDictionary(
     /**
      * Iterates over index files.
      */
-    inner class IndexFileIterator @JvmOverloads constructor(pos: POS, pattern: String = "") : FileIterator2<IndexWord>(
-        dataProvider.resolveContentType<IndexWord>(DataType.INDEX, pos)!!,
+    inner class IndexFileIterator @JvmOverloads constructor(pos: POS, pattern: String = "") : FileIterator2<SenseIndex>(
+        dataProvider.resolveContentType<SenseIndex>(DataType.INDEX, pos)!!,
         pattern
     ) {
 
-        override fun parseLine(line: String): IndexWord {
+        override fun parseLine(line: String): SenseIndex {
             return parser.parseLine(line)
         }
     }

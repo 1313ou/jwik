@@ -9,9 +9,9 @@ import java.util.*
  * Parser for Wordnet index files (e.g., `idx.adv` or `adv.idx`).
  * It produces an IndexWord object.
  */
-object IndexLineParser : ILineParser<IndexWord> {
+object IndexLineParser : ILineParser<SenseIndex> {
 
-    override fun parseLine(line: String): IndexWord {
+    override fun parseLine(line: String): SenseIndex {
 
         try {
             val tokenizer = StringTokenizer(line, " ")
@@ -40,11 +40,11 @@ object IndexLineParser : ILineParser<IndexWord> {
             val tagSenseCnt = tokenizer.nextToken().toInt()
 
             // get words
-            val words = Array<IWordID>(senseCount) {
+            val words = Array<ISenseID>(senseCount) {
                 val offset: Int = tokenizer.nextToken().toInt()
-                WordLemmaID(SynsetID(offset, pos), lemma)
+                SenseIDWithLemma(SynsetID(offset, pos), lemma)
             }
-            return IndexWord(lemma, pos, tagSenseCnt, ptrs, words)
+            return SenseIndex(lemma, pos, tagSenseCnt, ptrs, words)
         } catch (e: Exception) {
             throw MisformattedLineException(line, e)
         }

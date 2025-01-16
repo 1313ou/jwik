@@ -1,10 +1,10 @@
 package edu.mit.jwi.item
 
 import java.util.*
-import java.util.regex.Pattern
 
 /**
- * A unique identifier for an index word. An index word ID is sufficient to retrieve a specific index word from the Wordnet database.
+ * A unique identifier for an index word.
+ * An index word ID is sufficient to retrieve a specific index word from the Wordnet database.
  * It consists of both a lemma (root form) and part of speech.
  *
  * Constructs an index word id object with the specified lemma and part of speech.
@@ -14,16 +14,16 @@ import java.util.regex.Pattern
  * @param pOS the part of speech for the id
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
-class IndexWordID(
+class SenseIndexID(
     lemma: String,
     override val pOS: POS,
 ) : IHasPOS, IItemID {
 
     /**
-     * The lemma (root form) of the index word that this ID indicates.
+     * The lemma (root form) of the sense index that this ID indicates.
      * The lemma will never be empty, or all whitespace.
      */
-    val lemma: String = lemma.asEscapedIndexWordLemma()
+    val lemma: String = lemma.asEscapedSenseIndexLemma()
 
     init {
         require(lemma.isNotEmpty())
@@ -40,7 +40,7 @@ class IndexWordID(
         if (obj == null) {
             return false
         }
-        if (obj !is IndexWordID) {
+        if (obj !is SenseIndexID) {
             return false
         }
         val other = obj
@@ -63,12 +63,12 @@ class IndexWordID(
          * @return the index word id
          * @throws IllegalArgumentException if the specified string does not conform to an index word id string
          */
-        fun parseIndexWordID(value: String): IndexWordID {
+        fun parseIndexWordID(value: String): SenseIndexID {
             require(value.startsWith("XID-"))
             require(value[value.length - 2] == '-')
 
             val pos = POS.getPartOfSpeech(value[value.length - 1])
-            return IndexWordID(value.substring(4, value.length - 2), pos)
+            return SenseIndexID(value.substring(4, value.length - 2), pos)
         }
     }
 }

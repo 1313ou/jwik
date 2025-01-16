@@ -16,7 +16,7 @@ fun String.asIndexWordLemma(): String{
     return this.lowercase().trim { it <= ' ' }
 }
 
-fun String.asEscapedIndexWordLemma(): String{
+fun String.asEscapedSenseIndexLemma(): String{
     return  whitespace.matcher(this.asIndexWordLemma()).replaceAll("_")
 }
 

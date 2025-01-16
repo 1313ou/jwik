@@ -100,7 +100,7 @@ object DataLineParser : ILineParser<Synset> {
                     // this is a lexical pointer
                     val sourceNum: Int = sourceTargetNum / 256
                     val targetNum: Int = sourceTargetNum and 255
-                    val targetWordID: IWordID = WordNumID(targetSynsetID, targetNum)
+                    val targetWordID: ISenseID = SenseIDWithNum(targetSynsetID, targetNum)
                     wordProxies[sourceNum - 1].addRelatedWord(pointerType, targetWordID)
                 }
             }

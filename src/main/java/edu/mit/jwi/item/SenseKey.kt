@@ -1,8 +1,8 @@
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.LexFile.Companion.getLexicalFileNumberString
-import edu.mit.jwi.item.Word.Companion.checkLexicalID
-import edu.mit.jwi.item.Word.Companion.getLexicalIDForSenseKey
+import edu.mit.jwi.item.Sense.Companion.checkLexicalID
+import edu.mit.jwi.item.Sense.Companion.getLexicalIDForSenseKey
 import java.io.Serializable
 import java.util.*
 

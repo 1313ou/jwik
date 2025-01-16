@@ -13,19 +13,19 @@ import java.util.*
  * @param words       the words for this index word
  * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
  */
-class IndexWord(
-    id: IndexWordID,
+class SenseIndex(
+    id: SenseIndexID,
     tagSenseCnt: Int,
     ptrs: Array<Pointer>?,
-    words: Array<IWordID>,
+    words: Array<ISenseID>,
 
-    ) : IHasPOS, IItem<IndexWordID> {
+    ) : IHasPOS, IItem<SenseIndexID> {
 
     /**
      * The lemma (word root) associated with this index word.
      * Never empty or all whitespace.
      */
-    override val iD: IndexWordID = id
+    override val iD: SenseIndexID = id
 
     /**
      * The number of senses of lemma that are ranked according to their frequency of occurrence in semantic concordance texts.
@@ -39,7 +39,7 @@ class IndexWord(
      */
     val pointers: Set<Pointer>
 
-    val wordIDs: List<IWordID> = words.toList()
+    val wordIDs: List<ISenseID> = words.toList()
 
     val lemma: String
         get() {
@@ -60,7 +60,7 @@ class IndexWord(
      * @param words       the words for this index word
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
-    constructor(lemma: String, pos: POS, tagSenseCnt: Int, words: Array<IWordID>) : this(IndexWordID(lemma, pos), tagSenseCnt, null, words)
+    constructor(lemma: String, pos: POS, tagSenseCnt: Int, words: Array<ISenseID>) : this(SenseIndexID(lemma, pos), tagSenseCnt, null, words)
 
     /**
      * Constructs a new index word.
@@ -72,7 +72,7 @@ class IndexWord(
      * @param words       the words for this index word
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
-    constructor(lemma: String, pos: POS, tagSenseCnt: Int, ptrs: Array<Pointer>, words: Array<IWordID>) : this(IndexWordID(lemma, pos), tagSenseCnt, ptrs, words)
+    constructor(lemma: String, pos: POS, tagSenseCnt: Int, ptrs: Array<Pointer>, words: Array<ISenseID>) : this(SenseIndexID(lemma, pos), tagSenseCnt, ptrs, words)
 
     /**
      * Constructs a new index word.
@@ -82,7 +82,7 @@ class IndexWord(
      * @param words       the words for this index word
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
-    constructor(id: IndexWordID, tagSenseCnt: Int, words: Array<IWordID>) : this(id, tagSenseCnt, null, words)
+    constructor(id: SenseIndexID, tagSenseCnt: Int, words: Array<ISenseID>) : this(id, tagSenseCnt, null, words)
 
     init {
         require(tagSenseCnt >= 0)
@@ -116,10 +116,10 @@ class IndexWord(
         if (obj == null) {
             return false
         }
-        if (obj !is IndexWord) {
+        if (obj !is SenseIndex) {
             return false
         }
-        val other: IndexWord = obj
+        val other: SenseIndex = obj
         if (iD != other.iD) {
             return false
         }

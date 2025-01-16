@@ -193,16 +193,16 @@ constructor(
 
     // L O O K   U P
 
-    override fun getIndexWord(id: IndexWordID): IndexWord? {
+    override fun getIndexWord(id: SenseIndexID): SenseIndex? {
         return if (data != null) super.getIndexWord(id) else return backingDictionary.getIndexWord(id)
     }
 
-    override fun getWord(id: IWordID): Word? {
-        return if (data != null) super.getWord(id) else backingDictionary.getWord(id)
+    override fun getSense(id: ISenseID): Sense? {
+        return if (data != null) super.getSense(id) else backingDictionary.getSense(id)
     }
 
-    override fun getWord(key: SenseKey): Word? {
-        return if (data != null) super.getWord(key) else backingDictionary.getWord(key)
+    override fun getSense(key: SenseKey): Sense? {
+        return if (data != null) super.getSense(key) else backingDictionary.getSense(key)
     }
 
     override fun getLemmasStartingWith(start: String, pos: POS?, limit: Int): Set<String> {
@@ -223,7 +223,7 @@ constructor(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
+    override fun getIndexWordIterator(pos: POS): Iterator<SenseIndex> {
         return HotSwappableIndexWordIterator(pos)
     }
 
@@ -307,12 +307,12 @@ constructor(
      * @param pos the part of speech for the iterator
      */
     private inner class HotSwappableIndexWordIterator(private val pos: POS) :
-        HotSwappableIterator<IndexWord>(
+        HotSwappableIterator<SenseIndex>(
             if (data == null) backingDictionary.getIndexWordIterator(pos) else data!!.idxWords[pos]!!.values.iterator(),
             data == null
         ) {
 
-        override fun makeIterator(): Iterator<IndexWord> {
+        override fun makeIterator(): Iterator<SenseIndex> {
             val m = data!!.idxWords[pos]!!
             return m.values.iterator()
         }
@@ -394,7 +394,7 @@ constructor(
                 // index words
                 var idxWords = result.idxWords[pos]!!
                 run {
-                    val i: Iterator<IndexWord> = source.getIndexWordIterator(pos)
+                    val i: Iterator<SenseIndex> = source.getIndexWordIterator(pos)
                     while (i.hasNext()) {
                         val idxWord = i.next()
                         idxWords.put(idxWord.iD, idxWord)
@@ -430,7 +430,7 @@ constructor(
             val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
             while (i.hasNext()) {
                 val entry = i.next()
-                val word: Word = result.words[entry.senseKey]!!
+                val word: Sense = result.words[entry.senseKey]!!
                 // Creates a new sense entry that replicates the specified sense entry.
                 // The new sense entry replaces its internal sense key with the specified sense key thus removing a redundant object.
                 result.senses.put(word.senseKey, SenseEntry(word.senseKey, entry.offset, entry.senseNumber, entry.tagCount))
