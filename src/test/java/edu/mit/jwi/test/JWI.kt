@@ -52,7 +52,7 @@ class JWI
             val it: Iterator<Index> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
-                val senseids: List<ISenseID> = idx.senseIDs
+                val senseids: List<SenseID> = idx.senseIDs
                 for (senseid in senseids)  // synset id, sense number, and lemma
                 {
                     val sense = this.dict.getSense(senseid)
@@ -73,7 +73,7 @@ class JWI
             while (it.hasNext()) {
                 try {
                     val idx = it.next()
-                    val senseids: List<ISenseID> = idx.senseIDs
+                    val senseids: List<SenseID> = idx.senseIDs
                     for (senseid in senseids)  // synset id, sense number, and lemma
                     {
                         val sense = dict.getSense(senseid)
@@ -142,7 +142,7 @@ class JWI
             val it: Iterator<Index> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
-                val senseids: List<ISenseID> = idx.senseIDs
+                val senseids: List<SenseID> = idx.senseIDs
                 for (senseid in senseids)  // synset id, sense number, and lemma
                 {
                     val sense = dict.getSense(senseid)
@@ -163,7 +163,7 @@ class JWI
             val it: Iterator<Index> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
-                val senseids: List<ISenseID> = idx.senseIDs
+                val senseids: List<SenseID> = idx.senseIDs
                 for (senseid in senseids)  // synset id, sense number, and lemma
                 {
                     val sense = dict.getSense(senseid)
@@ -198,7 +198,7 @@ class JWI
             val it: Iterator<Index> = dict.getIndexWordIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
-                val senseids: List<ISenseID> = idx.senseIDs
+                val senseids: List<SenseID> = idx.senseIDs
                 for (senseid in senseids)  // synset id, sense number, and lemma
                 {
                     val sense = dict.getSense(senseid)
@@ -207,7 +207,7 @@ class JWI
                         // val sense2: Word = dict.getWord(senseid)
                         continue
                     }
-                    val relatedIds: List<ISenseID>? = sense.allRelated
+                    val relatedIds: List<SenseID>? = sense.allRelated
                     for (relatedId in relatedIds!!) {
                         val related = dict.getSense(relatedId)!!
                         f?.accept(related)
@@ -245,14 +245,14 @@ class JWI
         }
 
         // senseid=(lemma, synsetid, sensenum)
-        val senseids: List<ISenseID> = idx.senseIDs
+        val senseids: List<SenseID> = idx.senseIDs
         for (senseid in senseids)  // synset id, sense number, and lemma
         {
             walk(senseid, ps)
         }
     }
 
-    fun walk(senseid: ISenseID, ps: PrintStream) {
+    fun walk(senseid: SenseID, ps: PrintStream) {
         ps.println("--------------------------------------------------------------------------------")
 
         //ps.println("senseid = " + senseid.toString())
@@ -289,7 +289,7 @@ class JWI
         }
 
         // lexical relations
-        val relatedMap: Map<Pointer, List<ISenseID>> = sense.related
+        val relatedMap: Map<Pointer, List<SenseID>> = sense.related
         walk(relatedMap, ps)
 
         // verb frames
@@ -299,7 +299,7 @@ class JWI
         ps.printf("  sensenum: %s tag cnt:%s%n", senseEntry?.senseNumber ?: "<missing>", senseEntry?.tagCount ?: "<missing>")
     }
 
-    fun walk(relatedMap: Map<Pointer, List<ISenseID>>, ps: PrintStream) {
+    fun walk(relatedMap: Map<Pointer, List<SenseID>>, ps: PrintStream) {
         for (entry in relatedMap.entries) {
             val pointer = entry.key
             for (relatedId in entry.value) {

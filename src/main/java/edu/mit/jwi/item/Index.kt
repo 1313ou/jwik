@@ -22,7 +22,7 @@ class Index(
     id: IndexID,
     tagSenseCnt: Int,
     pointers: Array<Pointer>?,
-    senseids: Array<ISenseID>,
+    senseids: Array<SenseID>,
 
     ) : IHasPOS, IItem<IndexID> {
 
@@ -65,7 +65,7 @@ class Index(
     /**
      * Sense IDs
      */
-    val senseIDs: List<ISenseID> = senseids.toList()
+    val senseIDs: List<SenseID> = senseids.toList()
 
     /**
      * Constructs a new index.
@@ -76,7 +76,7 @@ class Index(
      * @param senseids the sense ids for this index
      * @throws IllegalArgumentException if the tag sense count is negative, or the sense ids array is empty
      */
-    constructor(lemma: String, pos: POS, tagSenseCnt: Int, senseids: Array<ISenseID>) : this(IndexID(lemma, pos), tagSenseCnt, null, senseids)
+    constructor(lemma: String, pos: POS, tagSenseCnt: Int, senseids: Array<SenseID>) : this(IndexID(lemma, pos), tagSenseCnt, null, senseids)
 
     /**
      * Constructs a new index.
@@ -88,7 +88,7 @@ class Index(
      * @param senseids the sense ids for this index
      * @throws IllegalArgumentException if the tag sense count is negative, or the sense ids array is empty
      */
-    constructor(lemma: String, pos: POS, tagSenseCnt: Int, pointers: Array<Pointer>, senseids: Array<ISenseID>) : this(IndexID(lemma, pos), tagSenseCnt, pointers, senseids)
+    constructor(lemma: String, pos: POS, tagSenseCnt: Int, pointers: Array<Pointer>, senseids: Array<SenseID>) : this(IndexID(lemma, pos), tagSenseCnt, pointers, senseids)
 
     /**
      * Constructs a new index.
@@ -98,7 +98,7 @@ class Index(
      * @param senseids the sense ids for this index
      * @throws IllegalArgumentException if the tag sense count is negative, or the sense ids array is empty
      */
-    constructor(id: IndexID, tagSenseCnt: Int, senseids: Array<ISenseID>) : this(id, tagSenseCnt, null, senseids)
+    constructor(id: IndexID, tagSenseCnt: Int, senseids: Array<SenseID>) : this(id, tagSenseCnt, null, senseids)
 
     init {
         require(tagSenseCnt >= 0)

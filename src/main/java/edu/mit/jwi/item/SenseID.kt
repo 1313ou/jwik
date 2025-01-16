@@ -6,25 +6,32 @@ import java.util.*
 
 /**
  * Base abstract class containing only reference to synset
+ * The other component (the word) is implemented in the derived classes
  *
  * @property synsetID the synset id
  */
-abstract class BaseSenseID(override val synsetID: SynsetID) : ISenseID {
+abstract class SenseID(
+    /**
+     * The synset id
+     */
+    val synsetID: SynsetID,
+
+    ) : IHasPOS, IItemID {
 
     override val pOS: POS
         get() = synsetID.pOS
 
     override fun toString(): String {
         val pos = synsetID.pOS
-        return "$WORDID_PREFIX${Synset.zeroFillOffset(synsetID.offset)}-${pos.tag.uppercaseChar()}"
+        return "$PREFIX${Synset.zeroFillOffset(synsetID.offset)}-${pos.tag.uppercaseChar()}"
     }
 
     companion object {
 
-        private const val WORDID_PREFIX = "WID-"
+        private const val PREFIX = "WID"
 
         /**
-         * Parses the result of the toString method back into an `WordID`.
+         * Parses the result of the toString method back into an SenseID.
          * Sense ids are always of the following format: WID-########-P-##-lemma where
          * ######## is the eight decimal digit zero-filled offset of the associated synset,
          * P is the upper case character representing the part of speech,
@@ -32,27 +39,33 @@ abstract class BaseSenseID(override val synsetID: SynsetID) : ISenseID {
          * lemma is the lemma.
          *
          * @param value the string to be parsed
-         * @return WordID the parsed id
+         * @return the parsed id
          * @throws IllegalArgumentException if the specified string does not represent a sense id
          */
-        fun parseWordID(value: String): ISenseID {
+        fun parseSenseID(value: String): SenseID {
             require(value.length >= 19)
-            require(value.startsWith("WID-"))
+            require(value.startsWith("$PREFIX-"))
 
             // get synset id
-            val offset = value.substring(4, 12).toInt()
-            val pos = POS.getPartOfSpeech(value[13])
+            val synsetFrom = PREFIX.length + 1
+            val synsetTo = synsetFrom + 8
+            val offset = value.substring(synsetFrom, synsetTo).toInt()
+
+            val posFrom = synsetTo + 1
+            val pos = POS.getPartOfSpeech(value[posFrom])
             val id = SynsetID(offset, pos)
 
             // get sense number
-            val numStr = value.substring(15, 17)
-            if (numStr != SenseIDWithLemma.UNKNOWN_NUMBER) {
-                val num = numStr.toInt(16)
-                return SenseIDWithNum(id, num)
+            val numFrom = posFrom + 2
+            val numTo = numFrom + 2
+            val num = value.substring(numFrom, numTo)
+            if (num != SenseIDWithLemma.UNKNOWN_NUMBER) {
+                return SenseIDWithNum(id, num.toInt(16))
             }
 
             // get lemma
-            val lemma = value.substring(18)
+            val lemmaFrom = numTo + 2
+            val lemma = value.substring(lemmaFrom)
             require(lemma != SenseIDWithNum.UNKNOWN_LEMMA)
             return SenseIDWithLemma(id, lemma)
         }
@@ -69,7 +82,7 @@ abstract class BaseSenseID(override val synsetID: SynsetID) : ISenseID {
  * @param synsetID the synset id
  * @property senseNumber the sense number
  */
-class SenseIDWithNum(synsetID: SynsetID, val senseNumber: Int) : BaseSenseID(synsetID), ISenseID {
+class SenseIDWithNum(synsetID: SynsetID, val senseNumber: Int) : SenseID(synsetID) {
 
     init {
         checkWordNumber(senseNumber)
@@ -86,7 +99,7 @@ class SenseIDWithNum(synsetID: SynsetID, val senseNumber: Int) : BaseSenseID(syn
         if (other == null) {
             return false
         }
-        if (other is BaseSenseID && synsetID != other.synsetID)
+        if (other is SenseID && synsetID != other.synsetID)
             return false
 
         return when (other) {
@@ -117,7 +130,7 @@ class SenseIDWithNum(synsetID: SynsetID, val senseNumber: Int) : BaseSenseID(syn
  * @property lemma lemma
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
-open class SenseIDWithLemma(synsetID: SynsetID, lemma: String) : BaseSenseID(synsetID), ISenseID {
+open class SenseIDWithLemma(synsetID: SynsetID, lemma: String) : SenseID(synsetID) {
 
     val lemma: String = lemma.trim { it <= ' ' }
 
@@ -136,7 +149,7 @@ open class SenseIDWithLemma(synsetID: SynsetID, lemma: String) : BaseSenseID(syn
         if (other == null) {
             return false
         }
-        if (other is BaseSenseID && synsetID != other.synsetID)
+        if (other is SenseID && synsetID != other.synsetID)
             return false
 
         return when (other) {
@@ -168,7 +181,7 @@ open class SenseIDWithLemma(synsetID: SynsetID, lemma: String) : BaseSenseID(syn
  * @param lemma the lemma; may not be empty or all whitespace
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
-class SenseIDWithLemmaAndNum(synsetID: SynsetID, val senseNumber: Int, lemma: String) : SenseIDWithLemma(synsetID, lemma), ISenseID {
+class SenseIDWithLemmaAndNum(synsetID: SynsetID, val senseNumber: Int, lemma: String) : SenseIDWithLemma(synsetID, lemma) {
 
     init {
         checkWordNumber(senseNumber)
@@ -185,7 +198,7 @@ class SenseIDWithLemmaAndNum(synsetID: SynsetID, val senseNumber: Int, lemma: St
         if (other == null) {
             return false
         }
-        if (other is BaseSenseID && synsetID != other.synsetID)
+        if (other is SenseID && synsetID != other.synsetID)
             return false
 
         return when (other) {

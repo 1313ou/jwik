@@ -185,7 +185,7 @@ class DataSourceDictionary(
         return content.dataType.parser.parseLine(line)
     }
 
-    override fun getSense(id: ISenseID): Sense? {
+    override fun getSense(id: SenseID): Sense? {
         checkOpen()
         val synset = getSynset(id.synsetID)
         if (synset == null) {

@@ -48,7 +48,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @param id the id of the word to search for
      * @return the word, if found; null otherwise
      */
-    fun getSense(id: ISenseID): Sense?
+    fun getSense(id: SenseID): Sense?
 
     /**
      * Retrieves the word with the specified sense key from the database. If the specified word is not found, returns null

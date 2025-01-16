@@ -35,8 +35,8 @@ class Sense(
 
     verbFrames: List<VerbFrame>?,
 
-    related: Map<Pointer, List<ISenseID>>,
-) : IHasPOS, IItem<ISenseID> {
+    related: Map<Pointer, List<SenseID>>,
+) : IHasPOS, IItem<SenseID> {
 
     override val pOS: POS
         get() = iD.synsetID.pOS
@@ -45,9 +45,9 @@ class Sense(
 
     val verbFrames: List<VerbFrame> = if (verbFrames == null || verbFrames.isEmpty()) emptyList() else verbFrames
 
-    val related: Map<Pointer, List<ISenseID>> = normalizeRelated(related)
+    val related: Map<Pointer, List<SenseID>> = normalizeRelated(related)
 
-    val allRelated: List<ISenseID>
+    val allRelated: List<SenseID>
         get() = related.values
             .flatMap { it.toList() }
             .distinct()
@@ -128,8 +128,8 @@ class Sense(
      * @param ptr the pointer for which related words are requested
      * @return the list of words related by the specified pointer, or an empty list if none.
      */
-    fun getRelatedFor(ptr: Pointer): List<ISenseID> {
-        return related[ptr] ?: emptyList<ISenseID>()
+    fun getRelatedFor(ptr: Pointer): List<SenseID> {
+        return related[ptr] ?: emptyList<SenseID>()
     }
 
     companion object {
@@ -232,7 +232,7 @@ class Sense(
             return "%02x".format(num)
         }
 
-        private fun normalizeRelated(related: Map<Pointer, List<ISenseID>>?): Map<Pointer, List<ISenseID>> {
+        private fun normalizeRelated(related: Map<Pointer, List<SenseID>>?): Map<Pointer, List<SenseID>> {
             return related?.entries
                 ?.filterNot { it.value.isEmpty() }
                 ?.associate { it.key to it.value }

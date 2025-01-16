@@ -106,7 +106,7 @@ open class CachingDictionary(
         return item as Index?
     }
 
-    override fun getSense(id: ISenseID): Sense? {
+    override fun getSense(id: SenseID): Sense? {
         checkOpen()
         var item = cache.retrieveItem(id)
         if (item == null) {

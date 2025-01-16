@@ -210,7 +210,7 @@ class Synset private constructor(
             checkWordNumber(number)
         }
 
-        private val relatedWords: MutableMap<Pointer, MutableList<ISenseID>> = HashMap<Pointer, MutableList<ISenseID>>()
+        private val relatedWords: MutableMap<Pointer, MutableList<SenseID>> = HashMap<Pointer, MutableList<SenseID>>()
 
         private val verbFrames = ArrayList<VerbFrame>()
 
@@ -218,8 +218,8 @@ class Synset private constructor(
             return Sense(synset, SenseIDWithLemmaAndNum(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
         }
 
-        fun addRelatedWord(ptrType: Pointer, id: ISenseID) {
-            val words = relatedWords.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<ISenseID>() }
+        fun addRelatedWord(ptrType: Pointer, id: SenseID) {
+            val words = relatedWords.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<SenseID>() }
             words.add(id)
         }
 

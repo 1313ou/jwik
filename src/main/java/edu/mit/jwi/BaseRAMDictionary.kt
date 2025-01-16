@@ -187,7 +187,7 @@ abstract class BaseRAMDictionary protected constructor(
 
     // WORD
 
-    override fun getSense(id: ISenseID): Sense? {
+    override fun getSense(id: SenseID): Sense? {
         check(data != null) { NO_DATA }
         val resolver = data!!.synsets[id.pOS]!!
         val synset = resolver[id.synsetID]
@@ -446,7 +446,7 @@ abstract class BaseRAMDictionary protected constructor(
             // related words
             val newRelated = old.related
                 .map { (ptr, oldTargets) ->
-                    val newTargets: List<ISenseID> = oldTargets
+                    val newTargets: List<SenseID> = oldTargets
                         .map { it as SenseIDWithNum }
                         .map {
                             val resolver: Map<SynsetID, Synset> = synsets[it.pOS]!!
@@ -476,8 +476,8 @@ abstract class BaseRAMDictionary protected constructor(
          * @return the new index word object
          */
         private fun makeIndexWord(old: Index): Index {
-            val newIDs: Array<ISenseID> = Array(old.senseIDs.size) { i ->
-                var oldID: ISenseID = old.senseIDs[i]
+            val newIDs: Array<SenseID> = Array(old.senseIDs.size) { i ->
+                var oldID: SenseID = old.senseIDs[i]
                 val resolver = synsets[oldID.pOS]!!
                 var synset: Synset = resolver[oldID.synsetID]!!
                 val newWord = synset.words.first { it.iD == oldID }

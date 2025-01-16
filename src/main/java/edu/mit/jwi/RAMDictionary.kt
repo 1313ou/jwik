@@ -197,7 +197,7 @@ constructor(
         return if (data != null) super.getIndexWord(id) else return backingDictionary.getIndexWord(id)
     }
 
-    override fun getSense(id: ISenseID): Sense? {
+    override fun getSense(id: SenseID): Sense? {
         return if (data != null) super.getSense(id) else backingDictionary.getSense(id)
     }
 

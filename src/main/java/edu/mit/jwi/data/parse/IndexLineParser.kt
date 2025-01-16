@@ -40,7 +40,7 @@ object IndexLineParser : ILineParser<Index> {
             val tagSenseCnt = tokenizer.nextToken().toInt()
 
             // get words
-            val words = Array<ISenseID>(senseCount) {
+            val words = Array<SenseID>(senseCount) {
                 val offset: Int = tokenizer.nextToken().toInt()
                 SenseIDWithLemma(SynsetID(offset, pos), lemma)
             }
