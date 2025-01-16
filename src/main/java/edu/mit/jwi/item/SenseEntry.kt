@@ -28,6 +28,7 @@ class SenseEntry(
      * A sense number is a positive integer.
      */
     val senseNumber: Int,
+
     /**
      * The non-negative tag count for the sense entry.
      * A tag count is a non-negative integer that represents the number of times the sense is tagged in various semantic concordance texts.
@@ -67,10 +68,10 @@ class SenseEntry(
         if (offset != other.offset) {
             return false
         }
-        if (this.senseNumber != other.senseNumber) {
+        if (senseNumber != other.senseNumber) {
             return false
         }
-        return this.tagCount == other.tagCount
+        return tagCount == other.tagCount // questionable
     }
 
     override fun toString(): String {

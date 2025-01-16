@@ -20,7 +20,6 @@ object SensesLineParser : ILineParser<Array<SenseEntry>> {
             // get sense key
             val end = line.indexOf(' ')
             val keyStr = line.substring(0, end)
-            checkNotNull(keyParser)
             val senseKey = keyParser.parseLine(keyStr)
 
             // get sense entry

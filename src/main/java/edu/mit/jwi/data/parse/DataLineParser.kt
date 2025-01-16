@@ -74,11 +74,10 @@ object DataLineParser : ILineParser<Synset> {
             repeat(pointerCount) {
 
                 // get pointer symbol
-                val pointerType: Pointer = resolvePointer(tokenizer.nextToken(), synsetPos)
-                checkNotNull(pointerType)
+                val pointer = resolvePointer(tokenizer.nextToken(), synsetPos)
 
                 // get synset target offset
-                val targetOffset: Int = tokenizer.nextToken().toInt()
+                val targetOffset = tokenizer.nextToken().toInt()
 
                 // get target synset part of speech
                 val targetPos = getPartOfSpeech(tokenizer.nextToken()[0])
@@ -87,21 +86,21 @@ object DataLineParser : ILineParser<Synset> {
                 var targetSynsetID = SynsetID(targetOffset, targetPos)
 
                 // get source/target numbers
-                var sourceTargetNum: Int = tokenizer.nextToken().toInt(16)
+                var sourceTargetNum = tokenizer.nextToken().toInt(16)
 
                 // this is a semantic pointer if the source/target numbers are zero
                 if (sourceTargetNum == 0) {
                     if (synsetPointerMap == null) {
                         synsetPointerMap = HashMap<Pointer, ArrayList<SynsetID>>()
                     }
-                    var pointers = synsetPointerMap.computeIfAbsent(pointerType) { _: Pointer -> ArrayList<SynsetID>() }
+                    var pointers = synsetPointerMap.computeIfAbsent(pointer) { _: Pointer -> ArrayList<SynsetID>() }
                     pointers.add(targetSynsetID)
                 } else {
                     // this is a lexical pointer
                     val sourceNum: Int = sourceTargetNum / 256
                     val targetNum: Int = sourceTargetNum and 255
                     val targetWordID: SenseID = SenseIDWithNum(targetSynsetID, targetNum)
-                    wordProxies[sourceNum - 1].addRelatedWord(pointerType, targetWordID)
+                    wordProxies[sourceNum - 1].addRelatedWord(pointer, targetWordID)
                 }
             }
 

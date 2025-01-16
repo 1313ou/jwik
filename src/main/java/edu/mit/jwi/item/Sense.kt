@@ -92,7 +92,6 @@ class Sense(
         val that = obj
 
         // check id
-        checkNotNull(this.iD)
         if (iD != that.iD) {
             return false
         }

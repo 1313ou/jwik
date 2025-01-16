@@ -7,7 +7,7 @@ import edu.mit.jwi.item.IHasPOS
  */
 interface IStemmingRule : IHasPOS {
 
-    val suffix: String?
+    val suffix: String
 
     val ending: String?
 
@@ -21,17 +21,6 @@ interface IStemmingRule : IHasPOS {
     val suffixIgnoreSet: Set<String>
 
     /**
-     * Applies this rule to the given word.
-     * The word may be empty.
-     * If the rule cannot be applied to the word, this method returns null.
-     * This call is equivalent to calling apply with null as the second argument
-     *
-     * @param word the word to which the stemming rule should be applied.
-     * @return the root of the word, or null if the rule cannot be applied to this word
-     */
-    fun apply(word: String): String?
-
-    /**
      * Applies this rule to the given word, adding the specified suffix to the end of the returned string.
      * If the rule cannot be applied to the word, this method returns null.
      *
@@ -39,5 +28,5 @@ interface IStemmingRule : IHasPOS {
      * @param suffix a suffix that should be appended to the root once it has been derived.
      * @return the root of the word, or null if the rule cannot be applied to this word
      */
-    fun apply(word: String, suffix: String?): String?
+    fun apply(word: String, suffix: String? = null): String?
 }

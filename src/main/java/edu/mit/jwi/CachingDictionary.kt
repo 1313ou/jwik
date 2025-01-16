@@ -112,8 +112,7 @@ open class CachingDictionary(
         if (item == null) {
             item = backingDictionary.getSense(id)
             if (item != null) {
-                val s = checkNotNull(item.synset)
-                cacheSynset(s)
+                cacheSynset(item.synset)
             }
         }
         return item as Sense?
@@ -383,7 +382,7 @@ open class CachingDictionary(
             if (!isEnabled) {
                 return
             }
-            val id = checkNotNull(item.iD)
+            val id = item.iD
             itemCache!!.put(id, item)
             reduceCacheSize(itemCache!!)
         }
@@ -398,7 +397,6 @@ open class CachingDictionary(
             if (!isEnabled) {
                 return
             }
-            checkNotNull(keyCache)
             keyCache!!.put(word.senseKey, word)
             reduceCacheSize(keyCache!!)
         }
@@ -413,9 +411,7 @@ open class CachingDictionary(
             if (!isEnabled) {
                 return
             }
-            val sk = checkNotNull(entry.senseKey)
-            checkNotNull(senseCache)
-            senseCache!!.put(sk, entry)
+            senseCache!!.put(entry.senseKey, entry)
             reduceCacheSize(senseCache!!)
         }
 

@@ -54,14 +54,9 @@ class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: Stri
         this.suffixIgnoreSet = ignoreSet
     }
 
-    override fun apply(word: String): String? {
-        return apply(word, null)
-    }
-
     override fun apply(word: String, suffix: String?): String? {
         // see if the suffix is present
-        checkNotNull(suffix)
-        if (!word.endsWith(suffix)) {
+        if (suffix != null && !word.endsWith(suffix)) {
             return null
         }
 
@@ -75,14 +70,15 @@ class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: Stri
         // apply the rule
         // we loop directly over characters here to avoid two loops
         val sb = StringBuilder()
-        val len = word.length - suffix.length
+        val len = word.length - (suffix?.length ?: 0)
         for (i in 0..<len) {
             sb.append(word[i])
         }
         sb.append(ending)
 
         // append optional suffix
-        sb.append(suffix.trim { it <= ' ' })
+        if (suffix != null)
+            sb.append(suffix.trim { it <= ' ' })
         return sb.toString()
     }
 }

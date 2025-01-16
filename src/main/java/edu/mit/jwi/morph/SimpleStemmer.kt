@@ -141,7 +141,7 @@ open class SimpleStemmer : IStemmer {
 
         // apply the rules
         var root: String?
-        val rules = checkNotNull(this.ruleMap[POS.NOUN])
+        val rules = ruleMap[POS.NOUN]!!
         for (rule in rules) {
             root = rule.apply(word, suffix)
             if (root != null && root.isNotEmpty()) {
@@ -242,7 +242,7 @@ open class SimpleStemmer : IStemmer {
 
         // apply the rules
         var root: String?
-        val rules = checkNotNull(this.ruleMap[POS.VERB])
+        val rules = ruleMap[POS.VERB]!!
         for (rule in rules) {
             root = rule.apply(verb)
             if (root != null && root.isNotEmpty()) {
@@ -309,7 +309,7 @@ open class SimpleStemmer : IStemmer {
 
         // apply the rules
         var root: String?
-        val rules = checkNotNull(this.ruleMap[POS.ADJECTIVE])
+        val rules = ruleMap[POS.ADJECTIVE]!!
         for (rule in rules) {
             root = rule.apply(adj)
             if (root != null && root.isNotEmpty()) {

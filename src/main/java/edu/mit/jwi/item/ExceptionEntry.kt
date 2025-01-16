@@ -33,7 +33,6 @@ class ExceptionEntry : ExceptionEntryProxy, IHasPOS, IItem<ExceptionEntryID> {
     }
 
     override fun toString(): String {
-        checkNotNull(this.pOS)
-        return super.toString() + "-" + this.pOS
+        return "${super.toString()}-$pOS"
     }
 }

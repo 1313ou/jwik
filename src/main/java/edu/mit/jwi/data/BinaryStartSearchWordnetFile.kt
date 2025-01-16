@@ -24,7 +24,6 @@ class BinaryStartSearchWordnetFile<T>(file: File, contentType: ContentType<T>) :
         val buffer = getBuffer()
 
         synchronized(bufferLock) {
-            checkNotNull(buffer)
             var start = 0
             var stop = buffer.limit()
             while (stop - start > 1) {
