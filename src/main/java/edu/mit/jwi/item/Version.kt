@@ -20,10 +20,10 @@ import java.util.regex.Pattern
  *
  * Clients should normally obtain instances of this class via the getVersion methods.
  *
- * @param majorVersion     the major version number, i.e., the '1' in 1.2.3.q
- * @param minorVersion     the minor version number, i.e., the '2' in 1.2.3.q
- * @param bugfixVersion    the bugfix version number, i.e., the '3' in 1.2.3.q
- * @param qualifier        the version qualifier, i.e., the 'q' in 1.2.3.q
+ * @param majorVersion the major version number, i.e., the '1' in 1.2.3.q
+ * @param minorVersion the minor version number, i.e., the '2' in 1.2.3.q
+ * @param bugfixVersion the bugfix version number, i.e., the '3' in 1.2.3.q
+ * @param qualifier the version qualifier, i.e., the 'q' in 1.2.3.q
  * @throws IllegalArgumentException if any of the version numbers are negative, or the qualifier is not a legal qualifier
  */
 open class Version(
@@ -132,9 +132,9 @@ open class Version(
          * Checks the supplied version numbers.
          * Throws an IllegalArgumentException if they do not define a legal version.,
          *
-         * @param major     the major version number
-         * @param minor     the minor version number
-         * @param bugfix    the bugfix version number
+         * @param major the major version number
+         * @param minor the minor version number
+         * @param bugfix the bugfix version number
          * @param qualifier the qualifier to check
          * @return the null-masked qualifier
          * @throws IllegalArgumentException if the supplied arguments do not identify a legal version
@@ -149,8 +149,8 @@ open class Version(
          * Checks the supplied version numbers.
          * Throws an IllegalArgumentException if the version numbers are not valid (that is, any are below zero).
          *
-         * @param major  the major version number
-         * @param minor  the minor version number
+         * @param major the major version number
+         * @param minor the minor version number
          * @param bugfix the bugfix version number
          * @throws IllegalArgumentException if any of the supplied numbers are negative
          */
@@ -177,9 +177,9 @@ open class Version(
         /**
          * Returns true if the arguments identify a legal version; false otherwise.
          *
-         * @param major     the major version number
-         * @param minor     the minor version number
-         * @param bugfix    the bugfix version number
+         * @param major the major version number
+         * @param minor the minor version number
+         * @param bugfix the bugfix version number
          * @param qualifier the version qualifier
          * @return true if the arguments identify a legal version; false otherwise.
          */
@@ -193,8 +193,8 @@ open class Version(
         /**
          * Returns true if any of three numbers are negative (unless specific NO_VERSION)
          *
-         * @param major  the major version number
-         * @param minor  the minor version number
+         * @param major the major version number
+         * @param minor the minor version number
          * @param bugfix the bugfix version number
          * @return true if all the numbers are non-negative; false otherwise
          */
@@ -232,8 +232,8 @@ open class Version(
         /**
          * Creates and caches, or retrieves from the cache, a version object corresponding to the specified numbers.
          *
-         * @param major  the major version number
-         * @param minor  the minor version number
+         * @param major the major version number
+         * @param minor the minor version number
          * @param bugfix the bugfix version number
          * @return the cached version object corresponding to these numbers
          */
@@ -245,9 +245,9 @@ open class Version(
         /**
          * Creates and caches, or retrieves from the cache, a version object corresponding to the specified numbers.
          *
-         * @param major     the major version number
-         * @param minor     the minor version number
-         * @param bugfix    the bugfix version number
+         * @param major the major version number
+         * @param minor the minor version number
+         * @param bugfix the bugfix version number
          * @param qualifier the version qualifier
          * @return the cached version object corresponding to these numbers
          * @throws IllegalArgumentException if the version numbers and qualifier are not legal
@@ -276,9 +276,9 @@ open class Version(
          * Creates a version string for the specified version numbers.
          * If a version's bugfix number is 0, and if the qualifier is null or empty, the string produced is of the form "x.y".
          *
-         * @param major     the major version number, i.e., the '1' in 1.2.3.q
-         * @param minor     the minor version number, i.e., the '2' in 1.2.3.q
-         * @param bugfix    the bugfix version number, i.e., the '3' in 1.2.3.q
+         * @param major the major version number, i.e., the '1' in 1.2.3.q
+         * @param minor the minor version number, i.e., the '2' in 1.2.3.q
+         * @param bugfix the bugfix version number, i.e., the '3' in 1.2.3.q
          * @param qualifier the version qualifier, i.e., the 'q' in 1.2.3.q
          * @return a string representing the specified version
          * @throws IllegalArgumentException if illegal argument
@@ -307,9 +307,9 @@ open class Version(
          * Calculates the hash code for a version object with the specified version
          * numbers.
          *
-         * @param major     the major version number, i.e., the '1' in 1.2.3.q
-         * @param minor     the minor version number, i.e., the '2' in 1.2.3.q
-         * @param bugfix    the bugfix version number, i.e., the '3' in 1.2.3.q
+         * @param major the major version number, i.e., the '1' in 1.2.3.q
+         * @param minor the minor version number, i.e., the '2' in 1.2.3.q
+         * @param bugfix the bugfix version number, i.e., the '3' in 1.2.3.q
          * @param qualifier the version qualifier, i.e., the 'q' in 1.2.3.q
          * @return the hash code for the specified version
          * @throws IllegalArgumentException if the specified parameters do not identify a legal version
@@ -331,7 +331,7 @@ open class Version(
          * If no version can be extracted, returns null.
          *
          * @param contentType the content type of the data in the buffer
-         * @param buffer      the buffer containing the data
+         * @param buffer the buffer containing the data
          * @return the Version that was extracted, or null if none
          */
 
@@ -445,7 +445,7 @@ open class Version(
          * @param verStr the sequence of characters to be transformed
          * @return the version
          * @throws IllegalArgumentException if the character sequence does not correspond to a legal version
-          */
+         */
         fun parseVersion(verStr: CharSequence): Version {
 
             val parts: Array<String?> = periodPattern.split(verStr)

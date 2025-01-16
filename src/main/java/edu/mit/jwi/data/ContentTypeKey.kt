@@ -7,7 +7,7 @@ import edu.mit.jwi.item.POS
  */
 enum class ContentTypeKey(
     private val dataType: DataType<*>,
-    val pOS: POS?
+    val pOS: POS?,
 ) {
 
     INDEX_NOUN(DataType.INDEX, POS.NOUN),  //

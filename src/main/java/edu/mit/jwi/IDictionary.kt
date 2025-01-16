@@ -22,7 +22,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * This method is identical to `getIndexWord(IndexWordID)` and is provided as a convenience.
      *
      * @param lemma the lemma for the index word requested; may not be empty or all whitespace
-     * @param pos   the part of speech
+     * @param pos the part of speech
      * @return the index word corresponding to the specified lemma and part of speech, or null if none is found
      * @throws IllegalArgumentException if the specified lemma is empty or all whitespace
      */
@@ -132,7 +132,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * Returns list of lemmas that have the given start.
      *
      * @param start start of lemmas searched for
-     * @param pos   the part of speech over which to iterate; may be null, in which case it ignores pos
+     * @param pos the part of speech over which to iterate; may be null, in which case it ignores pos
      * @param limit maximum number of results, 0 for no limit
      * @return a set of lemmas in dictionary that have given start
      */

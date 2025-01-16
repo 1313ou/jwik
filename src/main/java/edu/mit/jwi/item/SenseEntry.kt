@@ -5,7 +5,7 @@ import java.io.Serializable
 import java.util.*
 
 /**
- * A Wordnet sense entry object, represented in the Wordnet files as a line in the sense entry.
+ * A Wordnet sense entry object, represented in the Wordnet files as a line in the index.senses
  *
  * @param senseKey the sense key of the entry
  * @param offset the synset offset of the entry

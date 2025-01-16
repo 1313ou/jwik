@@ -109,7 +109,7 @@ class DataType<T>(
          * Finds the first file that satisfies the naming constraints of both the data type and part of speech.
          *
          * @param dataType the data type whose resource name hints should be used
-         * @param pos  the part of speech whose resource name hints should be used
+         * @param pos the part of speech whose resource name hints should be used
          * @param files the files to be searched
          * @return the file that matches both the pos and type naming conventions, or null if none is found.
          */
@@ -141,7 +141,7 @@ class DataType<T>(
          * If the pattern set is empty or null, returns true.
          * If a pattern is found in the target string, returns true; otherwise, returns false.
          *
-         * @param target   the string to be searched
+         * @param target the string to be searched
          * @param patterns the patterns to search for
          * @return true if the target contains one of the patterns; false otherwise
          */

@@ -55,5 +55,5 @@ open class BaseIndexLineComparator() : ILineComparator {
     }
 }
 
-object IndexLineComparator: BaseIndexLineComparator()
+object IndexLineComparator : BaseIndexLineComparator()
 

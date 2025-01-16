@@ -10,6 +10,7 @@ import edu.mit.jwi.item.*
 import java.io.File
 import java.net.URL
 import java.util.concurrent.Callable
+import kotlin.Throws
 
 /**
  * Dictionary that wraps an arbitrary dictionary object.
@@ -448,6 +449,7 @@ constructor(
     }
 
     companion object {
+
         /**
          * The default load policy of a RAMDictionary is to load data in the background when opened.
          */

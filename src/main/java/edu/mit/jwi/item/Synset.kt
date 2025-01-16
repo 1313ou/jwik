@@ -48,7 +48,7 @@ class Synset private constructor(
      */
     val related: Map<Pointer, List<SynsetID>>,
 
-) : IHasPOS, IItem<SynsetID> {
+    ) : IHasPOS, IItem<SynsetID> {
 
     /**
      * Part Of Speech

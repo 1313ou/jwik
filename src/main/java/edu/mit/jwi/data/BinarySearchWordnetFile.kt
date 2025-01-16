@@ -68,7 +68,7 @@ class BinarySearchWordnetFile<T>(file: File, contentType: ContentType<T>) : Word
      *
      * @param buffer the buffer over which the iterator should iterate
      * @param key the key of the line to start at
-      */
+     */
     inner class BinarySearchLineIterator(buffer: ByteBuffer, key: String?) : LineIterator(buffer) {
 
         private val bufferLock: Any = Any()

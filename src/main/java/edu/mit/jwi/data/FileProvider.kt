@@ -384,7 +384,7 @@ class FileProvider @JvmOverloads constructor(
      * The method should return a non-null result, but it may be empty if no data sources can be created.
      * Subclasses may override this method.
      *
-     * @param files  the files from which the data sources should be created
+     * @param files the files from which the data sources should be created
      * @param policy the load policy of the provider
      * @return a map, possibly empty, of content types mapped to data sources
      * @throws IOException if there is a problem creating the data source

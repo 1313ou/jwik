@@ -99,7 +99,7 @@ class SenseKey(
     /**
      * Constructs a new sense key.
      *
-     * @param lemma  the lemma for the sense key
+     * @param lemma the lemma for the sense key
      * @param lexicalID the lexical id of the sense key
      * @param synset the synset for the sense key
      */
@@ -108,12 +108,12 @@ class SenseKey(
     /**
      * Constructs a new sense key.
      *
-     * @param lemma       the lemma
-     * @param lexID       the lexical id
-     * @param pos         the part of speech
-     * @param isAdjSat    true if this represents an adjective satellite; false otherwise
-     * @param lexFile     the lexical file
-     * @param sensekey    the original key string
+     * @param lemma the lemma
+     * @param lexID the lexical id
+     * @param pos the part of speech
+     * @param isAdjSat true if this represents an adjective satellite; false otherwise
+     * @param lexFile the lexical file
+     * @param sensekey the original key string
      */
     constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFile: LexFile, sensekey: String) : this(lemma, lexID, pos, isAdjSat, lexFile) {
         this.sensekey = sensekey
@@ -122,13 +122,13 @@ class SenseKey(
     /**
      * Constructs a new sense key.
      *
-     * @param lemma       the lemma
-     * @param lexID       the lexical id
-     * @param pos         the part of speech
-     * @param lexFile     the lexical file
-     * @param sensekey    the original key string
-     * @param headLemma   the head lemma
-     * @param headLexID   the head lexical id; ignored if head lemma is null
+     * @param lemma the lemma
+     * @param lexID the lexical id
+     * @param pos the part of speech
+     * @param lexFile the lexical file
+     * @param sensekey the original key string
+     * @param headLemma the head lemma
+     * @param headLexID the head lexical id; ignored if head lemma is null
      */
     constructor(lemma: String, lexID: Int, pos: POS, lexFile: LexFile, headLemma: String?, headLexID: Int, sensekey: String) : this(lemma, lexID, pos, (headLemma != null), lexFile) {
         if (headLemma == null) {

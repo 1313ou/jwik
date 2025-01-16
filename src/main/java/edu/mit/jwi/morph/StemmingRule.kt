@@ -11,7 +11,7 @@ import java.util.*
  *
  * @param suffix the suffix that should be stripped from a word; should not be empty, or all whitespace.
  * @param ending the ending that should be stripped from a word; may be empty or all whitespace.
- * @param pos    the part of speech to which this rule applies
+ * @param pos the part of speech to which this rule applies
  * @param ignore the set of suffixes that, when present, indicate this rule should not be applied. May not contain nulls or empties.
  */
 class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: String) : IStemmingRule {
@@ -24,7 +24,7 @@ class StemmingRule(suffix: String, ending: String, pos: POS, vararg ignore: Stri
 
     override val suffixIgnoreSet: MutableSet<String>
 
-     init {
+    init {
         var suffix = suffix
         var ending = ending
 

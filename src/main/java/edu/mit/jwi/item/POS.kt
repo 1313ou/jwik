@@ -61,7 +61,7 @@ enum class POS
 
     /**
      * Returns a set of strings that can be used to identify resource corresponding to objects with this part of speech.
-    */
+     */
     val resourceNameHints: Set<String> = setOf(*names)
 
     override fun toString(): String {

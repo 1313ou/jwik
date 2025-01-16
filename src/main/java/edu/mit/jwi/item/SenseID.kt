@@ -92,8 +92,8 @@ class SenseIDWithNum(synsetID: SynsetID, val senseNumber: Int) : BaseSenseID(syn
         return when (other) {
             is SenseIDWithLemmaAndNum -> senseNumber == other.senseNumber
             is SenseIDWithNum         -> senseNumber == other.senseNumber
-            is SenseIDWithLemma -> false
-            else                -> false
+            is SenseIDWithLemma       -> false
+            else                      -> false
         }
     }
 
@@ -112,7 +112,7 @@ class SenseIDWithNum(synsetID: SynsetID, val senseNumber: Int) : BaseSenseID(syn
  * This constructor produces a sense id with a lemma
  * The lemma is a non-empty string non-whitespace string
  *
- * @param synsetID  the synset id
+ * @param synsetID the synset id
  * @param lemma lemma arg
  * @property lemma lemma
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
@@ -143,7 +143,7 @@ open class SenseIDWithLemma(synsetID: SynsetID, lemma: String) : BaseSenseID(syn
             is SenseIDWithLemmaAndNum -> lemma.equals(other.lemma, ignoreCase = true)
             is SenseIDWithLemma       -> lemma.equals(other.lemma, ignoreCase = true)
             is SenseIDWithNum         -> false
-            else                -> false
+            else                      -> false
         }
     }
 
@@ -163,7 +163,7 @@ open class SenseIDWithLemma(synsetID: SynsetID, lemma: String) : BaseSenseID(syn
  * The sense number, which is a number from 1 to 255, indicates the order this sense is listed in the Wordnet data files
  * The lemma is a non-empty string non-whitespace string
  *
- * @param synsetID  the synset id
+ * @param synsetID the synset id
  * @property senseNumber the sense number
  * @param lemma the lemma; may not be empty or all whitespace
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
@@ -192,7 +192,7 @@ class SenseIDWithLemmaAndNum(synsetID: SynsetID, val senseNumber: Int, lemma: St
             is SenseIDWithLemmaAndNum -> lemma.equals(other.lemma, ignoreCase = true) && senseNumber == other.senseNumber
             is SenseIDWithLemma       -> lemma.equals(other.lemma, ignoreCase = true)
             is SenseIDWithNum         -> senseNumber == other.senseNumber
-            else                -> false
+            else                      -> false
         }
     }
 

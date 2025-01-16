@@ -4,7 +4,7 @@ import java.util.regex.Pattern
 
 // sense keys
 
-fun String.asSensekeyLemma(): String{
+fun String.asSensekeyLemma(): String {
     return this.lowercase()
 }
 
@@ -12,16 +12,16 @@ fun String.asSensekeyLemma(): String{
 
 private val whitespace: Pattern = Pattern.compile("\\s+")
 
-fun String.asIndexWordLemma(): String{
+fun String.asIndexWordLemma(): String {
     return this.lowercase().trim { it <= ' ' }
 }
 
-fun String.asEscapedSenseIndexLemma(): String{
-    return  whitespace.matcher(this.asIndexWordLemma()).replaceAll("_")
+fun String.asEscapedSenseIndexLemma(): String {
+    return whitespace.matcher(this.asIndexWordLemma()).replaceAll("_")
 }
 
 // exceptions
 
-fun String.asSurfaceForm(): String{
+fun String.asSurfaceForm(): String {
     return this.lowercase().trim { it <= ' ' }
 }

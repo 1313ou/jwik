@@ -7,10 +7,10 @@ import java.util.*
  *
  * Constructs a new index word.
  *
- * @param id          the index word id for this index word
+ * @param id the sense index id for this sense index
  * @param tagSenseCnt the tag sense count
- * @param ptrs        an array of pointers for all the synsets of this lemma
- * @param words       the words for this index word
+ * @param ptrs an array of pointers for all the synsets of this lemma
+ * @param words the words for this sense index
  * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
  */
 class SenseIndex(
@@ -22,7 +22,7 @@ class SenseIndex(
     ) : IHasPOS, IItem<SenseIndexID> {
 
     /**
-     * The lemma (word root) associated with this index word.
+     * The lemma (word root) associated with this sense index.
      * Never empty or all whitespace.
      */
     override val iD: SenseIndexID = id
@@ -34,7 +34,7 @@ class SenseIndex(
     val tagSenseCount: Int = tagSenseCnt
 
     /**
-     * An immutable set containing all the different types of pointers that this index word has across all synsets containing this word.
+     * An immutable set containing all the different types of pointers that this sense index has across all synsets containing this word.
      * If all senses of the word have no pointers, this method returns an empty set.
      */
     val pointers: Set<Pointer>
@@ -52,34 +52,34 @@ class SenseIndex(
         }
 
     /**
-     * Constructs a new index word.
+     * Constructs a new sense index.
      *
-     * @param lemma       the lemma of this index word
-     * @param pos         the part of speech of this index word
+     * @param lemma the lemma of this sense index
+     * @param pos the part of speech of this sense index
      * @param tagSenseCnt the tag sense count
-     * @param words       the words for this index word
+     * @param words the words for this sense index
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
     constructor(lemma: String, pos: POS, tagSenseCnt: Int, words: Array<ISenseID>) : this(SenseIndexID(lemma, pos), tagSenseCnt, null, words)
 
     /**
-     * Constructs a new index word.
+     * Constructs a new sense index.
      *
-     * @param lemma       the lemma of this index word
-     * @param pos         the part of speech of this index word
+     * @param lemma the lemma of this sense index
+     * @param pos the part of speech of this sense index
      * @param tagSenseCnt the tag sense count
-     * @param ptrs        an array of pointers that the synsets with lemma have
-     * @param words       the words for this index word
+     * @param ptrs an array of pointers that the synsets with lemma have
+     * @param words the words for this sense index
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
     constructor(lemma: String, pos: POS, tagSenseCnt: Int, ptrs: Array<Pointer>, words: Array<ISenseID>) : this(SenseIndexID(lemma, pos), tagSenseCnt, ptrs, words)
 
     /**
-     * Constructs a new index word.
+     * Constructs a new sense index.
      *
-     * @param id          the index word id for this index word
+     * @param id the sense index id for this sense index
      * @param tagSenseCnt the tag sense count
-     * @param words       the words for this index word
+     * @param words the words for this sense index
      * @throws IllegalArgumentException if the tag sense count is negative, or the word array is empty
      */
     constructor(id: SenseIndexID, tagSenseCnt: Int, words: Array<ISenseID>) : this(id, tagSenseCnt, null, words)

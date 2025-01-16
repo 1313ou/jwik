@@ -8,7 +8,7 @@ import java.util.*
  * Hard-coded, implementation that does not read from the actual file.
  * This is not implemented as an `Enum` so that clients can instantiate their own custom verb frame objects.
  *
- * @param number      the verb frame number
+ * @param number the verb frame number
  * @param template the template representing the verb frame
  */
 class VerbFrame(

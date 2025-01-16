@@ -42,7 +42,7 @@ abstract class WordnetFile<T>(
      */
     override val contentType: ContentType<T>,
 
-) : ILoadableDataSource<T> {
+    ) : ILoadableDataSource<T> {
 
     override val name: String
         get() = file.name
@@ -371,7 +371,7 @@ abstract class WordnetFile<T>(
          * If the provided character set is null, the method defaults to the previous method getLine.
          *
          * @param buf the buffer from which the line should be extracted
-         * @param cs  the character set to use for decoding
+         * @param cs the character set to use for decoding
          * @return the remainder of line in the specified buffer, starting from the buffer's current position
          */
         @JvmStatic

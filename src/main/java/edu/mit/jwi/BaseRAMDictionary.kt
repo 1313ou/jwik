@@ -10,6 +10,7 @@ import java.net.URL
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPOutputStream
+import kotlin.Throws
 
 /**
  * Dictionary that can be completely loaded into memory.
@@ -237,7 +238,7 @@ abstract class BaseRAMDictionary protected constructor(
 
     override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
         check(data != null) { NO_DATA }
-        return  data!!.exceptions[id.pOS]!![id]
+        return data!!.exceptions[id.pOS]!![id]
     }
 
     // I T E R A T E
@@ -335,7 +336,7 @@ abstract class BaseRAMDictionary protected constructor(
          * @param <K>         the type of the keys for the sub-maps
          * @param <V>         the type of the values for the sub-maps
          * @param initialSize the initial size of the map; this parameter is ignored if the `contents` parameter is non-null.
-         * @param contents    the items to be inserted in the map, may be null. If non-null, the initialSize parameter is ignored
+         * @param contents the items to be inserted in the map, may be null. If non-null, the initialSize parameter is ignored
          * @return an empty map with either the specified initial size, or contained the specified contents
          * @throws IllegalArgumentException if the initial size is invalid (less than 1) and the specified contents are null
          */
@@ -438,7 +439,7 @@ abstract class BaseRAMDictionary protected constructor(
          * Creates a new word object that replaces all the old internal `IWordID` objects with those from the denoted words, thus throwing away redundant word ids.
          *
          * @param newSynset the synset for which the word is being made
-         * @param old       the word to be replicated
+         * @param old the word to be replicated
          * @return the new synset, a copy of the first
          */
         private fun makeWord(newSynset: Synset, old: Sense): Sense {
@@ -492,7 +493,7 @@ abstract class BaseRAMDictionary protected constructor(
          * Constructs a new word builder object out of the specified old
          * synset and word.
          *
-         * @param oldWord   the old word that backs this builder
+         * @param oldWord the old word that backs this builder
          */
         inner class WordBuilder(private val oldWord: Sense) : Synset.IWordBuilder {
 
@@ -512,7 +513,7 @@ abstract class BaseRAMDictionary protected constructor(
          * output stream. The file may point to either a directory or in-memory
          * image.
          *
-         * @param in  the file from which the Wordnet data should be loaded
+         * @param in the file from which the Wordnet data should be loaded
          * @param out the output stream to which the Wordnet data should be written
          * @return true if the export was successful
          * @throws IOException          if there is an IO problem when opening or exporting the dictionary.
@@ -528,7 +529,7 @@ abstract class BaseRAMDictionary protected constructor(
          * output stream. The url may point to either a directory or in-memory
          * image.
          *
-         * @param in  the url from which the Wordnet data should be loaded
+         * @param in the url from which the Wordnet data should be loaded
          * @param out the output stream to which the Wordnet data should be written
          * @return true if the export was successful
          * @throws IOException          if there is an IO problem when opening or exporting the dictionary.
@@ -543,7 +544,7 @@ abstract class BaseRAMDictionary protected constructor(
          * from the specified input stream factory into an in-memory image written to
          * the specified output stream.
          *
-         * @param in  the file from which the Wordnet data should be loaded
+         * @param in the file from which the Wordnet data should be loaded
          * @param out the output stream to which the Wordnet data should be written
          * @return true if the export was successful
          * @throws IOException          if there is an IO problem when opening or exporting the dictionary.
@@ -558,7 +559,7 @@ abstract class BaseRAMDictionary protected constructor(
          * This is convenience method.
          *
          * @param dict the dictionary to be exported; the dictionary will be closed at the end of the method.
-         * @param out  the output stream to which the data will be written.
+         * @param out the output stream to which the data will be written.
          * @return true if the export was successful
          * @throws IOException if there was a IO problem during export
          */

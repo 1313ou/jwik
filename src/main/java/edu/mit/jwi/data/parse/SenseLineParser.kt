@@ -1,5 +1,6 @@
 package edu.mit.jwi.data.parse
 
+import edu.mit.jwi.data.parse.SenseLineParser.keyParser
 import edu.mit.jwi.item.SenseEntry
 import edu.mit.jwi.item.SenseKey
 import java.util.*

@@ -4,7 +4,7 @@ package edu.mit.jwi.item
  * Represents 'unknown' lexical files.
  * This class implements internal caching, much like the Integer class.
  * Clients should use the getUnknownLexicalFile method to retrieve instances of this class.
-  */
+ */
 class UnknownLexFile
 /**
  * Obtain instances of this class via the getUnknownLexicalFile] method.

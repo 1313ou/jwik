@@ -6,6 +6,7 @@ import edu.mit.jwi.item.*
 import java.io.IOException
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.Throws
 
 /**
  * A dictionary that caches the results of another dictionary
@@ -424,7 +425,7 @@ open class CachingDictionary(
          *
          * @param <T> the type of the item
          * @param <D> the type of the item id
-         * @param id  the id for the requested item
+         * @param id the id for the requested item
          * @return the item for the specified id, or null if not present in the cache
          */
         fun <T : IItem<D>, D : IItemID> retrieveItem(id: D): T? {

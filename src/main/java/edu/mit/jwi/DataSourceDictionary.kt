@@ -6,13 +6,14 @@ import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.data.parse.ILineParser
 import edu.mit.jwi.item.*
-import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
 import edu.mit.jwi.item.Sense.Companion.checkLexicalId
+import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
 import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.Collections.emptyIterator
+import kotlin.Throws
 
 /**
  * A type of `IDictionary` which uses an instance of a `DataProvider` to obtain its data.
@@ -35,7 +36,7 @@ class DataSourceDictionary(
      * Constructs a new dictionary that uses the Wordnet files located in a directory pointed to by the specified url
      *
      * @param wordnetDir an url pointing to a directory containing the wordnet data files on the filesystem
-     * @param config     config parameters
+     * @param config config parameters
      */
     @JvmOverloads
     constructor(wordnetDir: URL, config: Config? = null) : this(FileProvider(wordnetDir)) {
@@ -46,7 +47,7 @@ class DataSourceDictionary(
      * Constructs a new dictionary that uses the Wordnet files located in the specified directory
      *
      * @param wordnetDir a directory containing the wordnet data files on the filesystem
-     * @param config     config parameters
+     * @param config config parameters
      */
     @JvmOverloads
     constructor(wordnetDir: File, config: Config? = null) : this(FileProvider(wordnetDir)) {
@@ -401,7 +402,7 @@ class DataSourceDictionary(
         /**
          * Constructs a new file iterator with the specified content type and start key.
          *
-         * @param content  content type
+         * @param content content type
          * @param startKey start key
          */
         constructor(content: ContentType<T>, startKey: String) : super(content, startKey)
