@@ -2,6 +2,7 @@ package edu.mit.jwi.morph
 
 import edu.mit.jwi.item.POS
 import java.util.regex.Pattern
+import kotlin.sequences.distinct
 
 /**
  * Provides simple a simple pattern-based stemming facility based on the "Rules of Detachment" as described in the `morphy` man page in the Wordnet distribution, which can be found at [ http://wordnet.princeton.edu/man/morphy.7WN.html](http://wordnet.princeton.edu/man/morphy.7WN.html)
@@ -55,29 +56,21 @@ open class SimpleStemmer : IStemmer {
      * @return the rule map for this stemmer
      */
     override fun findStems(word: String, pos: POS?): List<String> {
-        var word = word
-        word = normalize(word)
+        var word = normalize(word)
 
         // if pos is null, do all
         if (pos == null) {
-            val result = LinkedHashSet<String>()
-            for (p in POS.entries) {
-                result.addAll(findStems(word, p))
-            }
-            if (result.isEmpty()) {
-                return emptyList()
-            }
-            return result.toList()
+            return POS.entries.asSequence()
+                .flatMap { findStems(word, it) }
+                .toList()
         }
 
-        val isCollocation: Boolean = word.contains(underscore)
-
+        val isMultipleWord = word.contains(underscoreRegex)
         return when (pos) {
-            POS.NOUN      -> if (isCollocation) getNounCollocationRoots(word) else stripNounSuffix(word)
-            POS.VERB      -> if (isCollocation) getVerbCollocationRoots(word) else stripVerbSuffix(word) // BUG006: here we check for composites
-
+            POS.NOUN      -> if (isMultipleWord) getNounMultipleWordsRoots(word) else stripNounSuffix(word)
+            POS.VERB      -> if (isMultipleWord) getVerbMultipleWordsRoots(word) else stripVerbSuffix(word)
             POS.ADJECTIVE -> stripAdjectiveSuffix(word)
-            POS.ADVERB    -> listOf<String>()  // nothing for adverb
+            POS.ADVERB    -> emptyList()  // nothing for adverb
         }
 
         throw IllegalArgumentException("This should not happen")
@@ -92,8 +85,7 @@ open class SimpleStemmer : IStemmer {
      */
     protected fun normalize(word: String): String {
         // make lowercase
-        var word = word
-        word = word.lowercase()
+        var word = word.lowercase()
 
         // replace all underscores with spaces
         word = word.replace('_', ' ')
@@ -103,10 +95,7 @@ open class SimpleStemmer : IStemmer {
         require(word.isNotEmpty())
 
         // replace all whitespace with underscores
-        word = whitespace.matcher(word).replaceAll(underscore)
-
-        // return normalized word
-        return word
+        return whitespace.matcher(word).replaceAll(underscore)
     }
 
     /**
@@ -131,81 +120,8 @@ open class SimpleStemmer : IStemmer {
         return rules[POS.VERB]!!.asSequence()
             .mapNotNull { it.apply(word, suffix) }
             .filter { !it.isEmpty() }
+            .distinct()
             .toList()
-    }
-
-    /**
-     * Handles stemming noun collocations.
-     *
-     * @param composite the word to be modified
-     * @return a list of modified forms that were constructed, or the empty list if none
-     */
-
-    protected fun getNounCollocationRoots(composite: String): List<String> {
-        // split into parts
-        val parts: Array<String> = composite.split(underscore.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        if (parts.size < 2) {
-            return mutableListOf<String>()
-        }
-
-        // stem each part
-        val rootSets: MutableList<List<String>?> = ArrayList<List<String>?>(parts.size)
-        for (part in parts) {
-            rootSets.add(findStems(part, POS.NOUN))
-        }
-
-        // reassemble all combinations
-        val poss: MutableSet<StringBuffer> = HashSet<StringBuffer>()
-
-        // seed the set
-        var rootSet = rootSets[0]
-        if (rootSet == null) {
-            poss.add(StringBuffer(parts[0]))
-        } else {
-            for (root in rootSet) {
-                poss.add(StringBuffer(root))
-            }
-        }
-
-        // make all combinations
-        var replace: MutableSet<StringBuffer>?
-        for (i in 1..<rootSets.size) {
-            rootSet = rootSets[i]
-            if (rootSet!!.isEmpty()) {
-                for (p in poss) {
-                    p.append("_")
-                    p.append(parts[i])
-                }
-            } else {
-                replace = HashSet<StringBuffer>()
-                for (p in poss) {
-                    for (root in rootSet) {
-                        var newBuf = StringBuffer()
-                        newBuf.append(p.toString())
-                        newBuf.append("_")
-                        newBuf.append(root)
-                        replace.add(newBuf)
-                    }
-                }
-                poss.clear()
-                poss.addAll(replace)
-            }
-        }
-
-        if (poss.isEmpty()) {
-            return listOf<String>()
-        }
-
-        // make sure to remove empties
-        val result: MutableSet<String> = LinkedHashSet<String>()
-        var root: String?
-        for (p in poss) {
-            root = p.toString().trim { it <= ' ' }
-            if (root.isNotEmpty()) {
-                result.add(root)
-            }
-        }
-        return ArrayList<String>(result)
     }
 
     /**
@@ -222,52 +138,8 @@ open class SimpleStemmer : IStemmer {
         return rules[POS.VERB]!!.asSequence()
             .mapNotNull { it.apply(verb) }
             .filter { !it.isEmpty() }
+            .distinct()
             .toList()
-     }
-
-    /**
-     * Handles stemming verb collocations.
-     *
-     * @param composite the word to be modified
-     * @return a list of modified forms that were constructed, or an empty list if none
-     */
-    protected fun getVerbCollocationRoots(composite: String): List<String> {
-        // split into parts
-        val parts: Array<String> = composite.split(underscore.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        if (parts.size < 2) {
-            return emptyList()
-        }
-
-        // find the stems of each parts
-        val rootSets = parts
-            .map { findStems(it, POS.VERB) }
-            .toList()
-
-        val result = LinkedHashSet<String>()
-
-        // form all combinations
-        val rootBuffer = StringBuilder()
-        for (i in parts.indices) {
-            for (partRoot in rootSets[i]) {
-                rootBuffer.replace(0, rootBuffer.length, "")
-
-                for (j in parts.indices) {
-                    if (j == i) {
-                        rootBuffer.append(partRoot)
-                    } else {
-                        rootBuffer.append(parts[j])
-                    }
-                    if (j < parts.size - 1) {
-                        rootBuffer.append(underscore)
-                    }
-                }
-                result.add(rootBuffer.toString())
-            }
-        }
-
-        // remove any empties
-        result.removeIf { it.isEmpty() }
-        return result.toList()
     }
 
     /**
@@ -281,6 +153,71 @@ open class SimpleStemmer : IStemmer {
             .asSequence()
             .mapNotNull { it.apply(adj) }
             .filter { !it.isEmpty() }
+            .distinct()
+            .toList()
+    }
+
+    fun <T> cartesianProduct(lists: List<List<T>>): List<List<T>> {
+        return lists.fold(listOf(emptyList<T>())) { acc, list ->
+            acc.flatMap { accItem ->
+                list.map { accItem + it }
+            }
+        }
+    }
+
+    /**
+     * Handles stemming noun collocations.
+     *
+     * @param composite the word to be modified
+     * @return a list of modified forms that were constructed, or the empty list if none
+     */
+    protected fun getNounMultipleWordsRoots(composite: String): List<String> {
+        // split into parts
+        val parts = composite.split(underscoreRegex).dropLastWhile { it.isEmpty() }.toTypedArray()
+        if (parts.size < 2) {
+            return emptyList()
+        }
+
+        // stem each part
+        val rootSets = parts
+            .map { findStems(it, POS.NOUN) }
+            .toList()
+
+        // reassemble all combinations
+        val product = cartesianProduct(rootSets)
+        return product
+            .map { it.joinToString(separator = underscore) }
+            .map { it.trim { it <= ' ' } }
+            .filterNot { it.isEmpty() }
+            .distinct()
+            .toList()
+    }
+
+    /**
+     * Handles stemming verb collocations.
+     *
+     * @param composite the word to be modified
+     * @return a list of modified forms that were constructed, or an empty list if none
+     */
+    protected fun getVerbMultipleWordsRoots(composite: String): List<String> {
+        // split into parts
+        val parts = composite.split(underscoreRegex).dropLastWhile { it.isEmpty() }.toTypedArray()
+        if (parts.size < 2) {
+            return emptyList()
+        }
+
+        // find the stems of each parts
+        val rootSets = parts
+            .map { findStems(it, POS.VERB) }
+            .toList()
+
+        // reassemble all combinations
+        val product = cartesianProduct(rootSets)
+        return product
+            .map { it.joinToString(separator = underscore) }
+            .map { it.trim { it <= ' ' } }
+            .filterNot { it.isEmpty() }
+            .distinct()
             .toList()
     }
 
@@ -288,7 +225,9 @@ open class SimpleStemmer : IStemmer {
 
         val whitespace: Pattern = Pattern.compile("\\s+")
 
-        const val underscore: String = "_"
+        const val underscore = "_"
+
+        val underscoreRegex: Regex = underscore.toRegex()
 
         const val SUFFIX_ches: String = "ches"
         const val SUFFIX_ed: String = "ed"
