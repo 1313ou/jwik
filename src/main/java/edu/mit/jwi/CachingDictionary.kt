@@ -6,7 +6,6 @@ import edu.mit.jwi.item.*
 import java.io.IOException
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.Throws
 
 /**
  * A dictionary that caches the results of another dictionary
@@ -82,9 +81,9 @@ open class CachingDictionary(
 
     // L O O K   U P
 
-    override fun getIndexWord(lemma: String, pos: POS): SenseIndex? {
+    override fun getIndexWord(lemma: String, pos: POS): Index? {
         checkOpen()
-        val id = SenseIndexID(lemma, pos)
+        val id = IndexID(lemma, pos)
         var item = cache.retrieveItem(id)
         if (item == null) {
             item = backingDictionary.getIndexWord(id)
@@ -92,10 +91,10 @@ open class CachingDictionary(
                 cache.cacheItem(item)
             }
         }
-        return item as SenseIndex?
+        return item as Index?
     }
 
-    override fun getIndexWord(id: SenseIndexID): SenseIndex? {
+    override fun getIndexWord(id: IndexID): Index? {
         checkOpen()
         var item = cache.retrieveItem(id)
         if (item == null) {
@@ -104,7 +103,7 @@ open class CachingDictionary(
                 cache.cacheItem(item)
             }
         }
-        return item as SenseIndex?
+        return item as Index?
     }
 
     override fun getSense(id: ISenseID): Sense? {
@@ -196,7 +195,7 @@ open class CachingDictionary(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<SenseIndex> {
+    override fun getIndexWordIterator(pos: POS): Iterator<Index> {
         return backingDictionary.getIndexWordIterator(pos)
     }
 

@@ -72,10 +72,10 @@ class DataType<T>(
     companion object {
 
         @JvmField
-        val INDEX: DataType<SenseIndex> = DataType<SenseIndex>("Index", true, IndexLineParser, "index", "idx")
+        val INDEX: DataType<Index> = DataType<Index>("Index", true, IndexLineParser, "index", "idx")
 
         @JvmField
-        val WORD: DataType<SenseIndex> = DataType<SenseIndex>("Word", true, IndexLineParser, "index", "idx")
+        val WORD: DataType<Index> = DataType<Index>("Word", true, IndexLineParser, "index", "idx")
 
         @JvmField
         val DATA: DataType<Synset> = DataType<Synset>("Data", true, DataLineParser, "data", "dat")

@@ -67,15 +67,15 @@ class ContentType<T>
 
     companion object {
 
-        val INDEX_NOUN = ContentType<SenseIndex>(ContentTypeKey.INDEX_NOUN, IndexLineComparator)
-        val INDEX_VERB = ContentType<SenseIndex>(ContentTypeKey.INDEX_VERB, IndexLineComparator)
-        val INDEX_ADVERB = ContentType<SenseIndex>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator)
-        val INDEX_ADJECTIVE = ContentType<SenseIndex>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator)
+        val INDEX_NOUN = ContentType<Index>(ContentTypeKey.INDEX_NOUN, IndexLineComparator)
+        val INDEX_VERB = ContentType<Index>(ContentTypeKey.INDEX_VERB, IndexLineComparator)
+        val INDEX_ADVERB = ContentType<Index>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator)
+        val INDEX_ADJECTIVE = ContentType<Index>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator)
 
-        val WORD_NOUN = ContentType<SenseIndex>(ContentTypeKey.WORD_NOUN, IndexLineComparator)
-        val WORD_VERB = ContentType<SenseIndex>(ContentTypeKey.WORD_VERB, IndexLineComparator)
-        val WORD_ADVERB = ContentType<SenseIndex>(ContentTypeKey.WORD_ADVERB, IndexLineComparator)
-        val WORD_ADJECTIVE = ContentType<SenseIndex>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator)
+        val WORD_NOUN = ContentType<Index>(ContentTypeKey.WORD_NOUN, IndexLineComparator)
+        val WORD_VERB = ContentType<Index>(ContentTypeKey.WORD_VERB, IndexLineComparator)
+        val WORD_ADVERB = ContentType<Index>(ContentTypeKey.WORD_ADVERB, IndexLineComparator)
+        val WORD_ADJECTIVE = ContentType<Index>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator)
 
         val DATA_NOUN = ContentType<Synset>(ContentTypeKey.DATA_NOUN, DataLineComparator)
         val DATA_VERB = ContentType<Synset>(ContentTypeKey.DATA_VERB, DataLineComparator)
@@ -130,7 +130,7 @@ class ContentType<T>
          * @param pos the part of speech for the content type
          * @return the index content type for the specified part of speech
          */
-        fun getIndexContentType(pos: POS): ContentType<SenseIndex> {
+        fun getIndexContentType(pos: POS): ContentType<Index> {
             return when (pos) {
                 POS.NOUN      -> INDEX_NOUN
                 POS.VERB      -> INDEX_VERB
@@ -139,7 +139,7 @@ class ContentType<T>
             }
         }
 
-        fun getWordContentType(pos: POS): ContentType<SenseIndex> {
+        fun getWordContentType(pos: POS): ContentType<Index> {
             return when (pos) {
                 POS.NOUN      -> WORD_NOUN
                 POS.VERB      -> WORD_VERB

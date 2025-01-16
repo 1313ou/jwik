@@ -13,7 +13,6 @@ import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.Collections.emptyIterator
-import kotlin.Throws
 
 /**
  * A type of `IDictionary` which uses an instance of a `DataProvider` to obtain its data.
@@ -173,12 +172,12 @@ class DataSourceDictionary(
 
     // L O O K  U P
 
-    override fun getIndexWord(lemma: String, pos: POS): SenseIndex? {
+    override fun getIndexWord(lemma: String, pos: POS): Index? {
         checkOpen()
-        return getIndexWord(SenseIndexID(lemma, pos))
+        return getIndexWord(IndexID(lemma, pos))
     }
 
-    override fun getIndexWord(id: SenseIndexID): SenseIndex? {
+    override fun getIndexWord(id: IndexID): Index? {
         checkOpen()
         val content = dataProvider.resolveContentType(DataType.INDEX, id.pOS)!!
         val file = dataProvider.getSource(content)!!
@@ -211,7 +210,7 @@ class DataSourceDictionary(
 
         // sometimes the sense.index file doesn't have the sense key entry so try an alternate method of retrieving words by sense keys
         // we have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
-        return getIndexWord(sensekey.lemma, sensekey.pOS)?.wordIDs
+        return getIndexWord(sensekey.lemma, sensekey.pOS)?.senseIDs
             ?.mapNotNull { getSense(it) }
             ?.flatMap { it.synset.words }
             ?.first { it.senseKey == sensekey }
@@ -270,7 +269,7 @@ class DataSourceDictionary(
         checkOpen()
         val content = dataProvider.resolveContentType(DataType.WORD, pos)!!
         val parser = content.dataType.parser
-        val file = dataProvider.getSource<SenseIndex>(content)!!
+        val file = dataProvider.getSource<Index>(content)!!
         val lines = file.iterator(start)
         return lines.asSequence()
             .filter { it.startsWith(start) }
@@ -326,7 +325,7 @@ class DataSourceDictionary(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<SenseIndex> {
+    override fun getIndexWordIterator(pos: POS): Iterator<Index> {
         checkOpen()
         return IndexFileIterator(pos)
     }
@@ -411,12 +410,12 @@ class DataSourceDictionary(
     /**
      * Iterates over index files.
      */
-    inner class IndexFileIterator @JvmOverloads constructor(pos: POS, pattern: String = "") : FileIterator2<SenseIndex>(
-        dataProvider.resolveContentType<SenseIndex>(DataType.INDEX, pos)!!,
+    inner class IndexFileIterator @JvmOverloads constructor(pos: POS, pattern: String = "") : FileIterator2<Index>(
+        dataProvider.resolveContentType<Index>(DataType.INDEX, pos)!!,
         pattern
     ) {
 
-        override fun parseLine(line: String): SenseIndex {
+        override fun parseLine(line: String): Index {
             return parser.parseLine(line)
         }
     }

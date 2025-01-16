@@ -3,18 +3,18 @@ package edu.mit.jwi.item
 import java.util.*
 
 /**
- * A unique identifier for an index word.
- * An index word ID is sufficient to retrieve a specific index word from the Wordnet database.
- * It consists of both a lemma (root form) and part of speech.
+ * A unique identifier / key for an index.
+ * An index ID is sufficient to retrieve a specific index from the Wordnet database.
+ * It consists of both a lemma and part of speech.
  *
- * Constructs an index word id object with the specified lemma and part of speech.
+ * Constructs an index id object with the specified lemma and part of speech.
  * Since all index entries are in lower case, with whitespace converted to underscores, this constructor applies this conversion.
  *
  * @param lemma the lemma for the id
  * @param pOS the part of speech for the id
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
-class SenseIndexID(
+class IndexID(
     lemma: String,
     override val pOS: POS,
 ) : IHasPOS, IItemID {
@@ -40,7 +40,7 @@ class SenseIndexID(
         if (obj == null) {
             return false
         }
-        if (obj !is SenseIndexID) {
+        if (obj !is IndexID) {
             return false
         }
         val other = obj
@@ -51,24 +51,26 @@ class SenseIndexID(
     }
 
     override fun toString(): String {
-        return "XID-$lemma-${pOS.tag}"
+        return "$PREFIX-$lemma-${pOS.tag}"
     }
 
     companion object {
 
+        const val PREFIX = "XID"
+
         /**
-         * Convenience method for transforming the result of the toString method into an `IndexWordID`
+         * Convenience method for transforming the result of the toString method into an IndexID
          *
          * @param value the string to be parsed
-         * @return the index word id
-         * @throws IllegalArgumentException if the specified string does not conform to an index word id string
+         * @return the index id
+         * @throws IllegalArgumentException if the specified string does not conform to an index id string
          */
-        fun parseIndexWordID(value: String): SenseIndexID {
-            require(value.startsWith("XID-"))
+        fun parseIndexID(value: String): IndexID {
+            require(value.startsWith("$PREFIX-"))
             require(value[value.length - 2] == '-')
 
             val pos = POS.getPartOfSpeech(value[value.length - 1])
-            return SenseIndexID(value.substring(4, value.length - 2), pos)
+            return IndexID(value.substring(PREFIX.length + 1, value.length - 2), pos)
         }
     }
 }

@@ -10,7 +10,6 @@ import java.net.URL
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import java.util.zip.GZIPOutputStream
-import kotlin.Throws
 
 /**
  * Dictionary that can be completely loaded into memory.
@@ -177,11 +176,11 @@ abstract class BaseRAMDictionary protected constructor(
 
     // INDEX WORD
 
-    override fun getIndexWord(lemma: String, pos: POS): SenseIndex? {
-        return getIndexWord(SenseIndexID(lemma, pos))
+    override fun getIndexWord(lemma: String, pos: POS): Index? {
+        return getIndexWord(IndexID(lemma, pos))
     }
 
-    override fun getIndexWord(id: SenseIndexID): SenseIndex? {
+    override fun getIndexWord(id: IndexID): Index? {
         check(data != null) { NO_DATA }
         return data!!.idxWords[id.pOS]!![id]
     }
@@ -243,7 +242,7 @@ abstract class BaseRAMDictionary protected constructor(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<SenseIndex> {
+    override fun getIndexWordIterator(pos: POS): Iterator<Index> {
         check(data != null) { NO_DATA }
         return data!!.idxWords[pos]!!.values.iterator()
     }
@@ -302,7 +301,7 @@ abstract class BaseRAMDictionary protected constructor(
 
         var version: Version? = null
 
-        val idxWords: MutableMap<POS, MutableMap<SenseIndexID, SenseIndex>> = makePOSMap<SenseIndexID, SenseIndex>()
+        val idxWords: MutableMap<POS, MutableMap<IndexID, Index>> = makePOSMap<IndexID, Index>()
 
         val synsets: MutableMap<POS, MutableMap<SynsetID, Synset>> = makePOSMap<SynsetID, Synset>()
 
@@ -356,7 +355,7 @@ abstract class BaseRAMDictionary protected constructor(
          * Resizes the internal data maps to be the exact size to contain their data.
          */
         fun compactSize() {
-            compactPOSMap<SenseIndexID, SenseIndex>(idxWords)
+            compactPOSMap<IndexID, Index>(idxWords)
             compactPOSMap<SynsetID, Synset>(synsets)
             compactPOSMap<ExceptionEntryID, ExceptionEntry>(exceptions)
             words = compactMap<SenseKey, Sense>(words)
@@ -476,15 +475,15 @@ abstract class BaseRAMDictionary protected constructor(
          * @param old the index word to be replicated
          * @return the new index word object
          */
-        private fun makeIndexWord(old: SenseIndex): SenseIndex {
-            val newIDs: Array<ISenseID> = Array(old.wordIDs.size) { i ->
-                var oldID: ISenseID = old.wordIDs[i]
+        private fun makeIndexWord(old: Index): Index {
+            val newIDs: Array<ISenseID> = Array(old.senseIDs.size) { i ->
+                var oldID: ISenseID = old.senseIDs[i]
                 val resolver = synsets[oldID.pOS]!!
                 var synset: Synset = resolver[oldID.synsetID]!!
                 val newWord = synset.words.first { it.iD == oldID }
                 newWord.iD
             }
-            return SenseIndex(old.iD, old.tagSenseCount, newIDs)
+            return Index(old.iD, old.tagSenseCount, newIDs)
         }
 
         /**

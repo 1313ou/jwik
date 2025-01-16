@@ -10,7 +10,6 @@ import edu.mit.jwi.item.*
 import java.io.File
 import java.net.URL
 import java.util.concurrent.Callable
-import kotlin.Throws
 
 /**
  * Dictionary that wraps an arbitrary dictionary object.
@@ -194,7 +193,7 @@ constructor(
 
     // L O O K   U P
 
-    override fun getIndexWord(id: SenseIndexID): SenseIndex? {
+    override fun getIndexWord(id: IndexID): Index? {
         return if (data != null) super.getIndexWord(id) else return backingDictionary.getIndexWord(id)
     }
 
@@ -224,7 +223,7 @@ constructor(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<SenseIndex> {
+    override fun getIndexWordIterator(pos: POS): Iterator<Index> {
         return HotSwappableIndexWordIterator(pos)
     }
 
@@ -308,12 +307,12 @@ constructor(
      * @param pos the part of speech for the iterator
      */
     private inner class HotSwappableIndexWordIterator(private val pos: POS) :
-        HotSwappableIterator<SenseIndex>(
+        HotSwappableIterator<Index>(
             if (data == null) backingDictionary.getIndexWordIterator(pos) else data!!.idxWords[pos]!!.values.iterator(),
             data == null
         ) {
 
-        override fun makeIterator(): Iterator<SenseIndex> {
+        override fun makeIterator(): Iterator<Index> {
             val m = data!!.idxWords[pos]!!
             return m.values.iterator()
         }
@@ -395,7 +394,7 @@ constructor(
                 // index words
                 var idxWords = result.idxWords[pos]!!
                 run {
-                    val i: Iterator<SenseIndex> = source.getIndexWordIterator(pos)
+                    val i: Iterator<Index> = source.getIndexWordIterator(pos)
                     while (i.hasNext()) {
                         val idxWord = i.next()
                         idxWords.put(idxWord.iD, idxWord)
