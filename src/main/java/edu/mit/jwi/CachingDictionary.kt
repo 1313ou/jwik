@@ -31,10 +31,10 @@ open class CachingDictionary(
         backingDictionary.configure(config)
     }
 
+    // O P E N   /   C L O S E
+
     /**
-     * An internal method for assuring compliance with the dictionary interface
-     * that says that methods will throw `ObjectClosedException`s if
-     * the dictionary has not yet been opened.
+     * An internal method for assuring compliance with the dictionary interface that says that methods will throw ObjectClosedExceptions if the dictionary has not yet been opened.
      *
      * @throws ObjectClosedException if the dictionary is closed.
      */
@@ -80,38 +80,36 @@ open class CachingDictionary(
             return backingDictionary.version
         }
 
+    // L O O K   U P
+
     override fun getIndexWord(lemma: String, pos: POS): IndexWord? {
         checkOpen()
-        val id: IndexWordID = IndexWordID(lemma, pos)
-        var item = cache.retrieveItem<IndexWord, IndexWordID>(id)
+        val id = IndexWordID(lemma, pos)
+        var item = cache.retrieveItem(id)
         if (item == null) {
             item = backingDictionary.getIndexWord(id)
             if (item != null) {
                 cache.cacheItem(item)
             }
         }
-        return item
+        return item as IndexWord?
     }
 
     override fun getIndexWord(id: IndexWordID): IndexWord? {
         checkOpen()
-        var item = cache.retrieveItem<IndexWord, IndexWordID>(id)
+        var item = cache.retrieveItem(id)
         if (item == null) {
             item = backingDictionary.getIndexWord(id)
             if (item != null) {
                 cache.cacheItem(item)
             }
         }
-        return item
-    }
-
-    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
-        return backingDictionary.getIndexWordIterator(pos)
+        return item as IndexWord?
     }
 
     override fun getWord(id: IWordID): Word? {
         checkOpen()
-        var item = cache.retrieveItem<Word, IWordID>(id)
+        var item = cache.retrieveItem(id)
         if (item == null) {
             item = backingDictionary.getWord(id)
             if (item != null) {
@@ -119,7 +117,7 @@ open class CachingDictionary(
                 cacheSynset(s)
             }
         }
-        return item
+        return item as Word?
     }
 
     override fun getWord(key: SenseKey): Word? {
@@ -136,14 +134,14 @@ open class CachingDictionary(
 
     override fun getSynset(id: SynsetID): Synset? {
         checkOpen()
-        var item = cache.retrieveItem<Synset, SynsetID>(id)
+        var item = cache.retrieveItem(id)
         if (item == null) {
             item = backingDictionary.getSynset(id)
             if (item != null) {
                 cacheSynset(item)
             }
         }
-        return item
+        return item as Synset?
     }
 
     /**
@@ -159,8 +157,29 @@ open class CachingDictionary(
         }
     }
 
-    override fun getSynsetIterator(pos: POS): Iterator<Synset> {
-        return backingDictionary.getSynsetIterator(pos)
+    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
+        checkOpen()
+        val id = ExceptionEntryID(surfaceForm, pos)
+        var item = cache.retrieveItem(id)
+        if (item == null) {
+            item = backingDictionary.getExceptionEntry(id)
+            if (item != null) {
+                cache.cacheItem(item)
+            }
+        }
+        return item as ExceptionEntry?
+    }
+
+    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
+        checkOpen()
+        var item = cache.retrieveItem(id)
+        if (item == null) {
+            item = backingDictionary.getExceptionEntry(id)
+            if (item != null) {
+                cache.cacheItem(item)
+            }
+        }
+        return item as ExceptionEntry?
     }
 
     override fun getSenseEntry(key: SenseKey): SenseEntry? {
@@ -175,33 +194,18 @@ open class CachingDictionary(
         return entry
     }
 
+    // I T E R A T E
+
+    override fun getIndexWordIterator(pos: POS): Iterator<IndexWord> {
+        return backingDictionary.getIndexWordIterator(pos)
+    }
+
+    override fun getSynsetIterator(pos: POS): Iterator<Synset> {
+        return backingDictionary.getSynsetIterator(pos)
+    }
+
     override fun getSenseEntryIterator(): Iterator<SenseEntry> {
         return backingDictionary.getSenseEntryIterator()
-    }
-
-    override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
-        checkOpen()
-        val id = ExceptionEntryID(surfaceForm, pos)
-        var item = cache.retrieveItem<ExceptionEntry, ExceptionEntryID>(id)
-        if (item == null) {
-            item = backingDictionary.getExceptionEntry(id)
-            if (item != null) {
-                cache.cacheItem(item)
-            }
-        }
-        return item
-    }
-
-    override fun getExceptionEntry(id: ExceptionEntryID): ExceptionEntry? {
-        checkOpen()
-        var item = cache.retrieveItem<ExceptionEntry, ExceptionEntryID>(id)
-        if (item == null) {
-            item = backingDictionary.getExceptionEntry(id)
-            if (item != null) {
-                cache.cacheItem(item)
-            }
-        }
-        return item
     }
 
     override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
