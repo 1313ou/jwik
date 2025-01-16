@@ -1,23 +1,19 @@
 package edu.mit.jwi.morph
 
 import edu.mit.jwi.item.POS
-import java.util.Collections.unmodifiableList
-import java.util.Collections.unmodifiableMap
 import java.util.regex.Pattern
 
 /**
- * Provides simple a simple pattern-based stemming facility based on the "Rules
- * of Detachment" as described in the `morphy` man page in the Wordnet
- * distribution, which can be found at [
- * http://wordnet.princeton.edu/man/morphy.7WN.html](http://wordnet.princeton.edu/man/morphy.7WN.html) It also attempts to
- * strip "ful" endings. It does not search Wordnet to see if stems actually
- * exist. In particular, quoting from that man page:
+ * Provides simple a simple pattern-based stemming facility based on the "Rules of Detachment" as described in the `morphy` man page in the Wordnet distribution, which can be found at [ http://wordnet.princeton.edu/man/morphy.7WN.html](http://wordnet.princeton.edu/man/morphy.7WN.html)
+ * It also attempts to strip "ful" endings.
+ * It does not search Wordnet to see if stems actually exist.
+ * In particular, quoting from that man page:
  * <h3>Rules of Detachment</h3>
- *
- *
- * The following table shows the rules of detachment used by Morphy. If a word
- * ends with one of the suffixes, it is stripped from the word and the
- * corresponding ending is added. ... No rules are applicable to adverbs.
+ * *
+ * The following table shows the rules of detachment used by Morphy.
+ * If a word ends with one of the suffixes, it is stripped from the word and the
+ * corresponding ending is added.
+ * No rules are applicable to adverbs.
  *
  *
  * POS Suffix Ending<br></br>
@@ -46,11 +42,10 @@ import java.util.regex.Pattern
  * <h3>Special Processing for nouns ending with 'ful'</h3>
  *
  * Morphy contains code that searches for nouns ending with ful and performs a transformation on the substring preceding it.
- * It then appends 'ful' back onto the resulting string and returns it. For example, if passed the nouns "boxesful", it will return "boxful".
+ * It then appends 'ful' back onto the resulting string and returns it.
+ * For example, if passed the nouns "boxesful", it will return "boxful".
  */
 open class SimpleStemmer : IStemmer {
-
-    val whitespace: Pattern = Pattern.compile("\\s+")
 
     /**
      * Returns a set of stemming rules used by this stemmer.
@@ -59,9 +54,6 @@ open class SimpleStemmer : IStemmer {
      *
      * @return the rule map for this stemmer
      */
-    val ruleMap: MutableMap<POS?, List<StemmingRule>>
-        get() = Companion.ruleMap
-
     override fun findStems(word: String, pos: POS?): List<String> {
         var word = word
         word = normalize(word)
@@ -128,7 +120,7 @@ open class SimpleStemmer : IStemmer {
             return emptyList()
         }
 
-        // strip off "ful"
+        // strip off "ful" to later reapply it
         var word = noun
         var suffix: String? = null
         if (noun.endsWith(SUFFIX_ful)) {
@@ -136,19 +128,10 @@ open class SimpleStemmer : IStemmer {
             suffix = SUFFIX_ful
         }
 
-        // we will return this to the caller
-        val result: MutableSet<String> = LinkedHashSet<String>()
-
-        // apply the rules
-        var root: String?
-        val rules = ruleMap[POS.NOUN]!!
-        for (rule in rules) {
-            root = rule.apply(word, suffix)
-            if (root != null && root.isNotEmpty()) {
-                result.add(root)
-            }
-        }
-        return if (result.isEmpty()) listOf<String>() else ArrayList<String>(result)
+        return rules[POS.VERB]!!.asSequence()
+            .mapNotNull { it.apply(word, suffix) }
+            .filter { !it.isEmpty() }
+            .toList()
     }
 
     /**
@@ -236,21 +219,11 @@ open class SimpleStemmer : IStemmer {
         if (verb.length <= 2) {
             return emptyList<String>()
         }
-
-        // we will return this to the caller
-        val result = LinkedHashSet<String>()
-
-        // apply the rules
-        var root: String?
-        val rules = ruleMap[POS.VERB]!!
-        for (rule in rules) {
-            root = rule.apply(verb)
-            if (root != null && root.isNotEmpty()) {
-                result.add(root)
-            }
-        }
-        return result.toList()
-    }
+        return rules[POS.VERB]!!.asSequence()
+            .mapNotNull { it.apply(verb) }
+            .filter { !it.isEmpty() }
+            .toList()
+     }
 
     /**
      * Handles stemming verb collocations.
@@ -304,24 +277,19 @@ open class SimpleStemmer : IStemmer {
      * @return a list of modified forms that were constructed, or an empty list if none
      */
     protected fun stripAdjectiveSuffix(adj: String): List<String> {
-        // we will return this to the caller
-        val result: MutableSet<String> = LinkedHashSet<String>()
-
-        // apply the rules
-        var root: String?
-        val rules = ruleMap[POS.ADJECTIVE]!!
-        for (rule in rules) {
-            root = rule.apply(adj)
-            if (root != null && root.isNotEmpty()) {
-                result.add(root)
-            }
-        }
-        return if (result.isEmpty()) listOf<String>() else ArrayList<String>(result)
+        return rules[POS.ADJECTIVE]!!
+            .asSequence()
+            .mapNotNull { it.apply(adj) }
+            .filter { !it.isEmpty() }
+            .toList()
     }
 
     companion object {
 
+        val whitespace: Pattern = Pattern.compile("\\s+")
+
         const val underscore: String = "_"
+
         const val SUFFIX_ches: String = "ches"
         const val SUFFIX_ed: String = "ed"
         const val SUFFIX_es: String = "es"
@@ -348,52 +316,42 @@ open class SimpleStemmer : IStemmer {
         const val ENDING_y: String = "y"
         const val ENDING_z: String = "z"
 
-        val ruleMap: MutableMap<POS?, List<StemmingRule>>
+        val rulesForNoun = listOf(
+            StemmingRule(SUFFIX_s, ENDING_null, POS.NOUN, SUFFIX_ss),
+            StemmingRule(SUFFIX_ses, ENDING_s, POS.NOUN),
+            StemmingRule(SUFFIX_xes, ENDING_x, POS.NOUN),
+            StemmingRule(SUFFIX_zes, ENDING_z, POS.NOUN),
+            StemmingRule(SUFFIX_ches, ENDING_ch, POS.NOUN),
+            StemmingRule(SUFFIX_shes, ENDING_sh, POS.NOUN),
+            StemmingRule(SUFFIX_men, ENDING_man, POS.NOUN),
+            StemmingRule(SUFFIX_ies, ENDING_y, POS.NOUN)
+        )
 
-        init {
-            // nouns
-            val listNouns = listOf(
-                StemmingRule(SUFFIX_s, ENDING_null, POS.NOUN, SUFFIX_ss),
-                StemmingRule(SUFFIX_ses, ENDING_s, POS.NOUN),
-                StemmingRule(SUFFIX_xes, ENDING_x, POS.NOUN),
-                StemmingRule(SUFFIX_zes, ENDING_z, POS.NOUN),
-                StemmingRule(SUFFIX_ches, ENDING_ch, POS.NOUN),
-                StemmingRule(SUFFIX_shes, ENDING_sh, POS.NOUN),
-                StemmingRule(SUFFIX_men, ENDING_man, POS.NOUN),
-                StemmingRule(SUFFIX_ies, ENDING_y, POS.NOUN)
-            )
+        val rulesForVerb = listOf(
+            StemmingRule(SUFFIX_s, ENDING_null, POS.VERB),
+            StemmingRule(SUFFIX_ies, ENDING_y, POS.VERB),
+            StemmingRule(SUFFIX_es, ENDING_e, POS.VERB),
+            StemmingRule(SUFFIX_es, ENDING_null, POS.VERB),
+            StemmingRule(SUFFIX_ed, ENDING_e, POS.VERB),
+            StemmingRule(SUFFIX_ed, ENDING_null, POS.VERB),
+            StemmingRule(SUFFIX_ing, ENDING_e, POS.VERB),
+            StemmingRule(SUFFIX_ing, ENDING_null, POS.VERB)
+        )
 
-            // verbs
-            val listVerb = listOf(
-                StemmingRule(SUFFIX_s, ENDING_null, POS.VERB),
-                StemmingRule(SUFFIX_ies, ENDING_y, POS.VERB),
-                StemmingRule(SUFFIX_es, ENDING_e, POS.VERB),
-                StemmingRule(SUFFIX_es, ENDING_null, POS.VERB),
-                StemmingRule(SUFFIX_ed, ENDING_e, POS.VERB),
-                StemmingRule(SUFFIX_ed, ENDING_null, POS.VERB),
-                StemmingRule(SUFFIX_ing, ENDING_e, POS.VERB),
-                StemmingRule(SUFFIX_ing, ENDING_null, POS.VERB)
-            )
+        val rulesForAdj = listOf(
+            StemmingRule(SUFFIX_er, ENDING_e, POS.ADJECTIVE),
+            StemmingRule(SUFFIX_er, ENDING_null, POS.ADJECTIVE),
+            StemmingRule(SUFFIX_est, ENDING_e, POS.ADJECTIVE),
+            StemmingRule(SUFFIX_est, ENDING_null, POS.ADJECTIVE)
+        )
 
-            // adjectives
-            val listAdj = listOf(
-                StemmingRule(SUFFIX_er, ENDING_e, POS.ADJECTIVE),
-                StemmingRule(SUFFIX_er, ENDING_null, POS.ADJECTIVE),
-                StemmingRule(SUFFIX_est, ENDING_e, POS.ADJECTIVE),
-                StemmingRule(SUFFIX_est, ENDING_null, POS.ADJECTIVE)
-            )
+        val rulesForAdv = emptyList<StemmingRule>()
 
-            // adverbs
-            val listAdv = emptyList<StemmingRule>()
-
-            // assign
-            val ruleMapHidden = sortedMapOf(
-                POS.NOUN to unmodifiableList<StemmingRule>(listNouns),
-                POS.VERB to unmodifiableList<StemmingRule>(listVerb),
-                POS.ADJECTIVE to unmodifiableList<StemmingRule>(listAdj),
-                POS.ADVERB to unmodifiableList<StemmingRule>(listAdv),
-            )
-            ruleMap = unmodifiableMap<POS?, List<StemmingRule>>(ruleMapHidden)
-        }
+        val rules = sortedMapOf(
+            POS.NOUN to rulesForNoun,
+            POS.VERB to rulesForVerb,
+            POS.ADJECTIVE to rulesForAdj,
+            POS.ADVERB to rulesForAdv,
+        )
     }
 }
