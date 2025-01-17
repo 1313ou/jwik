@@ -6,7 +6,7 @@ import edu.mit.jwi.item.IHasVersion
  * An object that mediate between an DataSourceDictionary and the data that is contained in the dictionary data resources.
  * Data resources are assigned a name (e.g., *verb.data*, for the data resource pertaining to verbs) and a content type.
  * Data resources are assumed to be indexed by keys that can be passed into the getLine method to find a particular piece of data in the resource.
- * The `String` return can be parsed by the parser associated with the content type to produce a data object (e.g., an `Synset` or `IndexWord` object).
+ * The `String` return can be parsed by the parser associated with the content type to produce a data object (e.g., a Synset or Index object).
  *
  * @param <T> the type of object represented in this data resource
  */

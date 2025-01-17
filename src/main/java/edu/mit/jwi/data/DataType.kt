@@ -58,8 +58,8 @@ class DataType<T>(
     ) : this(userFriendlyName, hasVersion, parser, listOf(*hints))
 
     /**
-     * Whether this content type usually has wordnet version information encoded in its header.
-     * Whether the content file that underlies this content usually has wordnet version information in its comment header
+     * Whether this content type usually has Wordnet version information encoded in its header.
+     * Whether the content file that underlies this content usually has Wordnet version information in its comment header
      */
     fun hasVersion(): Boolean {
         return hasVersion

@@ -175,7 +175,7 @@ abstract class BaseRAMDictionary protected constructor(
 
     // L O O K   U P
 
-    // INDEX WORD
+    // INDEX
 
     override fun getIndex(lemma: String, pos: POS): Index? {
         return getIndex(IndexID(lemma, pos))
@@ -186,7 +186,7 @@ abstract class BaseRAMDictionary protected constructor(
         return data!!.indexes[id.pOS]!![id]
     }
 
-    // WORD
+    // SENSE
 
     override fun getSense(id: SenseID): Sense? {
         check(data != null) { NO_DATA }
@@ -198,7 +198,7 @@ abstract class BaseRAMDictionary protected constructor(
         return when (id) {
             is SenseIDWithNum   -> synset.senses[id.senseNumber - 1]
             is SenseIDWithLemma -> synset.senses.first { it.lemma.equals(id.lemma, ignoreCase = true) }
-            else                -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
+            else                -> throw IllegalArgumentException("Not enough information in SenseID instance to retrieve sense.")
         }
     }
 
@@ -413,7 +413,7 @@ abstract class BaseRAMDictionary protected constructor(
          */
         private fun makeSynset(old: Synset): Synset {
 
-            // words
+            // senses
             val senseBuilders = old.senses
                 .map { SenseBuilder(it) }
                 .toList()
@@ -436,15 +436,15 @@ abstract class BaseRAMDictionary protected constructor(
         }
 
         /**
-         * Creates a new word object that replaces all the old internal `IWordID` objects with those from the denoted words, thus throwing away redundant word ids.
+         * Creates a new sense object that replaces all the old internal SenseID objects with those from the denoted senses, thus throwing away redundant sense ids.
          *
-         * @param newSynset the synset for which the word is being made
-         * @param old the word to be replicated
+         * @param newSynset the synset for which the sense is being made
+         * @param old the sense to be replicated
          * @return the new synset, a copy of the first
          */
         private fun makeSense(newSynset: Synset, old: Sense): Sense {
 
-            // related words
+            // related senses
             val newRelated = old.related
                 .map { (ptr, oldTargets) ->
                     val newTargets: List<SenseID> = oldTargets

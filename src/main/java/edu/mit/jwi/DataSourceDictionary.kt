@@ -34,7 +34,7 @@ class DataSourceDictionary(
     /**
      * Constructs a new dictionary that uses the Wordnet files located in a directory pointed to by the specified url
      *
-     * @param wordnetDir an url pointing to a directory containing the wordnet data files on the filesystem
+     * @param wordnetDir an url pointing to a directory containing the Wordnet data files on the filesystem
      * @param config config parameters
      */
     @JvmOverloads
@@ -45,7 +45,7 @@ class DataSourceDictionary(
     /**
      * Constructs a new dictionary that uses the Wordnet files located in the specified directory
      *
-     * @param wordnetDir a directory containing the wordnet data files on the filesystem
+     * @param wordnetDir a directory containing the Wordnet data files on the filesystem
      * @param config config parameters
      */
     @JvmOverloads
@@ -194,7 +194,7 @@ class DataSourceDictionary(
         return when (id) {
             is SenseIDWithNum   -> synset.senses[id.senseNumber - 1]
             is SenseIDWithLemma -> synset.senses.first { it.lemma.equals(id.lemma, ignoreCase = true) }
-            else                -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
+            else                -> throw IllegalArgumentException("Not enough information in SenseID instance to retrieve sense.")
         }
     }
 
@@ -208,8 +208,8 @@ class DataSourceDictionary(
             return synset?.senses?.first { it.senseKey == sensekey }
         }
 
-        // sometimes the sense.index file doesn't have the sense key entry so try an alternate method of retrieving words by sense keys
-        // we have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
+        // sometimes the sense.index file doesn't have the sense key entry so try an alternate method of retrieving senses by sense keys
+        // we have to search the synonyms of the sense returned from the index search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
         return getIndex(sensekey.lemma, sensekey.pOS)?.senseIDs
             ?.mapNotNull { getSense(it) }
             ?.flatMap { it.synset.senses }

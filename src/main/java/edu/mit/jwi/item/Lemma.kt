@@ -8,7 +8,7 @@ fun String.asSensekeyLemma(): String {
     return this.lowercase()
 }
 
-// index words
+// indexes
 
 private val whitespace: Pattern = Pattern.compile("\\s+")
 

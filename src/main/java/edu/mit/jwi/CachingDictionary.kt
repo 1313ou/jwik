@@ -143,7 +143,7 @@ open class CachingDictionary(
     }
 
     /**
-     * Caches the specified synset and its words.
+     * Caches the specified synset and its senses.
      *
      * @param synset the synset to be cached
      */
@@ -432,8 +432,8 @@ open class CachingDictionary(
         /**
          * Retrieves the sense identified by the specified sense key.
          *
-         * @param sensekey the sense key for the requested word
-         * @return the word for the specified key, or null if not
+         * @param sensekey the sense key for the requested sense
+         * @return the sense for the specified key, or null if not
          * present in the cache
          */
         fun retrieveSense(sensekey: SenseKey): Sense? {

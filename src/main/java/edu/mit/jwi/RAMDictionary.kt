@@ -51,7 +51,7 @@ constructor(
      *
      * Constructs a new wrapper RAM dictionary that will load the contents the specified local Wordnet data, with the specified load policy.
      *
-     * @param file a file pointing to a local copy of wordnet
+     * @param file a file pointing to a local copy of Wordnet
      * @param loadPolicy the load policy of the dictionary
      * @param config config bundle
      */
@@ -67,7 +67,7 @@ constructor(
      *
      * Constructs a new RAMDictionary that will load the contents the specified Wordnet data using the default load policy.
      *
-     * @param url an url pointing to a local copy of wordnet
+     * @param url an url pointing to a local copy of Wordnet
      * @param loadPolicy the load policy of the dictionary
      * @param config config bundle
      */
@@ -302,7 +302,7 @@ constructor(
     }
 
     /**
-     * A hot swappable iterator for index words.
+     * A hot swappable iterator for indexes.
      *
      * @param pos the part of speech for the iterator
      */

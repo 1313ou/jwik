@@ -16,17 +16,17 @@ import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 
 /**
- * Abstract superclass of wordnet data file objects.
+ * Abstract superclass of Wordnet data file objects.
  * Provides all the infrastructure required to access the files, except for the construction of iterators and the actual implementation of the getLine method.
  *
- * While this object is implemented to provide load/unload capabilities (i.e., it allows the whole wordnet file to be loaded into memory, rather than read from disk), this does not provide much of a performance boost.
+ * While this object is implemented to provide load/unload capabilities (i.e., it allows the whole Wordnet file to be loaded into memory, rather than read from disk), this does not provide much of a performance boost.
  * In tests, the time for parsing a line of data into a data object dominates the time required to read the data from disk (for a reasonable modern hard drive).
  *
  * Constructs an instance of this class backed by the specified java File object, with the specified content type.
  * No effort is made to ensure that the data in the specified file is actually formatted in the proper manner for the line parser associated with the content type's data type.
  * If these are mismatched, this will result in MisformattedLineExceptions in later calls.
  *
- * @param file the file which backs this wordnet file
+ * @param file the file which backs this Wordnet file
  * @param contentType the content type for this file
  * @param <T> the type of the objects represented in this file
  */
@@ -75,9 +75,9 @@ abstract class WordnetFile<T>(
     }
 
     /**
-     * Returns the wordnet version associated with this object, or null if the version cannot be determined.
+     * Returns the Wordnet version associated with this object, or null if the version cannot be determined.
      *
-     * @return the wordnet version associated with this object, or null if the version cannot be determined
+     * @return the Wordnet version associated with this object, or null if the version cannot be determined
      * @throws ObjectClosedException if the object is closed when this method is called
      */
     override var version: Version? = null

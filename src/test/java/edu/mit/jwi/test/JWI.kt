@@ -23,7 +23,7 @@ class JWI
     /**
      * Constructor
      *
-     * @param wnHome wordnet home
+     * @param wnHome Wordnet home
      * @param config config
      * val config = Config()
      * config.checkLexicalId = false
@@ -58,7 +58,7 @@ class JWI
                     val sense = this.dict.getSense(senseid)
                     if (sense == null) {
                         System.err.println("⚠ senseid: $senseid ➜ null sense")
-                        //val sense2: Sense = this.dict.getWord(senseid)
+                        //val sense2: Sense = this.dict.getSense(senseid)
                         continue
                     }
                     f?.accept(sense)
@@ -79,7 +79,7 @@ class JWI
                         val sense = dict.getSense(senseid)
                         if (sense == null) {
                             System.err.println("⚠ senseid: $senseid ➜ null sense")
-                            //val sense2: Sense = this.dict.getWord(senseid)
+                            //val sense2: Sense = this.dict.getSense(senseid)
                             continue
                         }
                         f?.accept(sense)
@@ -148,7 +148,7 @@ class JWI
                     val sense = dict.getSense(senseid)
                     if (sense == null) {
                         System.err.println("⚠ senseid: $senseid ➜ null sense")
-                        //val sense2: Sense = this.dict.getWord(senseid)
+                        //val sense2: Sense = this.dict.getSense(senseid)
                         continue
                     }
                     val lemma = sense.lemma
@@ -169,7 +169,7 @@ class JWI
                     val sense = dict.getSense(senseid)
                     if (sense == null) {
                         System.err.println("⚠ senseid: $senseid ➜ null sense")
-                        //val sense2: Sense = this.dict.getWord(senseid)
+                        //val sense2: Sense = this.dict.getSense(senseid)
                         continue
                     }
                     val sensekey = sense.senseKey

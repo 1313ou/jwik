@@ -21,15 +21,15 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     /**
      * This method is identical to getIndex(IndexID) and is provided as a convenience.
      *
-     * @param lemma the lemma for the index word requested; may not be empty or all whitespace
+     * @param lemma the lemma for the index requested; may not be empty or all whitespace
      * @param pos the part of speech
-     * @return the index word corresponding to the specified lemma and part of speech, or null if none is found
+     * @return the index corresponding to the specified lemma and part of speech, or null if none is found
      * @throws IllegalArgumentException if the specified lemma is empty or all whitespace
      */
     fun getIndex(lemma: String, pos: POS): Index?
 
     /**
-     * Retrieves the specified index word object from the database.
+     * Retrieves the specified index object from the database.
      * If the specified lemma/part of speech combination is not found, returns null.
      *
      * *Note:* This call does no stemming on the specified lemma, it is taken as specified.
@@ -37,24 +37,25 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * This is in contrast to the Wordnet API provided by Princeton.
      * If you want your searches to capture morphological variation, use the descendants of the Stemmer class.
      *
-     * @param id the id of the index word to search for
-     * @return the index word, if found; null otherwise
+     * @param id the id of the index to search for
+     * @return the index, if found; null otherwise
      */
     fun getIndex(id: IndexID): Index?
 
     /**
-     * Retrieves the word with the specified id from the database. If the specified word is not found, returns null
+     * Retrieves the sense with the specified id from the database. If the specified sense is not found, returns null
      *
-     * @param id the id of the word to search for
-     * @return the word, if found; null otherwise
+     * @param id the id of the sense to search for
+     * @return the sense, if found; null otherwise
      */
     fun getSense(id: SenseID): Sense?
 
     /**
-     * Retrieves the word with the specified sense key from the database. If the specified word is not found, returns null
+     * Retrieves the sense with the specified sense key from the database.
+     * If the specified sense is not found, returns null
      *
-     * @param key the sense key of the word to search for
-     * @return the word, if found; null otherwise
+     * @param key the sense key of the sense to search for
+     * @return the sense, if found; null otherwise
      */
     fun getSense(key: SenseKey): Sense?
 
@@ -96,10 +97,10 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     // I T E R A T O R S
 
     /**
-     * Returns an iterator that will iterate over all index words of the specified part of speech.
+     * Returns an iterator that will iterate over all indexes of the specified part of speech.
      *
      * @param pos the part of speech over which to iterate
-     * @return an iterator that will iterate over all index words of the specified part of speech
+     * @return an iterator that will iterate over all indexes of the specified part of speech
      */
     fun getIndexIterator(pos: POS): Iterator<Index>
 

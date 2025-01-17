@@ -4,12 +4,12 @@ import edu.mit.jwi.item.SenseIDWithLemma.Companion.UNKNOWN_NUMBER
 import java.util.*
 
 /**
- * A word, which in Wordnet is an index word paired with a synset.
+ * A sense, which in Wordnet is an index paired with a synset.
  *
- * Constructs a new word object.
+ * Constructs a new sense object.
  *
- * @param synset the synset for the word
- * @param iD the word id; its word lemma may not be empty or all whitespace
+ * @param synset the synset for the sense
+ * @param iD the sense id; its lemma may not be empty or all whitespace
  * @param lexicalID the lexical id
  * @param adjMarker non-null only if this is an adjective
  * @param verbFrames verb frames if this is a verb
@@ -23,11 +23,11 @@ class Sense(
 
     /**
      * An integer in the closed range [0,15] that, when appended onto lemma, uniquely identifies a sense within a lexicographer file.
-     * Lexical id numbers usually start with 0, and are incremented as additional senses of the word are added to the same file, although there is no requirement that the numbers be consecutive or begin with 0.
+     * Lexical id numbers usually start with 0, and are incremented as additional senses are added to the same file, although there is no requirement that the numbers be consecutive or begin with 0.
      * Note that a value of 0 is the default, and therefore is not present in lexicographer files.
-     * In the wordnet data files the lexical id is represented as a one digit hexadecimal integer.
+     * In the Wordnet data files the lexical id is represented as a one digit hexadecimal integer.
      *
-     * @return the lexical id of the word, an integer between 0 and 15, inclusive
+     * @return the lexical id of the sense, an integer between 0 and 15, inclusive
      */
     val lexicalID: Int,
 
@@ -118,14 +118,14 @@ class Sense(
     }
 
     /**
-     * Returns an immutable list of all word ids related to this word by the specified pointer type.
-     * Note that this only returns words related by lexical pointers (i.e., not semantic pointers).
+     * Returns an immutable list of all sense ids related to this sense by the specified pointer type.
+     * Note that this only returns senses related by lexical pointers (i.e., not semantic pointers).
      * To retrieve items related by semantic pointers, call getRelatedFor.
-     * If this word has no targets for the specified pointer, this method returns an empty list.
+     * If this sense has no targets for the specified pointer, this method returns an empty list.
      * This method never returns null.
      *
-     * @param ptr the pointer for which related words are requested
-     * @return the list of words related by the specified pointer, or an empty list if none.
+     * @param ptr the pointer for which related senses are requested
+     * @return the list of senses related by the specified pointer, or an empty list if none.
      */
     fun getRelatedFor(ptr: Pointer): List<SenseID> {
         return related[ptr] ?: emptyList<SenseID>()
@@ -162,7 +162,7 @@ class Sense(
 
         /**
          * Lexical ids are always an integer in the closed range [0,15].
-         * In the wordnet data files, lexical ids are represented as a one digit hexadecimal integer.
+         * In the Wordnet data files, lexical ids are represented as a one digit hexadecimal integer.
          *
          * @param id the lexical id to check
          * @return true if the specified integer is an invalid lexical id; false otherwise.
@@ -177,7 +177,7 @@ class Sense(
 
         /**
          * Sense numbers are always an integer in the closed range [1,255].
-         * In the wordnet data files, the sense number is determined by the order of the word listing.
+         * In the Wordnet data files, the sense number is determined by the order of the member lemma list.
          *
          * @param num the number to check
          * @return true if the specified integer is an invalid lexical id; false otherwise.

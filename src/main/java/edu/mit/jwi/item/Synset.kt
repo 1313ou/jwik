@@ -12,9 +12,9 @@ import java.util.*
  * @property isAdjectiveSatellite true if this object represents an adjective satellite synset; false otherwise
  * @property isAdjectiveHead true if this object represents an adjective head synset; false otherwise
  * @property gloss the gloss for this synset
- * @property senses the list of words in this synset
+ * @property senses the list of senses in this synset
  * @property related a map of related synset lists, indexed by pointer
- * @throws IllegalArgumentException if the word list is empty, or both the adjective satellite and adjective head flags are set
+ * @throws IllegalArgumentException if the sense list is empty, or both the adjective satellite and adjective head flags are set
  * @throws IllegalArgumentException if either the adjective satellite and adjective head flags are set, and the lexical file number is not zero
  */
 class Synset private constructor(
@@ -96,7 +96,7 @@ class Synset private constructor(
      * @param isAdjectiveSatellite true if this object represents an adjective satellite synset; false otherwise
      * @param isAdjectiveHead true if this object represents an adjective head synset; false otherwise
      * @param gloss the gloss for this synset
-     * @param senseBuilders the list of word builders for this synset
+     * @param senseBuilders the list of sense builders for this synset
      * @param related a map of related synset lists, indexed by pointer
      */
     constructor(
@@ -174,7 +174,7 @@ class Synset private constructor(
             .toList()
 
     /**
-     * A word builder used to construct word objects inside the synset object constructor.
+     * A sense builder used to construct sense objects inside the synset object constructor.
      */
     interface ISenseBuilder {
 
@@ -183,21 +183,21 @@ class Synset private constructor(
          * If the builder represents invalid values for a sense, this method may throw an exception.
          *
          * @param synset the synset to which this sense should be attached
-         * @return the created word
+         * @return the created sense
          */
         fun toSense(synset: Synset): Sense
     }
 
     /**
-     * Holds information about word objects before they are instantiated.
+     * Holds information about sense objects before they are instantiated.
      *
-     * Constructs a new word builder object. The constructor does not check
-     * its arguments - this is done when the word is created.
+     * Constructs a new sense builder object.
+     * The constructor does not check its arguments - this is done when the sense is created.
      *
-     * @property number the word number
+     * @property number the sense number
      * @property lemma the lemma
-     * @property lexID the id of the lexical file in which the word is listed
-     * @property marker the adjective marker for the word
+     * @property lexID the id of the lexical file in which the sense is listed
+     * @property marker the adjective marker for the sense
      */
     data class SenseBuilder(
         private val number: Int,
@@ -233,7 +233,7 @@ class Synset private constructor(
         /**
          * Takes an integer in the closed range [0,99999999] and converts it into an eight decimal digit zero-filled string.
          * E.g., "1" becomes "00000001", "1234" becomes "00001234", and so on.
-         * This is used for the generation of synset and word numbers.
+         * This is used for the generation of synset and sense numbers.
          *
          * @param offset the offset to be converted
          * @return the zero-filled string representation of the offset

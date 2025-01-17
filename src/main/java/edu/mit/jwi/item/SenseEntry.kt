@@ -24,7 +24,7 @@ class SenseEntry(
     val offset: Int,
 
     /**
-     * Returns the sense number for the word indicated by this entry.
+     * Returns the sense number for the sense indicated by this entry.
      * A sense number is a positive integer.
      */
     val senseNumber: Int,

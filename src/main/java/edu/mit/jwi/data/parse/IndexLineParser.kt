@@ -7,7 +7,7 @@ import java.util.*
 
 /**
  * Parser for Wordnet index files (e.g., `idx.adv` or `adv.idx`).
- * It produces an IndexWord object.
+ * It produces an Index object.
  */
 object IndexLineParser : ILineParser<Index> {
 
@@ -39,7 +39,7 @@ object IndexLineParser : ILineParser<Index> {
             // get tagged sense count
             val tagSenseCount = tokenizer.nextToken().toInt()
 
-            // get words
+            // get senses
             val senseIDs: Array<SenseID> = Array(senseCount) {
                 val offset: Int = tokenizer.nextToken().toInt()
                 SenseIDWithLemma(SynsetID(offset, pos), lemma)

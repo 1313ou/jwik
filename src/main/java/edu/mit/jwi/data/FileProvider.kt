@@ -35,7 +35,7 @@ import java.util.function.Function
  * This implementation takes a URL to a file system directory as its path argument,
  * and uses the resource hints from the data types and parts of speech for its content types to examine the filenames in the that directory to determine which files contain which data.
  *
- * This implementation supports loading the wordnet files into memory, but this is actually not that beneficial for speed.
+ * This implementation supports loading the Wordnet files into memory, but this is actually not that beneficial for speed.
  * This is because the implementation loads the file data into memory uninterpreted, and on modern machines, the time to interpret a line of data (i.e., parse it into a Java object) is much larger than the time it takes to load the line from disk.
  * Those wishing to achieve speed increases from loading Wordnet into memory should rely on the implementation in RAMDictionary, or something similar, which pre-processes the Wordnet data into objects before caching them.
  */
@@ -162,14 +162,14 @@ class FileProvider @JvmOverloads constructor(
      * Constructs the file provider pointing to the resource indicated by the path.
      * This file provider has an initial NO_LOAD load policy.
      *
-     * @param file A file pointing to the wordnet directory
+     * @param file A file pointing to the Wordnet directory
      */
     constructor(file: File) : this(toURL(file))
 
     /**
      * Constructs the file provider pointing to the resource indicated by the path, with the specified load policy.
      *
-     * @param file A file pointing to the wordnet directory
+     * @param file A file pointing to the Wordnet directory
      * @param loadPolicy the load policy for this provider; this provider supports the three values defined in ILoadPolicy.
      */
     constructor(file: File, loadPolicy: Int) : this(toURL(file), loadPolicy, values())
@@ -177,7 +177,7 @@ class FileProvider @JvmOverloads constructor(
     /**
      * Constructs the file provider pointing to the resource indicated by the path, with the specified load policy, looking for the specified content type.
      *
-     * @param file A file pointing to the wordnet directory
+     * @param file A file pointing to the Wordnet directory
      * @param loadPolicy the load policy for this provider; this provider supports the three values defined in ILoadPolicy.
      * @param types the content types this provider will look for when it loads its data; may not be empty
      * @throws IllegalArgumentException if the set of types is empty

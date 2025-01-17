@@ -14,7 +14,7 @@ class Dictionary : CachingDictionary {
     /**
      * Constructs a new dictionary that uses the Wordnet files located in a directory pointed to by the specified url
      *
-     * @param wordnetDir an url pointing to a directory containing the wordnet data files on the filesystem
+     * @param wordnetDir an url pointing to a directory containing the Wordnet data files on the filesystem
      * @param config config parameters
      */
     @JvmOverloads
@@ -25,7 +25,7 @@ class Dictionary : CachingDictionary {
     /**
      * Constructs a new dictionary that uses the Wordnet files located in the specified directory
      *
-     * @param wordnetDir a directory containing the wordnet data files on the filesystem
+     * @param wordnetDir a directory containing the Wordnet data files on the filesystem
      * @param config config parameters
      */
     @JvmOverloads

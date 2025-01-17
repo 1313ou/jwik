@@ -51,7 +51,7 @@ class Index(
         }
 
     /**
-     * An immutable set containing all the different types of pointers that this index has across all synsets containing this word.
+     * An immutable set containing all the different types of pointers that this index has across all synsets referring to this sense.
      * If all senses of the word have no pointers, this method returns an empty set.
      */
     val pointers: Set<Pointer> = pointers?.toSet() ?: emptySet()

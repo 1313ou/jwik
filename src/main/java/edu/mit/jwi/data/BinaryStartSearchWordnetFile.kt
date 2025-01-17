@@ -4,13 +4,13 @@ import java.io.File
 import java.nio.ByteBuffer
 
 /**
- * A wordnet file data source.
+ * A Wordnet file data source.
  * This particular implementation is for files on disk, and uses a binary search algorithm to find requested lines.
  * It is appropriate for alphabetically-ordered Wordnet files.
  *
- * Constructs a new binary search wordnet file, on the specified file with the specified content type.
+ * Constructs a new Wordnet file binary search, on the specified file with the specified content type.
  *
- * @param file the file which backs this wordnet file
+ * @param file the file which backs this Wordnet file
  * @param contentType the content type for this file
  * @param <T> the type of object represented in this data resource
  */

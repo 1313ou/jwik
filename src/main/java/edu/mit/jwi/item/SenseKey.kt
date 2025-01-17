@@ -136,7 +136,7 @@ class SenseKey(
     }
 
     /**
-     * This method is used to set the head for sense keys for adjective satellites, and it can only be called once, directly after the relevant word is created.
+     * This method is used to set the head for sense keys for adjective satellites, and it can only be called once, directly after the relevant sense is created.
      * If this method is called on a sense key that has had its head set already, or is not an adjective satellite, it will throw an exception.
      *
      * @param headLemma the head lemma to be set

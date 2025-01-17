@@ -49,7 +49,7 @@ constructor(
      *
      * Constructs a new wrapper RAM dictionary that will load the contents the specified local Wordnet data, with the specified load policy.
      *
-     * @param file a file pointing to a local copy of wordnet
+     * @param file a file pointing to a local copy of Wordnet
      * @param config config bundle
      */
     @JvmOverloads
@@ -63,7 +63,7 @@ constructor(
      *
      * Constructs a new wrapper RAM dictionary that will load the contents the specified local Wordnet data, with the specified load policy.
      *
-     * @param file a file pointing to a local copy of wordnet
+     * @param file a file pointing to a local copy of Wordnet
      * @param config config bundle
      */
     @JvmOverloads
@@ -77,7 +77,7 @@ constructor(
      *
      * Constructs a new RAMDictionary that will load the contents the specified Wordnet data using the default load policy.
      *
-     * @param url an url pointing to a local copy of wordnet
+     * @param url an url pointing to a local copy of Wordnet
      * @param config config bundle
      */
     @JvmOverloads
