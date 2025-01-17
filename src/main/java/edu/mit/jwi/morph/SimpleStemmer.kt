@@ -62,10 +62,11 @@ open class SimpleStemmer : IStemmer {
         if (pos == null) {
             return POS.entries.asSequence()
                 .flatMap { findStems(word, it) }
+                .distinct()
                 .toList()
         }
 
-        val isMultipleWord = word.contains(underscoreRegex)
+        val isMultipleWord = word.contains(UNDERSCORE)
         return when (pos) {
             POS.NOUN      -> if (isMultipleWord) getNounMultipleWordsRoots(word) else stripNounSuffix(word)
             POS.VERB      -> if (isMultipleWord) getVerbMultipleWordsRoots(word) else stripVerbSuffix(word)
@@ -95,7 +96,7 @@ open class SimpleStemmer : IStemmer {
         require(word.isNotEmpty())
 
         // replace all whitespace with underscores
-        return whitespace.matcher(word).replaceAll(underscore)
+        return whitespace.matcher(word).replaceAll(UNDERSCORE)
     }
 
     /**
@@ -157,15 +158,7 @@ open class SimpleStemmer : IStemmer {
             .toList()
     }
 
-    fun <T> cartesianProduct(lists: List<List<T>>): List<List<T>> {
-        return lists.fold(listOf(emptyList<T>())) { acc, list ->
-            acc.flatMap { accItem ->
-                list.map { accItem + it }
-            }
-        }
-    }
-
-    /**
+     /**
      * Handles stemming noun collocations.
      *
      * @param composite the word to be modified
@@ -186,7 +179,7 @@ open class SimpleStemmer : IStemmer {
         // reassemble all combinations
         val product = cartesianProduct(rootSets)
         return product
-            .map { it.joinToString(separator = underscore) }
+            .map { it.joinToString(separator = UNDERSCORE) }
             .map { it.trim { it <= ' ' } }
             .filterNot { it.isEmpty() }
             .distinct()
@@ -214,7 +207,7 @@ open class SimpleStemmer : IStemmer {
         // reassemble all combinations
         val product = cartesianProduct(rootSets)
         return product
-            .map { it.joinToString(separator = underscore) }
+            .map { it.joinToString(separator = UNDERSCORE) }
             .map { it.trim { it <= ' ' } }
             .filterNot { it.isEmpty() }
             .distinct()
@@ -225,9 +218,9 @@ open class SimpleStemmer : IStemmer {
 
         val whitespace: Pattern = Pattern.compile("\\s+")
 
-        const val underscore = "_"
+        const val UNDERSCORE = "_"
 
-        val underscoreRegex: Regex = underscore.toRegex()
+        val underscoreRegex: Regex = UNDERSCORE.toRegex()
 
         const val SUFFIX_ches: String = "ches"
         const val SUFFIX_ed: String = "ed"
@@ -292,5 +285,13 @@ open class SimpleStemmer : IStemmer {
             POS.ADJECTIVE to rulesForAdj,
             POS.ADVERB to rulesForAdv,
         )
+
+        fun <T> cartesianProduct(lists: List<List<T>>): List<List<T>> {
+            return lists.fold(listOf(emptyList<T>())) { acc, list ->
+                acc.flatMap { accItem ->
+                    list.map { accItem + it }
+                }
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ import edu.mit.jwi.item.POS
  */
 class WordnetStemmer(
     /**
-     * The dictionary in use by the stemmer; will not return null
+     * The dictionary in use by the stemmer
      *
      * @return the dictionary in use by this stemmer
      */
@@ -18,9 +18,7 @@ class WordnetStemmer(
 ) : SimpleStemmer() {
 
     override fun findStems(word: String, pos: POS?): List<String> {
-        var word = word
-        word = normalize(word)
-
+        var word = normalize(word)
         if (pos == null) {
             return super.findStems(word, null)
         }
