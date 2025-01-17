@@ -254,7 +254,6 @@ abstract class WordnetFile<T>(
          * Is a pure getter; does not increment the iterator.
          */
         var nextLine: String? = null
-            protected set
 
         override fun hasNext(): Boolean {
             return nextLine != null
