@@ -23,24 +23,22 @@ object DataLineComparator : ILineComparator {
             return 1
         }
 
-        // Neither strings are comments, so extract the offset from the beginnings of both and compare them as two ints.
-        var i1 = s1.indexOf(' ')
-        if (i1 == -1) {
-            i1 = s1.length
+        // neither strings are comments, so extract the offset from the beginnings of both and compare them as two ints.
+        var cut1 = s1.indexOf(' ')
+        if (cut1 == -1) {
+            cut1 = s1.length
         }
-        val sub1 = s1.substring(0, i1)
-        val l1 = sub1.toInt()
+        val offset1 = s1.substring(0, cut1).toInt()
 
-        var i2 = s2.indexOf(' ')
-        if (i2 == -1) {
-            i2 = s2.length
+        var cut2 = s2.indexOf(' ')
+        if (cut2 == -1) {
+            cut2 = s2.length
         }
-        val sub2 = s2.substring(0, i2)
-        val l2 = sub2.toInt()
+        val offset2 = s2.substring(0, cut2).toInt()
 
-        if (l1 < l2) {
+        if (offset1 < offset2) {
             return -1
-        } else if (l1 > l2) {
+        } else if (offset1 > offset2) {
             return 1
         }
         return 0

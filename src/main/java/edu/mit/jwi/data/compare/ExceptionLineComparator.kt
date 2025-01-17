@@ -1,7 +1,6 @@
 package edu.mit.jwi.data.compare
 
 import edu.mit.jwi.data.parse.MisformattedLineException
-import java.util.regex.Pattern
 
 /**
  * A comparator that captures the ordering of lines in Wordnet exception files (e.g., `exc.adv` or `adv.exc` files).
@@ -23,5 +22,5 @@ object ExceptionLineComparator : ILineComparator {
         return tokens1[0].compareTo(tokens2[0])
     }
 
-    private val SEPARATOR: Pattern = Pattern.compile(" ")
+    private val SEPARATOR: Regex = " ".toRegex()
 }

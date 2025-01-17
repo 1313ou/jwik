@@ -26,19 +26,18 @@ object CommentProcessor : ICommentDetector, Comparator<String> {
 
     override fun compare(s1: String, s2: String): Int {
         var s1 = s1.trim { it <= ' ' }
+        var cut1 = s1.indexOf(' ')
+        if (cut1 == -1) {
+            cut1 = s1.length
+        }
         var s2 = s2.trim { it <= ' ' }
-
-        var idx1 = s1.indexOf(' ')
-        if (idx1 == -1) {
-            idx1 = s1.length
-        }
-        var idx2 = s2.indexOf(' ')
-        if (idx2 == -1) {
-            idx2 = s2.length
+        var cut2 = s2.indexOf(' ')
+        if (cut2 == -1) {
+            cut2 = s2.length
         }
 
-        val num1 = s1.substring(0, idx1).toInt()
-        val num2 = s2.substring(0, idx2).toInt()
+        val num1 = s1.substring(0, cut1).toInt()
+        val num2 = s2.substring(0, cut2).toInt()
         if (num1 < num2) {
             return -1
         } else if (num1 > num2) {

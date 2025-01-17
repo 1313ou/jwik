@@ -1,7 +1,7 @@
 package edu.mit.jwi.item
 
 /**
- * Default implementation of IExceptionEntry
+ * Exception Entry
  */
 class ExceptionEntry : ExceptionEntryProxy, IHasPOS, IItem<ExceptionEntryID> {
 
