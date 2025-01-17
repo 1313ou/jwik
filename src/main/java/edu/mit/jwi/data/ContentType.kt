@@ -72,10 +72,10 @@ class ContentType<T>
         val INDEX_ADVERB = ContentType<Index>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator)
         val INDEX_ADJECTIVE = ContentType<Index>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator)
 
-        val WORD_NOUN = ContentType<Sense>(ContentTypeKey.WORD_NOUN, IndexLineComparator)
-        val WORD_VERB = ContentType<Sense>(ContentTypeKey.WORD_VERB, IndexLineComparator)
-        val WORD_ADVERB = ContentType<Sense>(ContentTypeKey.WORD_ADVERB, IndexLineComparator)
-        val WORD_ADJECTIVE = ContentType<Sense>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator)
+        val SENSE_NOUN = ContentType<Sense>(ContentTypeKey.WORD_NOUN, IndexLineComparator)
+        val SENSE_VERB = ContentType<Sense>(ContentTypeKey.WORD_VERB, IndexLineComparator)
+        val SENSE_ADVERB = ContentType<Sense>(ContentTypeKey.WORD_ADVERB, IndexLineComparator)
+        val SENSE_ADJECTIVE = ContentType<Sense>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator)
 
         val DATA_NOUN = ContentType<Synset>(ContentTypeKey.DATA_NOUN, DataLineComparator)
         val DATA_VERB = ContentType<Synset>(ContentTypeKey.DATA_VERB, DataLineComparator)
@@ -97,10 +97,10 @@ class ContentType<T>
                 INDEX_VERB,
                 INDEX_ADVERB,
                 INDEX_ADJECTIVE,
-                WORD_NOUN,
-                WORD_VERB,
-                WORD_ADVERB,
-                WORD_ADJECTIVE,
+                SENSE_NOUN,
+                SENSE_VERB,
+                SENSE_ADVERB,
+                SENSE_ADJECTIVE,
                 DATA_NOUN,
                 DATA_VERB,
                 DATA_ADVERB,
@@ -141,10 +141,10 @@ class ContentType<T>
 
         fun getSenseContentType(pos: POS): ContentType<Sense> {
             return when (pos) {
-                POS.NOUN      -> WORD_NOUN
-                POS.VERB      -> WORD_VERB
-                POS.ADVERB    -> WORD_ADVERB
-                POS.ADJECTIVE -> WORD_ADJECTIVE
+                POS.NOUN      -> SENSE_NOUN
+                POS.VERB      -> SENSE_VERB
+                POS.ADVERB    -> SENSE_ADVERB
+                POS.ADJECTIVE -> SENSE_ADJECTIVE
             }
         }
 
