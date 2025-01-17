@@ -135,7 +135,7 @@ class FileProvider @JvmOverloads constructor(
     override var charset: Charset? = null
         set(charset) {
             if (verbose) {
-                System.out.printf("Charset: %s%n", charset)
+                println("Charset: $charset")
             }
             try {
                 lifecycleLock.lock()
@@ -214,7 +214,7 @@ class FileProvider @JvmOverloads constructor(
      */
     fun setComparator(contentTypeKey: ContentTypeKey, comparator: ILineComparator?) {
         if (verbose) {
-            System.out.printf("Comparator for %s %s%n", contentTypeKey, comparator?.javaClass?.name)
+            println("Comparator for $contentTypeKey ${comparator?.javaClass?.name}")
         }
         try {
             lifecycleLock.lock()
@@ -242,7 +242,7 @@ class FileProvider @JvmOverloads constructor(
      */
     fun setSourceMatcher(contentTypeKey: ContentTypeKey, pattern: String?) {
         if (verbose) {
-            System.out.printf("Matcher for %s: '%s'%n", contentTypeKey, pattern)
+            println("Matcher for $contentTypeKey: '$pattern'")
         }
         try {
             lifecycleLock.lock()
@@ -424,7 +424,7 @@ class FileProvider @JvmOverloads constructor(
 
             result.put(contentType, createDataSource(file, contentType, policy))
             if (verbose) {
-                System.out.printf("%s %s%n", contentType, file.name)
+                println("$contentType ${file.name}")
             }
         }
         return result

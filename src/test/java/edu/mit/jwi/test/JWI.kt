@@ -32,8 +32,8 @@ class JWI
      * @throws IOException io exception
      */
     init {
-        System.out.printf("FROM %s%n", wnHome)
-        System.out.printf("CONFIG %s%n", config)
+        println("FROM$wnHome")
+        println("CONFIG $config")
 
         // construct the URL to the WordNet dictionary directory
         val url = File(wnHome).toURI().toURL()
@@ -57,8 +57,8 @@ class JWI
                 {
                     val sense = this.dict.getSense(senseid)
                     if (sense == null) {
-                        System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
-                        //val sense2: Word = this.dict.getWord(senseid);
+                        System.err.println("⚠ senseid: $senseid ➜ null sense")
+                        //val sense2: Sense = this.dict.getWord(senseid)
                         continue
                     }
                     f?.accept(sense)
@@ -78,8 +78,8 @@ class JWI
                     {
                         val sense = dict.getSense(senseid)
                         if (sense == null) {
-                            System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
-                            // val sense2: Word = dict.getWord(senseid)
+                            System.err.println("⚠ senseid: $senseid ➜ null sense")
+                            //val sense2: Sense = this.dict.getWord(senseid)
                             continue
                         }
                         f?.accept(sense)
@@ -147,8 +147,8 @@ class JWI
                 {
                     val sense = dict.getSense(senseid)
                     if (sense == null) {
-                        System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
-                        // val sense2: Word = dict.getWord(senseid)
+                        System.err.println("⚠ senseid: $senseid ➜ null sense")
+                        //val sense2: Sense = this.dict.getWord(senseid)
                         continue
                     }
                     val lemma = sense.lemma
@@ -168,8 +168,8 @@ class JWI
                 {
                     val sense = dict.getSense(senseid)
                     if (sense == null) {
-                        System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
-                        // val sense2: Word  = dict.getWord(senseid)
+                        System.err.println("⚠ senseid: $senseid ➜ null sense")
+                        //val sense2: Sense = this.dict.getWord(senseid)
                         continue
                     }
                     val sensekey = sense.senseKey
@@ -203,7 +203,8 @@ class JWI
                 {
                     val sense = dict.getSense(senseid)
                     if (sense == null) {
-                        System.err.printf("⚠ senseid: %s ➜ null sense", senseid.toString())
+                        System.err.println("⚠ senseid: $senseid ➜ null sense")
+                        //val sense2: Sense = this.dict.getWord(senseid)
                         // val sense2: Word = dict.getWord(senseid)
                         continue
                     }
@@ -258,19 +259,19 @@ class JWI
         //ps.println("senseid = " + senseid.toString())
 
         // sense=(senseid, lexid, sensekey, synset)
-        val sense: Sense? = checkNotNull(dict.getSense(senseid))
-        walk(sense!!, ps)
+        val sense = dict.getSense(senseid)!!
+        walk(sense, ps)
 
         // synset
         val synsetid = senseid.synsetID
-        val synset: Synset? = checkNotNull(dict.getSynset(synsetid))
-        ps.printf("● synset = %s%n", toString(synset!!))
+        val synset = dict.getSynset(synsetid)!!
+        ps.println("● synset = $synset")
 
         walk(synset, 1, ps)
     }
 
     fun walk(sense: Sense, ps: PrintStream) {
-        ps.printf("● sense: %s lexid: %d sensekey: %s%n", sense.toString(), sense.lexicalID, sense.senseKey)
+        ps.println("● sense: $sense lexid=${sense.lexicalID} sensekey=${sense.senseKey}")
 
         // adj marker
         val marker = sense.adjectiveMarker
@@ -282,10 +283,10 @@ class JWI
         val senseKey = sense.senseKey
         val senseEntry = dict.getSenseEntry(senseKey)
         if (senseEntry == null) {
-            val synset = checkNotNull(sense.synset)
-            val pos: POS? = checkNotNull(sense.pOS)
-            System.err.printf("⚠ Missing sensekey %s for sense at offset %d with pos %s%n", senseKey.toString(), synset.offset, pos)
-            // throw new IllegalArgumentException(String.format("%s at offset %d with pos %s%n", senseKey.toString(), sense.getSynset().getOffset(),sense.getPOS().toString()))
+            val synset = sense.synset
+            val pos = sense.pOS
+            System.err.println("⚠ Missing sensekey $senseKey for sense at offset ${synset.offset} with pos $pos")
+            // throw new IllegalArgumentException("⚠ Missing sensekey $senseKey for sense at offset ${synset.offset} with pos $pos")
         }
 
         // lexical relations
@@ -296,16 +297,16 @@ class JWI
         val verbFrames: List<VerbFrame>? = sense.verbFrames
         walk(verbFrames, sense.lemma, ps)
 
-        ps.printf("  sensenum: %s tag cnt:%s%n", senseEntry?.senseNumber ?: "<missing>", senseEntry?.tagCount ?: "<missing>")
+        ps.println("  sensenum: ${senseEntry?.senseNumber ?: "<missing>"} tagcnt=${senseEntry?.tagCount ?: "<missing>"}")
     }
 
     fun walk(relatedMap: Map<Pointer, List<SenseID>>, ps: PrintStream) {
         for (entry in relatedMap.entries) {
             val pointer = entry.key
             for (relatedId in entry.value) {
-                val related: Sense? = checkNotNull(dict.getSense(relatedId))
-                val relatedSynset = checkNotNull(related!!.synset)
-                ps.printf("  related %s lemma:%s synset:%s%n", pointer, related.lemma, relatedSynset)
+                val related = dict.getSense(relatedId)!!
+                val relatedSynset = related.synset
+                ps.println("  related $pointer lemma=${related.lemma} synset=${relatedSynset}")
             }
         }
     }
@@ -313,7 +314,7 @@ class JWI
     fun walk(verbFrames: List<VerbFrame>?, lemma: String, ps: PrintStream) {
         if (verbFrames != null) {
             for (verbFrame in verbFrames) {
-                ps.printf("  verb frame: %s : %s%n", verbFrame.template, verbFrame.instantiateTemplate(lemma))
+                ps.println("  verb frame: ${verbFrame.template} : ${verbFrame.instantiateTemplate(lemma)}")
             }
         }
     }
@@ -322,7 +323,7 @@ class JWI
         val indentSpace = String(CharArray(level)).replace('\u0000', '\t')
         val links: Map<Pointer, List<SynsetID>> = synset.related
         for (p in links.keys) {
-            ps.printf("%s🡆 %s%n", indentSpace, p.name)
+            ps.println("$indentSpace🡆 ${p.name}")
             val relations2: List<SynsetID> = links[p]!!
             walk(relations2, p, level, ps)
         }
@@ -331,8 +332,8 @@ class JWI
     fun walk(relations2: List<SynsetID>, p: Pointer, level: Int, ps: PrintStream) {
         val indentSpace = String(CharArray(level)).replace('\u0000', '\t')
         for (synsetid2 in relations2) {
-            val synset2: Synset? = checkNotNull(dict.getSynset(synsetid2))
-            ps.printf("%s%s%n", indentSpace, toString(synset2!!))
+            val synset2 = dict.getSynset(synsetid2)!!
+            ps.println("$indentSpace%s${toString(synset2)}")
 
             walk(synset2, p, level + 1, ps)
         }
@@ -340,10 +341,10 @@ class JWI
 
     fun walk(synset: Synset, p: Pointer, level: Int, ps: PrintStream) {
         val indentSpace = String(CharArray(level)).replace('\u0000', '\t')
-        val relations2: List<SynsetID> = checkNotNull(synset.getRelatedFor(p))
+        val relations2 = synset.getRelatedFor(p)
         for (synsetid2 in relations2) {
-            val synset2: Synset? = checkNotNull(dict.getSynset(synsetid2))
-            ps.printf("%s%s%n", indentSpace, toString(synset2!!))
+            val synset2 = dict.getSynset(synsetid2)!!
+            ps.println("$indentSpace%s${toString(synset2)}")
             if (canRecurse(p)) {
                 walk(synset2, p, level + 1, ps)
             }
