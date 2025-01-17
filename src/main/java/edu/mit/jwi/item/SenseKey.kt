@@ -63,10 +63,10 @@ class SenseKey(
             return if (this.isAdjectiveSatellite) NUM_ADJECTIVE_SATELLITE else pOS.number
         }
 
-    val headWord: String?
+    internal var headWord: String? = null
         get() {
             checkHeadSet()
-            return headLemma
+            return field
         }
 
     /**
@@ -75,17 +75,13 @@ class SenseKey(
      * It is a two digit decimal integer that, when appended onto the head word, uniquely identifies the sense within a lexicographer file.
      * If this sense key is not for an adjective synset, this method returns `-1`.
      */
-    val headID: Int
+    internal var headID = -1
         get() {
             checkHeadSet()
-            return headLexID
+            return field
         }
 
     private var isHeadSet: Boolean = !isAdjectiveSatellite
-
-    private var headLemma: String? = null
-
-    private var headLexID = -1
 
     private var sensekey: String? = null
         get() {
@@ -151,8 +147,8 @@ class SenseKey(
         check(needsHeadSet())
         checkLexicalID(headLexID)
         require(headLemma.trim { it <= ' ' }.isNotEmpty())
-        this.headLemma = headLemma
-        this.headLexID = headLexID
+        this.headWord = headLemma
+        this.headID = headLexID
         this.isHeadSet = true
     }
 
@@ -224,7 +220,7 @@ class SenseKey(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(lemma, lexicalID, pOS, lexicalFile, isAdjectiveSatellite, headLemma, headLexID)
+        return Objects.hash(lemma, lexicalID, pOS, lexicalFile, isAdjectiveSatellite, headWord, headID)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -254,10 +250,10 @@ class SenseKey(
             return false
         }
         if (isAdjectiveSatellite) {
-            if (headLemma != other.headWord) {
+            if (headWord != other.headWord) {
                 return false
             }
-            return headLexID == other.headID
+            return headID == other.headID
         }
         return true
     }
