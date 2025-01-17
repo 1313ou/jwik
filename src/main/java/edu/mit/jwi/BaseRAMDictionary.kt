@@ -5,6 +5,7 @@ import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.data.ILoadable
 import edu.mit.jwi.data.LoadPolicy
 import edu.mit.jwi.item.*
+import edu.mit.jwi.item.Synset.ISenseBuilder
 import java.io.*
 import java.net.URL
 import java.util.concurrent.locks.Lock
@@ -195,8 +196,8 @@ abstract class BaseRAMDictionary protected constructor(
             return null
         }
         return when (id) {
-            is SenseIDWithNum   -> synset.words[id.senseNumber - 1]
-            is SenseIDWithLemma -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
+            is SenseIDWithNum   -> synset.senses[id.senseNumber - 1]
+            is SenseIDWithLemma -> synset.senses.first { it.lemma.equals(id.lemma, ignoreCase = true) }
             else                -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
         }
     }
@@ -398,7 +399,7 @@ abstract class BaseRAMDictionary protected constructor(
                 }
                 val indexMap = indexes[pos]!!
                 for (entry in indexMap.entries) {
-                    entry.setValue(makeIndexWord(entry.value))
+                    entry.setValue(makeIndex(entry.value))
                 }
             }
         }
@@ -413,8 +414,8 @@ abstract class BaseRAMDictionary protected constructor(
         private fun makeSynset(old: Synset): Synset {
 
             // words
-            val wordBuilders = old.words
-                .map { WordBuilder(it) }
+            val senseBuilders = old.senses
+                .map { SenseBuilder(it) }
                 .toList()
 
             // related synsets
@@ -431,7 +432,7 @@ abstract class BaseRAMDictionary protected constructor(
                 }
                 .toMap()
 
-            return Synset(old.iD, old.lexicalFile, old.isAdjectiveSatellite, old.isAdjectiveHead, old.gloss, wordBuilders, newRelated)
+            return Synset(old.iD, old.lexicalFile, old.isAdjectiveSatellite, old.isAdjectiveHead, old.gloss, senseBuilders, newRelated)
         }
 
         /**
@@ -441,7 +442,7 @@ abstract class BaseRAMDictionary protected constructor(
          * @param old the word to be replicated
          * @return the new synset, a copy of the first
          */
-        private fun makeWord(newSynset: Synset, old: Sense): Sense {
+        private fun makeSense(newSynset: Synset, old: Sense): Sense {
 
             // related words
             val newRelated = old.related
@@ -451,53 +452,52 @@ abstract class BaseRAMDictionary protected constructor(
                         .map {
                             val resolver: Map<SynsetID, Synset> = synsets[it.pOS]!!
                             val otherSynset: Synset = resolver[it.synsetID]!!
-                            otherSynset.words[it.senseNumber - 1].iD
+                            otherSynset.senses[it.senseNumber - 1].iD
                         }
                         .toList()
                     ptr to newTargets
                 }
                 .toMap()
 
-            // word
-            val word = Sense(newSynset, old.iD, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
-            if (word.senseKey.needsHeadSet()) {
+            // sense
+            val sense = Sense(newSynset, old.iD, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
+            if (sense.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey
-                word.senseKey.setHead(oldKey.headWord!!, oldKey.headID)
+                sense.senseKey.setHead(oldKey.headWord!!, oldKey.headID)
             }
-            return word
+            return sense
         }
 
         /**
-         * Creates a new index word that replicates the specified index word.
-         * The new index word replaces its internal synset ids with synset ids
+         * Creates a new index that replicates the specified index.
+         * The new index replaces its internal synset ids with synset ids
          * from the denoted synsets, thus removing redundant ids.
          *
-         * @param old the index word to be replicated
-         * @return the new index word object
+         * @param old the index to be replicated
+         * @return the new index object
          */
-        private fun makeIndexWord(old: Index): Index {
+        private fun makeIndex(old: Index): Index {
             val newIDs: Array<SenseID> = Array(old.senseIDs.size) { i ->
                 var oldID: SenseID = old.senseIDs[i]
                 val resolver = synsets[oldID.pOS]!!
                 var synset: Synset = resolver[oldID.synsetID]!!
-                val newWord = synset.words.first { it.iD == oldID }
-                newWord.iD
+                val newSense = synset.senses.first { it.iD == oldID }
+                newSense.iD
             }
             return Index(old.iD, old.tagSenseCount, newIDs)
         }
 
         /**
-         * A utility class that allows us to build word objects
+         * A utility class that allows us to build sense objects
          *
-         * Constructs a new word builder object out of the specified old
-         * synset and word.
+         * Constructs a new sense builder object out of the specified old synset and sense.
          *
-         * @param oldWord the old word that backs this builder
+         * @param oldSense the old sense that backs this builder
          */
-        inner class WordBuilder(private val oldWord: Sense) : Synset.ISenseBuilder {
+        inner class SenseBuilder(private val oldSense: Sense) : ISenseBuilder {
 
             override fun toSense(synset: Synset): Sense {
-                return makeWord(synset, oldWord)
+                return makeSense(synset, oldSense)
             }
         }
     }

@@ -120,7 +120,7 @@ open class CachingDictionary(
 
     override fun getSense(key: SenseKey): Sense? {
         checkOpen()
-        var item = cache.retrieveWord(key)
+        var item = cache.retrieveSense(key)
         if (item == null) {
             item = backingDictionary.getSense(key)
             if (item != null) {
@@ -149,9 +149,9 @@ open class CachingDictionary(
      */
     protected fun cacheSynset(synset: Synset) {
         cache.cacheItem(synset)
-        for (word in synset.words) {
+        for (word in synset.senses) {
             cache.cacheItem(word)
-            cache.cacheWordByKey(word)
+            cache.cacheSenseByKey(word)
         }
     }
 
@@ -388,16 +388,16 @@ open class CachingDictionary(
         }
 
         /**
-         * Caches the specified word, indexed by its sense key.
+         * Caches the specified sense, indexed by its sense key.
          *
-         * @param word the word to be cached
+         * @param sense the sense to be cached
          */
-        fun cacheWordByKey(word: Sense) {
+        fun cacheSenseByKey(sense: Sense) {
             checkOpen()
             if (!isEnabled) {
                 return
             }
-            keyCache!!.put(word.senseKey, word)
+            keyCache!!.put(sense.senseKey, sense)
             reduceCacheSize(keyCache!!)
         }
 
@@ -430,26 +430,26 @@ open class CachingDictionary(
         }
 
         /**
-         * Retrieves the word identified by the specified sense key.
+         * Retrieves the sense identified by the specified sense key.
          *
-         * @param key the sense key for the requested word
+         * @param sensekey the sense key for the requested word
          * @return the word for the specified key, or null if not
          * present in the cache
          */
-        fun retrieveWord(key: SenseKey): Sense? {
+        fun retrieveSense(sensekey: SenseKey): Sense? {
             checkOpen()
-            return keyCache!![key]
+            return keyCache!![sensekey]
         }
 
         /**
          * Retrieves the sense entry identified by the specified sense key.
          *
-         * @param key the sense key for the requested sense entry
+         * @param sensekey the sense key for the requested sense entry
          * @return the sense entry for the specified key, or null if not present in the cache
          */
-        fun retrieveSenseEntry(key: SenseKey): SenseEntry? {
+        fun retrieveSenseEntry(sensekey: SenseKey): SenseEntry? {
             checkOpen()
-            return senseCache!![key]
+            return senseCache!![sensekey]
         }
 
         companion object {

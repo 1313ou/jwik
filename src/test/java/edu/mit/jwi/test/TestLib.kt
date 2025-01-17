@@ -74,7 +74,7 @@ object TestLib {
     fun parseDataLineIntoMembers(line: String): MutableList<String?> {
         val result: MutableList<String?> = ArrayList<String?>()
         val synset = DataLineParser.parseLine(line)
-        for (sense in synset.words) {
+        for (sense in synset.senses) {
             result.add("$sense, ${sense.lemma}, ${sense.lexicalID}")
         }
         return result

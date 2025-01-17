@@ -409,7 +409,7 @@ constructor(
                     while (i.hasNext()) {
                         val synset = i.next()
                         synsets.put(synset.iD, synset)
-                        for (word in synset.words) {
+                        for (word in synset.senses) {
                             result.words.put(word.senseKey, word)
                         }
                     }

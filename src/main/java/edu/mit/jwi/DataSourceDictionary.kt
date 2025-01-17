@@ -192,8 +192,8 @@ class DataSourceDictionary(
             return null
         }
         return when (id) {
-            is SenseIDWithNum   -> synset.words[id.senseNumber - 1]
-            is SenseIDWithLemma -> synset.words.first { it.lemma.equals(id.lemma, ignoreCase = true) }
+            is SenseIDWithNum   -> synset.senses[id.senseNumber - 1]
+            is SenseIDWithLemma -> synset.senses.first { it.lemma.equals(id.lemma, ignoreCase = true) }
             else                -> throw IllegalArgumentException("Not enough information in IWordID instance to retrieve word.")
         }
     }
@@ -205,14 +205,14 @@ class DataSourceDictionary(
         val entry = getSenseEntry(sensekey)
         if (entry != null) {
             val synset = getSynset(SynsetID(entry.offset, entry.pOS))
-            return synset?.words?.first { it.senseKey == sensekey }
+            return synset?.senses?.first { it.senseKey == sensekey }
         }
 
         // sometimes the sense.index file doesn't have the sense key entry so try an alternate method of retrieving words by sense keys
         // we have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
         return getIndex(sensekey.lemma, sensekey.pOS)?.senseIDs
             ?.mapNotNull { getSense(it) }
-            ?.flatMap { it.synset.words }
+            ?.flatMap { it.synset.senses }
             ?.first { it.senseKey == sensekey }
     }
 
@@ -290,35 +290,34 @@ class DataSourceDictionary(
 
         // go find the head word
         var headSynset: Synset?
-        var headWord: Sense? = null
+        var headSense: Sense? = null
         val related: List<SynsetID> = synset.getRelatedFor(Pointer.SIMILAR_TO)
         for (simID in related) {
             headSynset = getSynset(simID)!!
             // assume first 'similar' adjective head is the right one
             if (headSynset.isAdjectiveHead) {
-                headWord = headSynset.words[0]
+                headSense = headSynset.senses[0]
                 break
             }
         }
-        if (headWord == null) {
+        if (headSense == null) {
             return
         }
 
         // set head word, if we found it
-        var headLemma = headWord.lemma
+        var headLemma = headSense.lemma
 
-        // version 1.6 of Wordnet adds the adjective marker symbol
-        // on the end of the head word lemma
+        // version 1.6 of Wordnet adds the adjective marker symbol on the end of the head word lemma
         val ver = version
         val isVer16 = (ver != null) && (ver.majorVersion == 1 && ver.minorVersion == 6)
-        if (isVer16 && headWord.adjectiveMarker != null) {
-            headLemma += headWord.adjectiveMarker!!.symbol
+        if (isVer16 && headSense.adjectiveMarker != null) {
+            headLemma += headSense.adjectiveMarker!!.symbol
         }
 
         // set the head word for each word
-        for (word in synset.words) {
+        for (word in synset.senses) {
             if (word.senseKey.needsHeadSet()) {
-                word.senseKey.setHead(headLemma, headWord.lexicalID)
+                word.senseKey.setHead(headLemma, headSense.lexicalID)
             }
         }
     }

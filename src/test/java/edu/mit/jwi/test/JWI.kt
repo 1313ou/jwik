@@ -377,7 +377,7 @@ class JWI
             val sb = StringBuilder()
             sb.append('{')
             var first = true
-            for (sense in synset.words) {
+            for (sense in synset.senses) {
                 if (first) {
                     first = false
                 } else {

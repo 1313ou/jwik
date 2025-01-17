@@ -12,7 +12,7 @@ import java.util.*
  * @property isAdjectiveSatellite true if this object represents an adjective satellite synset; false otherwise
  * @property isAdjectiveHead true if this object represents an adjective head synset; false otherwise
  * @property gloss the gloss for this synset
- * @property words the list of words in this synset
+ * @property senses the list of words in this synset
  * @property related a map of related synset lists, indexed by pointer
  * @throws IllegalArgumentException if the word list is empty, or both the adjective satellite and adjective head flags are set
  * @throws IllegalArgumentException if either the adjective satellite and adjective head flags are set, and the lexical file number is not zero
@@ -84,19 +84,19 @@ class Synset private constructor(
         }
 
     /**
-     * The words that are members of the synset
+     * The senses that reference the synset
      */
-    lateinit var words: List<Sense>
+    lateinit var senses: List<Sense>
 
     /**
-     * Default implementation of the `Synset` interface.
+     * Default implementation of the Synset interface.
      *
      * @param iD the synset id
      * @param lexicalFile the lexical file for this synset
      * @param isAdjectiveSatellite true if this object represents an adjective satellite synset; false otherwise
      * @param isAdjectiveHead true if this object represents an adjective head synset; false otherwise
      * @param gloss the gloss for this synset
-     * @param wordBuilders the list of word builders for this synset
+     * @param senseBuilders the list of word builders for this synset
      * @param related a map of related synset lists, indexed by pointer
      */
     constructor(
@@ -105,11 +105,11 @@ class Synset private constructor(
         isAdjectiveSatellite: Boolean,
         isAdjectiveHead: Boolean,
         gloss: String,
-        wordBuilders: List<ISenseBuilder>,
+        senseBuilders: List<ISenseBuilder>,
         related: Map<Pointer, List<SynsetID>>?,
     ) : this(iD, lexicalFile, isAdjectiveSatellite, isAdjectiveHead, gloss, normalizeRelated(related)) {
-        require(!wordBuilders.isEmpty())
-        words = buildSenses(wordBuilders, this)
+        require(!senseBuilders.isEmpty())
+        senses = buildSenses(senseBuilders, this)
     }
 
     init {
@@ -118,7 +118,7 @@ class Synset private constructor(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(iD, words, related, gloss, isAdjectiveSatellite)
+        return Objects.hash(iD, senses, related, gloss, isAdjectiveSatellite)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -135,7 +135,7 @@ class Synset private constructor(
         if (iD != other.iD) {
             return false
         }
-        if (words != other.words) {
+        if (senses != other.senses) {
             return false
         }
         if (gloss != other.gloss) {
@@ -148,7 +148,7 @@ class Synset private constructor(
     }
 
     override fun toString(): String {
-        return "S-{${iD} [${words.joinToString(separator = ", ")}]}"
+        return "S-{${iD} [${senses.joinToString(separator = ", ")}]}"
     }
 
     /**
