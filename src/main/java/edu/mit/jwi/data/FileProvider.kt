@@ -522,7 +522,7 @@ class FileProvider @JvmOverloads constructor(
      * @return the data source
      */
     private fun <T> createBinarySearch(file: File, contentType: ContentType<T>): ILoadableDataSource<T> {
-        //TODO
+        //TODO HACK
         return if ("Word" == contentType.dataType.toString()) BinaryStartSearchWordnetFile<T>(file, contentType) else BinarySearchWordnetFile<T>(file, contentType)
     }
 

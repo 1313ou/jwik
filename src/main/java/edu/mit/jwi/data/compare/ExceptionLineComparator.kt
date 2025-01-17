@@ -12,15 +12,15 @@ object ExceptionLineComparator : ILineComparator {
     override var commentDetector: ICommentDetector? = null
 
     override fun compare(line1: String, line2: String): Int {
-        val words1 = SEPARATOR.split(line1)
-        if (words1.isEmpty()) {
+        val tokens1 = SEPARATOR.split(line1)
+        if (tokens1.isEmpty()) {
             throw MisformattedLineException(line1)
         }
-        val words2 = SEPARATOR.split(line2)
-        if (words2.isEmpty()) {
+        val tokens2 = SEPARATOR.split(line2)
+        if (tokens2.isEmpty()) {
             throw MisformattedLineException(line2)
         }
-        return words1[0].compareTo(words2[0])
+        return tokens1[0].compareTo(tokens2[0])
     }
 
     private val SEPARATOR: Pattern = Pattern.compile(" ")

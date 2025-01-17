@@ -267,7 +267,7 @@ class DataSourceDictionary(
 
     private fun getSequenceStartingWith(start: String, pos: POS): Sequence<String> {
         checkOpen()
-        val content = dataProvider.resolveContentType(DataType.WORD, pos)!!
+        val content = dataProvider.resolveContentType(DataType.INDEX, pos)!!
         val parser = content.dataType.parser
         val file = dataProvider.getSource<Index>(content)!!
         val lines = file.iterator(start)

@@ -27,8 +27,8 @@ object IndexLineParser : ILineParser<Index> {
             tokenizer.nextToken()
 
             // consume ptr_symbols
-            val ptrCnt = tokenizer.nextToken().toInt()
-            val ptrs = Array<Pointer>(ptrCnt) {
+            val pointerCount = tokenizer.nextToken().toInt()
+            val pointers = Array<Pointer>(pointerCount) {
                 val tok: String = tokenizer.nextToken()
                 resolvePointer(tok, pos)
             }
@@ -37,14 +37,14 @@ object IndexLineParser : ILineParser<Index> {
             val senseCount = tokenizer.nextToken().toInt()
 
             // get tagged sense count
-            val tagSenseCnt = tokenizer.nextToken().toInt()
+            val tagSenseCount = tokenizer.nextToken().toInt()
 
             // get words
-            val words = Array<SenseID>(senseCount) {
+            val senseIDs: Array<SenseID> = Array(senseCount) {
                 val offset: Int = tokenizer.nextToken().toInt()
                 SenseIDWithLemma(SynsetID(offset, pos), lemma)
             }
-            return Index(lemma, pos, tagSenseCnt, ptrs, words)
+            return Index(lemma, pos, tagSenseCount, pointers, senseIDs)
         } catch (e: Exception) {
             throw MisformattedLineException(line, e)
         }

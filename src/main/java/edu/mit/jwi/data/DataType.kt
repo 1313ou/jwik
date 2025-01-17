@@ -75,9 +75,6 @@ class DataType<T>(
         val INDEX: DataType<Index> = DataType<Index>("Index", true, IndexLineParser, "index", "idx")
 
         @JvmField
-        val WORD: DataType<Index> = DataType<Index>("Word", true, IndexLineParser, "index", "idx")
-
-        @JvmField
         val DATA: DataType<Synset> = DataType<Synset>("Data", true, DataLineParser, "data", "dat")
 
         @JvmField
@@ -93,7 +90,7 @@ class DataType<T>(
          * Set of all data types implemented in this class
          */
         private val dataTypes: Set<DataType<*>> = Collections.unmodifiableSet<DataType<*>>(
-            setOf(INDEX, WORD, DATA, EXCEPTION, SENSE, SENSES)
+            setOf(INDEX, DATA, EXCEPTION, SENSE, SENSES)
         )
 
         /**

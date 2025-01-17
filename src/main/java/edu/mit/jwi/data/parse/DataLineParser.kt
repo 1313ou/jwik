@@ -43,12 +43,13 @@ object DataLineParser : ILineParser<Synset> {
             // 01380721 marine (no antonyms), with satellite 01380926 deep-sea
             val isAdjHead = !isAdjSat && lexFilenum == 0
 
-            // Get word count
-            val wordCount = tokenizer.nextToken().toInt(16)
+            // Get token count
+            val tokenCount = tokenizer.nextToken().toInt(16)
 
-            // Get words
-            val wordProxies: Array<SenseBuilder> = Array<SenseBuilder>(wordCount) {
-                // Consume next word
+            // Get senses
+            val senseBuilders = Array<SenseBuilder>(tokenCount) {
+
+                // Consume next token
                 var lemma = tokenizer.nextToken()
 
                 // If it is an adjective, it may be followed by a marker
@@ -100,7 +101,7 @@ object DataLineParser : ILineParser<Synset> {
                     val sourceNum: Int = sourceTargetNum / 256
                     val targetNum: Int = sourceTargetNum and 255
                     val targetSenseID: SenseID = SenseIDWithNum(targetSynsetID, targetNum)
-                    wordProxies[sourceNum - 1].addRelatedSense(pointer, targetSenseID)
+                    senseBuilders[sourceNum - 1].addRelatedSense(pointer, targetSenseID)
                 }
             }
 
@@ -120,15 +121,17 @@ object DataLineParser : ILineParser<Synset> {
                     repeat(verbFrameCount) {
                         // Consume '+'
                         tokenizer.nextToken()
+
                         // Get frame number
                         var frameNum: Int = tokenizer.nextToken().toInt()
                         var frame: VerbFrame = resolveVerbFrame(frameNum)
-                        // Get word number
-                        val wordNum: Int = tokenizer.nextToken().toInt(16)
-                        if (wordNum > 0) {
-                            wordProxies[wordNum - 1].addVerbFrame(frame)
+
+                        // Get sense number
+                        val senseNum: Int = tokenizer.nextToken().toInt(16)
+                        if (senseNum > 0) {
+                            senseBuilders[senseNum - 1].addVerbFrame(frame)
                         } else {
-                            for (proxy in wordProxies) {
+                            for (proxy in senseBuilders) {
                                 proxy.addVerbFrame(frame)
                             }
                         }
@@ -144,7 +147,7 @@ object DataLineParser : ILineParser<Synset> {
             }
 
             // create members
-            val words = listOf<SenseBuilder>(*wordProxies)
+            val words = listOf<SenseBuilder>(*senseBuilders)
 
             // create synset
             return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, words, synsetPointerMap)
