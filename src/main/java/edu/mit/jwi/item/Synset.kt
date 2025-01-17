@@ -118,7 +118,7 @@ class Synset private constructor(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(iD, senses, related, gloss, isAdjectiveSatellite)
+        return Objects.hash(iD, senses, this@Synset.related, gloss, isAdjectiveSatellite)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -144,7 +144,7 @@ class Synset private constructor(
         if (isAdjectiveSatellite != other.isAdjectiveSatellite) {
             return false
         }
-        return related == other.related
+        return this@Synset.related == other.related
     }
 
     override fun toString(): String {
@@ -161,14 +161,14 @@ class Synset private constructor(
      * @return the list of synsets related by the specified pointer; if there are no such synsets, returns the empty list
      */
     fun getRelatedFor(ptr: Pointer): List<SynsetID> {
-        return related[ptr] ?: emptyList()
+        return this@Synset.related[ptr] ?: emptyList()
     }
 
     /**
      * List of the ids of all synsets that are related to this synset
      */
     val allRelated: List<SynsetID>
-        get() = related.values
+        get() = this@Synset.related.values
             .flatMap { it.toList() }
             .distinct()
             .toList()
@@ -210,21 +210,12 @@ class Synset private constructor(
             checkSenseNumber(number)
         }
 
-        private val relatedSenses: MutableMap<Pointer, MutableList<SenseID>> = HashMap<Pointer, MutableList<SenseID>>()
+        var related: Map<Pointer, List<SenseID>> = HashMap<Pointer, List<SenseID>>()
 
-        private val verbFrames = ArrayList<VerbFrame>()
+        var verbFrames: List<VerbFrame> = emptyList()
 
         override fun toSense(synset: Synset): Sense {
-            return Sense(synset, SenseIDWithLemmaAndNum(synset.iD, number, lemma), lexID, marker, verbFrames, relatedSenses)
-        }
-
-        fun addRelatedSense(ptrType: Pointer, id: SenseID) {
-            val sendIDs = relatedSenses.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<SenseID>() }
-            sendIDs.add(id)
-        }
-
-        fun addVerbFrame(frame: VerbFrame) {
-            verbFrames.add(frame)
+            return Sense(synset, SenseIDWithLemmaAndNum(synset.iD, number, lemma), lexID, marker, verbFrames, related)
         }
     }
 

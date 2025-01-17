@@ -90,6 +90,7 @@ object DataLineParser : ILineParser<Synset> {
                 var targetSynsetID = SynsetID(targetOffset, targetPos)
 
                 RelationData(pointer, targetSynsetID, sourceTargetNum)
+
             }.partition { it.sourceTargetNum == 0 }
 
             val synsetRelations = relations.first
@@ -97,16 +98,23 @@ object DataLineParser : ILineParser<Synset> {
                 .mapValues { (_, value) -> value.map { it.targetSynsetID } }
 
             val senseRelations = relations.second
-                .groupBy { it.pointer }
-                .mapValues { (key, value) ->
-                    value.map {
-                        val sourceNum: Int = it.sourceTargetNum / 256
-                        val targetNum: Int = it.sourceTargetNum and 255
-                        val senseid = SenseIDWithNum(it.targetSynsetID, targetNum)
-                        senseBuilders[sourceNum - 1].addRelatedSense(key, senseid)
-                        senseid
-                    }
+                .groupBy { it.sourceTargetNum / 256 }
+                .mapValues { (_, data) ->
+                    data
+                        .groupBy { it.pointer }
+                        .mapValues { (_, value) ->
+                            value.map {
+                                val targetNum: Int = it.sourceTargetNum and 255
+                                val senseid = SenseIDWithNum(it.targetSynsetID, targetNum)
+                                senseid
+                            }
+                        }
                 }
+
+            // transfer sense relations to sense builders
+            senseRelations.entries.forEach {
+                senseBuilders[it.key - 1].related = it.value
+            }
 
             // parse verb frames
             // do not make the field compulsory for verbs with a 00 when no frame is present
@@ -114,7 +122,8 @@ object DataLineParser : ILineParser<Synset> {
                 val peekTok = tokenizer.nextToken()
                 if (!peekTok.startsWith("|")) {
                     val verbFrameCount = peekTok.toInt()
-                    repeat(verbFrameCount) {
+
+                    val frames = List(verbFrameCount) {
                         // Consume '+'
                         tokenizer.nextToken()
 
@@ -124,23 +133,25 @@ object DataLineParser : ILineParser<Synset> {
 
                         // Get sense number
                         val senseNum: Int = tokenizer.nextToken().toInt(16)
-                        if (senseNum > 0) {
-                            senseBuilders[senseNum - 1].addVerbFrame(frame)
-                        } else {
-                            for (proxy in senseBuilders) {
-                                proxy.addVerbFrame(frame)
-                            }
-                        }
+                        senseNum to frame
+
+                    }.partition { it.first > 0 }
+                    val allSensesFrames = frames.first
+                        .map { it.second }
+                    val senseFrames = frames.second
+                        .groupBy { it.first }
+                        .mapValues { (_, value) -> value.map { it.second } }
+
+                    // transfer to sense builders
+                    senseFrames.entries.forEach {
+                        senseBuilders[it.key].verbFrames = it.value + allSensesFrames
                     }
                 }
             }
 
             // gloss
-            var gloss = ""
-            val index = line.indexOf('|')
-            if (index > 0) {
-                gloss = line.substring(index + 2).trim { it <= ' ' }
-            }
+            val cut = line.indexOf('|')
+            val gloss = if (cut > 0) line.substring(cut + 2).trim { it <= ' ' } else ""
 
             // create synset
             return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, listOf<SenseBuilder>(*senseBuilders), synsetRelations)
