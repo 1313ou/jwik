@@ -22,15 +22,15 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * This method is identical to getIndex(IndexID) and is provided as a convenience.
      *
      * @param lemma the lemma for the index requested; may not be empty or all whitespace
-     * @param pos the part of speech
-     * @return the index corresponding to the specified lemma and part of speech, or null if none is found
+     * @param pos the part-of-speech
+     * @return the index corresponding to the specified lemma and part-of-speech, or null if none is found
      * @throws IllegalArgumentException if the specified lemma is empty or all whitespace
      */
     fun getIndex(lemma: String, pos: POS): Index?
 
     /**
      * Retrieves the specified index object from the database.
-     * If the specified lemma/part of speech combination is not found, returns null.
+     * If the specified lemma/part-of-speech combination is not found, returns null.
      *
      * *Note:* This call does no stemming on the specified lemma, it is taken as specified.
      * That is, if you submit the word "dogs", it will search for "dogs", not "dog" in the standard Wordnet distribution, there is no entry for "dogs" and therefore the call will return null.
@@ -77,11 +77,11 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     fun getSenseEntry(key: SenseKey): SenseEntry?
 
     /**
-     * Retrieves the exception entry for the specified surface form and part of speech from the database.
-     * If the specified surface form / part of speech pair has no associated exception entry, returns null
+     * Retrieves the exception entry for the specified surface form and part-of-speech from the database.
+     * If the specified surface form / part-of-speech pair has no associated exception entry, returns null
      *
      * @param surfaceForm the surface form to be looked up; may not be empty or all whitespace
-     * @param pos the part of speech
+     * @param pos the part-of-speech
      * @return the entry, if found; null otherwise
      */
     fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry?
@@ -97,10 +97,10 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     // I T E R A T O R S
 
     /**
-     * Returns an iterator that will iterate over all indexes of the specified part of speech.
+     * Returns an iterator that will iterate over all indexes of the specified part-of-speech.
      *
-     * @param pos the part of speech over which to iterate
-     * @return an iterator that will iterate over all indexes of the specified part of speech
+     * @param pos the part-of-speech over which to iterate
+     * @return an iterator that will iterate over all indexes of the specified part-of-speech
      */
     fun getIndexIterator(pos: POS): Iterator<Index>
 
@@ -112,18 +112,18 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     fun getSenseEntryIterator(): Iterator<SenseEntry>
 
     /**
-     * Returns an iterator that will iterate over all synsets of the specified part of speech.
+     * Returns an iterator that will iterate over all synsets of the specified part-of-speech.
      *
-     * @param pos the part of speech over which to iterate
-     * @return an iterator that will iterate over all synsets of the specified part of speech
+     * @param pos the part-of-speech over which to iterate
+     * @return an iterator that will iterate over all synsets of the specified part-of-speech
      */
     fun getSynsetIterator(pos: POS): Iterator<Synset>
 
     /**
-     * Returns an iterator that will iterate over all exception entries of the specified part of speech.
+     * Returns an iterator that will iterate over all exception entries of the specified part-of-speech.
      *
-     * @param pos the part of speech over which to iterate
-     * @return an iterator that will iterate over all exception entries of the specified part of speech
+     * @param pos the part-of-speech over which to iterate
+     * @return an iterator that will iterate over all exception entries of the specified part-of-speech
      */
     fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry>
 
@@ -133,7 +133,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * Returns list of lemmas that have the given start.
      *
      * @param start start of lemmas searched for
-     * @param pos the part of speech over which to iterate; may be null, in which case it ignores pos
+     * @param pos the part-of-speech over which to iterate; may be null, in which case it ignores pos
      * @param limit maximum number of results, 0 for no limit
      * @return a set of lemmas in dictionary that have given start
      */

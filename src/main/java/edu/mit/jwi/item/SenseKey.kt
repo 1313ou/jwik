@@ -12,7 +12,7 @@ import java.util.*
  * @param lemma unprocessed lemma
  * @property lemma processed lemma
  * @property lexicalID lexical id for this sense key
- * @property pOS part of speech
+ * @property pOS part-of-speech
  * @property isAdjectiveSatellite whether this sense key points to an adjective satellite
  * @property lexicalFile lexical File
  */
@@ -106,7 +106,7 @@ class SenseKey(
      *
      * @param lemma the lemma
      * @param lexID the lexical id
-     * @param pos the part of speech
+     * @param pos the part-of-speech
      * @param isAdjSat true if this represents an adjective satellite; false otherwise
      * @param lexFile the lexical file
      * @param sensekey the original key string
@@ -120,7 +120,7 @@ class SenseKey(
      *
      * @param lemma the lemma
      * @param lexID the lexical id
-     * @param pos the part of speech
+     * @param pos the part-of-speech
      * @param lexFile the lexical file
      * @param sensekey the original key string
      * @param headLemma the head lemma

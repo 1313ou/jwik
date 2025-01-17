@@ -9,7 +9,7 @@ import java.util.*
  *
  * @param surfaceForm the raw surface form for the entry
  * @property surfaceForm the surface form for the entry
- * @property pOS the part of speech for the entry
+ * @property pOS the part-of-speech for the entry
  * @throws IllegalArgumentException if the surface form is empty or all whitespace
  */
 class ExceptionEntryID(

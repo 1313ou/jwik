@@ -4,10 +4,10 @@ import java.util.*
 
 /**
  * A unique identifier for a synset, sufficient to retrieve it from the Wordnet database.
- * It consists of a part of speech and an offset.
+ * It consists of a part-of-speech and an offset.
  *
  * @param offset the offset
- * @param pOS the part of speech
+ * @param pOS the part-of-speech
  * @throws IllegalArgumentException if the specified offset is not a legal offset
  */
 class SynsetID(
@@ -63,7 +63,7 @@ class SynsetID(
          * Synset IDs are always 14 characters long and have the following format:
          * SID-########-C, where
          * ######## is the zero-filled eight decimal digit offset of the synset, and
-         * C is the upper-case character code indicating the part of speech.
+         * C is the upper-case character code indicating the part-of-speech.
          *
          * @param value the string representation of the id; may include leading or trailing whitespace
          * @return a synset id object corresponding to the specified string representation
@@ -80,7 +80,7 @@ class SynsetID(
             // get pos
             val posTag = value[13].lowercaseChar()
             val pos = POS.getPartOfSpeech(posTag)
-            requireNotNull(pos) { "unknown part of speech tag: $posTag" }
+            requireNotNull(pos) { "unknown part-of-speech tag: $posTag" }
             return SynsetID(offset, pos)
         }
     }

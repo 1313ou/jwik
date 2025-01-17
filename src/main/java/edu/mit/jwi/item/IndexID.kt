@@ -5,13 +5,13 @@ import java.util.*
 /**
  * A unique identifier / key for an index.
  * An index ID is sufficient to retrieve a specific index from the Wordnet database.
- * It consists of both a lemma and part of speech.
+ * It consists of both a lemma and part-of-speech.
  *
- * Constructs an index id object with the specified lemma and part of speech.
+ * Constructs an index id object with the specified lemma and part-of-speech.
  * Since all index entries are in lower case, with whitespace converted to underscores, this constructor applies this conversion.
  *
  * @param lemma the lemma for the id
- * @param pOS the part of speech for the id
+ * @param pOS the part-of-speech for the id
  * @throws IllegalArgumentException if the lemma is empty or all whitespace
  */
 class IndexID(

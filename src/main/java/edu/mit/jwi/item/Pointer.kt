@@ -158,7 +158,7 @@ class Pointer(
          * specified pointer symbol.
          *
          * @param symbol the symbol to look up
-         * @param pos the part of speech for the symbol
+         * @param pos the part-of-speech for the symbol
          * except for ambiguous symbols @return pointer
          * @throws IllegalArgumentException if the symbol does not correspond to a known pointer.
          */

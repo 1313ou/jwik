@@ -34,7 +34,7 @@ abstract class SenseID(
          * Parses the result of the toString method back into an SenseID.
          * Sense ids are always of the following format: WID-########-P-##-lemma where
          * ######## is the eight decimal digit zero-filled offset of the associated synset,
-         * P is the upper case character representing the part of speech,
+         * P is the upper case character representing the part-of-speech,
          * ## is the two hexadecimal digit zero-filled sense number (or ?? if unknown), and
          * lemma is the lemma.
          *

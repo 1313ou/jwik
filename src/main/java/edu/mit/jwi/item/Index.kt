@@ -5,7 +5,7 @@ import java.util.*
 /**
  * A Wordnet index object, represented in the Wordnet files as a line in an index file index.(noun|verb|adj|adv)
  *
- * Each index file is an alphabetized list of all the words found in WordNet in the corresponding part of speech.
+ * Each index file is an alphabetized list of all the words found in WordNet in the corresponding part-of-speech.
  * On each line, following the word, is a list of byte offsets (synset_offset s) in the corresponding data file, one for each synset containing the word.
  * Words in the index file are in lower case only, regardless of how they were entered in the lexicographer files.
  * This folds various orthographic representations of the word into one line enabling database searches to be case-insensitive.
@@ -42,7 +42,7 @@ class Index(
         }
 
     /**
-     * Part of speech
+     * Part-of-speech
      * Derived from id.
      */
     override val pOS: POS
@@ -71,7 +71,7 @@ class Index(
      * Constructs a new index.
      *
      * @param lemma the lemma of this index
-     * @param pos the part of speech of this index
+     * @param pos the part-of-speech of this index
      * @param tagSenseCnt the tag sense count
      * @param senseids the sense ids for this index
      * @throws IllegalArgumentException if the tag sense count is negative, or the sense ids array is empty
@@ -82,7 +82,7 @@ class Index(
      * Constructs a new index.
      *
      * @param lemma the lemma of this index
-     * @param pos the part of speech of this index
+     * @param pos the part-of-speech of this index
      * @param tagSenseCnt the tag sense count
      * @param pointers an array of pointers that the synsets with lemma have
      * @param senseids the sense ids for this index

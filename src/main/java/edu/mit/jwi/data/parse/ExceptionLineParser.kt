@@ -4,7 +4,7 @@ import edu.mit.jwi.item.ExceptionEntryProxy
 
 /**
  * Parser for Wordnet exception files (e.g., `exc.adv` or `adv.exc`).
- * This parser produces ExceptionEntryProxy objects instead of ExceptionEntry objects directly because the exception files do not contain information about part of speech.
+ * This parser produces ExceptionEntryProxy objects instead of ExceptionEntry objects directly because the exception files do not contain information about part-of-speech.
  * This needs to be added by the governing object to create a full-fledged ExceptionEntry object.
  */
 object ExceptionLineParser : ILineParser<ExceptionEntryProxy> {

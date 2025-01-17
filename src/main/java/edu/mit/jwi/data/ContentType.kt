@@ -15,7 +15,7 @@ import java.util.*
  * *Index*,
  * *Data*, and
  * *Exception*
- * files for each part of speech.
+ * files for each part-of-speech.
  *
  * This class provides the content types necessary for Wordnet in the form of static fields.
  * It is not implemented as an `Enum` so that clients may add their own content types by instantiating this class.
@@ -118,8 +118,8 @@ class ContentType<T>
         /**
          * Use this convenience method to retrieve the appropriate IndexWord content type for the specified POS.
          *
-         * @param pos the part of speech for the content type
-         * @return the index content type for the specified part of speech
+         * @param pos the part-of-speech for the content type
+         * @return the index content type for the specified part-of-speech
          */
         fun getIndexContentType(pos: POS): ContentType<Index> {
             return when (pos) {
@@ -133,8 +133,8 @@ class ContentType<T>
         /**
          * Use this convenience method to retrieve the appropriate Synset content type for the specified POS.
          *
-         * @param pos the part of speech for the content type
-         * @return the index content type for the specified part of speech
+         * @param pos the part-of-speech for the content type
+         * @return the index content type for the specified part-of-speech
          */
         fun getDataContentType(pos: POS): ContentType<Synset> {
             return when (pos) {
@@ -148,8 +148,8 @@ class ContentType<T>
         /**
          * Use this convenience method to retrieve the appropriate ExceptionEntryProxy content type for the specified POS.
          *
-         * @param pos the part of speech for the content type
-         * @return the index content type for the specified part of speech
+         * @param pos the part-of-speech for the content type
+         * @return the index content type for the specified part-of-speech
          */
         fun getExceptionContentType(pos: POS): ContentType<ExceptionEntryProxy> {
             return when (pos) {

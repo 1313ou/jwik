@@ -262,8 +262,8 @@ class FileProvider @JvmOverloads constructor(
      *
      * @param <T> type
      * @param dt the data type, possibly null, of the desired content type
-     * @param pos the part of speech, possibly null, of the desired content type
-     * @return the first content type that matches the specified data type and part of speech.
+     * @param pos the part-of-speech, possibly null, of the desired content type
+     * @return the first content type that matches the specified data type and part-of-speech.
      */
     fun <T> resolveContentType(dt: DataType<T>?, pos: POS?): ContentType<T>? {
         for (e in prototypeMap.entries) {

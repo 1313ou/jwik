@@ -10,7 +10,7 @@ import edu.mit.jwi.item.POS
  *
  * @param suffix the suffix that should be stripped from a word; should not be empty or all whitespace.
  * @param ending the ending that should be stripped from a word; may be empty or all whitespace.
- * @param pOS the part of speech to which this rule applies
+ * @param pOS the part-of-speech to which this rule applies
  * @param ignore the set of suffixes that, when present, indicate this rule should not be applied. May not contain empties.
  */
 class StemmingRule(

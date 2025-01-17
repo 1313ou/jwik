@@ -15,24 +15,24 @@ const val TAG_ADVERB: Char = 'r'
 const val TAG_ADJECTIVE_SATELLITE: Char = 's'
 
 /**
- * Represents part of speech objects.
+ * Represents part-of-speech objects.
  */
 enum class POS
     (
     private val posName: String,
 
     /**
-     * The tag that is used to indicate this part of speech in Wordnet data
+     * The tag that is used to indicate this part-of-speech in Wordnet data
      * files
      *
-     * @return the character representing this part of speech
+     * @return the character representing this part-of-speech
      */
     val tag: Char,
 
     /**
-     * Returns the standard WordNet number of this part of speech
+     * Returns the standard WordNet number of this part-of-speech
      *
-     * @return the standard WordNet number of this part of speech
+     * @return the standard WordNet number of this part-of-speech
      */
     val number: Int,
 
@@ -40,27 +40,27 @@ enum class POS
 ) {
 
     /**
-     * Object representing the Noun part of speech.
+     * Object representing the Noun part-of-speech.
      */
     NOUN("noun", TAG_NOUN, NUM_NOUN, "noun"),
 
     /**
-     * Object representing the Verb part of speech.
+     * Object representing the Verb part-of-speech.
      */
     VERB("verb", TAG_VERB, NUM_VERB, "verb"),
 
     /**
-     * Object representing the Adjective part of speech.
+     * Object representing the Adjective part-of-speech.
      */
     ADJECTIVE("adjective", TAG_ADJECTIVE, NUM_ADJECTIVE, "adj", "adjective"),
 
     /**
-     * Object representing the Adverb part of speech.
+     * Object representing the Adverb part-of-speech.
      */
     ADVERB("adverb", TAG_ADVERB, NUM_ADVERB, "adv", "adverb");
 
     /**
-     * Returns a set of strings that can be used to identify resource corresponding to objects with this part of speech.
+     * Returns a set of strings that can be used to identify resource corresponding to objects with this part-of-speech.
      */
     val resourceNameHints: Set<String> = setOf(*names)
 
@@ -92,10 +92,10 @@ enum class POS
         }
 
         /**
-         * Retrieves the part of speech object given the number.
+         * Retrieves the part-of-speech object given the number.
          *
-         * @param num the number for the part of speech
-         * @return POS the part of speech object corresponding to the specified tag, or null if none is found
+         * @param num the number for the part-of-speech
+         * @return POS the part-of-speech object corresponding to the specified tag, or null if none is found
          */
         @JvmStatic
         fun getPartOfSpeech(num: Int): POS? {
@@ -109,10 +109,10 @@ enum class POS
         }
 
         /**
-         * Retrieves of the part of speech object given the tag. Accepts both lower and upper case characters.
+         * Retrieves of the part-of-speech object given the tag. Accepts both lower and upper case characters.
          *
-         * @param tag part of speech tag
-         * @return POS the part of speech object corresponding to the specified tag, or null if none is found
+         * @param tag part-of-speech tag
+         * @return POS the part-of-speech object corresponding to the specified tag, or null if none is found
          */
         @JvmStatic
         fun getPartOfSpeech(tag: Char): POS {

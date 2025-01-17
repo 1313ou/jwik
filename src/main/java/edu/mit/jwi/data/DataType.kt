@@ -103,10 +103,10 @@ class DataType<T>(
         }
 
         /**
-         * Finds the first file that satisfies the naming constraints of both the data type and part of speech.
+         * Finds the first file that satisfies the naming constraints of both the data type and part-of-speech.
          *
          * @param dataType the data type whose resource name hints should be used
-         * @param pos the part of speech whose resource name hints should be used
+         * @param pos the part-of-speech whose resource name hints should be used
          * @param files the files to be searched
          * @return the file that matches both the pos and type naming conventions, or null if none is found.
          */

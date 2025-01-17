@@ -304,7 +304,7 @@ constructor(
     /**
      * A hot swappable iterator for indexes.
      *
-     * @param pos the part of speech for the iterator
+     * @param pos the part-of-speech for the iterator
      */
     private inner class HotSwappableIndexIterator(private val pos: POS) :
         HotSwappableIterator<Index>(
@@ -321,7 +321,7 @@ constructor(
     /**
      * A hot swappable iterator for synsets.
      *
-     * @param pos the part of speech for the iterator
+     * @param pos the part-of-speech for the iterator
      */
     private inner class HotSwappableSynsetIterator(private val pos: POS) :
         HotSwappableIterator<Synset>(
@@ -336,9 +336,9 @@ constructor(
     }
 
     /**
-     * A hot swappable iterator that iterates over exceptions entries for a particular part of speech.
+     * A hot swappable iterator that iterates over exceptions entries for a particular part-of-speech.
      *
-     * @param pos the part of speech for this iterator
+     * @param pos the part-of-speech for this iterator
      */
     private inner class HotSwappableExceptionEntryIterator(private val pos: POS) :
         HotSwappableIterator<ExceptionEntry>(

@@ -314,12 +314,12 @@ abstract class BaseRAMDictionary protected constructor(
 
         /**
          * This method is used when constructing the dictionary data object.
-         * Constructs a map with an empty sub-map for every part of speech.
+         * Constructs a map with an empty sub-map for every part-of-speech.
          * Subclasses may override to change map character
          *
          * @param <K> the type of the keys for the sub-maps
          * @param <V> the type of the values for the sub-maps
-         * @return a map with an empty sub-map for every part of speech.
+         * @return a map with an empty sub-map for every part-of-speech.
          */
         private fun <K, V> makePOSMap(): MutableMap<POS, MutableMap<K, V>> {
             val result: MutableMap<POS, MutableMap<K, V>> = HashMap<POS, MutableMap<K, V>>(POS.entries.size)

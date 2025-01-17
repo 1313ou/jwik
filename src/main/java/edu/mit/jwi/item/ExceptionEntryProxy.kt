@@ -4,7 +4,7 @@ import java.io.Serializable
 
 /**
  * The data that can be obtained from a line in an exception entry file.
- * Because each exception entry does not specify its associated part of speech, this object is just a proxy and must be supplemented by the part of speech at some point to make a full ExceptionEntry object.
+ * Because each exception entry does not specify its associated part-of-speech, this object is just a proxy and must be supplemented by the part-of-speech at some point to make a full ExceptionEntry object.
  */
 open class ExceptionEntryProxy : Serializable {
 

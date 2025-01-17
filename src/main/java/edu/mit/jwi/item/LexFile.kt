@@ -13,7 +13,7 @@ import java.util.*
  * @param number the lexical file number, in the closed range [0,99]
  * @param name the name of the lexical file, may not be  empty, or all whitespace
  * @property description the description of the lexical file, may not be empty or all whitespace
- * @property pOS the part of speech for the lexical file
+ * @property pOS the part-of-speech for the lexical file
  * @throws IllegalArgumentException if either the name or description are empty or all whitespace
  */
 open class LexFile(

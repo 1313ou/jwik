@@ -19,23 +19,24 @@ object DataLineParser : ILineParser<Synset> {
         try {
             val tokenizer = StringTokenizer(line, " ")
 
-            // Get offset
+            // offset
             val offset = tokenizer.nextToken().toInt()
 
-            // Consume lex_filenum
+            // lex_filenum
             val lexFilenum = tokenizer.nextToken().toInt()
             val lexFile = resolveLexicalFile(lexFilenum)
 
-            // Get part of speech
+            // part-of-speech
             val synsetTag = tokenizer.nextToken()[0]
             val synsetPos = getPartOfSpeech(synsetTag)
 
             // ID
             val synsetID = SynsetID(offset, synsetPos)
 
-            // Determine if it is an adjective satellite
+            // adjective satellite
             val isAdjSat = (synsetTag == 's')
 
+            // adjective head
             // A synset is an adjective head if it is the 00 lexical file, is not an adjective satellite, and it has an antonym.
             // The Wordnet definition says head synsets have to have an antonym, but this is actually violated (perhaps mistakenly) in a small number of cases,
             // e.g., in Wordnet 3.0:
@@ -43,35 +44,30 @@ object DataLineParser : ILineParser<Synset> {
             // 01380721 marine (no antonyms), with satellite 01380926 deep-sea
             val isAdjHead = !isAdjSat && lexFilenum == 0
 
-            // Get token count
-            val tokenCount = tokenizer.nextToken().toInt(16)
+            // sense count
+            val senseCount = tokenizer.nextToken().toInt(16)
 
-            // Get senses
-            val senseBuilders = Array<SenseBuilder>(tokenCount) {
+            // senses
+            val senseBuilders = Array(senseCount) {
 
-                // Consume next token
+                // member lemma
                 var lemma = tokenizer.nextToken()
 
-                // If it is an adjective, it may be followed by a marker
-                var marker: AdjMarker? = null
-                if (synsetPos == POS.ADJECTIVE) {
-                    for (adjMarker in AdjMarker.entries) {
-                        if (lemma.endsWith(adjMarker.symbol)) {
-                            marker = adjMarker
-                            lemma = lemma.substring(0, lemma.length - adjMarker.symbol.length)
-                        }
-                    }
+                // if it is an adjective, it may be followed by a marker
+                val marker: AdjMarker? = if (synsetPos != POS.ADJECTIVE) null else AdjMarker.entries.firstOrNull { lemma.endsWith(it.symbol) }
+                marker?.let {
+                    lemma = lemma.substring(0, lemma.length - it.symbol.length)
                 }
 
-                // Parse lex_id
-                val lexID: Int = tokenizer.nextToken().toInt(16)
+                // lex_id
+                val lexID = tokenizer.nextToken().toInt(16)
 
                 SenseBuilder(it + 1, lemma, lexID, marker)
             }
 
-            // Get pointers
-            var synsetPointerMap: MutableMap<Pointer, ArrayList<SynsetID>>? = null
+            // pointers
             val pointerCount = tokenizer.nextToken().toInt()
+            var synsetPointerMap: MutableMap<Pointer, ArrayList<SynsetID>>? = null
             repeat(pointerCount) {
 
                 // get pointer symbol
@@ -80,7 +76,7 @@ object DataLineParser : ILineParser<Synset> {
                 // get synset target offset
                 val targetOffset = tokenizer.nextToken().toInt()
 
-                // get target synset part of speech
+                // get target synset part-of-speech
                 val targetPos = getPartOfSpeech(tokenizer.nextToken()[0])
 
                 // ID
@@ -148,6 +144,7 @@ object DataLineParser : ILineParser<Synset> {
 
             // create synset
             return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, listOf<SenseBuilder>(*senseBuilders), synsetPointerMap)
+
         } catch (e: NumberFormatException) {
             throw MisformattedLineException(line, e)
         } catch (e: NoSuchElementException) {
@@ -181,9 +178,9 @@ object DataLineParser : ILineParser<Synset> {
      * This is implemented in its own method for ease of subclassing.
      *
      * @param symbol the symbol of the pointer to return
-     * @param pos the part of speech of the pointer to return, can be null unless the pointer symbol is ambiguous
-     * @return the pointer corresponding to the specified symbol and part of speech combination
-     * @throws IllegalArgumentException if the symbol and part of speech combination does not correspond to a known pointer
+     * @param pos the part-of-speech of the pointer to return, can be null unless the pointer symbol is ambiguous
+     * @return the pointer corresponding to the specified symbol and part-of-speech combination
+     * @throws IllegalArgumentException if the symbol and part-of-speech combination does not correspond to a known pointer
      */
     private fun resolvePointer(symbol: String, pos: POS?): Pointer {
         return getPointerType(symbol, pos)
