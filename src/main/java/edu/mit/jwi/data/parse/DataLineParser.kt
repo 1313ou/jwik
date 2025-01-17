@@ -8,6 +8,8 @@ import edu.mit.jwi.item.Synset.SenseBuilder
 import edu.mit.jwi.item.VerbFrame.Companion.getFrame
 import java.util.*
 
+data class RelationData(val pointer: Pointer, val targetSynsetID: SynsetID, var sourceTargetNum: Int)
+
 /**
  * Parser for Wordnet data files (e.g., `data.adv` or `adv.dat`).
  * This parser produces a Synset object.
@@ -67,11 +69,10 @@ object DataLineParser : ILineParser<Synset> {
 
             // pointers
             val pointerCount = tokenizer.nextToken().toInt()
-            var synsetPointerMap: MutableMap<Pointer, ArrayList<SynsetID>>? = null
-            repeat(pointerCount) {
+            val relations = List(pointerCount) {
 
                 // get pointer symbol
-                val pointer = resolvePointer(tokenizer.nextToken(), synsetPos)
+                val symbol = tokenizer.nextToken()
 
                 // get synset target offset
                 val targetOffset = tokenizer.nextToken().toInt()
@@ -79,34 +80,33 @@ object DataLineParser : ILineParser<Synset> {
                 // get target synset part-of-speech
                 val targetPos = getPartOfSpeech(tokenizer.nextToken()[0])
 
-                // ID
-                var targetSynsetID = SynsetID(targetOffset, targetPos)
-
                 // get source/target numbers
                 var sourceTargetNum = tokenizer.nextToken().toInt(16)
 
-                // this is a semantic pointer if the source/target numbers are zero
-                if (sourceTargetNum == 0) {
-                    if (synsetPointerMap == null) {
-                        synsetPointerMap = HashMap<Pointer, ArrayList<SynsetID>>()
-                    }
-                    var pointers = synsetPointerMap.computeIfAbsent(pointer) { _: Pointer -> ArrayList<SynsetID>() }
-                    pointers.add(targetSynsetID)
-                } else {
-                    // this is a lexical pointer
-                    val sourceNum: Int = sourceTargetNum / 256
-                    val targetNum: Int = sourceTargetNum and 255
-                    val targetSenseID: SenseID = SenseIDWithNum(targetSynsetID, targetNum)
-                    senseBuilders[sourceNum - 1].addRelatedSense(pointer, targetSenseID)
-                }
-            }
+                // get pointer
+                val pointer = resolvePointer(symbol, synsetPos)
 
-            // trim pointer lists
-            if (synsetPointerMap != null) {
-                for (list in synsetPointerMap.values) {
-                    list.trimToSize()
+                // ID
+                var targetSynsetID = SynsetID(targetOffset, targetPos)
+
+                RelationData(pointer, targetSynsetID, sourceTargetNum)
+            }.partition { it.sourceTargetNum == 0 }
+
+            val synsetRelations = relations.first
+                .groupBy { it.pointer }
+                .mapValues { (_, value) -> value.map { it.targetSynsetID } }
+
+            val senseRelations = relations.second
+                .groupBy { it.pointer }
+                .mapValues { (key, value) ->
+                    value.map {
+                        val sourceNum: Int = it.sourceTargetNum / 256
+                        val targetNum: Int = it.sourceTargetNum and 255
+                        val senseid = SenseIDWithNum(it.targetSynsetID, targetNum)
+                        senseBuilders[sourceNum - 1].addRelatedSense(key, senseid)
+                        senseid
+                    }
                 }
-            }
 
             // parse verb frames
             // do not make the field compulsory for verbs with a 00 when no frame is present
@@ -143,7 +143,7 @@ object DataLineParser : ILineParser<Synset> {
             }
 
             // create synset
-            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, listOf<SenseBuilder>(*senseBuilders), synsetPointerMap)
+            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, listOf<SenseBuilder>(*senseBuilders), synsetRelations)
 
         } catch (e: NumberFormatException) {
             throw MisformattedLineException(line, e)
