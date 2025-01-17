@@ -139,18 +139,15 @@ object DataLineParser : ILineParser<Synset> {
                 }
             }
 
-            // Get gloss
+            // gloss
             var gloss = ""
             val index = line.indexOf('|')
             if (index > 0) {
                 gloss = line.substring(index + 2).trim { it <= ' ' }
             }
 
-            // create members
-            val words = listOf<SenseBuilder>(*senseBuilders)
-
             // create synset
-            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, words, synsetPointerMap)
+            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, listOf<SenseBuilder>(*senseBuilders), synsetPointerMap)
         } catch (e: NumberFormatException) {
             throw MisformattedLineException(line, e)
         } catch (e: NoSuchElementException) {

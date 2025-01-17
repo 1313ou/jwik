@@ -219,8 +219,8 @@ class Synset private constructor(
         }
 
         fun addRelatedSense(ptrType: Pointer, id: SenseID) {
-            val words = relatedSenses.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<SenseID>() }
-            words.add(id)
+            val sendIDs = relatedSenses.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<SenseID>() }
+            sendIDs.add(id)
         }
 
         fun addVerbFrame(frame: VerbFrame) {
@@ -270,8 +270,8 @@ class Synset private constructor(
             return offset <= 99999999
         }
 
-        fun buildSenses(wordBuilders: List<ISenseBuilder>, synset: Synset): List<Sense> {
-            return wordBuilders
+        fun buildSenses(senseBuilders: List<ISenseBuilder>, synset: Synset): List<Sense> {
+            return senseBuilders
                 .map { it.toSense(synset) }
                 .toList()
         }

@@ -314,10 +314,10 @@ class DataSourceDictionary(
             headLemma += headSense.adjectiveMarker!!.symbol
         }
 
-        // set the head word for each word
-        for (word in synset.senses) {
-            if (word.senseKey.needsHeadSet()) {
-                word.senseKey.setHead(headLemma, headSense.lexicalID)
+        // set the head word for each sense
+        for (sense in synset.senses) {
+            if (sense.senseKey.needsHeadSet()) {
+                sense.senseKey.setHead(headLemma, headSense.lexicalID)
             }
         }
     }

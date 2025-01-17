@@ -356,12 +356,12 @@ constructor(
      */
     private inner class HotSwappableSenseEntryIterator :
         HotSwappableIterator<SenseEntry>(
-            if (data == null) backingDictionary.getSenseEntryIterator() else data!!.senses.values.iterator(),
+            if (data == null) backingDictionary.getSenseEntryIterator() else data!!.senseEntries.values.iterator(),
             data == null
         ) {
 
         override fun makeIterator(): Iterator<SenseEntry> {
-            return data!!.senses.values.iterator()
+            return data!!.senseEntries.values.iterator()
         }
     }
 
@@ -409,8 +409,8 @@ constructor(
                     while (i.hasNext()) {
                         val synset = i.next()
                         synsets.put(synset.iD, synset)
-                        for (word in synset.senses) {
-                            result.words.put(word.senseKey, word)
+                        for (sense in synset.senses) {
+                            result.senses.put(sense.senseKey, sense)
                         }
                     }
                 }
@@ -430,10 +430,10 @@ constructor(
             val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
             while (i.hasNext()) {
                 val entry = i.next()
-                val word: Sense = result.words[entry.senseKey]!!
+                val sense: Sense = result.senses[entry.senseKey]!!
                 // Creates a new sense entry that replicates the specified sense entry.
                 // The new sense entry replaces its internal sense key with the specified sense key thus removing a redundant object.
-                result.senses.put(word.senseKey, SenseEntry(word.senseKey, entry.offset, entry.senseNumber, entry.tagCount))
+                result.senseEntries.put(sense.senseKey, SenseEntry(sense.senseKey, entry.offset, entry.senseNumber, entry.tagCount))
             }
             cooperate(thread)
 

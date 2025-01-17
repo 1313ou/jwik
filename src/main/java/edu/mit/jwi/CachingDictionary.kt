@@ -149,9 +149,9 @@ open class CachingDictionary(
      */
     protected fun cacheSynset(synset: Synset) {
         cache.cacheItem(synset)
-        for (word in synset.senses) {
-            cache.cacheItem(word)
-            cache.cacheSenseByKey(word)
+        for (sense in synset.senses) {
+            cache.cacheItem(sense)
+            cache.cacheSenseByKey(sense)
         }
     }
 

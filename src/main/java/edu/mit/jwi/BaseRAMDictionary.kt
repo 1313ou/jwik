@@ -204,12 +204,12 @@ abstract class BaseRAMDictionary protected constructor(
 
     override fun getSense(key: SenseKey): Sense? {
         check(data != null) { NO_DATA }
-        return data!!.words[key]
+        return data!!.senses[key]
     }
 
     override fun getLemmasStartingWith(start: String, pos: POS?, limit: Int): Set<String> {
         check(data != null) { NO_DATA }
-        return data!!.words.values
+        return data!!.senses.values
             .filter { it.lemma.startsWith(start) && if (pos != null) it.pOS == pos else true }
             .map { it.lemma }
             .take(limit)
@@ -227,7 +227,7 @@ abstract class BaseRAMDictionary protected constructor(
 
     override fun getSenseEntry(key: SenseKey): SenseEntry? {
         check(data != null) { NO_DATA }
-        return data!!.senses[key]
+        return data!!.senseEntries[key]
     }
 
     // EXCEPTION ENTRY
@@ -255,7 +255,7 @@ abstract class BaseRAMDictionary protected constructor(
 
     override fun getSenseEntryIterator(): Iterator<SenseEntry> {
         check(data != null) { NO_DATA }
-        return data!!.senses.values.iterator()
+        return data!!.senseEntries.values.iterator()
     }
 
     override fun getExceptionEntryIterator(pos: POS): Iterator<ExceptionEntry> {
@@ -308,9 +308,9 @@ abstract class BaseRAMDictionary protected constructor(
 
         val exceptions: MutableMap<POS, MutableMap<ExceptionEntryID, ExceptionEntry>> = makePOSMap<ExceptionEntryID, ExceptionEntry>()
 
-        var words: MutableMap<SenseKey, Sense> = makeMap<SenseKey, Sense>(212500, null)
+        var senses: MutableMap<SenseKey, Sense> = makeMap<SenseKey, Sense>(212500, null)
 
-        var senses: MutableMap<SenseKey, SenseEntry> = makeMap<SenseKey, SenseEntry>(212500, null)
+        var senseEntries: MutableMap<SenseKey, SenseEntry> = makeMap<SenseKey, SenseEntry>(212500, null)
 
         /**
          * This method is used when constructing the dictionary data object.
@@ -359,8 +359,8 @@ abstract class BaseRAMDictionary protected constructor(
             compactPOSMap<IndexID, Index>(indexes)
             compactPOSMap<SynsetID, Synset>(synsets)
             compactPOSMap<ExceptionEntryID, ExceptionEntry>(exceptions)
-            words = compactMap<SenseKey, Sense>(words)
-            senses = compactMap<SenseKey, SenseEntry>(senses)
+            senses = compactMap<SenseKey, Sense>(senses)
+            senseEntries = compactMap<SenseKey, SenseEntry>(senseEntries)
         }
 
         /**
