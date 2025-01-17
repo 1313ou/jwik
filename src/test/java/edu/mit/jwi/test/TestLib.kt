@@ -75,7 +75,7 @@ object TestLib {
         val result: MutableList<String?> = ArrayList<String?>()
         val synset = DataLineParser.parseLine(line)
         for (sense in synset.words) {
-            result.add(String.format("%s %s %d", sense, sense.lemma, sense.lexicalID))
+            result.add("$sense, ${sense.lemma}, ${sense.lexicalID}")
         }
         return result
     }

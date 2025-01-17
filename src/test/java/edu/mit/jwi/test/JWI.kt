@@ -25,10 +25,10 @@ class JWI
      *
      * @param wnHome wordnet home
      * @param config config
-     * final Config config = new Config();
-     * config.checkLexicalId = false;
-     * config.charSet = StandardCharsets.UTF_8;
-     * config.indexSenseKeyComparator = Comparators.CaseSensitiveSenseKeyLineComparator.getInstance();
+     * val config = Config()
+     * config.checkLexicalId = false
+     * config.charSet = StandardCharsets.UTF_8
+     * config.indexSenseKeyComparator = CaseSensitiveSenseKeyLineComparator
      * @throws IOException io exception
      */
     init {
