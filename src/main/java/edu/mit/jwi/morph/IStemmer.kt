@@ -20,5 +20,5 @@ interface IStemmer {
      * @return the list of stems found for the surface form and part of speech combination
      * @throws IllegalArgumentException if the specified surface form is empty or all whitespace
      */
-    fun findStems(surfaceForm: String, pos: POS?=null): List<String>
+    fun findStems(surfaceForm: String, pos: POS? = null): List<String>
 }
