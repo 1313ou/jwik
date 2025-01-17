@@ -100,7 +100,7 @@ object DataLineParser : ILineParser<Synset> {
                     val sourceNum: Int = sourceTargetNum / 256
                     val targetNum: Int = sourceTargetNum and 255
                     val targetWordID: SenseID = SenseIDWithNum(targetSynsetID, targetNum)
-                    wordProxies[sourceNum - 1].addRelatedWord(pointer, targetWordID)
+                    wordProxies[sourceNum - 1].addRelatedSense(pointer, targetWordID)
                 }
             }
 

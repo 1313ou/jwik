@@ -12,12 +12,12 @@ fun String.asSensekeyLemma(): String {
 
 private val whitespace: Pattern = Pattern.compile("\\s+")
 
-fun String.asIndexWordLemma(): String {
+fun String.asIndexLemma(): String {
     return this.lowercase().trim { it <= ' ' }
 }
 
 fun String.asEscapedSenseIndexLemma(): String {
-    return whitespace.matcher(this.asIndexWordLemma()).replaceAll("_")
+    return whitespace.matcher(this.asIndexLemma()).replaceAll("_")
 }
 
 // exceptions

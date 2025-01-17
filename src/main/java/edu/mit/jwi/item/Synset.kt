@@ -109,7 +109,7 @@ class Synset private constructor(
         related: Map<Pointer, List<SynsetID>>?,
     ) : this(iD, lexicalFile, isAdjectiveSatellite, isAdjectiveHead, gloss, normalizeRelated(related)) {
         require(!wordBuilders.isEmpty())
-        words = buildWords(wordBuilders, this)
+        words = buildSenses(wordBuilders, this)
     }
 
     init {
@@ -179,13 +179,13 @@ class Synset private constructor(
     interface IWordBuilder {
 
         /**
-         * Creates the word represented by this builder.
-         * If the builder represents invalid values for a word, this method may throw an exception.
+         * Creates the sense represented by this builder.
+         * If the builder represents invalid values for a sense, this method may throw an exception.
          *
-         * @param synset the synset to which this word should be attached
+         * @param synset the synset to which this sense should be attached
          * @return the created word
          */
-        fun toWord(synset: Synset): Sense
+        fun toSense(synset: Synset): Sense
     }
 
     /**
@@ -210,16 +210,16 @@ class Synset private constructor(
             checkWordNumber(number)
         }
 
-        private val relatedWords: MutableMap<Pointer, MutableList<SenseID>> = HashMap<Pointer, MutableList<SenseID>>()
+        private val relatedSenses: MutableMap<Pointer, MutableList<SenseID>> = HashMap<Pointer, MutableList<SenseID>>()
 
         private val verbFrames = ArrayList<VerbFrame>()
 
-        override fun toWord(synset: Synset): Sense {
-            return Sense(synset, SenseIDWithLemmaAndNum(synset.iD, number, lemma), lexID, marker, verbFrames, relatedWords)
+        override fun toSense(synset: Synset): Sense {
+            return Sense(synset, SenseIDWithLemmaAndNum(synset.iD, number, lemma), lexID, marker, verbFrames, relatedSenses)
         }
 
-        fun addRelatedWord(ptrType: Pointer, id: SenseID) {
-            val words = relatedWords.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<SenseID>() }
+        fun addRelatedSense(ptrType: Pointer, id: SenseID) {
+            val words = relatedSenses.computeIfAbsent(ptrType) { k: Pointer -> ArrayList<SenseID>() }
             words.add(id)
         }
 
@@ -270,9 +270,9 @@ class Synset private constructor(
             return offset <= 99999999
         }
 
-        fun buildWords(wordBuilders: List<IWordBuilder>, synset: Synset): List<Sense> {
+        fun buildSenses(wordBuilders: List<IWordBuilder>, synset: Synset): List<Sense> {
             return wordBuilders
-                .map { it.toWord(synset) }
+                .map { it.toSense(synset) }
                 .toList()
         }
 

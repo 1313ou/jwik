@@ -19,7 +19,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     // L O O K   U P
 
     /**
-     * This method is identical to `getIndexWord(IndexWordID)` and is provided as a convenience.
+     * This method is identical to getIndex(IndexID) and is provided as a convenience.
      *
      * @param lemma the lemma for the index word requested; may not be empty or all whitespace
      * @param pos the part of speech

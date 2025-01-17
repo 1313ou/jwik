@@ -204,8 +204,8 @@ class JWI
                     val sense = dict.getSense(senseid)
                     if (sense == null) {
                         System.err.println("⚠ senseid: $senseid ➜ null sense")
-                        //val sense2: Sense = this.dict.getWord(senseid)
-                        // val sense2: Word = dict.getWord(senseid)
+                        //val sense2: Sense = this.dict.getSense(senseid)
+                        // val sense2: Sense = dict.getSense(senseid)
                         continue
                     }
                     val relatedIds: List<SenseID>? = sense.allRelated

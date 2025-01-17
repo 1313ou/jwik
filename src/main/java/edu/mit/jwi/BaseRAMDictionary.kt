@@ -496,7 +496,7 @@ abstract class BaseRAMDictionary protected constructor(
          */
         inner class WordBuilder(private val oldWord: Sense) : Synset.IWordBuilder {
 
-            override fun toWord(synset: Synset): Sense {
+            override fun toSense(synset: Synset): Sense {
                 return makeWord(synset, oldWord)
             }
         }
