@@ -72,10 +72,10 @@ class ContentType<T>
         val INDEX_ADVERB = ContentType<Index>(ContentTypeKey.INDEX_ADVERB, IndexLineComparator)
         val INDEX_ADJECTIVE = ContentType<Index>(ContentTypeKey.INDEX_ADJECTIVE, IndexLineComparator)
 
-        val WORD_NOUN = ContentType<Index>(ContentTypeKey.WORD_NOUN, IndexLineComparator)
-        val WORD_VERB = ContentType<Index>(ContentTypeKey.WORD_VERB, IndexLineComparator)
-        val WORD_ADVERB = ContentType<Index>(ContentTypeKey.WORD_ADVERB, IndexLineComparator)
-        val WORD_ADJECTIVE = ContentType<Index>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator)
+        val WORD_NOUN = ContentType<Sense>(ContentTypeKey.WORD_NOUN, IndexLineComparator)
+        val WORD_VERB = ContentType<Sense>(ContentTypeKey.WORD_VERB, IndexLineComparator)
+        val WORD_ADVERB = ContentType<Sense>(ContentTypeKey.WORD_ADVERB, IndexLineComparator)
+        val WORD_ADJECTIVE = ContentType<Sense>(ContentTypeKey.WORD_ADJECTIVE, IndexLineComparator)
 
         val DATA_NOUN = ContentType<Synset>(ContentTypeKey.DATA_NOUN, DataLineComparator)
         val DATA_VERB = ContentType<Synset>(ContentTypeKey.DATA_VERB, DataLineComparator)
@@ -139,7 +139,7 @@ class ContentType<T>
             }
         }
 
-        fun getWordContentType(pos: POS): ContentType<Index> {
+        fun getSenseContentType(pos: POS): ContentType<Sense> {
             return when (pos) {
                 POS.NOUN      -> WORD_NOUN
                 POS.VERB      -> WORD_VERB
