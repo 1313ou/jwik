@@ -94,16 +94,16 @@ object DataLineParser : ILineParser<Synset> {
             }.partition { it.sourceTargetNum == 0 }
 
             val synsetRelations = relations.first
-                .groupBy { it.pointer }
-                .mapValues { (_, value) -> value.map { it.targetSynsetID } }
+                .groupBy { data -> data.pointer }
+                .mapValues { (_, data) -> data.map { it.targetSynsetID } }
 
             val senseRelations = relations.second
                 .groupBy { it.sourceTargetNum / 256 }
                 .mapValues { (_, data) ->
                     data
                         .groupBy { it.pointer }
-                        .mapValues { (_, value) ->
-                            value.map {
+                        .mapValues { (_, data) ->
+                            data.map {
                                 val targetNum: Int = it.sourceTargetNum and 255
                                 val senseid = SenseIDWithNum(it.targetSynsetID, targetNum)
                                 senseid
@@ -137,10 +137,10 @@ object DataLineParser : ILineParser<Synset> {
 
                     }.partition { it.first > 0 }
                     val allSensesFrames = frames.first
-                        .map { it.second }
+                        .map { (_, frame) -> frame }
                     val senseFrames = frames.second
-                        .groupBy { it.first }
-                        .mapValues { (_, value) -> value.map { it.second } }
+                        .groupBy { (index, _) -> index }
+                        .mapValues { (_, value) -> value.map { (_, frame) -> frame } }
 
                     // transfer to sense builders
                     senseFrames.entries.forEach {
