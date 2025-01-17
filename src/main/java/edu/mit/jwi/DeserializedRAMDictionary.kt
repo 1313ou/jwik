@@ -7,7 +7,6 @@ import edu.mit.jwi.item.Version
 import java.io.*
 import java.net.URL
 import java.util.zip.GZIPInputStream
-import kotlin.Throws
 
 /**
  * Dictionary that deserializes dictionary object.

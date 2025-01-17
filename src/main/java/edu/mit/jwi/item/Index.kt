@@ -8,7 +8,7 @@ import java.util.*
  * Each index file is an alphabetized list of all the words found in WordNet in the corresponding part of speech.
  * On each line, following the word, is a list of byte offsets (synset_offset s) in the corresponding data file, one for each synset containing the word.
  * Words in the index file are in lower case only, regardless of how they were entered in the lexicographer files.
- * This folds various orthographic representations of the word into one line enabling database searches to be case insensitive.
+ * This folds various orthographic representations of the word into one line enabling database searches to be case-insensitive.
  *
  * Constructs a new index.
  *

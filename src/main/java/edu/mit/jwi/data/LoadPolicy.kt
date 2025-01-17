@@ -9,7 +9,7 @@ object LoadPolicy {
 
     /**
      * Loading behavior where the object does not load itself when instantiated, initialized, or opened.
-     * Loading can be initiated through other means (e.g., a call to the ILoadable.load method, if the object supports it).
+     * Loading can be initiated through other means (e.g., a call to the load method, if the object supports it).
      * Value is 1 &lt;&lt; 1.
      */
     const val NO_LOAD: Int = 1 shl 1

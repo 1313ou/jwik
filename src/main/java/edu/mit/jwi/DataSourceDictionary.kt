@@ -359,7 +359,6 @@ class DataSourceDictionary(
         protected val parser: ILineParser<T> = content.dataType.parser
 
         var currentLine: String? = null
-            protected set
 
         override val pOS: POS
             get() {

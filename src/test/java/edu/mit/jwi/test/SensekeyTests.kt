@@ -7,8 +7,6 @@ import edu.mit.jwi.item.POS
 import edu.mit.jwi.item.SenseKey
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.io.OutputStream
-import java.io.PrintStream
 
 class SensekeyTests {
 
@@ -53,9 +51,5 @@ class SensekeyTests {
         println(sk2)
         Assertions.assertEquals(sk1, sk2)
         Assertions.assertEquals(sk1.hashCode(), sk2.hashCode())
-    }
-
-    companion object {
-
     }
 }

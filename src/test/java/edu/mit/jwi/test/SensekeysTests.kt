@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.io.IOException
-import java.io.OutputStream
-import java.io.PrintStream
 
 class SensekeysTests {
 
@@ -57,14 +55,6 @@ class SensekeysTests {
     }
 
     companion object {
-
-        private val VERBOSE = !System.getProperties().containsKey("SILENT")
-
-        private val PS: PrintStream? = if (VERBOSE) System.out else PrintStream(object : OutputStream() {
-            override fun write(b: Int) {
-                //DO NOTHING
-            }
-        })
 
         private var jwi: JWI? = null
 

@@ -2,7 +2,6 @@ package edu.mit.jwi.morph
 
 import edu.mit.jwi.item.POS
 import java.util.regex.Pattern
-import kotlin.sequences.distinct
 
 /**
  * Provides simple a simple pattern-based stemming facility based on the "Rules of Detachment" as described in the `morphy` man page in the Wordnet distribution, which can be found at [ http://wordnet.princeton.edu/man/morphy.7WN.html](http://wordnet.princeton.edu/man/morphy.7WN.html)
@@ -73,8 +72,6 @@ open class SimpleStemmer : IStemmer {
             POS.ADJECTIVE -> stripAdjectiveSuffix(word)
             POS.ADVERB    -> emptyList()  // nothing for adverb
         }
-
-        throw IllegalArgumentException("This should not happen")
     }
 
     /**
@@ -158,7 +155,7 @@ open class SimpleStemmer : IStemmer {
             .toList()
     }
 
-     /**
+    /**
      * Handles stemming noun collocations.
      *
      * @param composite the word to be modified

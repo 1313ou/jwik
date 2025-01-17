@@ -20,46 +20,33 @@ class WordnetStemmer(
     override fun findStems(word: String, pos: POS?): List<String> {
         var word = normalize(word)
         if (pos == null) {
-            return super.findStems(word, null)
+            return POS.entries
+                .flatMap { findStems(word, it) }
+                .distinct()
         }
 
-        val result: MutableSet<String> = LinkedHashSet<String>()
+        // look and see if it's in Wordnet
+        // if so, the form itself is a stem
+        var self = dictionary.getIndexWord(word, pos) != null
 
         // first look for the word in the exception lists
         val excEntry = dictionary.getExceptionEntry(word, pos)
         if (excEntry != null) {
+            val result = ArrayList<String>()
+            if (self)
+                result.add(word)
             result.addAll(excEntry.rootForms)
-        }
-
-        // then look and see if it's in Wordnet; if so, the form itself is a stem
-        if (dictionary.getIndexWord(word, pos) != null) {
-            result.add(word)
-        }
-
-        if (excEntry != null) {
-            return ArrayList<String>(result)
+            return result.distinct()
         }
 
         // go to the simple stemmer and check and see if any of those stems are in WordNet
-        val possibles: MutableList<String> = super.findStems(word, pos) as MutableList<String>
-
-        // Fix for Bug015: don't allow empty strings to go to the dictionary
-        possibles.removeIf { s: String? -> s!!.trim { it <= ' ' }.isEmpty() }
-
-        // check each algorithmically obtained root to see if it's in WordNet
-        for (possible in possibles) {
-            if (dictionary.getIndexWord(possible, pos) != null) {
-                result.add(possible)
-            }
-        }
-
-        if (result.isEmpty()) {
-            return if (possibles.isEmpty()) {
-                emptyList<String>()
-            } else {
-                ArrayList<String>(possibles)
-            }
-        }
-        return ArrayList<String>(result)
+        val result = super.findStems(word, pos)
+            .map { it.trim { it <= ' ' } }
+            .filterNot { it.isEmpty() }
+            .filter { dictionary.getIndexWord(it, pos) != null }
+            .toMutableList()
+        if (self)
+            result.add(0, word)
+        return result.distinct()
     }
 }

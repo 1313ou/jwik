@@ -1,7 +1,6 @@
 package edu.mit.jwi.data
 
 import java.io.IOException
-import kotlin.Throws
 
 /**
  * Object that has a lifecycle.

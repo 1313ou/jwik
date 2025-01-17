@@ -177,7 +177,7 @@ class SenseKey(
     override fun compareTo(other: SenseKey): Int {
 
         // first sort alphabetically by lemma
-        var cmp: Int = lemma.compareTo(other.lemma) //, ignoreCase = true) not needed if lemma is lowercased in constructor
+        var cmp: Int = lemma.compareTo(other.lemma) // ignoreCase = true not needed if lemma is lowercased in constructor
         if (cmp != 0) {
             return cmp
         }

@@ -14,7 +14,6 @@ import java.nio.charset.Charset
 import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.Throws
 
 /**
  * Abstract superclass of wordnet data file objects.
