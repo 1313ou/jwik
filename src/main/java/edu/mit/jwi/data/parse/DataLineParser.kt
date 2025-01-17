@@ -4,7 +4,7 @@ import edu.mit.jwi.item.*
 import edu.mit.jwi.item.LexFile.Companion.getLexicalFile
 import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
 import edu.mit.jwi.item.Pointer.Companion.getPointerType
-import edu.mit.jwi.item.Synset.WordBuilder
+import edu.mit.jwi.item.Synset.SenseBuilder
 import edu.mit.jwi.item.VerbFrame.Companion.getFrame
 import java.util.*
 
@@ -47,7 +47,7 @@ object DataLineParser : ILineParser<Synset> {
             val wordCount = tokenizer.nextToken().toInt(16)
 
             // Get words
-            val wordProxies: Array<WordBuilder> = Array<WordBuilder>(wordCount) {
+            val wordProxies: Array<SenseBuilder> = Array<SenseBuilder>(wordCount) {
                 // Consume next word
                 var lemma = tokenizer.nextToken()
 
@@ -65,7 +65,7 @@ object DataLineParser : ILineParser<Synset> {
                 // Parse lex_id
                 val lexID: Int = tokenizer.nextToken().toInt(16)
 
-                WordBuilder(it + 1, lemma, lexID, marker)
+                SenseBuilder(it + 1, lemma, lexID, marker)
             }
 
             // Get pointers
@@ -99,8 +99,8 @@ object DataLineParser : ILineParser<Synset> {
                     // this is a lexical pointer
                     val sourceNum: Int = sourceTargetNum / 256
                     val targetNum: Int = sourceTargetNum and 255
-                    val targetWordID: SenseID = SenseIDWithNum(targetSynsetID, targetNum)
-                    wordProxies[sourceNum - 1].addRelatedSense(pointer, targetWordID)
+                    val targetSenseID: SenseID = SenseIDWithNum(targetSynsetID, targetNum)
+                    wordProxies[sourceNum - 1].addRelatedSense(pointer, targetSenseID)
                 }
             }
 
@@ -144,7 +144,7 @@ object DataLineParser : ILineParser<Synset> {
             }
 
             // create members
-            val words = listOf<WordBuilder>(*wordProxies)
+            val words = listOf<SenseBuilder>(*wordProxies)
 
             // create synset
             return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, words, synsetPointerMap)

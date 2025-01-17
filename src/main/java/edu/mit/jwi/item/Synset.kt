@@ -1,7 +1,7 @@
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.LexFile.Companion.ADJ_ALL
-import edu.mit.jwi.item.Sense.Companion.checkWordNumber
+import edu.mit.jwi.item.Sense.Companion.checkSenseNumber
 import java.util.*
 
 /**
@@ -105,7 +105,7 @@ class Synset private constructor(
         isAdjectiveSatellite: Boolean,
         isAdjectiveHead: Boolean,
         gloss: String,
-        wordBuilders: List<IWordBuilder>,
+        wordBuilders: List<ISenseBuilder>,
         related: Map<Pointer, List<SynsetID>>?,
     ) : this(iD, lexicalFile, isAdjectiveSatellite, isAdjectiveHead, gloss, normalizeRelated(related)) {
         require(!wordBuilders.isEmpty())
@@ -176,7 +176,7 @@ class Synset private constructor(
     /**
      * A word builder used to construct word objects inside the synset object constructor.
      */
-    interface IWordBuilder {
+    interface ISenseBuilder {
 
         /**
          * Creates the sense represented by this builder.
@@ -199,15 +199,15 @@ class Synset private constructor(
      * @property lexID the id of the lexical file in which the word is listed
      * @property marker the adjective marker for the word
      */
-    data class WordBuilder(
+    data class SenseBuilder(
         private val number: Int,
         private val lemma: String,
         private val lexID: Int,
         private val marker: AdjMarker?,
-    ) : IWordBuilder {
+    ) : ISenseBuilder {
 
         init {
-            checkWordNumber(number)
+            checkSenseNumber(number)
         }
 
         private val relatedSenses: MutableMap<Pointer, MutableList<SenseID>> = HashMap<Pointer, MutableList<SenseID>>()
@@ -270,7 +270,7 @@ class Synset private constructor(
             return offset <= 99999999
         }
 
-        fun buildSenses(wordBuilders: List<IWordBuilder>, synset: Synset): List<Sense> {
+        fun buildSenses(wordBuilders: List<ISenseBuilder>, synset: Synset): List<Sense> {
             return wordBuilders
                 .map { it.toSense(synset) }
                 .toList()

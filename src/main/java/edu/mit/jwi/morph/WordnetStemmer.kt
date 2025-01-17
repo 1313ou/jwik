@@ -27,7 +27,7 @@ class WordnetStemmer(
 
         // look and see if it's in Wordnet
         // if so, the form itself is a stem
-        var self = dictionary.getIndexWord(word, pos) != null
+        var self = dictionary.getIndex(word, pos) != null
 
         // first look for the word in the exception lists
         val excEntry = dictionary.getExceptionEntry(word, pos)
@@ -43,7 +43,7 @@ class WordnetStemmer(
         val result = super.findStems(word, pos)
             .map { it.trim { it <= ' ' } }
             .filterNot { it.isEmpty() }
-            .filter { dictionary.getIndexWord(it, pos) != null }
+            .filter { dictionary.getIndex(it, pos) != null }
             .toMutableList()
         if (self)
             result.add(0, word)

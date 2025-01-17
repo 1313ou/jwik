@@ -1,7 +1,7 @@
 package edu.mit.jwi.item
 
-import edu.mit.jwi.item.Sense.Companion.checkWordNumber
-import edu.mit.jwi.item.Sense.Companion.zeroFillWordNumber
+import edu.mit.jwi.item.Sense.Companion.checkSenseNumber
+import edu.mit.jwi.item.Sense.Companion.zeroFillSenseNumber
 import java.util.*
 
 /**
@@ -85,7 +85,7 @@ abstract class SenseID(
 class SenseIDWithNum(synsetID: SynsetID, val senseNumber: Int) : SenseID(synsetID) {
 
     init {
-        checkWordNumber(senseNumber)
+        checkSenseNumber(senseNumber)
     }
 
     override fun hashCode(): Int {
@@ -111,7 +111,7 @@ class SenseIDWithNum(synsetID: SynsetID, val senseNumber: Int) : SenseID(synsetI
     }
 
     override fun toString(): String {
-        return "${super.toString()}-${zeroFillWordNumber(senseNumber)}-$UNKNOWN_LEMMA"
+        return "${super.toString()}-${zeroFillSenseNumber(senseNumber)}-$UNKNOWN_LEMMA"
     }
 
     companion object {
@@ -184,7 +184,7 @@ open class SenseIDWithLemma(synsetID: SynsetID, lemma: String) : SenseID(synsetI
 class SenseIDWithLemmaAndNum(synsetID: SynsetID, val senseNumber: Int, lemma: String) : SenseIDWithLemma(synsetID, lemma) {
 
     init {
-        checkWordNumber(senseNumber)
+        checkSenseNumber(senseNumber)
     }
 
     override fun hashCode(): Int {
@@ -210,6 +210,6 @@ class SenseIDWithLemmaAndNum(synsetID: SynsetID, val senseNumber: Int, lemma: St
     }
 
     override fun toString(): String {
-        return "${super.toString()}-${zeroFillWordNumber(senseNumber)}-$lemma"
+        return "${super.toString()}-${zeroFillSenseNumber(senseNumber)}-$lemma"
     }
 }

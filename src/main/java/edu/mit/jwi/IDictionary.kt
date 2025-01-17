@@ -26,7 +26,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @return the index word corresponding to the specified lemma and part of speech, or null if none is found
      * @throws IllegalArgumentException if the specified lemma is empty or all whitespace
      */
-    fun getIndexWord(lemma: String, pos: POS): Index?
+    fun getIndex(lemma: String, pos: POS): Index?
 
     /**
      * Retrieves the specified index word object from the database.
@@ -40,7 +40,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @param id the id of the index word to search for
      * @return the index word, if found; null otherwise
      */
-    fun getIndexWord(id: IndexID): Index?
+    fun getIndex(id: IndexID): Index?
 
     /**
      * Retrieves the word with the specified id from the database. If the specified word is not found, returns null
@@ -101,7 +101,7 @@ interface IDictionary : IHasVersion, IHasLifecycle {
      * @param pos the part of speech over which to iterate
      * @return an iterator that will iterate over all index words of the specified part of speech
      */
-    fun getIndexWordIterator(pos: POS): Iterator<Index>
+    fun getIndexIterator(pos: POS): Iterator<Index>
 
     /**
      * Returns an iterator that will iterate over all sense entries in the dictionary.

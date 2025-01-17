@@ -176,13 +176,13 @@ abstract class BaseRAMDictionary protected constructor(
 
     // INDEX WORD
 
-    override fun getIndexWord(lemma: String, pos: POS): Index? {
-        return getIndexWord(IndexID(lemma, pos))
+    override fun getIndex(lemma: String, pos: POS): Index? {
+        return getIndex(IndexID(lemma, pos))
     }
 
-    override fun getIndexWord(id: IndexID): Index? {
+    override fun getIndex(id: IndexID): Index? {
         check(data != null) { NO_DATA }
-        return data!!.idxWords[id.pOS]!![id]
+        return data!!.indexes[id.pOS]!![id]
     }
 
     // WORD
@@ -242,9 +242,9 @@ abstract class BaseRAMDictionary protected constructor(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<Index> {
+    override fun getIndexIterator(pos: POS): Iterator<Index> {
         check(data != null) { NO_DATA }
-        return data!!.idxWords[pos]!!.values.iterator()
+        return data!!.indexes[pos]!!.values.iterator()
     }
 
     override fun getSynsetIterator(pos: POS): Iterator<Synset> {
@@ -301,7 +301,7 @@ abstract class BaseRAMDictionary protected constructor(
 
         var version: Version? = null
 
-        val idxWords: MutableMap<POS, MutableMap<IndexID, Index>> = makePOSMap<IndexID, Index>()
+        val indexes: MutableMap<POS, MutableMap<IndexID, Index>> = makePOSMap<IndexID, Index>()
 
         val synsets: MutableMap<POS, MutableMap<SynsetID, Synset>> = makePOSMap<SynsetID, Synset>()
 
@@ -355,7 +355,7 @@ abstract class BaseRAMDictionary protected constructor(
          * Resizes the internal data maps to be the exact size to contain their data.
          */
         fun compactSize() {
-            compactPOSMap<IndexID, Index>(idxWords)
+            compactPOSMap<IndexID, Index>(indexes)
             compactPOSMap<SynsetID, Synset>(synsets)
             compactPOSMap<ExceptionEntryID, ExceptionEntry>(exceptions)
             words = compactMap<SenseKey, Sense>(words)
@@ -396,7 +396,7 @@ abstract class BaseRAMDictionary protected constructor(
                 for (entry in synsetMap.entries) {
                     entry.setValue(makeSynset(entry.value))
                 }
-                val indexMap = idxWords[pos]!!
+                val indexMap = indexes[pos]!!
                 for (entry in indexMap.entries) {
                     entry.setValue(makeIndexWord(entry.value))
                 }
@@ -494,7 +494,7 @@ abstract class BaseRAMDictionary protected constructor(
          *
          * @param oldWord the old word that backs this builder
          */
-        inner class WordBuilder(private val oldWord: Sense) : Synset.IWordBuilder {
+        inner class WordBuilder(private val oldWord: Sense) : Synset.ISenseBuilder {
 
             override fun toSense(synset: Synset): Sense {
                 return makeWord(synset, oldWord)

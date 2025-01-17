@@ -193,8 +193,8 @@ constructor(
 
     // L O O K   U P
 
-    override fun getIndexWord(id: IndexID): Index? {
-        return if (data != null) super.getIndexWord(id) else return backingDictionary.getIndexWord(id)
+    override fun getIndex(id: IndexID): Index? {
+        return if (data != null) super.getIndex(id) else return backingDictionary.getIndex(id)
     }
 
     override fun getSense(id: SenseID): Sense? {
@@ -223,8 +223,8 @@ constructor(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<Index> {
-        return HotSwappableIndexWordIterator(pos)
+    override fun getIndexIterator(pos: POS): Iterator<Index> {
+        return HotSwappableIndexIterator(pos)
     }
 
     override fun getSynsetIterator(pos: POS): Iterator<Synset> {
@@ -306,14 +306,14 @@ constructor(
      *
      * @param pos the part of speech for the iterator
      */
-    private inner class HotSwappableIndexWordIterator(private val pos: POS) :
+    private inner class HotSwappableIndexIterator(private val pos: POS) :
         HotSwappableIterator<Index>(
-            if (data == null) backingDictionary.getIndexWordIterator(pos) else data!!.idxWords[pos]!!.values.iterator(),
+            if (data == null) backingDictionary.getIndexIterator(pos) else data!!.indexes[pos]!!.values.iterator(),
             data == null
         ) {
 
         override fun makeIterator(): Iterator<Index> {
-            val m = data!!.idxWords[pos]!!
+            val m = data!!.indexes[pos]!!
             return m.values.iterator()
         }
     }
@@ -391,13 +391,13 @@ constructor(
 
             // pos-indexed
             for (pos in POS.entries) {
-                // index words
-                var idxWords = result.idxWords[pos]!!
+                // index
+                var indexes = result.indexes[pos]!!
                 run {
-                    val i: Iterator<Index> = source.getIndexWordIterator(pos)
+                    val i: Iterator<Index> = source.getIndexIterator(pos)
                     while (i.hasNext()) {
-                        val idxWord = i.next()
-                        idxWords.put(idxWord.iD, idxWord)
+                        val idx = i.next()
+                        indexes.put(idx.iD, idx)
                     }
                 }
                 cooperate(thread)

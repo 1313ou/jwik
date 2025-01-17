@@ -111,7 +111,7 @@ class JWITests {
     // the test involves a frameless entry
     @Test
     fun frameless() {
-        jwi!!.dict.getIndexWord("fangirl", POS.VERB)
+        jwi!!.dict.getIndex("fangirl", POS.VERB)
         jwi!!.walk("fangirl", POS.VERB, PS)
     }
 

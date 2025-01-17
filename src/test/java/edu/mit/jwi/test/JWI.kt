@@ -49,7 +49,7 @@ class JWI
 
     fun forAllSenses(f: Consumer<Sense>?) {
         for (pos in POS.entries) {
-            val it: Iterator<Index> = dict.getIndexWordIterator(pos)
+            val it: Iterator<Index> = dict.getIndexIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
                 val senseids: List<SenseID> = idx.senseIDs
@@ -69,7 +69,7 @@ class JWI
 
     fun tryForAllSenses(f: Consumer<Sense>?) {
         for (pos in POS.entries) {
-            val it: Iterator<Index> = dict.getIndexWordIterator(pos)
+            val it: Iterator<Index> = dict.getIndexIterator(pos)
             while (it.hasNext()) {
                 try {
                     val idx = it.next()
@@ -139,7 +139,7 @@ class JWI
 
     fun forAllLemmas(f: Consumer<String?>?) {
         for (pos in POS.entries) {
-            val it: Iterator<Index> = dict.getIndexWordIterator(pos)
+            val it: Iterator<Index> = dict.getIndexIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
                 val senseids: List<SenseID> = idx.senseIDs
@@ -160,7 +160,7 @@ class JWI
 
     fun forAllSensekeys(f: Consumer<SenseKey>?) {
         for (pos in POS.entries) {
-            val it: Iterator<Index> = dict.getIndexWordIterator(pos)
+            val it: Iterator<Index> = dict.getIndexIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
                 val senseids: List<SenseID> = idx.senseIDs
@@ -195,7 +195,7 @@ class JWI
 
     fun forAllSenseRelations(f: Consumer<Sense>?) {
         for (pos in POS.entries) {
-            val it: Iterator<Index> = dict.getIndexWordIterator(pos)
+            val it: Iterator<Index> = dict.getIndexIterator(pos)
             while (it.hasNext()) {
                 val idx = it.next()
                 val senseids: List<SenseID> = idx.senseIDs
@@ -228,7 +228,7 @@ class JWI
 
     fun walk(lemma: String, pos: POS, ps: PrintStream) {
         // a line in an index file
-        val idx = dict.getIndexWord(lemma, pos)
+        val idx = dict.getIndex(lemma, pos)
         if (idx != null) {
             // index
             ps.println()

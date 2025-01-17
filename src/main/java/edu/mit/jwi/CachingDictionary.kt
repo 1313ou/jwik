@@ -81,12 +81,12 @@ open class CachingDictionary(
 
     // L O O K   U P
 
-    override fun getIndexWord(lemma: String, pos: POS): Index? {
+    override fun getIndex(lemma: String, pos: POS): Index? {
         checkOpen()
         val id = IndexID(lemma, pos)
         var item = cache.retrieveItem(id)
         if (item == null) {
-            item = backingDictionary.getIndexWord(id)
+            item = backingDictionary.getIndex(id)
             if (item != null) {
                 cache.cacheItem(item)
             }
@@ -94,11 +94,11 @@ open class CachingDictionary(
         return item as Index?
     }
 
-    override fun getIndexWord(id: IndexID): Index? {
+    override fun getIndex(id: IndexID): Index? {
         checkOpen()
         var item = cache.retrieveItem(id)
         if (item == null) {
-            item = backingDictionary.getIndexWord(id)
+            item = backingDictionary.getIndex(id)
             if (item != null) {
                 cache.cacheItem(item)
             }
@@ -194,8 +194,8 @@ open class CachingDictionary(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<Index> {
-        return backingDictionary.getIndexWordIterator(pos)
+    override fun getIndexIterator(pos: POS): Iterator<Index> {
+        return backingDictionary.getIndexIterator(pos)
     }
 
     override fun getSynsetIterator(pos: POS): Iterator<Synset> {

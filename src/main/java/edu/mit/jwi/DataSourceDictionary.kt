@@ -172,12 +172,12 @@ class DataSourceDictionary(
 
     // L O O K  U P
 
-    override fun getIndexWord(lemma: String, pos: POS): Index? {
+    override fun getIndex(lemma: String, pos: POS): Index? {
         checkOpen()
-        return getIndexWord(IndexID(lemma, pos))
+        return getIndex(IndexID(lemma, pos))
     }
 
-    override fun getIndexWord(id: IndexID): Index? {
+    override fun getIndex(id: IndexID): Index? {
         checkOpen()
         val content = dataProvider.resolveContentType(DataType.INDEX, id.pOS)!!
         val file = dataProvider.getSource(content)!!
@@ -210,7 +210,7 @@ class DataSourceDictionary(
 
         // sometimes the sense.index file doesn't have the sense key entry so try an alternate method of retrieving words by sense keys
         // we have to search the synonyms of the words returned from the index word search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
-        return getIndexWord(sensekey.lemma, sensekey.pOS)?.senseIDs
+        return getIndex(sensekey.lemma, sensekey.pOS)?.senseIDs
             ?.mapNotNull { getSense(it) }
             ?.flatMap { it.synset.words }
             ?.first { it.senseKey == sensekey }
@@ -325,7 +325,7 @@ class DataSourceDictionary(
 
     // I T E R A T E
 
-    override fun getIndexWordIterator(pos: POS): Iterator<Index> {
+    override fun getIndexIterator(pos: POS): Iterator<Index> {
         checkOpen()
         return IndexFileIterator(pos)
     }

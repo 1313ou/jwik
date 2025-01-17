@@ -134,14 +134,14 @@ class Sense(
     companion object {
 
         /**
-         * Checks the specified word number, and throws an IllegalArgumentException if it is not legal.
+         * Checks the specified sense number, and throws an IllegalArgumentException if it is not legal.
          *
          * @param num the number to check
          * @throws IllegalArgumentException if the specified lexical id is not in the closed range [0,15]
          */
         @JvmStatic
-        fun checkWordNumber(num: Int) {
-            require(!isIllegalWordNumber(num)) { "'$num is an illegal word number: word numbers are in the closed range [1,255]" }
+        fun checkSenseNumber(num: Int) {
+            require(!isIllegalSenseNumber(num)) { "'$num is an illegal sense number: sense numbers are in the closed range [1,255]" }
         }
 
         /**
@@ -167,6 +167,7 @@ class Sense(
          * @param id the lexical id to check
          * @return true if the specified integer is an invalid lexical id; false otherwise.
          */
+        @JvmStatic
         fun isIllegalLexicalID(id: Int): Boolean {
             if (id < 0) {
                 return true
@@ -175,13 +176,14 @@ class Sense(
         }
 
         /**
-         * Word numbers are always an integer in the closed range [1,255].
-         * In the wordnet data files, the word number is determined by the order of the word listing.
+         * Sense numbers are always an integer in the closed range [1,255].
+         * In the wordnet data files, the sense number is determined by the order of the word listing.
          *
          * @param num the number to check
          * @return true if the specified integer is an invalid lexical id; false otherwise.
          */
-        fun isIllegalWordNumber(num: Int): Boolean {
+        @JvmStatic
+        fun isIllegalSenseNumber(num: Int): Boolean {
             if (num < 1) {
                 return true
             }
@@ -195,12 +197,12 @@ class Sense(
          * @return a string form of the lexical id as they are written in data files, which is a single digit hex number.
          * @throws IllegalArgumentException if the specified integer is not a valid lexical id.
          */
+        @JvmStatic
         fun getLexicalIDForDataFile(lexID: Int): String {
             checkLexicalID(lexID)
             return Integer.toHexString(lexID)
         }
 
-        // static cache
         private val lexIDNumStrs = arrayOf("00", "01", "02", "03", "04", "05", "06", "07", "08", "09")
 
         /**
@@ -219,18 +221,18 @@ class Sense(
         /**
          * Returns a string representation of the specified integer as a two hex digit zero-filled string.
          * E.g., "1" becomes "01", "10" becomes "0A", and so on.
-         * This is used for the generation of Word ID numbers.
+         * This is used for the generation of Sense ID numbers.
          *
          * @param num the number to be converted
          * @return a two hex digit zero-filled string representing the specified number
-         * @throws IllegalArgumentException if the specified number is not a legal word number
+         * @throws IllegalArgumentException if the specified number is not a legal sense number
          */
         @JvmStatic
-
-        fun zeroFillWordNumber(num: Int): String {
+        fun zeroFillSenseNumber(num: Int): String {
             return "%02x".format(num)
         }
 
+        @JvmStatic
         private fun normalizeRelated(related: Map<Pointer, List<SenseID>>?): Map<Pointer, List<SenseID>> {
             return related?.entries
                 ?.filterNot { it.value.isEmpty() }
