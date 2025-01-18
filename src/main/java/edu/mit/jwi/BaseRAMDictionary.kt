@@ -446,31 +446,8 @@ abstract class BaseRAMDictionary protected constructor(
          */
         private fun makeSense(newSynset: Synset, old: Sense): Sense {
 
-            // related senses
-            val newRelated = old.related
-                .map { (ptr, oldTargets) ->
-                    val newTargets: List<SenseID> = oldTargets
-                        .map { it as SenseIDWithNum }
-                        .map {
-                            val resolver: Map<SynsetID, Synset> = synsets[it.pOS]!!
-                            val otherSynset: Synset = resolver[it.synsetID]!!
-                            otherSynset.senses[it.senseNumber - 1].iD
-                        }
-                        .toList()
-                    ptr to newTargets
-                }
-                .toMap()
-
-            // member
-            val number = old.number
-            val lemma = old.lemma
-            val lexicalID =  old.lexicalID
-            val adjMarker: AdjMarker? = old.adjectiveMarker
-            val oldVerbFrames = old.verbFrames
-            val member = Member(number, lemma, lexicalID, adjMarker, newRelated, oldVerbFrames)
-
             // sense
-            val sense = newSynset.Sense(old.iD, member)
+            val sense = newSynset.Sense(old.iD, old.member)
             if (sense.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey
                 sense.senseKey.setHead(oldKey.headWord!!, oldKey.headID)
