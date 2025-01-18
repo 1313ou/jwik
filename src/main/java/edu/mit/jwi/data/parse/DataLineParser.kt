@@ -7,7 +7,6 @@ import edu.mit.jwi.item.Pointer.Companion.getPointerType
 import edu.mit.jwi.item.Synset.Companion.normalizeRelatedSense
 import edu.mit.jwi.item.Synset.Companion.normalizeRelatedSynset
 import edu.mit.jwi.item.Synset.Member
-import edu.mit.jwi.item.Synset.Sense
 import edu.mit.jwi.item.VerbFrame.Companion.getFrame
 import java.util.*
 
@@ -52,8 +51,8 @@ object DataLineParser : ILineParser<Synset> {
             // sense count
             val senseCount = tokenizer.nextToken().toInt(16)
 
-            // senses
-            val senseBuilders = Array<Member>(senseCount) {
+            // members
+            val members = Array<Member>(senseCount) {
 
                 // member lemma
                 var lemma = tokenizer.nextToken()
@@ -67,7 +66,7 @@ object DataLineParser : ILineParser<Synset> {
                 // lex_id
                 val lexID = tokenizer.nextToken().toInt(16)
 
-                Member(it + 1, lemma, lexID, marker)
+                Member(it + 1, lemma, lexID, marker, emptyMap(), emptyList())
             }
 
             // pointers
@@ -116,7 +115,7 @@ object DataLineParser : ILineParser<Synset> {
                 }
             // transfer sense relations to sense builders
             senseRelations.entries.forEach {
-                senseBuilders[it.key - 1].related = normalizeRelatedSense(it.value)
+                members[it.key - 1].related = normalizeRelatedSense(it.value)
             }
 
             // parse verb frames
@@ -147,7 +146,7 @@ object DataLineParser : ILineParser<Synset> {
 
                     // transfer to sense builders
                     senseFrames.entries.forEach {
-                        senseBuilders[it.key].verbFrames = it.value + allSensesFrames
+                        members[it.key].verbFrames = it.value + allSensesFrames
                     }
                 }
             }
@@ -157,7 +156,7 @@ object DataLineParser : ILineParser<Synset> {
             val gloss = if (cut > 0) line.substring(cut + 2).trim { it <= ' ' } else ""
 
             // create synset
-            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, listOf<Member>(*senseBuilders), synsetRelations)
+            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, listOf<Member>(*members), synsetRelations)
 
         } catch (e: NumberFormatException) {
             throw MisformattedLineException(line, e)

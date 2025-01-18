@@ -461,16 +461,15 @@ abstract class BaseRAMDictionary protected constructor(
                 }
                 .toMap()
 
-            // sense
+            // member
             val number = old.number
             val lemma = old.lemma
             val lexicalID =  old.lexicalID
             val adjMarker: AdjMarker? = old.adjectiveMarker
             val oldVerbFrames = old.verbFrames
-            val member = Member(number, lemma, lexicalID, adjMarker)
-            member.verbFrames = oldVerbFrames
-            member.related = newRelated
+            val member = Member(number, lemma, lexicalID, adjMarker, newRelated, oldVerbFrames)
 
+            // sense
             val sense = newSynset.Sense(old.iD, member)
             if (sense.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey

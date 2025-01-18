@@ -313,15 +313,13 @@ class Synset internal constructor(
         private val lemma: String,
         internal val lexicalID: Int,
         internal val adjMarker: AdjMarker?,
+        internal var related: Map<Pointer, List<SenseID>>,
+        internal var verbFrames: List<VerbFrame>,
     ) : ISenseBuilder {
 
         init {
             checkSenseNumber(number)
         }
-
-        var related: Map<Pointer, List<SenseID>> = HashMap<Pointer, List<SenseID>>()
-
-        var verbFrames: List<VerbFrame> = emptyList()
 
         override fun toSense(synset: Synset): Sense {
             return synset.Sense(SenseIDWithLemmaAndNum(synset.iD, number, lemma), this)
