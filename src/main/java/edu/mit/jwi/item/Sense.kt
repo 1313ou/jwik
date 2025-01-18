@@ -233,7 +233,7 @@ class Sense(
         }
 
         @JvmStatic
-        private fun normalizeRelated(related: Map<Pointer, List<SenseID>>?): Map<Pointer, List<SenseID>> {
+        internal fun normalizeRelated(related: Map<Pointer, List<SenseID>>?): Map<Pointer, List<SenseID>> {
             return related?.entries
                 ?.filterNot { it.value.isEmpty() }
                 ?.associate { it.key to it.value }

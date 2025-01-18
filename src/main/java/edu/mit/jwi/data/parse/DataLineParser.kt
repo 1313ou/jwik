@@ -96,6 +96,8 @@ object DataLineParser : ILineParser<Synset> {
             val synsetRelations = relations.first
                 .groupBy { data -> data.pointer }
                 .mapValues { (_, data) -> data.map { it.targetSynsetID } }
+            //TODO
+            Synset.normalizeRelated(synsetRelations)
 
             val senseRelations = relations.second
                 .groupBy { it.sourceTargetNum / 256 }
@@ -110,10 +112,9 @@ object DataLineParser : ILineParser<Synset> {
                             }
                         }
                 }
-
             // transfer sense relations to sense builders
             senseRelations.entries.forEach {
-                senseBuilders[it.key - 1].related = it.value
+                senseBuilders[it.key - 1].related = Sense.normalizeRelated(it.value)
             }
 
             // parse verb frames
