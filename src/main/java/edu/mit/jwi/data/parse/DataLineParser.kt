@@ -4,7 +4,7 @@ import edu.mit.jwi.item.*
 import edu.mit.jwi.item.LexFile.Companion.getLexicalFile
 import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
 import edu.mit.jwi.item.Pointer.Companion.getPointerType
-import edu.mit.jwi.item.Synset.SenseBuilder
+import edu.mit.jwi.item.Synset.Member
 import edu.mit.jwi.item.VerbFrame.Companion.getFrame
 import java.util.*
 
@@ -64,7 +64,7 @@ object DataLineParser : ILineParser<Synset> {
                 // lex_id
                 val lexID = tokenizer.nextToken().toInt(16)
 
-                SenseBuilder(it + 1, lemma, lexID, marker)
+                Member(it + 1, lemma, lexID, marker)
             }
 
             // pointers
@@ -154,7 +154,7 @@ object DataLineParser : ILineParser<Synset> {
             val gloss = if (cut > 0) line.substring(cut + 2).trim { it <= ' ' } else ""
 
             // create synset
-            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, listOf<SenseBuilder>(*senseBuilders), synsetRelations)
+            return Synset(synsetID, lexFile, isAdjSat, isAdjHead, gloss, listOf<Member>(*senseBuilders), synsetRelations)
 
         } catch (e: NumberFormatException) {
             throw MisformattedLineException(line, e)

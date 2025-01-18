@@ -44,6 +44,11 @@ class Synset private constructor(
     val gloss: String,
 
     /**
+     * Members
+     */
+    val members: List<ISenseBuilder>,
+
+    /**
      * Semantic relations
      */
     val related: Map<Pointer, List<SynsetID>>,
@@ -86,30 +91,10 @@ class Synset private constructor(
     /**
      * The senses that reference the synset
      */
-    lateinit var senses: List<Sense>
-
-    /**
-     * Default implementation of the Synset interface.
-     *
-     * @param iD the synset id
-     * @param lexicalFile the lexical file for this synset
-     * @param isAdjectiveSatellite true if this object represents an adjective satellite synset; false otherwise
-     * @param isAdjectiveHead true if this object represents an adjective head synset; false otherwise
-     * @param gloss the gloss for this synset
-     * @param senseBuilders the list of sense builders for this synset
-     * @param related a map of related synset lists, indexed by pointer
-     */
-    constructor(
-        iD: SynsetID,
-        lexicalFile: LexFile,
-        isAdjectiveSatellite: Boolean,
-        isAdjectiveHead: Boolean,
-        gloss: String,
-        senseBuilders: List<ISenseBuilder>,
-        related: Map<Pointer, List<SynsetID>>?,
-    ) : this(iD, lexicalFile, isAdjectiveSatellite, isAdjectiveHead, gloss, normalizeRelated(related)) {
-        require(!senseBuilders.isEmpty())
-        senses = buildSenses(senseBuilders, this)
+    val senses: List<Sense> by lazy {
+        members
+            .map { it.toSense(this) }
+            .toList()
     }
 
     init {
@@ -199,7 +184,7 @@ class Synset private constructor(
      * @property lexID the id of the lexical file in which the sense is listed
      * @property marker the adjective marker for the sense
      */
-    data class SenseBuilder(
+    data class Member(
         private val number: Int,
         private val lemma: String,
         private val lexID: Int,
@@ -259,12 +244,6 @@ class Synset private constructor(
             if (offset < 0)
                 return false
             return offset <= 99999999
-        }
-
-        fun buildSenses(senseBuilders: List<ISenseBuilder>, synset: Synset): List<Sense> {
-            return senseBuilders
-                .map { it.toSense(synset) }
-                .toList()
         }
 
         private fun normalizeRelated(related: Map<Pointer, List<SynsetID>>?): Map<Pointer, List<SynsetID>> {
