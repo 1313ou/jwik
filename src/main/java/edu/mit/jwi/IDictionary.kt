@@ -2,6 +2,7 @@ package edu.mit.jwi
 
 import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.item.*
+import edu.mit.jwi.item.Synset.Sense
 
 /**
  * Objects that implement this interface are intended as the main entry point to accessing Wordnet data.

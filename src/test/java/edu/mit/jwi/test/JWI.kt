@@ -4,6 +4,7 @@ import edu.mit.jwi.Config
 import edu.mit.jwi.Dictionary
 import edu.mit.jwi.IDictionary
 import edu.mit.jwi.item.*
+import edu.mit.jwi.item.Synset.Sense
 import java.io.File
 import java.io.IOException
 import java.io.PrintStream
@@ -137,7 +138,7 @@ class JWI
 
     // S P E C I F I C   I T E R A T I O N S
 
-    fun forAllLemmas(f: Consumer<String?>?) {
+    fun forAllLemmas(f: Consumer<String>?) {
         for (pos in POS.entries) {
             val it: Iterator<Index> = dict.getIndexIterator(pos)
             while (it.hasNext()) {

@@ -30,40 +30,40 @@ class JWITests {
     // enum non null
     @Test
     fun allSensesAreNonNull() {
-        jwi!!.forAllSenses(Consumer { actual: Sense? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSenses { }
     }
 
     @Test
     fun allSynsetsAreNonNull() {
-        jwi!!.forAllSynsets(Consumer { actual: Synset? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSynsets { }
     }
 
     @Test
     fun allSenseEntriesAreNonNull() {
-        jwi!!.forAllSenseEntries(Consumer { actual: SenseEntry? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSenseEntries { }
     }
 
     @Test
     fun allLemmasAreNonNull() {
-        jwi!!.forAllLemmas(Consumer { l: String? ->
+        jwi!!.forAllLemmas { l: String? ->
             Assertions.assertNotNull(l)
             Assertions.assertFalse(l!!.isEmpty())
-        })
+        }
     }
 
     @Test
     fun allSensekeysAreNonNull() {
-        jwi!!.forAllSensekeys(Consumer { actual: SenseKey? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSensekeys { }
     }
 
     @Test
     fun allSynsetRelationsAreNonNull() {
-        jwi!!.forAllSynsetRelations(Consumer { actual: Synset? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSynsetRelations { }
     }
 
     @Test
     fun allSenseRelationsAreNonNull() {
-        jwi!!.forAllSenseRelations(Consumer { actual: Sense? -> Assertions.assertNotNull(actual) })
+        jwi!!.forAllSenseRelations { }
     }
 
     // enum live

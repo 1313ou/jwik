@@ -6,13 +6,15 @@ import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.data.parse.ILineParser
 import edu.mit.jwi.item.*
-import edu.mit.jwi.item.Sense.Companion.checkLexicalId
+import edu.mit.jwi.item.Synset.Companion.checkLexicalId
 import edu.mit.jwi.item.Synset.Companion.zeroFillOffset
+import edu.mit.jwi.item.Synset.Sense
 import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.Collections.emptyIterator
+import kotlin.Throws
 
 /**
  * A type of `IDictionary` which uses an instance of a `DataProvider` to obtain its data.

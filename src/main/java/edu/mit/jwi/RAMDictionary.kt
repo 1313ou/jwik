@@ -7,6 +7,7 @@ import edu.mit.jwi.data.IHasLifecycle.ObjectOpenException
 import edu.mit.jwi.data.LoadPolicy.BACKGROUND_LOAD
 import edu.mit.jwi.data.LoadPolicy.IMMEDIATE_LOAD
 import edu.mit.jwi.item.*
+import edu.mit.jwi.item.Synset.Sense
 import java.io.File
 import java.net.URL
 import java.util.concurrent.Callable

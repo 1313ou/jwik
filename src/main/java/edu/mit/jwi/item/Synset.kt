@@ -1,7 +1,6 @@
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.LexFile.Companion.ADJ_ALL
-import edu.mit.jwi.item.Sense.Companion.checkSenseNumber
 import edu.mit.jwi.item.SenseIDWithLemma.Companion.UNKNOWN_NUMBER
 import java.util.*
 
@@ -160,52 +159,6 @@ class Synset internal constructor(
             .toList()
 
     /**
-     * A sense builder used to construct sense objects inside the synset object constructor.
-     */
-    interface ISenseBuilder {
-
-        /**
-         * Creates the sense represented by this builder.
-         * If the builder represents invalid values for a sense, this method may throw an exception.
-         *
-         * @param synset the synset to which this sense should be attached
-         * @return the created sense
-         */
-        fun toSense(synset: Synset): Sense
-    }
-
-    /**
-     * Holds information about sense objects before they are instantiated.
-     *
-     * Constructs a new sense builder object.
-     * The constructor does not check its arguments - this is done when the sense is created.
-     *
-     * @property number the sense number
-     * @property lemma the lemma
-     * @property lexicalID the id of the lexical file in which the sense is listed
-     * @property adjMarker the adjective marker for the sense
-     */
-    data class Member(
-        private val number: Int,
-        private val lemma: String,
-        internal val lexicalID: Int,
-        internal val adjMarker: AdjMarker?,
-    ) : ISenseBuilder {
-
-        init {
-            checkSenseNumber(number)
-        }
-
-        var related: Map<Pointer, List<SenseID>> = HashMap<Pointer, List<SenseID>>()
-
-        var verbFrames: List<VerbFrame> = emptyList()
-
-        override fun toSense(synset: Synset): Sense {
-            return Sense(synset, SenseIDWithLemmaAndNum(synset.iD, number, lemma), lexicalID, adjMarker, verbFrames, related)
-        }
-    }
-
-    /**
      * A sense, which in Wordnet is an index paired with a synset.
      *
      * Constructs a new sense object.
@@ -215,22 +168,24 @@ class Synset internal constructor(
      * @param member memer
      * @throws IllegalArgumentException if the adjective marker is non-null and this is not an adjective
      */
-    inner class Sense2(
+    inner class Sense(
 
         override val iD: SenseIDWithLemma,
 
-        val member: Member
+        val member: Member,
 
         ) : IHasPOS, IItem<SenseID> {
 
         val synset: Synset
             get() = this@Synset
 
+        val number: Int
+            get() = member.number
+
         override val pOS: POS
             get() = iD.synsetID.pOS
 
-        val senseKey: SenseKey
-            get() = SenseKey(iD.lemma, member.lexicalID, synset)
+        val senseKey: SenseKey by lazy { SenseKey(iD.lemma, member.lexicalID, synset) }
 
         val verbFrames: List<VerbFrame>
             get() = member.verbFrames
@@ -327,6 +282,52 @@ class Synset internal constructor(
 
     }
 
+    /**
+     * A sense builder used to construct sense objects inside the synset object constructor.
+     */
+    interface ISenseBuilder {
+
+        /**
+         * Creates the sense represented by this builder.
+         * If the builder represents invalid values for a sense, this method may throw an exception.
+         *
+         * @param synset the synset to which this sense should be attached
+         * @return the created sense
+         */
+        fun toSense(synset: Synset): Sense
+    }
+
+    /**
+     * Holds information about sense objects before they are instantiated.
+     *
+     * Constructs a new sense builder object.
+     * The constructor does not check its arguments - this is done when the sense is created.
+     *
+     * @property number the sense number
+     * @property lemma the lemma
+     * @property lexicalID the id of the lexical file in which the sense is listed
+     * @property adjMarker the adjective marker for the sense
+     */
+    class Member(
+        internal val number: Int,
+        private val lemma: String,
+        internal val lexicalID: Int,
+        internal val adjMarker: AdjMarker?,
+    ) : ISenseBuilder {
+
+        init {
+            checkSenseNumber(number)
+        }
+
+        var related: Map<Pointer, List<SenseID>> = HashMap<Pointer, List<SenseID>>()
+
+        var verbFrames: List<VerbFrame> = emptyList()
+
+        override fun toSense(synset: Synset): Sense {
+            return synset.Sense(SenseIDWithLemmaAndNum(synset.iD, number, lemma), this)
+        }
+    }
+
     companion object {
 
         /**
@@ -367,13 +368,6 @@ class Synset internal constructor(
             if (offset < 0)
                 return false
             return offset <= 99999999
-        }
-
-        internal fun normalizeRelated(related: Map<Pointer, List<SynsetID>>?): Map<Pointer, List<SynsetID>> {
-            return related?.entries
-                ?.filterNot { it.value.isEmpty() }
-                ?.associate { it.key to it.value }
-                ?: emptyMap()
         }
 
         /**
@@ -476,7 +470,15 @@ class Synset internal constructor(
         }
 
         @JvmStatic
-        private fun normalizeRelated(related: Map<Pointer, List<SenseID>>?): Map<Pointer, List<SenseID>> {
+        internal fun normalizeRelatedSynset(related: Map<Pointer, List<SynsetID>>?): Map<Pointer, List<SynsetID>> {
+            return related?.entries
+                ?.filterNot { it.value.isEmpty() }
+                ?.associate { it.key to it.value }
+                ?: emptyMap()
+        }
+
+        @JvmStatic
+        internal fun normalizeRelatedSense(related: Map<Pointer, List<SenseID>>?): Map<Pointer, List<SenseID>> {
             return related?.entries
                 ?.filterNot { it.value.isEmpty() }
                 ?.associate { it.key to it.value }

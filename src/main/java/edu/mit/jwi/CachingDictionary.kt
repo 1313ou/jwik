@@ -6,6 +6,7 @@ import edu.mit.jwi.item.*
 import java.io.IOException
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
+import edu.mit.jwi.item.Synset.Sense
 
 /**
  * A dictionary that caches the results of another dictionary

@@ -4,7 +4,10 @@ import edu.mit.jwi.item.*
 import edu.mit.jwi.item.LexFile.Companion.getLexicalFile
 import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
 import edu.mit.jwi.item.Pointer.Companion.getPointerType
+import edu.mit.jwi.item.Synset.Companion.normalizeRelatedSense
+import edu.mit.jwi.item.Synset.Companion.normalizeRelatedSynset
 import edu.mit.jwi.item.Synset.Member
+import edu.mit.jwi.item.Synset.Sense
 import edu.mit.jwi.item.VerbFrame.Companion.getFrame
 import java.util.*
 
@@ -50,7 +53,7 @@ object DataLineParser : ILineParser<Synset> {
             val senseCount = tokenizer.nextToken().toInt(16)
 
             // senses
-            val senseBuilders = Array(senseCount) {
+            val senseBuilders = Array<Member>(senseCount) {
 
                 // member lemma
                 var lemma = tokenizer.nextToken()
@@ -96,8 +99,7 @@ object DataLineParser : ILineParser<Synset> {
             val synsetRelations = relations.first
                 .groupBy { data -> data.pointer }
                 .mapValues { (_, data) -> data.map { it.targetSynsetID } }
-            //TODO
-            Synset.normalizeRelated(synsetRelations)
+            normalizeRelatedSynset(synsetRelations)
 
             val senseRelations = relations.second
                 .groupBy { it.sourceTargetNum / 256 }
@@ -114,7 +116,7 @@ object DataLineParser : ILineParser<Synset> {
                 }
             // transfer sense relations to sense builders
             senseRelations.entries.forEach {
-                senseBuilders[it.key - 1].related = Sense.normalizeRelated(it.value)
+                senseBuilders[it.key - 1].related = normalizeRelatedSense(it.value)
             }
 
             // parse verb frames

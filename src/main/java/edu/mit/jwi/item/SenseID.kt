@@ -1,8 +1,9 @@
 package edu.mit.jwi.item
 
-import edu.mit.jwi.item.Sense.Companion.checkSenseNumber
-import edu.mit.jwi.item.Sense.Companion.zeroFillSenseNumber
+import edu.mit.jwi.item.Synset.Companion.checkSenseNumber
+import edu.mit.jwi.item.Synset.Companion.zeroFillSenseNumber
 import java.util.*
+
 
 /**
  * Base abstract class containing only reference to synset

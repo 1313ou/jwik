@@ -6,6 +6,8 @@ import edu.mit.jwi.data.ILoadable
 import edu.mit.jwi.data.LoadPolicy
 import edu.mit.jwi.item.*
 import edu.mit.jwi.item.Synset.ISenseBuilder
+import edu.mit.jwi.item.Synset.Member
+import edu.mit.jwi.item.Synset.Sense
 import java.io.*
 import java.net.URL
 import java.util.concurrent.locks.Lock
@@ -460,7 +462,16 @@ abstract class BaseRAMDictionary protected constructor(
                 .toMap()
 
             // sense
-            val sense = Sense(newSynset, old.iD, old.lexicalID, old.adjectiveMarker, old.verbFrames, newRelated)
+            val number = old.number
+            val lemma = old.lemma
+            val lexicalID =  old.lexicalID
+            val adjMarker: AdjMarker? = old.adjectiveMarker
+            val oldVerbFrames = old.verbFrames
+            val member = Member(number, lemma, lexicalID, adjMarker)
+            member.verbFrames = oldVerbFrames
+            member.related = newRelated
+
+            val sense = newSynset.Sense(old.iD, member)
             if (sense.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey
                 sense.senseKey.setHead(oldKey.headWord!!, oldKey.headID)
