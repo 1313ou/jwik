@@ -12,9 +12,9 @@ class SensekeyTests {
 
     @Test
     fun sensekeyWithSameOrDifferentLemma() {
-        val sk1 = SenseKey("entity", 0, POS.NOUN, false, NOUN_TOPS.number)
-        val sk2 = SenseKey("entity", 0, POS.NOUN, false, NOUN_TOPS.number)
-        val sk3 = SenseKey("'entity", 0, POS.NOUN, false, NOUN_TOPS.number)
+        val sk1 = SenseKey("entity", POS.NOUN, 0, NOUN_TOPS.number, false)
+        val sk2 = SenseKey("entity", POS.NOUN, 0, NOUN_TOPS.number, false)
+        val sk3 = SenseKey("'entity", POS.NOUN, 0, NOUN_TOPS.number, false)
         println(sk1)
         println(sk2)
         println(sk3)
@@ -25,8 +25,8 @@ class SensekeyTests {
 
     @Test
     fun sensekeyDifferingOnCase() {
-        val sk1 = SenseKey("'s_Gravenhage", 0, POS.NOUN, false, NOUN_LOCATION.number)
-        val sk2 = SenseKey("'s_gravenhage", 0, POS.NOUN, false, NOUN_LOCATION.number)
+        val sk1 = SenseKey("'s_Gravenhage", POS.NOUN, 0, NOUN_LOCATION.number, false)
+        val sk2 = SenseKey("'s_gravenhage", POS.NOUN, 0, NOUN_LOCATION.number, false)
         println(sk1)
         println(sk2)
         Assertions.assertEquals(sk1, sk2)
@@ -35,8 +35,8 @@ class SensekeyTests {
 
     @Test
     fun sensekeyDifferingOnCaseFromLemma() {
-        val sk1 = SenseKey("Earth", 0, POS.NOUN, false, NOUN_LOCATION.number)
-        val sk2 = SenseKey("earth", 0, POS.NOUN, false, NOUN_LOCATION.number)
+        val sk1 = SenseKey("Earth", POS.NOUN, 0, NOUN_LOCATION.number, false)
+        val sk2 = SenseKey("earth", POS.NOUN, 0, NOUN_LOCATION.number, false)
         println(sk1)
         println(sk2)
         Assertions.assertEquals(sk1, sk2)
