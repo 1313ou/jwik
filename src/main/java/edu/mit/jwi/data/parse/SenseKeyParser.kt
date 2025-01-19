@@ -40,7 +40,7 @@ object SenseKeyParser : ILineParser<SenseKey> {
 
             // if it's not an adjective satellite, we're done
             if (!isAdjSat) {
-                return SenseKey(lemma, lexId, pos, lexFile, null, -1, key)
+                return SenseKey(lemma, lexId, pos, lexFile.number, null, -1, key)
             }
 
             // get head_word
@@ -51,7 +51,7 @@ object SenseKeyParser : ILineParser<SenseKey> {
             // get head_id
             begin = end + 1
             val headId = key.substring(begin).toInt()
-            return SenseKey(lemma, lexId, pos, lexFile, headWord, headId, key)
+            return SenseKey(lemma, lexId, pos, lexFile.number, headWord, headId, key)
 
         } catch (e: Exception) {
             throw MisformattedLineException(e)
