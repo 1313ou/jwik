@@ -445,8 +445,6 @@ abstract class BaseRAMDictionary protected constructor(
          * @return the new synset, a copy of the first
          */
         private fun makeSense(newSynset: Synset, old: Sense): Sense {
-
-            // sense
             val sense = newSynset.Sense(old.iD, old.member)
             if (sense.senseKey.needsHeadSet()) {
                 val oldKey = old.senseKey
