@@ -1,7 +1,6 @@
 package edu.mit.jwi
 
 import edu.mit.jwi.data.*
-import edu.mit.jwi.data.ContentTypeKey.*
 import edu.mit.jwi.data.IHasLifecycle.ObjectClosedException
 import edu.mit.jwi.data.compare.ILineComparator
 import edu.mit.jwi.data.parse.ILineParser
@@ -211,7 +210,7 @@ class DataSourceDictionary(
         val zeroFilledOffset = zeroFillOffset(id.offset)
         val line = file.getLine(zeroFilledOffset) ?: return null
         val synset = content.dataType.parser.parseLine(line)
-        setHeadWord(synset)
+        setAdjHead(synset)
         return synset
     }
 
@@ -246,52 +245,6 @@ class DataSourceDictionary(
         return lines.asSequence()
             .filter { it.startsWith(start) }
             .map { parser.parseLine(it).lemma }
-    }
-
-    /**
-     * This method sets the head word on the specified synset by searching in the dictionary to find the head of its cluster.
-     * We will assume the head is the first adjective head synset related by an '&amp;' pointer (SIMILAR_TO) to this synset.
-     *
-     * @param synset synset
-     */
-    private fun setHeadWord(synset: Synset) {
-        // head words are only needed for adjective satellites
-        if (!synset.isAdjectiveSatellite) {
-            return
-        }
-
-        // go find the head word
-        var headSynset: Synset?
-        var headSense: Sense? = null
-        val related = synset.getRelatedFor(Pointer.SIMILAR_TO)
-        for (simID in related) {
-            headSynset = getSynset(simID)!!
-            // assume first 'similar' adjective head is the right one
-            if (headSynset.isAdjectiveHead) {
-                headSense = headSynset.senses[0]
-                break
-            }
-        }
-        if (headSense == null) {
-            return
-        }
-
-        // set head word, if we found it
-        var headLemma = headSense.lemma
-
-        // version 1.6 of Wordnet adds the adjective marker symbol on the end of the head word lemma
-        val ver = version
-        val isVer16 = (ver != null) && (ver.majorVersion == 1 && ver.minorVersion == 6)
-        if (isVer16 && headSense.adjectiveMarker != null) {
-            headLemma += headSense.adjectiveMarker!!.symbol
-        }
-
-        // set the head word for each sense
-        for (sense in synset.senses) {
-            if (sense.senseKey.needsHeadSet()) {
-                sense.senseKey.setHead(headLemma, headSense.lexicalID)
-            }
-        }
     }
 
     // I T E R A T E
@@ -412,7 +365,7 @@ class DataSourceDictionary(
         override fun parseLine(line: String): Synset {
             if (pOS == POS.ADJECTIVE) {
                 val synset = parser.parseLine(line)
-                setHeadWord(synset)
+                setAdjHead(synset)
                 return synset
             } else {
                 return parser.parseLine(line)
@@ -430,6 +383,57 @@ class DataSourceDictionary(
         override fun parseLine(line: String): ExceptionEntry {
             val proxy = parser.parseLine(line)
             return ExceptionEntry(proxy, pOS)
+        }
+    }
+
+    // H E A D
+
+    /**
+     * This method gets the head word and head ID on the specified synset by searching in the dictionary to find the head of its cluster.
+     * We will assume the head is the first adjective head synset related by an '&amp;' pointer (SIMILAR_TO) to this synset.
+     *
+     * @param synset synset
+     */
+    private fun getAdjHead(synset: Synset): Pair<String, Int> {
+        // head words are only needed for adjective satellites
+        require(synset.isAdjectiveSatellite)
+
+        // go find the head synset
+        // assume first 'similar' adjective head is the right one
+        val headSynset: Synset = synset.getRelatedFor(Pointer.SIMILAR_TO)
+            .asSequence()
+            .map { getSynset(it)!! }
+            .filter { it.isAdjectiveHead }
+            .first()
+        val headSense: Sense = headSynset.senses[0]
+        val headID = headSense.lexicalID
+        var headLemma = headSense.lemma
+
+        // version 1.6 of Wordnet adds the adjective marker symbol on the end of the head word lemma
+        val isVer16 = version != null && version!!.majorVersion == 1 && version!!.minorVersion == 6
+        if (isVer16 && headSense.adjectiveMarker != null) {
+            headLemma += headSense.adjectiveMarker!!.symbol
+        }
+        return headLemma to headID
+    }
+
+    /**
+     * This method sets the head word on the specified synset by searching in the dictionary to find the head of its cluster.
+     * We will assume the head is the first adjective head synset related by an '&amp;' pointer (SIMILAR_TO) to this synset.
+     * Head words are only needed for adjective satellites.
+     *
+     * @param synset synset
+     */
+    private fun setAdjHead(synset: Synset) {
+        if (synset.isAdjectiveSatellite) {
+            val (headLemma, headID) = getAdjHead(synset)
+
+            // set the head word for each sense
+            for (sense in synset.senses) {
+                if (sense.senseKey.needsHeadSet()) {
+                    sense.senseKey.setHead(headLemma, headID)
+                }
+            }
         }
     }
 }
