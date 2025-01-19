@@ -83,14 +83,11 @@ class DataType<T>(
         @JvmField
         val SENSE: DataType<SenseEntry> = DataType<SenseEntry>("Sense", false, SenseLineParser, "sense")
 
-        @JvmField
-        val SENSES: DataType<Array<SenseEntry>> = DataType<Array<SenseEntry>>("Senses", false, SensesLineParser, "sense")
-
         /**
          * Set of all data types implemented in this class
          */
         private val dataTypes: Set<DataType<*>> = Collections.unmodifiableSet<DataType<*>>(
-            setOf(INDEX, DATA, EXCEPTION, SENSE, SENSES)
+            setOf(INDEX, DATA, EXCEPTION, SENSE)
         )
 
         /**

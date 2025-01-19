@@ -413,7 +413,6 @@ class FileProvider @JvmOverloads constructor(
 
             // do not remove file from possible choices as both content types may use the same file
             if ((contentType.key != ContentTypeKey.SENSE) &&
-                (contentType.key != ContentTypeKey.SENSES) &&
                 (contentType.key != ContentTypeKey.INDEX_ADJECTIVE) &&
                 (contentType.key != ContentTypeKey.INDEX_ADVERB) &&
                 (contentType.key != ContentTypeKey.INDEX_NOUN) &&

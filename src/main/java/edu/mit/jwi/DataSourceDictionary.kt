@@ -133,11 +133,9 @@ class DataSourceDictionary(
 
         if (config.indexSensePattern != null) {
             setSourceMatcher(SENSE, config.indexSensePattern)
-            setSourceMatcher(SENSES, config.indexSensePattern)
         }
         if (config.indexSenseKeyComparator != null) {
             setComparator(SENSE, config.indexSenseKeyComparator)
-            setComparator(SENSES, config.indexSenseKeyComparator)
         }
         if (config.charSet != null) {
             charset = config.charSet
@@ -248,14 +246,6 @@ class DataSourceDictionary(
         val parser = content.dataType.parser
         val proxy = parser.parseLine(line)
         return ExceptionEntry(proxy, id.pOS)
-    }
-
-    fun getSenseEntries(sensekey: SenseKey): Array<SenseEntry>? {
-        checkOpen()
-        val content = dataProvider.resolveContentType<Array<SenseEntry>>(DataType.SENSES, null)!!
-        val file = dataProvider.getSource(content)!!
-        val line = file.getLine(sensekey.toString()) ?: return null
-        return content.dataType.parser.parseLine(line)
     }
 
     override fun getLemmasStartingWith(start: String, pos: POS?, limit: Int): Set<String> {

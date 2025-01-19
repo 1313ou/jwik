@@ -83,7 +83,6 @@ class ContentType<T>
         val EXCEPTION_ADJECTIVE = ContentType<ExceptionEntryProxy>(ContentTypeKey.EXCEPTION_ADJECTIVE, ExceptionLineComparator)
 
         val SENSE = ContentType<SenseEntry>(ContentTypeKey.SENSE, SenseKeyLineComparator)
-        val SENSES = ContentType<Array<SenseEntry>>(ContentTypeKey.SENSES, SenseKeyLineComparator)
 
         // set of all content types implemented in this class
         private val contentTypes: Set<ContentType<*>> = Collections.unmodifiableSet<ContentType<*>>(
@@ -101,7 +100,6 @@ class ContentType<T>
                 EXCEPTION_ADVERB,
                 EXCEPTION_ADJECTIVE,
                 SENSE,
-                SENSES,
             )
         )
 
