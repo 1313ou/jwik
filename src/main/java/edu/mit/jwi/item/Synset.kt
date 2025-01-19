@@ -24,6 +24,11 @@ class Synset internal constructor(
     override val iD: SynsetID,
 
     /**
+     * Members
+     */
+    val members: Array<out ISenseBuilder>,
+
+    /**
      * The lexical file it was found in
      */
     val lexicalFile: LexFile,
@@ -42,11 +47,6 @@ class Synset internal constructor(
      * The gloss or definition that comes with the synset
      */
     val gloss: String,
-
-    /**
-     * Members
-     */
-    val members: List<ISenseBuilder>,
 
     /**
      * Semantic relations
@@ -181,8 +181,17 @@ class Synset internal constructor(
         val number: Int
             get() = member.number
 
+        val lemma: String
+            get() = iD.lemma
+
         override val pOS: POS
             get() = this@Synset.pOS
+
+        val lexicalID: Int
+            get() = member.lexicalID
+
+        val adjectiveMarker: AdjMarker?
+            get() = member.adjMarker
 
         val senseKey: SenseKey by lazy { SenseKey(iD.lemma, pOS, lexicalFile.number, lexicalID, isAdjectiveSatellite) }
 
@@ -197,15 +206,6 @@ class Synset internal constructor(
                 .flatMap { it.toList() }
                 .distinct()
                 .toList()
-
-        val lemma: String
-            get() = iD.lemma
-
-        val lexicalID: Int
-            get() = member.lexicalID
-
-        val adjectiveMarker: AdjMarker?
-            get() = member.adjMarker
 
         init {
             checkLexicalID(member.lexicalID)

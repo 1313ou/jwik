@@ -418,7 +418,7 @@ abstract class BaseRAMDictionary protected constructor(
             // senses
             val senseBuilders = old.senses
                 .map { SenseBuilder(it) }
-                .toList()
+                .toTypedArray<ISenseBuilder>()
 
             // related synsets
             val newRelated = old.related
@@ -434,7 +434,7 @@ abstract class BaseRAMDictionary protected constructor(
                 }
                 .toMap()
 
-            return Synset(old.iD, old.lexicalFile, old.isAdjectiveSatellite, old.isAdjectiveHead, old.gloss, senseBuilders, newRelated)
+            return Synset(old.iD, senseBuilders, old.lexicalFile, old.isAdjectiveSatellite, old.isAdjectiveHead, old.gloss, newRelated)
         }
 
         /**
