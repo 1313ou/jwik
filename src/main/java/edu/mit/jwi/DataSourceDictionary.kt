@@ -118,25 +118,6 @@ class DataSourceDictionary(
         }
 
         // dictionary params
-        if (config.indexNounComparator != null) {
-            setComparator(INDEX_NOUN, config.indexNounComparator)
-        }
-        if (config.indexVerbComparator != null) {
-            setComparator(INDEX_VERB, config.indexVerbComparator)
-        }
-        if (config.indexAdjectiveComparator != null) {
-            setComparator(INDEX_ADJECTIVE, config.indexAdjectiveComparator)
-        }
-        if (config.indexAdverbComparator != null) {
-            setComparator(INDEX_ADVERB, config.indexAdverbComparator)
-        }
-
-        if (config.indexSensePattern != null) {
-            setSourceMatcher(SENSE, config.indexSensePattern)
-        }
-        if (config.indexSenseKeyComparator != null) {
-            setComparator(SENSE, config.indexSenseKeyComparator)
-        }
         if (config.charSet != null) {
             charset = config.charSet
         }
