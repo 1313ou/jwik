@@ -5,8 +5,6 @@ import edu.mit.jwi.data.IHasLifecycle
 import edu.mit.jwi.data.ILoadable
 import edu.mit.jwi.data.LoadPolicy
 import edu.mit.jwi.item.*
-import edu.mit.jwi.item.Synset.ISenseBuilder
-import edu.mit.jwi.item.Synset.Member
 import edu.mit.jwi.item.Synset.Sense
 import java.io.*
 import java.net.URL
@@ -418,7 +416,7 @@ abstract class BaseRAMDictionary protected constructor(
             // senses
             val senseBuilders = old.senses
                 .map { SenseBuilder(it) }
-                .toTypedArray<ISenseBuilder>()
+                .toTypedArray<(Synset) -> Sense>()
 
             // related synsets
             val newRelated = old.related
@@ -479,9 +477,9 @@ abstract class BaseRAMDictionary protected constructor(
          *
          * @param oldSense the old sense that backs this builder
          */
-        inner class SenseBuilder(private val oldSense: Sense) : ISenseBuilder {
+        inner class SenseBuilder(private val oldSense: Sense) : (Synset) -> Sense, Serializable {
 
-            override fun toSense(synset: Synset): Sense {
+            override fun invoke(synset: Synset): Sense {
                 return makeSense(synset, oldSense)
             }
         }

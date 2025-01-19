@@ -2,6 +2,7 @@ package edu.mit.jwi.item
 
 import edu.mit.jwi.item.LexFile.Companion.ADJ_ALL
 import edu.mit.jwi.item.SenseIDWithLemma.Companion.UNKNOWN_NUMBER
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -24,9 +25,9 @@ class Synset internal constructor(
     override val iD: SynsetID,
 
     /**
-     * Members
+     * Virtual senses or sense factories/suppliers
      */
-    val members: Array<out ISenseBuilder>,
+    private val virtualSenses: Array<out (Synset) -> Sense>,
 
     /**
      * The lexical file it was found in
@@ -90,10 +91,10 @@ class Synset internal constructor(
     /**
      * The senses that reference the synset
      */
-    val senses: List<Sense> by lazy {
-        members
-            .map { it.toSense(this) }
-            .toList()
+    val senses: Array<Sense> by lazy {
+        virtualSenses
+            .map { it.invoke(this) }
+            .toTypedArray()
     }
 
     init {
@@ -282,21 +283,6 @@ class Synset internal constructor(
     }
 
     /**
-     * A sense builder used to construct sense objects inside the synset object constructor.
-     */
-    interface ISenseBuilder {
-
-        /**
-         * Creates the sense represented by this builder.
-         * If the builder represents invalid values for a sense, this method may throw an exception.
-         *
-         * @param synset the synset to which this sense should be attached
-         * @return the created sense
-         */
-        fun toSense(synset: Synset): Sense
-    }
-
-    /**
      * Holds information about sense objects before they are instantiated.
      *
      * Constructs a new sense builder object.
@@ -314,13 +300,13 @@ class Synset internal constructor(
         internal val adjMarker: AdjMarker?,
         internal var related: Map<Pointer, List<SenseID>>,
         internal var verbFrames: List<VerbFrame>,
-    ) : ISenseBuilder {
+    ) : (Synset) -> Sense, Serializable {
 
         init {
             checkSenseNumber(number)
         }
 
-        override fun toSense(synset: Synset): Sense {
+        override fun invoke(synset: Synset): Sense {
             return synset.Sense(SenseIDWithLemmaAndNum(synset.iD, number, lemma), this)
         }
     }

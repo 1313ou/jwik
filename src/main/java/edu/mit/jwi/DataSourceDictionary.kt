@@ -213,7 +213,7 @@ class DataSourceDictionary(
         // we have to search the synonyms of the sense returned from the index search because some synsets have lemmas that differ only in case e.g., {earth, Earth} or {south, South}, and so separate entries are not found in the index file
         return getIndex(sensekey.lemma, sensekey.pOS)?.senseIDs
             ?.mapNotNull { getSense(it) }
-            ?.flatMap { it.synset.senses }
+            ?.flatMap { it.synset.senses.asSequence() }
             ?.first { it.senseKey == sensekey }
     }
 
