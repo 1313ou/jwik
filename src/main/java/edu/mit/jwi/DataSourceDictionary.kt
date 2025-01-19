@@ -14,7 +14,6 @@ import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.Collections.emptyIterator
-import kotlin.Throws
 
 /**
  * A type of `IDictionary` which uses an instance of a `DataProvider` to obtain its data.
@@ -232,9 +231,9 @@ class DataSourceDictionary(
         val file = dataProvider.getSource(content)!!
         val zeroFilledOffset = zeroFillOffset(id.offset)
         val line = file.getLine(zeroFilledOffset) ?: return null
-        val result = content.dataType.parser.parseLine(line)
-        setHeadWord(result)
-        return result
+        val synset = content.dataType.parser.parseLine(line)
+        setHeadWord(synset)
+        return synset
     }
 
     override fun getExceptionEntry(surfaceForm: String, pos: POS): ExceptionEntry? {
@@ -293,7 +292,7 @@ class DataSourceDictionary(
         // go find the head word
         var headSynset: Synset?
         var headSense: Sense? = null
-        val related: List<SynsetID> = synset.getRelatedFor(Pointer.SIMILAR_TO)
+        val related = synset.getRelatedFor(Pointer.SIMILAR_TO)
         for (simID in related) {
             headSynset = getSynset(simID)!!
             // assume first 'similar' adjective head is the right one

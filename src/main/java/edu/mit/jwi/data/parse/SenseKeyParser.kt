@@ -12,7 +12,11 @@ import edu.mit.jwi.item.SenseKey
  */
 object SenseKeyParser : ILineParser<SenseKey> {
 
-    override fun parseLine(key: String): SenseKey {
+    override fun parseLine(line: String): SenseKey {
+        return parseSenseKey(line)
+    }
+
+    fun parseSenseKey(key: String): SenseKey {
         try {
             var begin = 0
             var end: Int = key.indexOf('%')
@@ -40,7 +44,7 @@ object SenseKeyParser : ILineParser<SenseKey> {
 
             // if it's not an adjective satellite, we're done
             if (!isAdjSat) {
-                return SenseKey(lemma, lexId, pos, lexFile.number, null, -1, key)
+                return SenseKey(lemma, pos, lexFile.number, lexId, null, -1)
             }
 
             // get head_word
@@ -51,7 +55,7 @@ object SenseKeyParser : ILineParser<SenseKey> {
             // get head_id
             begin = end + 1
             val headId = key.substring(begin).toInt()
-            return SenseKey(lemma, lexId, pos, lexFile.number, headWord, headId, key)
+            return SenseKey(lemma, pos, lexFile.number, lexId, headWord, headId)
 
         } catch (e: Exception) {
             throw MisformattedLineException(e)

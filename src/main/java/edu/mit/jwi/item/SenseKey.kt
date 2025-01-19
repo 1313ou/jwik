@@ -1,7 +1,6 @@
 package edu.mit.jwi.item
 
 import edu.mit.jwi.item.Synset.Companion.checkLexicalID
-import edu.mit.jwi.item.Synset.Companion.getLexicalIDForSenseKey
 import java.io.Serializable
 import java.util.*
 
@@ -51,20 +50,6 @@ class SenseKey(
      */
     val lemma: String = lemma.asSensekeyLemma()
 
-    /**
-     * The synset type for the key.
-     * The synset type is a one digit decimal integer representing the synset type for the sense.
-     * 1=NOUN
-     * 2=VERB
-     * 3=ADJECTIVE
-     * 4=ADVERB
-     * 5=ADJECTIVE SATELLITE
-     */
-    val synsetType: Int
-        get() {
-            return if (isAdjectiveSatellite) NUM_ADJECTIVE_SATELLITE else pOS.number
-        }
-
     internal var headWord: String? = null
         get() {
             checkHeadSet()
@@ -85,56 +70,41 @@ class SenseKey(
 
     private var isHeadSet: Boolean = !isAdjectiveSatellite
 
-    private var sensekey: String? = null
+    /**
+     * (Cached) string
+     */
+    val sensekey: String by lazy { toString() }
+
+    /**
+     * The synset type for the key.
+     * The synset type is a one digit decimal integer representing the synset type for the sense.
+     * 1=NOUN
+     * 2=VERB
+     * 3=ADJECTIVE
+     * 4=ADVERB
+     * 5=ADJECTIVE SATELLITE
+     */
+    val synsetType: Int
         get() {
-            checkHeadSet()
-            if (field == null) {
-                field = toString(this)
-            }
-            return field
+            return if (isAdjectiveSatellite) NUM_ADJECTIVE_SATELLITE else pOS.number
         }
 
     /**
      * Constructs a new sense key.
      *
-     * @param lemma the lemma for the sense key
-     * @param lexicalID the lexical id of the sense key
-     * @param synset the synset for the sense key
-     */
-    constructor(lemma: String, lexicalID: Int, synset: Synset) : this(lemma, synset.pOS, lexicalID, synset.lexicalFile.number, synset.isAdjectiveSatellite)
-
-    /**
-     * Constructs a new sense key.
-     *
      * @param lemma the lemma
-     * @param lexID the lexical id
-     * @param pos the part-of-speech
-     * @param isAdjSat true if this represents an adjective satellite; false otherwise
-     * @param lexFileNum the lexical file
-     * @param sensekey the original key string
-     */
-    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFileNum: Int, sensekey: String) : this(lemma, pos, lexFileNum, lexID, isAdjSat) {
-        this.sensekey = sensekey
-    }
-
-    /**
-     * Constructs a new sense key.
-     *
-     * @param lemma the lemma
-     * @param lexID the lexical id
      * @param pos the part-of-speech
      * @param lexFileNum the lexical file
-     * @param sensekey the original key string
+     * @param lexID the lexical id
      * @param headLemma the head lemma
      * @param headLexID the head lexical id; ignored if head lemma is null
      */
-    constructor(lemma: String, lexID: Int, pos: POS, lexFileNum: Int, headLemma: String?, headLexID: Int, sensekey: String) : this(lemma, pos, lexID, lexFileNum, (headLemma != null)) {
+    constructor(lemma: String, pos: POS, lexFileNum: Int, lexID: Int, headLemma: String?, headLexID: Int) : this(lemma, pos, lexFileNum, lexID, (headLemma != null)) {
         if (headLemma == null) {
             isHeadSet = true
         } else {
             setHead(headLemma, headLexID)
         }
-        this.sensekey = sensekey
     }
 
     /**
@@ -216,7 +186,10 @@ class SenseKey(
     }
 
     override fun toString(): String {
-        return sensekey!!
+        return if (isAdjectiveSatellite)
+            "$lemma%$NUM_ADJECTIVE_SATELLITE:${"%02d".format(lexicalFileNum)}:${"%02d".format(lexID)}:$headWord:${"%02d".format(headID)}"
+        else
+            "$lemma%${pOS.number}:${"%02d".format(lexicalFileNum)}:${"%02d".format(lexID)}::"
     }
 
     override fun hashCode(): Int {
@@ -256,22 +229,5 @@ class SenseKey(
             return headID == other.headID
         }
         return true
-    }
-
-    companion object {
-
-        /**
-         * Returns a string representation of the specified sense key object.
-         *
-         * @param key the sense key to be encoded as a string
-         * @return the string representation of the sense key
-         */
-        fun toString(key: SenseKey): String {
-            val lexFileNum = key.lexicalFileNum
-            val lexID = getLexicalIDForSenseKey(key.lexID)
-            val head = if (key.isAdjectiveSatellite) (if (key.needsHeadSet()) "??" else key.headWord) else ""
-            val headID = if (key.isAdjectiveSatellite) (if (key.needsHeadSet()) "??" else getLexicalIDForSenseKey(key.headID)) else ""
-            return "${key.lemma}%${key.synsetType}:$lexFileNum:$lexID:$head:$headID"
-        }
     }
 }

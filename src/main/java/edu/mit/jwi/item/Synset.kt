@@ -81,11 +81,10 @@ class Synset internal constructor(
      */
     val type: Int
         get() {
-            val pos = pOS
-            if (pos == POS.ADJECTIVE) {
+            if (pOS == POS.ADJECTIVE) {
                 return if (isAdjectiveSatellite) NUM_ADJECTIVE_SATELLITE else NUM_ADJECTIVE
             }
-            return pos.number
+            return pOS.number
         }
 
     /**
@@ -183,9 +182,9 @@ class Synset internal constructor(
             get() = member.number
 
         override val pOS: POS
-            get() = iD.synsetID.pOS
+            get() = this@Synset.pOS
 
-        val senseKey: SenseKey by lazy { SenseKey(iD.lemma, member.lexicalID, synset) }
+        val senseKey: SenseKey by lazy { SenseKey(iD.lemma, pOS, lexicalFile.number, lexicalID, isAdjectiveSatellite) }
 
         val verbFrames: List<VerbFrame>
             get() = member.verbFrames
@@ -423,34 +422,6 @@ class Synset internal constructor(
                 return true
             }
             return num > 255
-        }
-
-        /**
-         * Returns a string form of the lexical id as they are written in data files, which is a single digit hex number.
-         *
-         * @param lexID the lexical id to convert
-         * @return a string form of the lexical id as they are written in data files, which is a single digit hex number.
-         * @throws IllegalArgumentException if the specified integer is not a valid lexical id.
-         */
-        @JvmStatic
-        fun getLexicalIDForDataFile(lexID: Int): String {
-            checkLexicalID(lexID)
-            return Integer.toHexString(lexID)
-        }
-
-        private val lexIDNumStrs = arrayOf("00", "01", "02", "03", "04", "05", "06", "07", "08", "09")
-
-        /**
-         * Returns a string form of the lexical id as they are written in sense keys, which is as a two-digit decimal number.
-         *
-         * @param lexID the lexical id to convert
-         * @return a string form of the lexical id as they are written in sense keys, which is as a two-digit decimal number.
-         * @throws IllegalArgumentException if the specified integer is not a valid lexical id.
-         */
-        @JvmStatic
-        fun getLexicalIDForSenseKey(lexID: Int): String {
-            checkLexicalID(lexID)
-            return if (lexID < 10) lexIDNumStrs[lexID] else lexID.toString()
         }
 
         /**

@@ -1,5 +1,6 @@
 package edu.mit.jwi.test
 
+import edu.mit.jwi.data.parse.SenseKeyParser
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -52,6 +53,11 @@ class SensekeysTests {
         Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:unpleasant:00"))
         Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:violent:00"))
         Assertions.assertTrue(TestLib.sensekeyFromStringIsLive(jwi!!, "hot%5:00:00:wanted:00"))
+    }
+    @Test
+    fun parse() {
+        val sk = SenseKeyParser.parseSenseKey("0%5:00:00:cardinal:00")
+        print(sk)
     }
 
     companion object {
