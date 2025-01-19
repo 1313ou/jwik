@@ -22,6 +22,16 @@ class SenseKey(
     lemma: String,
 
     /**
+     * Part-of-Speech
+     */
+    override val pOS: POS,
+
+    /**
+     * Lexical File number
+     */
+    val lexicalFileNum: Int,
+
+    /**
      * The lexical id for this sense key, which is a non-negative integer.
      * lex_id is a two digit decimal integer that, when appended onto lemma , uniquely identifies a sense within a lexicographer file.
      * lex_id numbers usually start with 00 , and are incremented as additional senses of the word are added to the same file, although there is no requirement that the numbers be consecutive or begin with 00 .
@@ -30,19 +40,9 @@ class SenseKey(
     val lexID: Int,
 
     /**
-     * Part of Speech
-     */
-    override val pOS: POS,
-
-    /**
      * Whether this sense key points to an adjective satellite
      */
     val isAdjectiveSatellite: Boolean,
-
-    /**
-     * Lexical File
-     */
-    val lexicalFileNum: Int,
 
     ) : IHasPOS, Comparable<SenseKey>, Serializable {
 
@@ -101,7 +101,7 @@ class SenseKey(
      * @param lexicalID the lexical id of the sense key
      * @param synset the synset for the sense key
      */
-    constructor(lemma: String, lexicalID: Int, synset: Synset) : this(lemma, lexicalID, synset.pOS, synset.isAdjectiveSatellite, synset.lexicalFile.number)
+    constructor(lemma: String, lexicalID: Int, synset: Synset) : this(lemma, synset.pOS, lexicalID, synset.lexicalFile.number, synset.isAdjectiveSatellite)
 
     /**
      * Constructs a new sense key.
@@ -113,7 +113,7 @@ class SenseKey(
      * @param lexFileNum the lexical file
      * @param sensekey the original key string
      */
-    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFileNum: Int, sensekey: String) : this(lemma, lexID, pos, isAdjSat, lexFileNum) {
+    constructor(lemma: String, lexID: Int, pos: POS, isAdjSat: Boolean, lexFileNum: Int, sensekey: String) : this(lemma, pos, lexFileNum, lexID, isAdjSat) {
         this.sensekey = sensekey
     }
 
@@ -128,7 +128,7 @@ class SenseKey(
      * @param headLemma the head lemma
      * @param headLexID the head lexical id; ignored if head lemma is null
      */
-    constructor(lemma: String, lexID: Int, pos: POS, lexFileNum: Int, headLemma: String?, headLexID: Int, sensekey: String) : this(lemma, lexID, pos, (headLemma != null), lexFileNum) {
+    constructor(lemma: String, lexID: Int, pos: POS, lexFileNum: Int, headLemma: String?, headLexID: Int, sensekey: String) : this(lemma, pos, lexID, lexFileNum, (headLemma != null)) {
         if (headLemma == null) {
             isHeadSet = true
         } else {
