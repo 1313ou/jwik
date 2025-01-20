@@ -19,7 +19,7 @@ class SenseKey(
     /**
      * Lemma
      */
-    lemma: String,
+    val casedLemma: String,
 
     /**
      * Part-of-Speech
@@ -58,7 +58,7 @@ class SenseKey(
     /**
      * Lemma
      */
-    val lemma: String = lemma.asSensekeyLemma()
+    val lemma: String = casedLemma.asSensekeyLemma()
 
     /**
      * Whether the sense is an adjective satellite
@@ -70,6 +70,11 @@ class SenseKey(
      * (Cached) string
      */
     val sensekey: String by lazy { toString() }
+
+    /**
+     * (Cached) string
+     */
+    val key: String by lazy { toKeyString() }
 
     /**
      * The synset type for the key.
@@ -140,6 +145,13 @@ class SenseKey(
             "$lemma%$NUM_ADJECTIVE_SATELLITE:${"%02d".format(lexicalFileNum)}:${"%02d".format(lexID)}:$headWord:${"%02d".format(headID)}"
         else
             "$lemma%${pOS.number}:${"%02d".format(lexicalFileNum)}:${"%02d".format(lexID)}::"
+    }
+
+    fun toKeyString(): String {
+        return if (isAdjectiveSatellite)
+            "$casedLemma%$NUM_ADJECTIVE_SATELLITE:${"%02d".format(lexicalFileNum)}:${"%02d".format(lexID)}:$headWord:${"%02d".format(headID)}"
+        else
+            "$casedLemma%${pOS.number}:${"%02d".format(lexicalFileNum)}:${"%02d".format(lexID)}::"
     }
 
     override fun hashCode(): Int {

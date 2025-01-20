@@ -202,9 +202,9 @@ abstract class BaseRAMDictionary protected constructor(
         }
     }
 
-    override fun getSense(key: SenseKey): Sense? {
+    override fun getSense(sk: SenseKey): Sense? {
         check(data != null) { NO_DATA }
-        return data!!.senses[key]
+        return data!!.senses[sk.key]
     }
 
     override fun getLemmasStartingWith(start: String, pos: POS?, limit: Int): Set<String> {
@@ -227,7 +227,7 @@ abstract class BaseRAMDictionary protected constructor(
 
     override fun getSenseEntry(key: SenseKey): SenseEntry? {
         check(data != null) { NO_DATA }
-        return data!!.senseEntries[key]
+        return data!!.senseEntries[key.sensekey]
     }
 
     // EXCEPTION ENTRY
@@ -302,15 +302,15 @@ abstract class BaseRAMDictionary protected constructor(
 
         var version: Version? = null
 
-        val indexes: MutableMap<POS, MutableMap<IndexID, Index>> = makePOSMap<IndexID, Index>()
+        var indexes: Map<POS, Map<IndexID, Index>> = makePOSMap<IndexID, Index>()
 
         val synsets: MutableMap<POS, MutableMap<SynsetID, Synset>> = makePOSMap<SynsetID, Synset>()
 
         val exceptions: MutableMap<POS, MutableMap<ExceptionEntryID, ExceptionEntry>> = makePOSMap<ExceptionEntryID, ExceptionEntry>()
 
-        var senses: MutableMap<SenseKey, Sense> = makeMap<SenseKey, Sense>(212500, null)
+        var senses: MutableMap<String, Sense> = makeMap<String, Sense>(212500, null)
 
-        var senseEntries: MutableMap<SenseKey, SenseEntry> = makeMap<SenseKey, SenseEntry>(212500, null)
+        var senseEntries: MutableMap<String, SenseEntry> = makeMap<String, SenseEntry>(212500, null)
 
         /**
          * This method is used when constructing the dictionary data object.
@@ -359,8 +359,8 @@ abstract class BaseRAMDictionary protected constructor(
             compactPOSMap<IndexID, Index>(indexes)
             compactPOSMap<SynsetID, Synset>(synsets)
             compactPOSMap<ExceptionEntryID, ExceptionEntry>(exceptions)
-            senses = compactMap<SenseKey, Sense>(senses)
-            senseEntries = compactMap<SenseKey, SenseEntry>(senseEntries)
+            senses = compactMap<String, Sense>(senses)
+            senseEntries = compactMap<String, SenseEntry>(senseEntries)
         }
 
         /**
@@ -405,8 +405,7 @@ abstract class BaseRAMDictionary protected constructor(
         }
 
         /**
-         * Creates a new synset object that replaces all the old internal `ISynsetID` objects with those from the denoted synsets,
-         * thus throwing away redundant synset ids.
+         * Creates a new synset object that replaces all the old internal SynsetID objects with those from the denoted synsets, thus throwing away redundant synset ids.
          *
          * @param old the synset to be replicated
          * @return the new synset, a copy of the first
@@ -414,7 +413,7 @@ abstract class BaseRAMDictionary protected constructor(
         private fun makeSynset(old: Synset): Synset {
 
             // senses
-            val senseBuilders = old.senses
+            val virtualSenses = old.senses
                 .map { SenseBuilder(it) }
                 .toTypedArray<(Synset) -> Sense>()
 
@@ -432,36 +431,39 @@ abstract class BaseRAMDictionary protected constructor(
                 }
                 .toMap()
 
-            return Synset(old.iD, senseBuilders, old.lexicalFile, old.gloss, newRelated, old.isAdjectiveSatellite, old.isAdjectiveHead, old.adjHeadSenseID)
+            // related synsets
+
+            return Synset(old.iD, virtualSenses, old.lexicalFile, old.gloss, newRelated, old.isAdjectiveSatellite, old.isAdjectiveHead, old.adjHeadSenseID)
         }
 
         /**
          * Creates a new sense object that replaces all the old internal SenseID objects with those from the denoted senses, thus throwing away redundant sense ids.
          *
-         * @param newSynset the synset for which the sense is being made
          * @param old the sense to be replicated
-         * @return the new synset, a copy of the first
+         * @return the new sense, a copy of the first
          */
-        private fun makeSense(newSynset: Synset, old: Sense): Sense {
-            val sense = newSynset.Sense(old.iD, old.member)
-            return sense
+        private fun makeSense(old: Sense): (Synset) -> Sense {
+            return SenseBuilder(old)
+        }
+
+        private fun makeSenseID(oldSenseID: SenseID): SenseID {
+            val resolver = synsets[oldSenseID.pOS]!!
+            var synset: Synset = resolver[oldSenseID.synsetID]!!
+            val newSense = synset.senses.first { it.iD == oldSenseID }
+            return newSense.iD
         }
 
         /**
          * Creates a new index that replicates the specified index.
-         * The new index replaces its internal synset ids with synset ids
-         * from the denoted synsets, thus removing redundant ids.
+         * The new index replaces its internal synset ids with synset ids from the denoted synsets, thus removing redundant ids.
          *
          * @param old the index to be replicated
          * @return the new index object
          */
         private fun makeIndex(old: Index): Index {
-            val newIDs: Array<SenseID> = Array(old.senseIDs.size) { i ->
-                var oldID: SenseID = old.senseIDs[i]
-                val resolver = synsets[oldID.pOS]!!
-                var synset: Synset = resolver[oldID.synsetID]!!
-                val newSense = synset.senses.first { it.iD == oldID }
-                newSense.iD
+            val newIDs = Array(old.senseIDs.size) {
+                var oldSenseID: SenseID = old.senseIDs[it]
+                makeSenseID(oldSenseID)
             }
             return Index(old.iD, old.tagSenseCount, newIDs)
         }
@@ -476,7 +478,7 @@ abstract class BaseRAMDictionary protected constructor(
         inner class SenseBuilder(private val oldSense: Sense) : (Synset) -> Sense, Serializable {
 
             override fun invoke(synset: Synset): Sense {
-                return makeSense(synset, oldSense)
+                return synset.Sense(oldSense.iD, oldSense.member)
             }
         }
     }

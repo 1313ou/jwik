@@ -387,64 +387,60 @@ constructor(
         override fun call(): DictionaryData {
             val thread = Thread.currentThread()
 
-            val result = DictionaryData()
-            result.version = source.version
+            val data = DictionaryData()
+            data.version = source.version
 
-            // pos-indexed
-            for (pos in POS.entries) {
+            // indexes
+            data.indexes = POS.entries.asSequence().associate { pos ->
+
                 // index
-                var indexes = result.indexes[pos]!!
-                run {
-                    val i: Iterator<Index> = source.getIndexIterator(pos)
-                    while (i.hasNext()) {
-                        val idx = i.next()
-                        indexes.put(idx.iD, idx)
+                source.getIndexIterator(pos)
+                    .asSequence()
+                    .groupBy { it.iD }
+
+            }
+            cooperate(thread)
+
+            // synsets
+            POS.entries.forEach { pos ->
+                var synsets = data.synsets[pos]!!
+                source.getSynsetIterator(pos).forEach { synset ->
+                    synsets.put(synset.iD, synset)
+
+                    // senses
+                    synset.senses.forEach { sense ->
+                        data.senses.put(sense.senseKey.key, sense)
                     }
                 }
-                cooperate(thread)
+            }
+            cooperate(thread)
 
-                // synsets and words
-                var synsets = result.synsets[pos]!!
-                run {
-                    val i: Iterator<Synset> = source.getSynsetIterator(pos)
-                    while (i.hasNext()) {
-                        val synset = i.next()
-                        synsets.put(synset.iD, synset)
-                        for (sense in synset.senses) {
-                            result.senses.put(sense.senseKey, sense)
-                        }
-                    }
-                }
-                cooperate(thread)
-
-                // exceptions
-                var exceptions = result.exceptions[pos]!!
-                val i: Iterator<ExceptionEntry> = source.getExceptionEntryIterator(pos)
-                while (i.hasNext()) {
-                    val exception = i.next()
+            // exceptions
+            POS.entries.forEach { pos ->
+                var exceptions = data.exceptions[pos]!!
+                source.getExceptionEntryIterator(pos).forEach { exception ->
                     exceptions.put(exception.iD, exception)
                 }
                 cooperate(thread)
             }
 
             // sense entries
-            val i: Iterator<SenseEntry> = source.getSenseEntryIterator()
-            while (i.hasNext()) {
-                val entry = i.next()
-                val sense: Sense = result.senses[entry.senseKey]!!
+            source.getSenseEntryIterator().forEach
+            { entry ->
+                val sense: Sense = data.senses[entry.senseKey.key]!!
                 // Creates a new sense entry that replicates the specified sense entry.
                 // The new sense entry replaces its internal sense key with the specified sense key thus removing a redundant object.
-                result.senseEntries.put(sense.senseKey, SenseEntry(sense.senseKey, entry.offset, entry.senseNumber, entry.tagCount))
+                data.senseEntries.put(sense.senseKey.key, SenseEntry(sense.senseKey, entry.offset, entry.senseNumber, entry.tagCount))
             }
             cooperate(thread)
 
             // compact
-            result.compactSize()
+            data.compactSize()
             cooperate(thread)
-            result.compactObjects()
+            data.compactObjects()
             cooperate(thread)
 
-            return result
+            return data
         }
     }
 
