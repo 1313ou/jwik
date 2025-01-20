@@ -390,14 +390,12 @@ constructor(
             val data = DictionaryData()
             data.version = source.version
 
-            // indexes
-            data.indexes = POS.entries.asSequence().associate { pos ->
-
-                // index
-                source.getIndexIterator(pos)
-                    .asSequence()
-                    .groupBy { it.iD }
-
+            // pos-indexed
+            POS.entries.forEach { pos ->
+                var indexes = data.indexes[pos]!!
+                source.getIndexIterator(pos).forEach { idx ->
+                    indexes.put(idx.iD, idx)
+                }
             }
             cooperate(thread)
 
@@ -425,8 +423,7 @@ constructor(
             }
 
             // sense entries
-            source.getSenseEntryIterator().forEach
-            { entry ->
+            source.getSenseEntryIterator().forEach { entry ->
                 val sense: Sense = data.senses[entry.senseKey.key]!!
                 // Creates a new sense entry that replicates the specified sense entry.
                 // The new sense entry replaces its internal sense key with the specified sense key thus removing a redundant object.

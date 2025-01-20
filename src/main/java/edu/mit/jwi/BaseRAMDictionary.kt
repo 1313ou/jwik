@@ -302,7 +302,7 @@ abstract class BaseRAMDictionary protected constructor(
 
         var version: Version? = null
 
-        var indexes: Map<POS, Map<IndexID, Index>> = makePOSMap<IndexID, Index>()
+        var indexes: MutableMap<POS, MutableMap<IndexID, Index>> = makePOSMap<IndexID, Index>()
 
         val synsets: MutableMap<POS, MutableMap<SynsetID, Synset>> = makePOSMap<SynsetID, Synset>()
 
