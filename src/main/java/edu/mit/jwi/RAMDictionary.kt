@@ -26,10 +26,12 @@ constructor(
      * The dictionary that backs this instance
      */
     val backingDictionary: IDictionary,
+
     /**
      * Load policy
      */
     loadPolicy: Int,
+
     /**
      * Configuration bundle
      */
@@ -387,11 +389,8 @@ constructor(
         override fun call(): DictionaryData {
             val thread = Thread.currentThread()
 
-            val data = DictionaryData()
-            data.version = source.version
-
-            // indexed
-            data.indexes = POS.entries
+            // indexes
+            val indexes = POS.entries
                 .associate { pos ->
                     pos to source.getIndexIterator(pos)
                         .asSequence()
@@ -400,7 +399,7 @@ constructor(
             cooperate(thread)
 
             // synsets
-            data.synsets = POS.entries
+            val synsets = POS.entries
                 .associate { pos ->
                     pos to source.getSynsetIterator(pos)
                         .asSequence()
@@ -409,7 +408,7 @@ constructor(
             cooperate(thread)
 
             // exceptions
-            data.exceptions = POS.entries
+            val exceptions = POS.entries
                 .associate { pos ->
                     pos to source.getExceptionEntryIterator(pos)
                         .asSequence()
@@ -418,14 +417,14 @@ constructor(
             cooperate(thread)
 
             // sense entries
-            data.senseEntries = source.getSenseEntryIterator().asSequence()
+            val senseEntries = source.getSenseEntryIterator().asSequence()
                 .associate { entry ->
                     entry.senseKey.key to SenseEntry(entry.senseKey, entry.offset, entry.senseNumber, entry.tagCount)
                 }
             cooperate(thread)
 
-            // sense entries
-            data.senses = data.synsets.asSequence()
+            // senses
+            val senses = synsets.asSequence()
                 .flatMap { (_, m) -> m.values }
                 .flatMap { synset -> synset.senses.asSequence() }
                 .associate { sense ->
@@ -433,26 +432,8 @@ constructor(
                 }
             cooperate(thread)
 
-            // compact
-            // data.compactSize()
-            // cooperate(thread)
-            // data.compactObjects()
-            // cooperate(thread)
-
-            return data
+            return DictionaryData(source.version, indexes, synsets, exceptions, senses, senseEntries)
         }
-
-        fun seqAllSenses(): Sequence<Sense> = sequence {
-            POS.entries.forEach { pos ->
-                source.getIndexIterator(pos).forEach {
-                    it.senseIDs.forEach {
-                        val sense = source.getSense(it)!!
-                        yield(sense)
-                    }
-                }
-            }
-        }
-
     }
 
     companion object {
