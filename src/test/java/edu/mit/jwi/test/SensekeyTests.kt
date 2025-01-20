@@ -4,7 +4,10 @@ import edu.mit.jwi.data.parse.SenseKeyParser
 import edu.mit.jwi.item.LexFile.Companion.NOUN_LOCATION
 import edu.mit.jwi.item.LexFile.Companion.NOUN_TOPS
 import edu.mit.jwi.item.POS
+import edu.mit.jwi.item.SenseID
+import edu.mit.jwi.item.SenseIDWithLemma
 import edu.mit.jwi.item.SenseKey
+import edu.mit.jwi.item.SynsetID
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -12,9 +15,9 @@ class SensekeyTests {
 
     @Test
     fun sensekeyWithSameOrDifferentLemma() {
-        val sk1 = SenseKey("entity", POS.NOUN, 0, NOUN_TOPS.number, false)
-        val sk2 = SenseKey("entity", POS.NOUN, 0, NOUN_TOPS.number, false)
-        val sk3 = SenseKey("'entity", POS.NOUN, 0, NOUN_TOPS.number, false)
+        val sk1 = SenseKey("entity", POS.NOUN, 0, NOUN_TOPS.number)
+        val sk2 = SenseKey("entity", POS.NOUN, 0, NOUN_TOPS.number)
+        val sk3 = SenseKey("'entity", POS.NOUN, 0, NOUN_TOPS.number)
         println(sk1)
         println(sk2)
         println(sk3)
@@ -25,8 +28,8 @@ class SensekeyTests {
 
     @Test
     fun sensekeyDifferingOnCase() {
-        val sk1 = SenseKey("'s_Gravenhage", POS.NOUN, 0, NOUN_LOCATION.number, false)
-        val sk2 = SenseKey("'s_gravenhage", POS.NOUN, 0, NOUN_LOCATION.number, false)
+        val sk1 = SenseKey("'s_Gravenhage", POS.NOUN, 0, NOUN_LOCATION.number)
+        val sk2 = SenseKey("'s_gravenhage", POS.NOUN, 0, NOUN_LOCATION.number)
         println(sk1)
         println(sk2)
         Assertions.assertEquals(sk1, sk2)
@@ -35,8 +38,8 @@ class SensekeyTests {
 
     @Test
     fun sensekeyDifferingOnCaseFromLemma() {
-        val sk1 = SenseKey("Earth", POS.NOUN, 0, NOUN_LOCATION.number, false)
-        val sk2 = SenseKey("earth", POS.NOUN, 0, NOUN_LOCATION.number, false)
+        val sk1 = SenseKey("Earth", POS.NOUN, 0, NOUN_LOCATION.number)
+        val sk2 = SenseKey("earth", POS.NOUN, 0, NOUN_LOCATION.number)
         println(sk1)
         println(sk2)
         Assertions.assertEquals(sk1, sk2)
@@ -52,4 +55,4 @@ class SensekeyTests {
         Assertions.assertEquals(sk1, sk2)
         Assertions.assertEquals(sk1.hashCode(), sk2.hashCode())
     }
-}
+ }

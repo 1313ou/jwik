@@ -14,7 +14,7 @@ import java.util.*
  * @property isAdjectiveHead true if this object represents an adjective head synset; false otherwise
  * @property gloss the gloss for this synset
  * @property senses the list of senses in this synset
- * @property related a map of related synset lists, indexed by pointer
+ * @property relatedSynsets a map of related synset lists, indexed by pointer
  * @throws IllegalArgumentException if the sense list is empty, or both the adjective satellite and adjective head flags are set
  * @throws IllegalArgumentException if either the adjective satellite and adjective head flags are set, and the lexical file number is not zero
  */
@@ -35,6 +35,16 @@ class Synset internal constructor(
     val lexicalFile: LexFile,
 
     /**
+     * The gloss or definition that comes with the synset
+     */
+    val gloss: String,
+
+    /**
+     * Semantic relations
+     */
+    val relatedSynsets: Map<Pointer, List<SynsetID>>,
+
+    /**
      * Whether this synset is / represents an adjective satellite
      */
     val isAdjectiveSatellite: Boolean,
@@ -45,14 +55,9 @@ class Synset internal constructor(
     val isAdjectiveHead: Boolean,
 
     /**
-     * The gloss or definition that comes with the synset
+     * The head sense for satellite adjectives
      */
-    val gloss: String,
-
-    /**
-     * Semantic relations
-     */
-    val related: Map<Pointer, List<SynsetID>>,
+    var adjHeadSenseID: SenseIDWithLemmaAndNum? = null,
 
     ) : IHasPOS, IItem<SynsetID> {
 
@@ -97,13 +102,20 @@ class Synset internal constructor(
             .toTypedArray()
     }
 
+    val headSynsetID: SynsetID?
+        get() =
+            if (isAdjectiveSatellite)
+                getRelatedSynsetsFor(Pointer.SIMILAR_TO)
+                    .first()
+            else null
+
     init {
         require(!(isAdjectiveSatellite && isAdjectiveHead))
         require(!((isAdjectiveSatellite || isAdjectiveHead) && lexicalFile.number != ADJ_ALL.number))
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(iD, senses, this@Synset.related, gloss, isAdjectiveSatellite)
+        return Objects.hash(iD, senses, this@Synset.relatedSynsets, gloss, isAdjectiveSatellite)
     }
 
     override fun equals(obj: Any?): Boolean {
@@ -129,7 +141,7 @@ class Synset internal constructor(
         if (isAdjectiveSatellite != other.isAdjectiveSatellite) {
             return false
         }
-        return this@Synset.related == other.related
+        return this@Synset.relatedSynsets == other.relatedSynsets
     }
 
     override fun toString(): String {
@@ -145,15 +157,15 @@ class Synset internal constructor(
      * @param ptr the pointer for which related synsets are to be retrieved.
      * @return the list of synsets related by the specified pointer; if there are no such synsets, returns the empty list
      */
-    fun getRelatedFor(ptr: Pointer): List<SynsetID> {
-        return this@Synset.related[ptr] ?: emptyList()
+    fun getRelatedSynsetsFor(ptr: Pointer): List<SynsetID> {
+        return this@Synset.relatedSynsets[ptr] ?: emptyList()
     }
 
     /**
      * List of the ids of all synsets that are related to this synset
      */
     val allRelated: List<SynsetID>
-        get() = this@Synset.related.values
+        get() = this@Synset.relatedSynsets.values
             .flatMap { it.toList() }
             .distinct()
             .toList()
@@ -170,7 +182,7 @@ class Synset internal constructor(
      */
     inner class Sense(
 
-        override val iD: SenseIDWithLemma,
+        override val iD: SenseIDWithLemmaAndNum,
 
         val member: Member,
 
@@ -194,16 +206,16 @@ class Synset internal constructor(
         val adjectiveMarker: AdjMarker?
             get() = member.adjMarker
 
-        val senseKey: SenseKey by lazy { SenseKey(iD.lemma, pOS, lexicalFile.number, lexicalID, isAdjectiveSatellite) }
+        val senseKey: SenseKey by lazy { SenseKey(iD.lemma, pOS, lexicalFile.number, lexicalID, adjHeadSenseID?.lemma, adjHeadSenseID?.senseNumber?.let { it - 1 }) }
 
         val verbFrames: List<VerbFrame>
             get() = member.verbFrames
 
-        val related: Map<Pointer, List<SenseID>>
+        val relatedSenses: Map<Pointer, List<SenseID>>
             get() = member.related
 
-        val allRelated: List<SenseID>
-            get() = related.values
+        val allRelatedSenses: List<SenseID>
+            get() = relatedSenses.values
                 .flatMap { it.toList() }
                 .distinct()
                 .toList()
@@ -215,14 +227,11 @@ class Synset internal constructor(
 
         override fun toString(): String {
             val sid = iD.synsetID.toString().substring(4)
-            return when (iD) {
-                is SenseIDWithLemmaAndNum -> "W-$sid-${iD.senseNumber}-${iD.lemma}"
-                else                      -> "W-$sid-$UNKNOWN_NUMBER-${iD.lemma}"
-            }
+            return "W-$sid-${iD.senseNumber}-${iD.lemma}"
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(iD, lexicalID, adjectiveMarker, related, verbFrames)
+            return Objects.hash(iD, lexicalID, adjectiveMarker, relatedSenses, verbFrames)
         }
 
         override fun equals(obj: Any?): Boolean {
@@ -263,7 +272,7 @@ class Synset internal constructor(
             if (verbFrames != that.verbFrames) {
                 return false
             }
-            return related == that.related
+            return relatedSenses == that.relatedSenses
         }
 
         /**
@@ -276,10 +285,9 @@ class Synset internal constructor(
          * @param ptr the pointer for which related senses are requested
          * @return the list of senses related by the specified pointer, or an empty list if none.
          */
-        fun getRelatedFor(ptr: Pointer): List<SenseID> {
-            return related[ptr] ?: emptyList<SenseID>()
+        fun getRelatedSenseFor(ptr: Pointer): List<SenseID> {
+            return relatedSenses[ptr] ?: emptyList<SenseID>()
         }
-
     }
 
     /**

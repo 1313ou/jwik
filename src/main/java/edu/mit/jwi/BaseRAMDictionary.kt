@@ -419,11 +419,11 @@ abstract class BaseRAMDictionary protected constructor(
                 .toTypedArray<(Synset) -> Sense>()
 
             // related synsets
-            val newRelated = old.related
+            val newRelated = old.relatedSynsets
                 .map { (ptr, oldTargets) ->
-                    val newTargets: List<SynsetID> = oldTargets
+                    val newTargets = oldTargets
                         .map {
-                            val resolver: Map<SynsetID, Synset> = synsets[it.pOS]!!
+                            val resolver = synsets[it.pOS]!!
                             val otherSynset: Synset = resolver[it]!!
                             otherSynset.iD
                         }
@@ -432,7 +432,7 @@ abstract class BaseRAMDictionary protected constructor(
                 }
                 .toMap()
 
-            return Synset(old.iD, senseBuilders, old.lexicalFile, old.isAdjectiveSatellite, old.isAdjectiveHead, old.gloss, newRelated)
+            return Synset(old.iD, senseBuilders, old.lexicalFile, old.gloss, newRelated, old.isAdjectiveSatellite, old.isAdjectiveHead, old.adjHeadSenseID)
         }
 
         /**
@@ -444,10 +444,6 @@ abstract class BaseRAMDictionary protected constructor(
          */
         private fun makeSense(newSynset: Synset, old: Sense): Sense {
             val sense = newSynset.Sense(old.iD, old.member)
-            if (sense.senseKey.needsHeadSet()) {
-                val oldKey = old.senseKey
-                sense.senseKey.setHead(oldKey.headWord!!, oldKey.headID)
-            }
             return sense
         }
 

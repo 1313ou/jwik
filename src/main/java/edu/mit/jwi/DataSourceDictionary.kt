@@ -210,7 +210,9 @@ class DataSourceDictionary(
         val zeroFilledOffset = zeroFillOffset(id.offset)
         val line = file.getLine(zeroFilledOffset) ?: return null
         val synset = content.dataType.parser.parseLine(line)
-        setAdjHead(synset)
+        if (synset.isAdjectiveSatellite) {
+            synset.adjHeadSenseID = getAdjHead(synset)
+        }
         return synset
     }
 
@@ -365,7 +367,10 @@ class DataSourceDictionary(
         override fun parseLine(line: String): Synset {
             if (pOS == POS.ADJECTIVE) {
                 val synset = parser.parseLine(line)
-                setAdjHead(synset)
+                if (synset.isAdjectiveSatellite) {
+                    synset.adjHeadSenseID = getAdjHead(synset)
+                    setAdjHead(synset)
+                }
                 return synset
             } else {
                 return parser.parseLine(line)
@@ -394,27 +399,30 @@ class DataSourceDictionary(
      *
      * @param synset synset
      */
-    private fun getAdjHead(synset: Synset): Pair<String, Int> {
+    private fun getAdjHead(synset: Synset): SenseIDWithLemmaAndNum {
         // head words are only needed for adjective satellites
         require(synset.isAdjectiveSatellite)
 
         // go find the head synset
         // assume first 'similar' adjective head is the right one
-        val headSynset: Synset = synset.getRelatedFor(Pointer.SIMILAR_TO)
+        val headSynset: Synset = synset.getRelatedSynsetsFor(Pointer.SIMILAR_TO)
             .asSequence()
             .map { getSynset(it)!! }
             .filter { it.isAdjectiveHead }
             .first()
         val headSense: Sense = headSynset.senses[0]
-        val headID = headSense.lexicalID
-        var headLemma = headSense.lemma
+        return headSense.iD
+    }
+
+    private fun getAdjHeadLemmaAndID(headSense: Sense): Pair<String, Int> {
 
         // version 1.6 of Wordnet adds the adjective marker symbol on the end of the head word lemma
+        var headLemma = headSense.lemma
         val isVer16 = version != null && version!!.majorVersion == 1 && version!!.minorVersion == 6
         if (isVer16 && headSense.adjectiveMarker != null) {
             headLemma += headSense.adjectiveMarker!!.symbol
         }
-        return headLemma to headID
+        return headLemma to headSense.lexicalID
     }
 
     /**
@@ -425,15 +433,16 @@ class DataSourceDictionary(
      * @param synset synset
      */
     private fun setAdjHead(synset: Synset) {
-        if (synset.isAdjectiveSatellite) {
-            val (headLemma, headID) = getAdjHead(synset)
-
-            // set the head word for each sense
-            for (sense in synset.senses) {
-                if (sense.senseKey.needsHeadSet()) {
-                    sense.senseKey.setHead(headLemma, headID)
-                }
-            }
-        }
+        //if (synset.isAdjectiveSatellite) {
+        //    requireNotNull(synset.adjHeadSenseID)
+        //    val (headLemma, headID) = getAdjHeadLemmaAndID(synset.adjHeadSenseID!!)
+//
+        //    // set the head word for each sense
+        //    for (sense in synset.senses) {
+        //        if (sense.senseKey.needsHeadSet()) {
+        //            sense.senseKey.setHead(headLemma, headID)
+        //        }
+        //    }
+        //}
     }
 }

@@ -209,7 +209,7 @@ class JWI
                         // val sense2: Sense = dict.getSense(senseid)
                         continue
                     }
-                    val relatedIds: List<SenseID>? = sense.allRelated
+                    val relatedIds: List<SenseID>? = sense.allRelatedSenses
                     for (relatedId in relatedIds!!) {
                         val related = dict.getSense(relatedId)!!
                         f?.accept(related)
@@ -291,7 +291,7 @@ class JWI
         }
 
         // lexical relations
-        val relatedMap: Map<Pointer, List<SenseID>> = sense.related
+        val relatedMap: Map<Pointer, List<SenseID>> = sense.relatedSenses
         walk(relatedMap, ps)
 
         // verb frames
@@ -322,7 +322,7 @@ class JWI
 
     fun walk(synset: Synset, level: Int, ps: PrintStream) {
         val indentSpace = String(CharArray(level)).replace('\u0000', '\t')
-        val links: Map<Pointer, List<SynsetID>> = synset.related
+        val links: Map<Pointer, List<SynsetID>> = synset.relatedSynsets
         for (p in links.keys) {
             ps.println("$indentSpace🡆 ${p.name}")
             val relations2: List<SynsetID> = links[p]!!
@@ -342,7 +342,7 @@ class JWI
 
     fun walk(synset: Synset, p: Pointer, level: Int, ps: PrintStream) {
         val indentSpace = String(CharArray(level)).replace('\u0000', '\t')
-        val relations2 = synset.getRelatedFor(p)
+        val relations2 = synset.getRelatedSynsetsFor(p)
         for (synsetid2 in relations2) {
             val synset2 = dict.getSynset(synsetid2)!!
             ps.println("$indentSpace%s${toString(synset2)}")

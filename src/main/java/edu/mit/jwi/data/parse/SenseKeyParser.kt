@@ -44,7 +44,7 @@ object SenseKeyParser : ILineParser<SenseKey> {
 
             // if it's not an adjective satellite, we're done
             if (!isAdjSat) {
-                return SenseKey(lemma, pos, lexFile.number, lexId, null, -1)
+                return SenseKey(lemma, pos, lexFile.number, lexId)
             }
 
             // get head_word

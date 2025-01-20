@@ -11,7 +11,8 @@ import java.util.*
  * @property lemma processed lemma
  * @property lexID lexical id for this sense key
  * @property pOS part-of-speech
- * @property isAdjectiveSatellite whether this sense key points to an adjective satellite
+ * @property headWord head word for adjective satellite
+ * @property headID head word ID for adjective satellite
  * @property lexicalFileNum lexical File
  */
 class SenseKey(
@@ -39,9 +40,18 @@ class SenseKey(
     val lexID: Int,
 
     /**
-     * Whether this sense key points to an adjective satellite
+     * The head word for adjective satellite
+     * The head id is only non-null if the sense is an adjective satellite synset,
      */
-    val isAdjectiveSatellite: Boolean,
+    val headWord: String? = null,
+
+    /**
+     * The head id for adj satellite
+     * The head id is only present if the sense is an adjective satellite synset,
+     * It is a two digit decimal integer that, when appended onto the head word, uniquely identifies the sense within a lexicographer file.
+     * If this sense key is not for an adjective synset, this method returns `-1`.
+     */
+    val headID: Int? = null,
 
     ) : IHasPOS, Comparable<SenseKey>, Serializable {
 
@@ -50,25 +60,11 @@ class SenseKey(
      */
     val lemma: String = lemma.asSensekeyLemma()
 
-    internal var headWord: String? = null
-        get() {
-            checkHeadSet()
-            return field
-        }
-
     /**
-     * The head id for this sense key
-     * The head id is only present if the sense is an adjective satellite synset,
-     * It is a two digit decimal integer that, when appended onto the head word, uniquely identifies the sense within a lexicographer file.
-     * If this sense key is not for an adjective synset, this method returns `-1`.
+     * Whether the sense is an adjective satellite
      */
-    internal var headID = -1
-        get() {
-            checkHeadSet()
-            return field
-        }
-
-    private var isHeadSet: Boolean = !isAdjectiveSatellite
+    val isAdjectiveSatellite: Boolean
+        get() = headWord != null || headID != null
 
     /**
      * (Cached) string
@@ -89,57 +85,11 @@ class SenseKey(
             return if (isAdjectiveSatellite) NUM_ADJECTIVE_SATELLITE else pOS.number
         }
 
-    /**
-     * Constructs a new sense key.
-     *
-     * @param lemma the lemma
-     * @param pos the part-of-speech
-     * @param lexFileNum the lexical file
-     * @param lexID the lexical id
-     * @param headLemma the head lemma
-     * @param headLexID the head lexical id; ignored if head lemma is null
-     */
-    constructor(lemma: String, pos: POS, lexFileNum: Int, lexID: Int, headLemma: String?, headLexID: Int) : this(lemma, pos, lexFileNum, lexID, (headLemma != null)) {
-        if (headLemma == null) {
-            isHeadSet = true
-        } else {
-            setHead(headLemma, headLexID)
+    init {
+        if (isAdjectiveSatellite) {
+            checkLexicalID(headID!!)
+            require(headWord!!.isNotEmpty())
         }
-    }
-
-    /**
-     * This method is used to set the head for sense keys for adjective satellites, and it can only be called once, directly after the relevant sense is created.
-     * If this method is called on a sense key that has had its head set already, or is not an adjective satellite, it will throw an exception.
-     *
-     * @param headLemma the head lemma to be set
-     * @param headLexID the head lexid to be set
-     * @throws IllegalStateException if this method has already been called, if the headLemma is empty or all whitespace or if the headLexID is illegal.
-     */
-    fun setHead(headLemma: String, headLexID: Int) {
-        check(needsHeadSet())
-        checkLexicalID(headLexID)
-        require(headLemma.trim { it <= ' ' }.isNotEmpty())
-        this.headWord = headLemma
-        this.headID = headLexID
-        this.isHeadSet = true
-    }
-
-    /**
-     * Whether the head lemma and lexical id need to be set
-     * This method will always return false if the isAdjectiveSatellite returns false.
-     * If that method returns true, this method will only return true if setHead has not yet been called.
-     */
-    fun needsHeadSet(): Boolean {
-        return !isHeadSet
-    }
-
-    /**
-     * Throws an exception if the head is not yet set.
-     *
-     * @throws IllegalArgumentException if the needsHeadSet method returns true.
-     */
-    private fun checkHeadSet() {
-        check(!needsHeadSet()) { "Head word and id not yet set" }
     }
 
     override fun compareTo(other: SenseKey): Int {
@@ -182,7 +132,7 @@ class SenseKey(
         }
 
         // finally by head_id
-        return headID.compareTo(other.headID)
+        return headID!!.compareTo(other.headID!!)
     }
 
     override fun toString(): String {

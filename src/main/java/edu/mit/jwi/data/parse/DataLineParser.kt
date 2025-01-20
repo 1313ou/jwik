@@ -6,7 +6,6 @@ import edu.mit.jwi.item.POS.Companion.getPartOfSpeech
 import edu.mit.jwi.item.Pointer.Companion.getPointerType
 import edu.mit.jwi.item.Synset.Companion.normalizeRelatedSense
 import edu.mit.jwi.item.Synset.Companion.normalizeRelatedSynset
-import edu.mit.jwi.item.Synset.ISenseBuilder
 import edu.mit.jwi.item.Synset.Member
 import edu.mit.jwi.item.VerbFrame.Companion.getFrame
 import java.util.*
@@ -114,7 +113,7 @@ object DataLineParser : ILineParser<Synset> {
                             }
                         }
                 }
-            // transfer sense relations to sense builders
+            // transfer sense relations members
             senseRelations.entries.forEach {
                 members[it.key - 1].related = normalizeRelatedSense(it.value)
             }
@@ -157,7 +156,7 @@ object DataLineParser : ILineParser<Synset> {
             val gloss = if (cut > 0) line.substring(cut + 2).trim { it <= ' ' } else ""
 
             // create synset
-            return Synset(synsetID, members, lexFile, isAdjSat, isAdjHead, gloss, synsetRelations)
+            return Synset(synsetID, members, lexFile, gloss, synsetRelations, isAdjSat, isAdjHead, null)
 
         } catch (e: NumberFormatException) {
             throw MisformattedLineException(line, e)
