@@ -106,19 +106,19 @@ interface IDictionary : IHasVersion, IHasLifecycle {
     fun getIndexIterator(pos: POS): Iterator<Index>
 
     /**
-     * Returns an iterator that will iterate over all sense entries in the dictionary.
-     *
-     * @return an iterator that will iterate over all sense entries
-     */
-    fun getSenseEntryIterator(): Iterator<SenseEntry>
-
-    /**
      * Returns an iterator that will iterate over all synsets of the specified part-of-speech.
      *
      * @param pos the part-of-speech over which to iterate
      * @return an iterator that will iterate over all synsets of the specified part-of-speech
      */
     fun getSynsetIterator(pos: POS): Iterator<Synset>
+
+    /**
+     * Returns an iterator that will iterate over all sense entries in the dictionary.
+     *
+     * @return an iterator that will iterate over all sense entries
+     */
+    fun getSenseEntryIterator(): Iterator<SenseEntry>
 
     /**
      * Returns an iterator that will iterate over all exception entries of the specified part-of-speech.

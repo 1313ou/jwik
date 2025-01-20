@@ -302,15 +302,15 @@ abstract class BaseRAMDictionary protected constructor(
 
         var version: Version? = null
 
-        var indexes: MutableMap<POS, MutableMap<IndexID, Index>> = makePOSMap<IndexID, Index>()
+        lateinit var indexes: Map<POS, Map<IndexID, Index>>
 
-        val synsets: MutableMap<POS, MutableMap<SynsetID, Synset>> = makePOSMap<SynsetID, Synset>()
+        lateinit var synsets: Map<POS, Map<SynsetID, Synset>>
 
-        val exceptions: MutableMap<POS, MutableMap<ExceptionEntryID, ExceptionEntry>> = makePOSMap<ExceptionEntryID, ExceptionEntry>()
+        lateinit var exceptions: Map<POS, Map<ExceptionEntryID, ExceptionEntry>>
 
-        var senses: MutableMap<String, Sense> = makeMap<String, Sense>(212500, null)
+        lateinit var senses: Map<String, Sense>
 
-        var senseEntries: MutableMap<String, SenseEntry> = makeMap<String, SenseEntry>(212500, null)
+        lateinit var senseEntries: Map<String, SenseEntry>
 
         /**
          * This method is used when constructing the dictionary data object.
@@ -347,21 +347,21 @@ abstract class BaseRAMDictionary protected constructor(
         /**
          * Compacts this dictionary data object by resizing the internal maps, and removing redundant objects where possible.
          */
-        fun compact() {
-            compactSize()
-            compactObjects()
-        }
+        //fun compact() {
+        //    compactSize()
+        //    compactObjects()
+        //}
 
         /**
          * Resizes the internal data maps to be the exact size to contain their data.
          */
-        fun compactSize() {
-            compactPOSMap<IndexID, Index>(indexes)
-            compactPOSMap<SynsetID, Synset>(synsets)
-            compactPOSMap<ExceptionEntryID, ExceptionEntry>(exceptions)
-            senses = compactMap<String, Sense>(senses)
-            senseEntries = compactMap<String, SenseEntry>(senseEntries)
-        }
+        //fun compactSize() {
+        //    compactPOSMap<IndexID, Index>(indexes)
+        //    compactPOSMap<SynsetID, Synset>(synsets)
+        //    compactPOSMap<ExceptionEntryID, ExceptionEntry>(exceptions)
+        //    senses = compactMap<String, Sense>(senses)
+        //    senseEntries = compactMap<String, SenseEntry>(senseEntries)
+        //}
 
         /**
          * Compacts a part-of-speech map
@@ -370,11 +370,11 @@ abstract class BaseRAMDictionary protected constructor(
          * @param <K> key type
          * @param <V> value type
          */
-        private fun <K, V> compactPOSMap(map: MutableMap<POS, MutableMap<K, V>>) {
-            for (entry in map.entries) {
-                entry.setValue(compactMap<K, V>(entry.value))
-            }
-        }
+        //private fun <K, V> compactPOSMap(map: MutableMap<POS, MutableMap<K, V>>) {
+        //    for (entry in map.entries) {
+        //        entry.setValue(compactMap<K, V>(entry.value))
+        //    }
+        //}
 
         /**
          * Compacts a regular map.
@@ -388,21 +388,21 @@ abstract class BaseRAMDictionary protected constructor(
             return makeMap<K, V>(-1, map)
         }
 
-        /**
-         * Replaces redundant objects where possible
-         */
-        fun compactObjects() {
-            for (pos in POS.entries) {
-                val synsetMap = synsets[pos]!!
-                for (entry in synsetMap.entries) {
-                    entry.setValue(makeSynset(entry.value))
-                }
-                val indexMap = indexes[pos]!!
-                for (entry in indexMap.entries) {
-                    entry.setValue(makeIndex(entry.value))
-                }
-            }
-        }
+        ///**
+        // * Replaces redundant objects where possible
+        // */
+        //fun compactObjects() {
+        //    for (pos in POS.entries) {
+        //        val synsetMap = synsets[pos]!!
+        //        for (entry in synsetMap.entries) {
+        //            entry.setValue(makeSynset(entry.value))
+        //        }
+        //        val indexMap = indexes[pos]!!
+        //        for (entry in indexMap.entries) {
+        //            entry.setValue(makeIndex(entry.value))
+        //        }
+        //    }
+        //}
 
         /**
          * Creates a new synset object that replaces all the old internal SynsetID objects with those from the denoted synsets, thus throwing away redundant synset ids.

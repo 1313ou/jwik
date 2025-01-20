@@ -390,55 +390,69 @@ constructor(
             val data = DictionaryData()
             data.version = source.version
 
-            // pos-indexed
-            POS.entries.forEach { pos ->
-                var indexes = data.indexes[pos]!!
-                source.getIndexIterator(pos).forEach { idx ->
-                    indexes.put(idx.iD, idx)
+            // indexed
+            data.indexes = POS.entries
+                .associate { pos ->
+                    pos to source.getIndexIterator(pos)
+                        .asSequence()
+                        .associate { idx -> idx.iD to idx }
                 }
-            }
             cooperate(thread)
 
             // synsets
-            POS.entries.forEach { pos ->
-                var synsets = data.synsets[pos]!!
-                source.getSynsetIterator(pos).forEach { synset ->
-                    synsets.put(synset.iD, synset)
-
-                    // senses
-                    synset.senses.forEach { sense ->
-                        data.senses.put(sense.senseKey.key, sense)
-                    }
+            data.synsets = POS.entries
+                .associate { pos ->
+                    pos to source.getSynsetIterator(pos)
+                        .asSequence()
+                        .associate { synset -> synset.iD to synset }
                 }
-            }
             cooperate(thread)
 
             // exceptions
-            POS.entries.forEach { pos ->
-                var exceptions = data.exceptions[pos]!!
-                source.getExceptionEntryIterator(pos).forEach { exception ->
-                    exceptions.put(exception.iD, exception)
+            data.exceptions = POS.entries
+                .associate { pos ->
+                    pos to source.getExceptionEntryIterator(pos)
+                        .asSequence()
+                        .associate { exception -> exception.iD to exception }
                 }
-                cooperate(thread)
-            }
+            cooperate(thread)
 
             // sense entries
-            source.getSenseEntryIterator().forEach { entry ->
-                val sense: Sense = data.senses[entry.senseKey.key]!!
-                // Creates a new sense entry that replicates the specified sense entry.
-                // The new sense entry replaces its internal sense key with the specified sense key thus removing a redundant object.
-                data.senseEntries.put(sense.senseKey.key, SenseEntry(sense.senseKey, entry.offset, entry.senseNumber, entry.tagCount))
-            }
+            data.senseEntries = source.getSenseEntryIterator().asSequence()
+                .associate { entry ->
+                    entry.senseKey.key to SenseEntry(entry.senseKey, entry.offset, entry.senseNumber, entry.tagCount)
+                }
+            cooperate(thread)
+
+            // sense entries
+            data.senses = data.synsets.asSequence()
+                .flatMap { (_, m) -> m.values }
+                .flatMap { synset -> synset.senses.asSequence() }
+                .associate { sense ->
+                    sense.senseKey.key to sense
+                }
             cooperate(thread)
 
             // compact
-            data.compactSize()
-            cooperate(thread)
-            data.compactObjects()
-            cooperate(thread)
+            // data.compactSize()
+            // cooperate(thread)
+            // data.compactObjects()
+            // cooperate(thread)
 
             return data
         }
+
+        fun seqAllSenses(): Sequence<Sense> = sequence {
+            POS.entries.forEach { pos ->
+                source.getIndexIterator(pos).forEach {
+                    it.senseIDs.forEach {
+                        val sense = source.getSense(it)!!
+                        yield(sense)
+                    }
+                }
+            }
+        }
+
     }
 
     companion object {
